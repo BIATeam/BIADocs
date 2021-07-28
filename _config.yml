@@ -4,5 +4,5 @@ remote_theme: pmarsceill/just-the-docs
 logo: "/docs/Images/BIALogo.gif"
 aux_links:
   "Live demo":
-    - "https://biateam.github.io/BIADocs/App/Index.html"
+    - "https://biateam.github.io/BIADemo/"
 color_scheme: dark
