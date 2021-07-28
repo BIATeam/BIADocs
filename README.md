@@ -3,7 +3,7 @@
 The BIA Framework is a set of components. It give the possibility to build quickly a modern application at the state of art in 2021 (Green IT, Secure, Structured, RWD, Ergonomic, Fast, Powerful, Open to web component integration)
 
 ## Documentation
-* [The live demo](./App/Index.html)
+* [The live demo](https://biateam.github.io/BIADocs/App/Index.html)
 * [Prerequisite for development](./PREREQUISITE.md)
 * [Configure your environment](./CONFIGURE_YOUR_DEV_ENVIRONMENT.md)
 * [Create a new project](./Docs/NEW_PROJECT.md)
