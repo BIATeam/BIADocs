@@ -74,7 +74,7 @@ nav_order: 999
 * Use of BIA.core nugetpackage (1 by layer)
 * Compatibility with multi ad environmemt
   
-### V3.1.1 (2020-06-26)
+## V3.1.1 (2020-06-26)
 ### Angular
 *  Bug Fix
   
