@@ -1,32 +1,41 @@
-# BIA Framework
+---
+layout: default
+title: Home
+nav_order: 1
+description: The BIA Framework is a set of components. It give the possibility to build quickly a modern application at the state of art in 2021 (Green IT, Secure, Structured, RWD, Ergonomic, Fast, Powerful, Open to web component integration)
+permalink: /
+---
+
+# BIA Framework V3
 
 The BIA Framework is a set of components. It give the possibility to build quickly a modern application at the state of art in 2021 (Green IT, Secure, Structured, RWD, Ergonomic, Fast, Powerful, Open to web component integration)
 
 ## Documentation
 * [The live demo](https://biateam.github.io/BIADocs/App/Index.html)
-* [Prerequisite for development](./PREREQUISITE.md)
-* [Configure your environment](./CONFIGURE_YOUR_DEV_ENVIRONMENT.md)
-* [Create a new project](./Docs/NEW_PROJECT.md)
-* [Start an existing project](./Docs/START_EXISTING_PROJECT.md)
-* [Migrate an existing project](./Docs/MIGRATION.md)
+* [Prerequisite for development](./docs/PREREQUISITE.md)
+* [Configure your environment](./docs/ConfigureEnv/CONFIGURE_YOUR_DEV_ENVIRONMENT.md)
+* [Create a new project](./docs/NEW_PROJECT.md)
+* [Start an existing project](./docs/START_EXISTING_PROJECT.md)
+* [Migrate an existing project](./docs/Migration/MIGRATION.md)
 * Use the framework founctionnalities
   * DotNet projects:
-    * [PRESENTATION.API](./Projects/01-PRESENTATION.API.md)
-    * [WORKER_SERVICE](./Projects/01-WORKER_SERVICE.md)
-    * [INFRASTRUCTURE.DATA](./Projects/04-INFRASTRUCTURE.DATA.md)
-    * [TEST](./Projects/99-TEST.md)
+    * [PRESENTATION.API](./docs/Projects/01-PRESENTATION.API.md)
+    * [WORKER_SERVICE](./docs/Projects/01-WORKER_SERVICE.md)
+    * [INFRASTRUCTURE.DATA](./docs/Projects/04-INFRASTRUCTURE.DATA.md)
+    * [TEST](./docs/Projects/99-TEST.md)
   * Features:
-    * [CLIENT_FOR_HUB](./Features/CLIENT_FOR_HUB.md)
-    * [DATABASE_HANDLER](./Features/DATABASE_HANDLER.md)
-    * [DELEGATE_JOB_TO_WORKER](./Features/DELEGATE_JOB_TO_WORKER.md)
-    * [HUB_FOR_CLIENTS](./Features/HUB_FOR_CLIENTS.md)
-    * [SINGLE_ROLE_MODE](./Features/SINGLE_ROLE_MODE.md)
-    * [SWAGGER](./Features/SWAGGER.md)
+    * [CLIENT_FOR_HUB](./docs/Features/CLIENT_FOR_HUB.md)
+    * [DATABASE_HANDLER](./docs/Features/DATABASE_HANDLER.md)
+    * [DELEGATE_JOB_TO_WORKER](./docs/Features/DELEGATE_JOB_TO_WORKER.md)
+    * [HUB_FOR_CLIENTS](./docs/Features/HUB_FOR_CLIENTS.md)
+    * [SINGLE_ROLE_MODE](./docs/Features/SINGLE_ROLE_MODE.md)
+    * [SWAGGER](./docs/Features/SWAGGER.md)
   * Front Angular:
-    * [Begining](./Front/BEGINING.md)
-    * [Create a CRUD](./FRONT/CRUD_UNIVERSAL_MODE.md)
-    * [Create a OPTION](./FRONT/OPTION.md)
-    * [Customize theme](./FRONT/CUSTOMIZE_THEME.md)
-    * [Use highcharts](./FRONT/HIGHCHARTS.md)
+    * [Begining](./docs/Front/BEGINING.md)
+    * [Create a CRUD](./docs/FRONT/CRUD_UNIVERSAL_MODE.md)
+    * [Create a OPTION](./docs/FRONT/OPTION.md)
+    * [Customize theme](./docs/FRONT/CUSTOMIZE_THEME.md)
+    * [Use highcharts](./docs/FRONT/HIGHCHARTS.md)
+
 ## Changelog
 * [Latest improvements](./CHANGELOG.md)
