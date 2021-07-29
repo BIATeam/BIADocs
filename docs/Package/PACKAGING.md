@@ -34,12 +34,15 @@ has_children: true
 - test the BIADemo project.
 
 ## Prepare BIATemplate:
-- Launch **...\BIADemo\Tools\DotNet-BIADemo-BIATemplate.ps1**
 - Launch **...\BIADemo\Tools\Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
+- Launch **...\BIADemo\Tools\DotNet-BIADemo-BIATemplate.ps1**
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 
 ## Prepare BIACompany Files and relase BIATemplate:
+- Copy the last version folder in   **..\CompanyFiles** to **..\CompanyFiles\VX.Y.Z**
 - Launch **...\BIADemo\Tools\DeliverBIATemplateAndCompanyFileVersion.ps1**
+- Verirfy that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
+
 
 ## Test the project creation using the VX.Y.Z
 - With the BIAToolKit create a project of the VX.Y.Z.
