@@ -17,6 +17,8 @@ has_children: true
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\environments\environment.ts**
   - **..\BIADemo\Angular\src\environments\environment.prod.ts**
+- If it is a major version modify it in 
+  - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - COMMIT BIADemo
 
 ## Compile the BIA packages:

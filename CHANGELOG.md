@@ -5,6 +5,13 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.4.1 (2021-07-16)
+* Add general project file (ReadMe + Change Log)
+* Remove Doc (now in BIADocs)
+### DotNet
+* Correct GitIgnore
+* The switch to nuget now limit to minor version eg : 3.4.*
+* Add launch settings for IIS
 
 ## V3.4.0 (2021-07-16)
 ### DotNet
