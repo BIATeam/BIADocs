@@ -6,7 +6,7 @@ nav_order: 999
 
 # ChangeLog
 ## V3.4.2 (2021-10-08)
-* notification system (translation of title and description can be temporaly done in i18n or not, but it will change in next version)
+* notification system (translation of title and description can be temporally done in i18n or not, but it will change in next version)
 * The signalR message are now filter by feature and site.
 * Authentication send current site and current roles
 * Permission table is created
