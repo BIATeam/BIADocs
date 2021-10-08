@@ -5,6 +5,15 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.4.2 (2021-10-08)
+* notification system (translation of title and description can be temporaly done in i18n or not, but it will change in next version)
+* The signalR message are now filter by feature and site.
+* Authentication send current site and current roles
+* Permission table is created
+* Roles are translate in i18n files
+### DotNet
+* The client for hub (SignalR) in now a domain service
+
 ## V3.4.1 (2021-07-16)
 * Add general project file (ReadMe + Change Log)
 * Remove Doc (now in BIADocs)
