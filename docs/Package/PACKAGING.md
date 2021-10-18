@@ -19,6 +19,7 @@ has_children: true
   - **..\BIADemo\Angular\src\environments\environment.prod.ts**
 - If it is a major version modify it in 
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
+- Test Authent AD Group + ReadOnly Database
 - COMMIT BIADemo
 
 ## Compile the BIA packages:
