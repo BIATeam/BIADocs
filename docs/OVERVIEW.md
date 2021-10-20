@@ -40,7 +40,7 @@ Example of 2 applications design with the BIA Framework:
 
  ![Run Overview](./Images/Overview_Run.PNG)
 
- ## Domain Driven Design
- The application generated respect the driven design approach to be modular.
+## Domain Driven Design
+The application generated respect the driven design approach to be modular.
 
- ![DDD Overview](./Images/Overview_DDD.PNG)
+![DDD Overview](./Images/Overview_DDD.PNG)
