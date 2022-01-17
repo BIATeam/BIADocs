@@ -1,7 +1,7 @@
 # theme: jekyll-theme-dinky
 title: BIA Framework
 remote_theme: pmarsceill/just-the-docs
-logo: "/docs/Images/BIALogo.gif"
+logo: "/docs/Images/LogoAvecTitre.png"
 aux_links:
   "Live demo":
     - "https://biateam.github.io/BIADemo/"
