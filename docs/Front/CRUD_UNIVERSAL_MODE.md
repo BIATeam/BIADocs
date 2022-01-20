@@ -13,19 +13,19 @@ It means that you can switch this functionnalities:
 - Modification in the table / in dedicated form 
 - Refresh with SignalR / not use signalR
   
-<u>For this example, we imagine that we want to create a new feature with the name: <span style="background-color:yellow">aircrafts-types</span>.   </u>
+<u>For this example, we imagine that we want to create a new feature with the name: <span style="background-color:#327f00">aircrafts-types</span>.   </u>
 
 ## Prerequisite
-The back-end is ready, i.e. the <span style="background-color:yellow">AircraftType</span> controller exists as well as permissions such as `AircraftType_List_Access`.
+The back-end is ready, i.e. the <span style="background-color:#327f00">AircraftType</span> controller exists as well as permissions such as `AircraftType_List_Access`.
 
 ## Create a new feature
-First, create a new <span style="background-color:yellow">aircrafts-types</span> folder under the **src\app\features** folder of your project.   
-Then copy, paste and unzip into this feature <span style="background-color:yellow">aircrafts-types</span> folder the contents of :
+First, create a new <span style="background-color:#327f00">aircrafts-types</span> folder under the **src\app\features** folder of your project.   
+Then copy, paste and unzip into this feature <span style="background-color:#327f00">aircrafts-types</span> folder the contents of :
   * **Angular\docs\feature-planes.zip** Universal Mode 
 
 Then, inside the folder of your new feature, execute the file **new-crud.ps1**   
-For **new crud name? (singular)**, type <span style="background-color:yellow">aircraft-type</span> 
-For **new crud name? (plural)**, type <span style="background-color:yellow">aircrafts-types</span>
+For **new crud name? (singular)**, type <span style="background-color:#327f00">aircraft-type</span> 
+For **new crud name? (plural)**, type <span style="background-color:#327f00">aircrafts-types</span>
 When finished, you can delete **new-crud.ps1**   
 
 ## Update permission
@@ -63,7 +63,7 @@ Open the file **src\app\app-routing.module.ts** and in the array **routes**, add
 ```
 
 ## Create the model
-Use the back-end with swagger to retrieve a json from the new entity <span style="background-color:yellow">AircraftType</span>.   
+Use the back-end with swagger to retrieve a json from the new entity <span style="background-color:#327f00">AircraftType</span>.   
 Use this site to convert the json to interface TypeScript:   
 http://json2ts.com/   
 And then, copy the generated code in **src\app\features\aircrafts\model\aircraft-type.ts**
