@@ -5,6 +5,17 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.5.0 (2022-01-21)
+* Manage Time only with or without second
+### DotNet
+* Manage Id other than int
+* Translate in DB (use by role and notification)
+* Faster authentication
+* Template for CRUD in Doc
+### Angular
+* Angular 12
+* NG lint ok
+
 ## V3.4.2 (2021-10-08)
 * notification system (translation of title and description can be temporally done in i18n or not, but it will change in next version)
 * The signalR message are now filter by feature and site.
