@@ -5,6 +5,13 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.5.1 (2022-01-23)
+### DotNet
+* Solve bug in Test unitary
+### Angular
+* Breadcrumb disapear at home 
+* Correct switch of theme (bug in prod only)
+  
 ## V3.5.0 (2022-01-21)
 * Manage Time only with or without second
 ### DotNet
