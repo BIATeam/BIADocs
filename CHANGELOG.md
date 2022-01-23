@@ -9,7 +9,7 @@ nav_order: 999
 ### DotNet
 * Solve bug in Test unitary
 ### Angular
-* Breadcrumb disapear at home 
+* Breadcrumb disappear at home 
 * Correct switch of theme (bug in prod only)
   
 ## V3.5.0 (2022-01-21)
