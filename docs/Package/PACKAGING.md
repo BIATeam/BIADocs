@@ -13,14 +13,15 @@ has_children: true
 - Change the framework version in 
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\app\shared\bia-shared\framework-version.ts**
-- Verify project version in
+- Verify the project version should be 0.0.0 in
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\environments\environment.ts**
   - **..\BIADemo\Angular\src\environments\environment.prod.ts**
 - If it is a major version modify it in 
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
-- Test Authent AD Group + ReadOnly Database
+- Test Authent AD Group + ReadOnly Database + Unitary Test
 - COMMIT BIADemo
+- Test a deployement in INT, UAT and PRD. 
 
 ## Compile the BIA packages:
 - Change the version number of all BIA.Net.Core packages to match the version to be released.
@@ -30,7 +31,7 @@ has_children: true
 ## Switch the BIADemo project to nuget
 - In the file **...\BIADemo\DotNet\Switch-To-Nuget.ps1** adapt the package version number in the line :
     ```
-    dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.4.*
+    dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.5.*
     ```
 - Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
