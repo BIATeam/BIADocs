@@ -9,7 +9,7 @@ nav_order: 4
 The PrimeNG theme chosen for this framework is the <a href="https://www.primefaces.org/ultima-ng/">Ultima theme</a>.
 In this project, the content of the theme can be found in the following folders :<br/>
 src/assets/bia/primeng<br/>
-To be able to customize the theme, you must first install node-sass globally with the following command (for node 12): <b>npm install -g node-sass@4.12.*</b>.
+To be able to customize the theme, you must first install node-sass globally with the following command (for node 12.18.3): <b>npm install -g node-sass@6.0.1 --unsafe-perm true</b>.
 In this commande adapt the version of the node-sass to your installed node version. See the compatibility list <a href="https://github.com/sass/node-sass#node-sass">here</a>.
 <br/>
 You only must change the <b>src/assets/bia/primeng/sass/overrides</b> folder.<br/>
