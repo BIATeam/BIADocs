@@ -11,6 +11,7 @@ nav_order: 999
 * Solve bug in order list
 ### Angular
 * Custom Scss include in project
+* Correct all roles get signalR notification
 
 ## V3.5.0.1 (2022-01-23)
 ### DotNet
