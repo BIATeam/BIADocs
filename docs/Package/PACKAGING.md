@@ -7,7 +7,7 @@ has_children: true
 # Package a new version of the Framework (Only for BIATeam):
 
 ## Refine the BIADemo project
-- [ ] In the .Net Part: put comments "// BIADemo only" at the beginning of each file which must not appear in the template
+- In the .Net Part: put comments "// BIADemo only" at the beginning of each file which must not appear in the template
 - Put behind comments "// Begin BIADemo" and "// End BIADemo" the parts of the files to make disappear in the template
 - Remove all warnings.
 - Change the framework version in 
