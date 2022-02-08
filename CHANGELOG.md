@@ -5,7 +5,7 @@ nav_order: 999
 ---
 
 # ChangeLog
-## V3.5.1 (2022-01-23)
+## V3.5.1 (2022-02-08)
 * Possibility to inject ExternalJS in front depending on back environement. 
 ### DotNet
 * Solve bug in order list
