@@ -1,4 +1,4 @@
-$Source = "D:\Sources\Azure.DevOps.Safran\DigitalManufacturing\eZTest";
+$Source = "D:\xxxx\ProjectName";
 
 function ReplaceInProject {
   param (
@@ -42,7 +42,7 @@ ReplaceInProject -Source $Source -OldRegexp 'ui-' -NewRegexp 'p-' -Include *.ts,
 
 
 
-ReplaceInProject -Source $Source -OldRegexp ' mapper = new (.*)Mapper\(\);' -NewRegexp ' mapper = this.InitMapper<$1Dto, $1Mapper>\(\);' -Include *.cs
+ReplaceInProject -Source $Source -OldRegexp ' mapper = new (.*)Mapper\(\);' -NewRegexp ' mapper = this.InitMapper<$1Dto, $1Mapper>();' -Include *.cs
 
 ReplaceInProject -Source $Source -OldRegexp 'FileFiltersDto' -NewRegexp 'PagingFilterFormatDto' -Include *.cs
 
@@ -63,6 +63,9 @@ ReplaceInProject -Source $Source -OldRegexp ': AppServiceBase<$1, int, int>' -Ne
 
 ReplaceInProject -Source $Source -OldRegexp ': ICrudAppServiceBase<(.*),(.*),(.*)>' -NewRegexp ': ICrudAppServiceBase<$1,$2, int,$3>' -Include *.cs
 ReplaceInProject -Source $Source -OldRegexp ': ICrudAppServiceBase<(.*),(.*), int, int,(.*)>' -NewRegexp ': ICrudAppServiceBase<$1,$2, int,$3>' -Include *.cs
+
+ReplaceInProject -Source $Source -OldRegexp ': CrudAppServiceBase<(.*),(.*),(.*),(.*)>' -NewRegexp ': CrudAppServiceBase<$1,$2, int,$3,$4>' -Include *.cs
+ReplaceInProject -Source $Source -OldRegexp ': CrudAppServiceBase<(.*),(.*), int, int,(.*),(.*)>' -NewRegexp ': CrudAppServiceBase<$1,$2, int,$3,$4>' -Include *.cs
 
 ReplaceInProject -Source $Source -OldRegexp ': BaseMapper<(.*),(.*)>' -NewRegexp ': BaseMapper<$1,$2, int>' -Include *.cs
 ReplaceInProject -Source $Source -OldRegexp ': BaseMapper<(.*),(.*), int, int>' -NewRegexp ': BaseMapper<$1,$2, int>' -Include *.cs
