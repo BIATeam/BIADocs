@@ -12,6 +12,6 @@ has_children: true
 * Read the value of FrameworkVersion
 
 ## Apply successively the migration:
-* If your project is older than V3.4.0 use this [doc](./3.3.3%20TO%203.4.0.md).
+* If your project is older than V3.4.0 use this [doc](./3.3.3%20TO%203.4.0.html).
 * Else use the BIAToolKit to apply the migration.
 * Continue with the other .md files...

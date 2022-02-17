@@ -5,6 +5,14 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.5.1 (2022-02-08)
+* Possibility to inject ExternalJS in front depending on back environement. 
+### DotNet
+* Solve bug in order list
+### Angular
+* Custom Scss include in project
+* Correct all roles get signalR notification
+
 ## V3.5.0.1 (2022-01-23)
 ### DotNet
 * Solve bug in Test unitary
