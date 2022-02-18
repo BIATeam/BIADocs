@@ -5,7 +5,7 @@ parent: Front
 nav_order: 6
 ---
 
-# Analyse the size of the appliucation
+# Analyse the size of the application
 This document explains how to create a stats report that give an overview of the size of the js generated with the Angular application.   
 ![Stats](../Images/Stats.PNG)
 
