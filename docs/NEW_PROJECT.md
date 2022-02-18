@@ -14,7 +14,7 @@ You have to respect the structure below for your project :
 
 To accomplish this, follow the steps below in the right order : 
 1. Clone the Git repository from Azure DevOps.
-2. Create the project using the [BIA ToolKit](https://github.com/BIATeam/BIAToolKit/releases).
+2. Create the project using the BIAToolKit. [Step desribe here](./BIAToolKit/CREATE.md).
 3. Update the README.md file with a descripion of your project.
 4. Prepare the DotNet project :
 * Prepare the Presentation WebApi:
