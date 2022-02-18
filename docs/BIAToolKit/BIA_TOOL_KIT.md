@@ -1,6 +1,6 @@
 ---
 layout: default
-title: BIA Tool Kit
+title: BIAToolKit
 nav_order: 120
 has_children: true
 ---
