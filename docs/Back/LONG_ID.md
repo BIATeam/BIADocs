@@ -81,7 +81,7 @@ Use long ithe list of ids in Remove function
 Add-Migration "<span style="background-color:#327f00">Plane</span>LongId" -Context "DataContext"
 
 ## Adapt the migration
-Due to a known bu in ef5.0 you have to add manualy the remove of the PrimaryKey and ForeignKey on each element modified, and recreate them after change in Up and Down function.
+Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey and ForeignKey on each element modified, and recreate them after change in Up and Down function.
   ``` csharp
     public partial class PlaneLongId : Migration
     {
