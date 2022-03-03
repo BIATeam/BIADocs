@@ -19,10 +19,10 @@ Swagger open a user interface to launch and test the web api develop in the proj
 
 ![Swagger UI](../Images/SwaggerUI.png)
 
-This interface is accesible with the path /swagger relative to the root of your Presentation.api application.
+This interface is accessible with the path /swagger relative to the root of your Presentation.api application.
 
 ### BIA customizing:
-In the BIA Framework a buton is ad at the bottom right to authenticat the user with SSO using JWT token.
+In the BIA Framework a button is added at the bottom right to authenticate the user with SSO using JWT token.
 
 ## Activation
 ### bianetconfig.Development.json
@@ -37,5 +37,5 @@ In the BIANet Section add:
 ### recommendation
 It is not recommanded to Activate this feature in UAT and Production. It can be activate in Integration only for test.
 
-It is recomanded to configur your Presentation.Api project in Visual Studio to launch the swagger UI at start of debug:
+It is recomanded to configure your Presentation.Api project in Visual Studio to launch the swagger UI at start of debug:
 ![Swagger VS Configuration](../Images/SwaggerVSConfig.png)
