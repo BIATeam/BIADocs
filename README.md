@@ -31,6 +31,7 @@ The BIA Framework is a set of components. It give the possibility to build quick
     * [HUB_FOR_CLIENTS](./docs/Features/HUB_FOR_CLIENTS.md)
     * [SINGLE_ROLE_MODE](./docs/Features/SINGLE_ROLE_MODE.md)
     * [SWAGGER](./docs/Features/SWAGGER.md)
+    * [AUDIT](./docs/Features/AUDIT.md)
   * Front Angular:
     * [Begining](./docs/Front/BEGINING.md)
     * [Create a CRUD](./docs/FRONT/CRUD_UNIVERSAL_MODE.md)

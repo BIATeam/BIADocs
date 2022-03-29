@@ -24,7 +24,7 @@ The features activable in BIA framework.
     * Related element (OptionDTO)
     * Service filtered
     * Service for CRUD
-    * Querry customizer
+    * Query customizer
     * Hangfire jobs
     * Client for Hub (SignalR)
     * Database Handler

@@ -33,25 +33,25 @@ function ReplaceInProject {
 
 Write-Host "Migration replacement"
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.put\((.*),(.*)\)' -NewRegexp 'Das.put({ item: $1, id: $1.id })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.put\(([^{].*),(.*)\)' -NewRegexp 'Das.put({ item: $1, id: $1.id })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.post\((.*)\)' -NewRegexp 'Das.post({item: $1})' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.post\(([^{].*)\)' -NewRegexp 'Das.post({item: $1})' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.delete\((.*)\)' -NewRegexp 'Das.delete({ id: id })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.delete\(([^{].*)\)' -NewRegexp 'Das.delete({ id: id })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.deletes\((.*)\)' -NewRegexp 'Das.deletes({ ids: ids })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.deletes\(([^{].*)\)' -NewRegexp 'Das.deletes({ ids: ids })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.save\((.*),(.*)\)' -NewRegexp 'Das.save({ items: $1, endpoint: $2 })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.save\(([^{].*),(.*)\)' -NewRegexp 'Das.save({ items: $1, endpoint: $2 })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.save\((.*)\)' -NewRegexp 'Das.save({ items: $1 })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.save\(([^{].*)\)' -NewRegexp 'Das.save({ items: $1 })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.getList\((.*),(.*)\)' -NewRegexp 'Das.getList({ endpoint: $1, options: $2 })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.getList\(([^{].*),(.*)\)' -NewRegexp 'Das.getList({ endpoint: $1, options: $2 })' -Include *.ts
 
 ReplaceInProject -Source $Source -OldRegexp 'Das.getList\(''(.*)''\)' -NewRegexp 'Das.getList({ endpoint: ''$1'' })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.getListByPost\((.*)\)' -NewRegexp 'Das.getListByPost({ event: $1 })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.getListByPost\(([^{].*)\)' -NewRegexp 'Das.getListByPost({ event: $1 })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.get\((.*)\).pipe' -NewRegexp 'Das.get({ id: $1 }).pipe' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.get\(([^{].*)\).pipe' -NewRegexp 'Das.get({ id: $1 }).pipe' -Include *.ts
 
 cd $Source/DotNet
 dotnet restore --no-cache
