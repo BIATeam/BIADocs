@@ -7,21 +7,21 @@ nav_order: 3
 
 # Configure your Git environment 
 
-## Company Customisation
-If your company have a proxy specify it (exact values can be describe in your company docs : CompanyConfig.md) else follow those steps.
+Install [Git for windows](https://git-scm.com/download/win)
+When working for a company behind a proxy with certificate interception, it is advised to choose "Use the native Windows Secure Channel library" in order to validate server certificates with Windows Certificates Stores
+![Git Windows ssl](../Images/GitSsl.png)
+In order to avoid to do unnecessary merges it is also advised to configure the default behavior of "git pull" to "pull rebase"
+When working only on Windows, in order to avoid issues with line feeds, choose the "Checkout as is, commit as" option
 
-## Configuration for the Company proxy
-[Add the following **User** environment variables :](https://www.tenforums.com/tutorials/121664-set-new-user-system-environment-variables-windows.html#option1)  
-* HTTP_PROXY: [Add here your proxy]
-* HTTPS_PROXY: [Add here your proxy]
-* NO_PROXY: [Add here the local domain extensions taht do not need proxy separate by a space]
+The git plugin for Visual Studio is automatically installed by default with Visual Studio but you can also install a dedicated GUI client (for instance [Git extensions](https://gitextensions.github.io/))
+if behind a company proxy, in order to be able to fech a github repo, run the following command :
+> git config --global http.https://<area>github.com.proxy [**add_here_your_proxy_url**]
 
-## Git config
+this should add the following lines to your **.gitconfig** file
+```
+[http "https://github.com"]
+	proxy = [proxy_url]
+```
+
 To find the path to the **.gitconfig** file, type the following command:   
 `git config --list --show-origin`   
-Open your **.gitconfig** file and add this configuration:
-```
-[http]
-	sslVerify = false
-	proxy = "[Add here your proxy if requiered]"
-```
