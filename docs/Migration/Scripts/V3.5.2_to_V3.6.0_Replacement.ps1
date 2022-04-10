@@ -53,6 +53,12 @@ ReplaceInProject -Source $Source -OldRegexp 'Das.getListByPost\(([^{].*)\)' -New
 
 ReplaceInProject -Source $Source -OldRegexp 'Das.get\(([^{].*)\).pipe' -NewRegexp 'Das.get({ id: $1 }).pipe' -Include *.ts
 
+
+ReplaceInProject -Source $Source -OldRegexp '<bia-table([^-]([^>]|\n)*)\[canEdit\]' -NewRegexp '<bia-table$1[canClickRow]' -Include *.html
+ReplaceInProject -Source $Source -OldRegexp '<bia-table([^-]([^>]|\n)*)\(edit\)' -NewRegexp '<bia-table$1(clickRow)' -Include *.html
+
+
+
 cd $Source/DotNet
 dotnet restore --no-cache
 
