@@ -3,6 +3,8 @@ title: BIA Framework
 remote_theme: pmarsceill/just-the-docs
 logo: "/docs/Images/LogoAvecTitre.png"
 aux_links:
+  "Sources":
+    - "https://github.com/BIATeam/"
   "Live demo":
     - "https://biateam.github.io/BIADemo/"
 color_scheme: dark
