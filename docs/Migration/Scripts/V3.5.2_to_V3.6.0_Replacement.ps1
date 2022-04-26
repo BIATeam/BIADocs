@@ -59,6 +59,37 @@ ReplaceInProject -Source $Source -OldRegexp '<bia-table([^-]([^>]|\n)*)\(edit\)'
 
 
 
+
+ReplaceInProject -Source $Source -OldRegexp '/domains/app-settings/' -NewRegexp '/domains/bia-domains/app-settings/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/domains/language-option/' -NewRegexp '/domains/bia-domains/language-option/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/domains/notification/' -NewRegexp '/domains/bia-domains/notification/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/domains/notification-type-option/' -NewRegexp '/domains/bia-domains/notification-type-option/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/domains/role-option/' -NewRegexp '/domains/bia-domains/role-option/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/domains/team/' -NewRegexp '/domains/bia-domains/team/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/domains/user-option/' -NewRegexp '/domains/bia-domains/user-option/' -Include *.ts
+
+ReplaceInProject -Source $Source -OldRegexp '/features/background-task/' -NewRegexp '/features/bia-features/background-task/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/features/notifications/' -NewRegexp '/features/bia-features/notifications/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/features/users/' -NewRegexp '/features/bia-features/users/' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp '/features/users-from-directory/' -NewRegexp '/features/bia-features/users-from-directory/' -Include *.ts
+
+
+
+ReplaceInProject -Source $Source -OldRegexp 'import \{ loadAllUserOptions \}' -NewRegexp 'import { DomainUserOptionsActions }' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'loadAllUserOptions' -NewRegexp 'DomainUserOptionsActions.loadAll' -Include *.ts
+
+ReplaceInProject -Source $Source -OldRegexp 'import \{ loadAllRoleOptions \}' -NewRegexp 'import { DomainRoleOptionsActions }' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'loadAllRoleOptions' -NewRegexp 'DomainRoleOptionsActions.loadAll' -Include *.ts
+
+ReplaceInProject -Source $Source -OldRegexp 'import \{ loadAllNotificationTypeOptions \}' -NewRegexp 'import { DomainNotificationTypeOptionsActions }' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'loadAllNotificationTypeOptions' -NewRegexp 'DomainNotificationTypeOptionsActions.loadAll' -Include *.ts
+
+ReplaceInProject -Source $Source -OldRegexp 'import \{ loadAllLanguageOptions \}' -NewRegexp 'import { DomainLanguageOptionsActions }' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'loadAllLanguageOptions' -NewRegexp 'DomainLanguageOptionsActions.loadAll' -Include *.ts
+
+ReplaceInProject -Source $Source -OldRegexp 'import \{ loadDomainAppSettings \}' -NewRegexp 'import { DomainAppSettingsActions }' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'loadDomainAppSettings' -NewRegexp 'DomainAppSettingsActions.loadAll' -Include *.ts
+
 cd $Source/DotNet
 dotnet restore --no-cache
 
