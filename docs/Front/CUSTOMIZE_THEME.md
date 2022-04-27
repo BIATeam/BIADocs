@@ -37,7 +37,7 @@ You can adapt the files in folder
 
 Once the changes have been made run
 ``` cmd
-npm run all-styles
+npm run styles
 ```
 
 It will generate :
