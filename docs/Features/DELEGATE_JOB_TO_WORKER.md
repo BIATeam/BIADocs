@@ -26,7 +26,7 @@ This file explains what to use the the delegate job to worker feature in your V3
 ## Activation
 * bianetconfig.json
 In the BIANet Section add:
-```Json
+``` json
     "ApiFeatures": {
       "DelegateJobToWorker": {
         "Activate": true,
@@ -40,7 +40,7 @@ replace **[YourAppConnectionStringName]** by the name of your connection string 
 ## Usage
 ### Create the job
 In the Application layer (this layer is share with the worker service) create the job classe in the Job folder.
-```CSharp
+``` csharp
 namespace [YourCompanyName].[YourProjectName].Application.Job
 {
     using System;
@@ -90,7 +90,7 @@ namespace [YourCompanyName].[YourProjectName].Application.Job
 In the Presentation.Api layer add the package Hangfire 1.7.18 (repect the version to keep a database compatibility)
 
 You can call the job like that from a controller:
-```CSharp
+``` csharp
     using BIA.Net.Core.Application.Helpers;
     ...
     using Hangfire;

@@ -28,7 +28,7 @@ A test suite is class containing several tests related to the same topic.
 This attribute can be used in combination with several **<code>[DataRow(x, y, z)]</code>** attributes. Each **<code>DataRow</code>** will be an execution of the test with the given inputs (x, y, z).
 Note: you can add as many input parameters as you want.
 Example:
-  ```csharp
+  ``` csharp
     [DataTestMethod]
     [DataRow(-1, true)]
     [DataRow(0, true)]
@@ -180,7 +180,7 @@ This can allow you to centralize some initialization in the **<code>[TestInitial
   * With the **<code>[TestClass]</code>** attribute.
   * Extending **<code>AbstractUnitTest</code>**.
   * With a default constructor (without parameter) calling the base constructor with a boolean parameter:
-  ```csharp
+  ``` csharp
    public MyControllerTests() 
    : base(false) 
    {
@@ -212,7 +212,7 @@ You can add an optional parameter to this attribute in order to configure the na
 * For **controller tests**, you can:
   * Retrieve the **HTTP status code** of an API by casting its returned value into an **<code>IStatusCodeActionResult</code>**.
   For example:
-    ```csharp
+    ``` csharp
     this.controller = this.GetControllerWithHttpContext<SitesController>();
     IStatusCodeActionResult response = this.controller.Add(siteDto).Result as IStatusCodeActionResult;
     Assert.IsNotNull(response);
@@ -220,7 +220,7 @@ You can add an optional parameter to this attribute in order to configure the na
     ```
   * Retrieve the **HTTP status code and the returned value** of an API by casting its returned value into an **<code>ObjectResult</code>**.
   For example:
-    ```csharp
+    ``` csharp
     this.controller = this.GetControllerWithHttpContext<SitesController>();
     ObjectResult response = this.controller.GetAll(filter).Result as ObjectResult;
     Assert.IsNotNull(response);
@@ -245,7 +245,7 @@ For the controllers, it will automatically configure an HttpContext that is requ
 You only have to call the **<code>MockXxxx()</code>** methods in order to setup the information you want to mock. The mocked object is automatically generated and applied when initializing the test.
 * Since most of our APIs are asynchronous, use **<code>Result</code>** to wait for the call to be complete and retrieve the returned value.
 For example: 
-  ```csharp
+  ``` csharp
   ISiteAppService service = this.GetService<ISiteAppService>();  
   SiteDto site = service.GetAsync(1).Result;
   ```

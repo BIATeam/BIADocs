@@ -22,7 +22,7 @@ The endpoint for this service is "HubForClients" (ie: http://localhost/[YourProj
 ## Activation
 * bianetconfig.json
 In the BIANet Section add:
-```Json
+``` json
     "ApiFeatures": {
       "HubForClients": {
         "Activate": true
@@ -31,7 +31,7 @@ In the BIANet Section add:
 ```
 * bianetconfig.ENV.json (4 files not Development)
 In the BIANet Section add:
-```Json
+``` json
     "ApiFeatures": {
       "HubForClients": {
         "RedisConnectionString": "[FqdnYourRedisServer]",

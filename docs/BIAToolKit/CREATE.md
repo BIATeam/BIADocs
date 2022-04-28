@@ -44,7 +44,7 @@ ProjectParentPath/
 
 ## Set the company name and project name
 The company name and project name will appear in the namspace of the application :
-```csharp
+``` csharp
 namespace [CompanyName].[ProjectName].Presentation.Api
 ```
 
