@@ -9,7 +9,8 @@ has_children: true
 ## Refine the BIADemo project
 - In the .Net Part: put comments "// BIADemo only" at the beginning of each file which must not appear in the template
 - Put behind comments "// Begin BIADemo" and "// End BIADemo" the parts of the files to make disappear in the template
-- Remove all warnings.
+- Remove all warnings in .Net core.
+- Ng lint the angular poject and remove all errors and warnings.
 - Change the framework version in 
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\app\shared\bia-shared\framework-version.ts**
