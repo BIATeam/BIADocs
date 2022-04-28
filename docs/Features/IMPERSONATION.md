@@ -16,7 +16,7 @@ This is called impersonation.
 To do this, we will use the class : **BIA.Net.Core.Common.Helpers.WindowsIdentityHelper**
 Here is an example of impersonation. We are going to use another account to retrieve a file from a folder.
 
-```CSharp
+``` csharp
         public Task<FileStream> GetFileAsync(string path)
         {
                 // Here we have the code we want to run with another account : File.OpenRead(path)

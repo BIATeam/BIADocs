@@ -19,7 +19,7 @@ Here is an example of a parallel call. This example doesn't make any functional 
 The **GetAsync** method shows a classic call.
 The **GetInParallelAsync** method shows a parallel call.
 
-```CSharp
+``` csharp
         public async Task GetAsync()
         {
             // We launch here 3 queries one by one and we wait each time for the result

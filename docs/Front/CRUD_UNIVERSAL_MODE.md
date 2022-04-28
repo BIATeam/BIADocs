@@ -73,14 +73,14 @@ If you have a related model you have 2 models to generate replace all any and ob
 ## Update translations
 Open the file **src\assets\i18n\app\en.json** and   
 add in `"app"`
-```json
+``` json
 "app": {
     ...
     "aircraftsType": "Aircrafts types"
   }
 ```
 add 
-```json
+``` json
 "aircraftType": {
   "add": "Add aircraft type",
   "edit": "Edit aircraft type",
@@ -91,14 +91,14 @@ and add translations of interface properties.
 
 Open the file **src\assets\i18n\app\fr.json** and
 add in `"app"`
-```json
+``` json
 "app": {
     ...
     "aircraftsType": "Type d'aéronefs"
   }
 ```
 add
-```json
+``` json
 "aircraftType": {
     "add": "Ajouter type d'aéronef",
     "edit": "Modifier type d'aéronef",
@@ -109,14 +109,14 @@ and add translations of interface properties.
 
 Open the file **src\assets\i18n\app\es.json** and
 add in `"app"`
-```json
+``` json
 "app": {
     ...
     "aircraftsType": "Aeronaves"
   }
 ```
 add
-```json
+``` json
 "aircraftType": {
    "add": "Añadir tipo de aeronave",
     "edit": "Editar tipo de aeronave",

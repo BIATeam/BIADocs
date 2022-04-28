@@ -21,7 +21,7 @@ Concretly the service is connected to a front taht propagate the message.
 * bianetconfig.json
 
 In the BIANet Section add:
-```Json
+``` json
     "WorkerFeatures": {
       "HubForClients": {
         "Activate": true,
@@ -29,7 +29,7 @@ In the BIANet Section add:
     },
 ```
 * bianetconfig.Development.json
-```Json
+``` json
     "WorkerFeatures": {
       "HubForClients": {
         "SignalRUrl": "http://localhost/[YourProjectName]/WebApi/HubForClients"
@@ -38,7 +38,7 @@ In the BIANet Section add:
 ```
 * bianetconfig.ENV.json (4 files not Development)
 In the BIANet Section add:
-```Json
+``` json
     "WorkerFeatures": {
       "HubForClients": {
         "SignalRUrl": "https://[FqdnYourAppServer]/[YourProjectName]/WebApi/HubForClients"
@@ -49,7 +49,7 @@ replace [FqdnYourAppServer] by the FQDN of your application server
 replace [YourProjectName] by the name of your project
 
 ## Usage
-```csharp
+``` csharp
     using BIA.Net.Core.WorkerService.Features.HubForClients;
     ...
     HubForClientsService.SendMessage("refresh-planes", "");

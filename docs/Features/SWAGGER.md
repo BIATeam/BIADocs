@@ -27,7 +27,7 @@ In the BIA Framework a button is added at the bottom right to authenticate the u
 ## Activation
 ### bianetconfig.Development.json
 In the BIANet Section add:
-```Json
+``` json
     "ApiFeatures": {
       "Swagger": {
         "Activate": true

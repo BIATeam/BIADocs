@@ -69,7 +69,7 @@ GO
 ### Api: 
 * bianetconfig.json
 In the BIANet Section add:
-```Json
+``` json
     "WorkerFeatures": {
       "DatabaseHandler": {
         "Activate": true
@@ -80,7 +80,7 @@ In the BIANet Section add:
 ## Usage
 ## Create the handler repositories:
 Create a repository classe in the worker project in floder Features this classe inherit of DatabaseHandlerRepository.
-```CSharp
+``` csharp
 namespace [YourCompanyName].[YourProjectName].WorkerService.Features
 {
     using System.Data.SqlClient;
@@ -119,7 +119,7 @@ In the callback function :
 
 ### Parameters those repositories
 In program.cs you should pass the list of all yours database handler repositories class in the function config.DatabaseHandler.Activate.
-```CSharp
+``` csharp
         services.AddBiaWorkerFeatures(config =>
         {
             config.Configuration = hostContext.Configuration;

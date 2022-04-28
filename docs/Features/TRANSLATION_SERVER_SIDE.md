@@ -27,7 +27,7 @@ In this approach Instead of putting all translation under the same table, we wil
     * a link on language (Language + LanguageId)
     * a link on the entity to translate (Notification + NotificationId in this exemple)
     * the fields to translate (Title + Description in this exemple).
-    ```CSharp
+    ``` csharp
         /// <summary>
     /// The role entity.
     /// </summary>
@@ -75,7 +75,7 @@ In this approach Instead of putting all translation under the same table, we wil
     * the requiered constrainte on LanguageId and the entity to translate id (NotificationId  in this exemple)
     * the HasIndex on those 2 keys (to avoid duplication of translation on same language and same entity)
     * the contrante on fields to translate identical to the constraints in the entity required or not, lenght... (Title + Description in this exemple).
-    ```CSharp
+    ``` csharp
             /// <summary>
         /// Create the model for notification.
         /// </summary>
@@ -94,7 +94,7 @@ In this approach Instead of putting all translation under the same table, we wil
   * in case of data to enter at migration add the translation in all language in this fonction:
     * increment the id of 100 when changing of entity (in case of adding language in the future)
     * exemple of adding notification Type translation in French, spanich and german.
-    ```CSharp
+    ``` csharp
             modelBuilder.Entity<NotificationTypeTranslation>().HasData(new NotificationTypeTranslation { NotificationTypeId = 1, LanguageId = LanguageId.French, Id = 101, Label = "Tâche" });
             modelBuilder.Entity<NotificationTypeTranslation>().HasData(new NotificationTypeTranslation { NotificationTypeId = 1, LanguageId = LanguageId.Spanish, Id = 102, Label = "Tarea" });
             modelBuilder.Entity<NotificationTypeTranslation>().HasData(new NotificationTypeTranslation { NotificationTypeId = 1, LanguageId = LanguageId.German, Id = 103, Label = "Aufgabe" });
@@ -117,7 +117,7 @@ In this approach Instead of putting all translation under the same table, we wil
     ```
 
 * Add the **User Context** initialization in service constructor. ex in role service:
-    ```CSharp
+    ``` csharp
         /// <summary>
         /// Initializes a new instance of the <see cref="RoleAppService"/> class.
         /// </summary>
@@ -132,7 +132,7 @@ In this approach Instead of putting all translation under the same table, we wil
     ```
 * Adapt the dto (if not optionDto)
   * add translated fields:
-    ```CSharp
+    ``` csharp
           /// <summary>
         /// Gets or sets the title.
         /// </summary>
@@ -156,22 +156,22 @@ In this approach Instead of putting all translation under the same table, we wil
 * Adapt the mapper:
   * ex for an optionDto in EntityToDto():
     * without translation
-    ```CSharp
+    ``` csharp
         Display = entity.Label,
     ```
     * with translation
-    ```CSharp
+    ``` csharp
         Display = entity.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Label,
     ```
   *  for an entity diplay in CRUD
     *  translate for sort and filter in ExpressionCollection<Notification>
     *  for display in EntityToDto() add :
-    ```CSharp
+    ``` csharp
         TitleTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Title).FirstOrDefault() ?? entity.Title,
         DescriptionTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Description).FirstOrDefault() ?? entity.Description,
     ```
     * for item only ( if (mapperMode == MapperMode.Item)) retrieve all translation (see exemple in NotificationMapper):
-    ```CSharp
+    ``` csharp
             NotificationTranslations = entity.NotificationTranslations.Select(nt => new NotificationTranslationDto
             {
                 DtoState = DtoState.Unchanged,
