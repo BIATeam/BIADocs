@@ -34,6 +34,7 @@ has_children: true
     ```
     dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.5.*
     ```
+- In Visual Studio select the local 
 - Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
 - test the BIADemo project.
