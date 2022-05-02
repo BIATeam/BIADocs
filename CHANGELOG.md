@@ -5,6 +5,13 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.6.0 (2022-05-02)
+* DB Event Auditing
+* Rights and views by teams
+* Offline mode
+* Cross or team notifications
+* Adding users from AD for Site_Admin
+
 ## V3.5.1 (2022-02-08)
 * Possibility to inject ExternalJS in front depending on back environement. 
 ### DotNet
