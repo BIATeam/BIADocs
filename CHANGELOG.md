@@ -11,6 +11,14 @@ nav_order: 999
 * Offline mode
 * Cross or team notifications
 * Adding users from AD for Site_Admin
+* Hangfire authentication JWT
+### DotNet
+* Read only context is usable with the repository
+* Bulk insert, update and delete is usable with the repository (without license)
+* WebApi connector (abstract class)
+* Helper impersonation
+### Angular
+* New organistion for bia domain and bia reposotory, placed in separate folder
 
 ## V3.5.1 (2022-02-08)
 * Possibility to inject ExternalJS in front depending on back environement. 
