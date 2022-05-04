@@ -9,7 +9,7 @@ nav_order: 1
 
 ## If it was not done at the delivery set tags on project BIATEMPLATE at the last commit of the delivery
 1. To have the full log history open powersheel:
-```ps
+``` ps
 cd ...\BIATemplate
 git log --pretty=format:"%h - %an, %ad"
 ```
@@ -20,7 +20,7 @@ https://azure.devops.safran/SafranElectricalAndPower/Digital%20Manufacturing/_gi
 
 ## Create the git differential patch 
 1. Use git batch (V2.30.1 or higher) and run command (ex for V3.2.0 to V3.2.2):
-```ps
+``` ps
 cd "...\\BIATemplate"
 git diff V3.2.0 V3.2.2 > ..\\BIADemo\\Docs\\Migration\\Patch\\3.2.0-3.2.2.patch
 ```
@@ -29,7 +29,7 @@ git diff V3.2.0 V3.2.2 > ..\\BIADemo\\Docs\\Migration\\Patch\\3.2.0-3.2.2.patch
 * In your BIACompanyFiles repo copy the last version folder and rename it with the new version name.
 * Apply in this new folder the difference concerning your company files (generaly it is in the appsettings.(...).json or bianetconfig.(...).json)
 * Create the diff for company files in your BIACompanyFiles repo
-```ps
+``` ps
 cd "...\\BIACompanyFiles"
 git diff --no-index V3.3.3 V3.4.0 > .\\Migration\\CF_3.3.3-3.4.0.patch
 ```
@@ -47,7 +47,7 @@ git diff --no-index V3.3.3 V3.4.0 > .\\Migration\\CF_3.3.3-3.4.0.patch
 * Remplace biatemplate by the name of your project in lower case
 * Remplace TheBIADevCompany by the name of your company
 * Run the following command in Git Batch
-\```ps
+\``` ps
 cd "...\\YourProject"
 git apply --reject --whitespace=fix "3.2.2-3.3.0.patch"
 \```
