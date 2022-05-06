@@ -5,6 +5,11 @@ nav_order: 999
 ---
 
 # ChangeLog
+## V3.6.1 (2022-05-06)
+* Change the format of the NotificationTeamDto
+### Angular
+* Notification edition work for notified teams
+
 ## V3.6.0 (2022-05-02)
 * DB Event Auditing
 * Rights and views by teams
