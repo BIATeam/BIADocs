@@ -7,8 +7,12 @@ nav_order: 999
 # ChangeLog
 ## V3.6.1 (2022-05-06)
 * Change the format of the NotificationTeamDto
+### DotNet
+* Correct bug in inheritance of CrudAppServiceListAndItemBase
 ### Angular
 * Notification edition work for notified teams
+* Refresh notification when read
+* Refresh star when select default site/role
 
 ## V3.6.0 (2022-05-02)
 * DB Event Auditing
