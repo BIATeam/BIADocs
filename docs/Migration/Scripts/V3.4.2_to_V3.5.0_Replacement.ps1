@@ -1,5 +1,7 @@
 $Source = "D:\xxxx\ProjectName";
 
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss')
+
 function ReplaceInProject {
   param (
     [string]$Source,
@@ -13,9 +15,22 @@ function ReplaceInProject {
 	#Write-Host $OldRegexp;
 	#Write-Host $NewRegexp;
 	#Write-Host $Filter;
+    ReplaceInProjectRec -Source $Source -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
+}
+
+function ReplaceInProjectRec {
+  param (
+    [string]$Source,
+    [string]$OldRegexp,
+    [string]$NewRegexp,
+    [string[]]$Include
+
+  )
+	foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
+		ReplaceInProjectRec -Source $childDirectory.FullName -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
+	}
 	
-    $Destination = $Source + "FINAL"
-    Get-ChildItem $Source -Recurse -Include  $Include | ForEach-Object  {
+    Get-ChildItem $Source -File -Include $Include | ForEach-Object  {
         $oldContent = [System.IO.File]::ReadAllText($_.FullName);
         $found = $oldContent | select-string -Pattern $OldRegexp
         if ($found.Matches)
