@@ -62,7 +62,7 @@ ReplaceInProject -Source $Source -OldRegexp 'Das.save\(([^{].*)\)' -NewRegexp 'D
 
 ReplaceInProject -Source $Source -OldRegexp 'Das.getList\(([^{].*),(.*)\)' -NewRegexp 'Das.getList({ endpoint: $1, options: $2 })' -Include *.ts
 
-ReplaceInProject -Source $Source -OldRegexp 'Das.getList\(''(.*)''\)' -NewRegexp 'Das.getList({ endpoint: ''$1'' })' -Include *.ts
+ReplaceInProject -Source $Source -OldRegexp 'Das.getList\(([^{].*)\)' -NewRegexp 'Das.getList({ endpoint: $1 })' -Include *.ts
 
 ReplaceInProject -Source $Source -OldRegexp 'Das.getListByPost\(([^{].*)\)' -NewRegexp 'Das.getListByPost({ event: $1 })' -Include *.ts
 
