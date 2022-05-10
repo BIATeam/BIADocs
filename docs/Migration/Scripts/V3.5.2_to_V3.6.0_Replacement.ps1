@@ -1,6 +1,6 @@
 $Source = "D:\xxxx\ProjectName";
 
-$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss')
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode')
 
 function ReplaceInProject {
   param (
@@ -30,7 +30,7 @@ function ReplaceInProjectRec {
 		ReplaceInProjectRec -Source $childDirectory.FullName -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
 	}
 	
-    Get-ChildItem $Source -File -Include $Include | ForEach-Object  {
+    Get-ChildItem -LiteralPath $Source -File -Include $Include | ForEach-Object  {
         $oldContent = [System.IO.File]::ReadAllText($_.FullName);
         $found = $oldContent | select-string -Pattern $OldRegexp
         if ($found.Matches)
