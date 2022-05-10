@@ -1,4 +1,4 @@
-$Source = "D:\xxxx\ProjectName";
+$Source = "D:\Sources\GitHub\BIATeam\eSuitePortal";
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode')
 
