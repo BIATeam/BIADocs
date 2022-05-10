@@ -442,11 +442,11 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
                     { 1000101, "Administrateur", 2, 10001 },
                     { 1000102, "Administrador", 3, 10001 },
                     { 1000103, "Administrator", 4, 10001 },
-                    { 1000201, "Administrateur des t�ches en arri�re-plan", 2, 10002 },
+                    { 1000201, "Administrateur des tâches en arrière-plan", 2, 10002 },
                     { 1000202, "Administrador de tareas en segundo plano", 3, 10002 },
-                    { 1000203, "Administrator f�r Hintergrundaufgaben", 4, 10002 },
-                    { 1000301, "Visualisation des t�ches en arri�re-plan", 2, 10003 },
-                    { 1000302, "Visualizaci�n de tareas en segundo plano", 3, 10003 },
+                    { 1000203, "Administrator für Hintergrundaufgaben", 4, 10002 },
+                    { 1000301, "Visualisation des tâches en arrière-plan", 2, 10003 },
+                    { 1000302, "Visualización de tareas en segundo plano", 3, 10003 },
                     { 1000303, "Visualisierung von Hintergrundaufgaben", 4, 10003 }
                 });
 
