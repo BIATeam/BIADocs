@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Overview
+title: What is BIA Framework
+parent: Getting Started
 nav_order: 10
 ---
-# Overview
+# What is BIA Framework
 
 ## Goal of the BIA Framework:
 The goal of BIA Framework is to develop on **faster and secure way** professionnal applications.
