@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Prerequisite
-parent: Build your first project
-grand_parent: Try it
+parent: Try it
+grand_parent: Getting Started
 nav_order: 10
 ---
 # Prerequisite
