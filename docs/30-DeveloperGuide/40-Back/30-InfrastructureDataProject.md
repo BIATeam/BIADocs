@@ -5,7 +5,7 @@ parent: Back
 grand_parent: Developer guide
 nav_order: 30
 ---
-# Infrastructure.Data project
+# Infrastructure data project
 
 ## Preparation of the Database
 
