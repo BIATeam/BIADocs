@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Add a C.R.U.D.
+title: Create your first CRUD
 parent: Try it
 grand_parent: Getting Started
 nav_order: 30
 ---
 
-# Add a C.R.U.D.
+# Create your first CRUD
 
 Coming soon ...
 
