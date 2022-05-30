@@ -3,7 +3,7 @@ layout: default
 title: Use Highcharts
 parent: Front
 grand_parent: Developer guide
-nav_order: 5
+nav_order: 50
 ---
 
 # Use Highcharts

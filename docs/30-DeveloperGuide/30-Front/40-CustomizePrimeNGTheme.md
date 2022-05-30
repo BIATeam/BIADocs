@@ -3,7 +3,7 @@ layout: default
 title: Customize PrimeNG Theme
 parent: Front
 grand_parent: Developer guide
-nav_order: 4
+nav_order: 40
 ---
 
 # Customize PrimeNG Theme

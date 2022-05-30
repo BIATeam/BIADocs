@@ -3,7 +3,7 @@ layout: default
 title: Compute stats
 parent: Front
 grand_parent: Developer guide
-nav_order: 6
+nav_order: 60
 ---
 
 # Analyse the size of the application

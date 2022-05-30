@@ -3,9 +3,8 @@ layout: default
 title: Begining
 parent: Front
 grand_parent: Developer guide
-nav_order: 1
+nav_order: 10
 ---
-
 
 # Begining
 This document explains how to customize a project based on the BIA Angular framework.   
