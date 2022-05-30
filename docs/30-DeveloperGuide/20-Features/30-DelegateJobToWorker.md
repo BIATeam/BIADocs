@@ -3,7 +3,7 @@ layout: default
 title: Delegate job to worker
 parent: Features
 grand_parent: Developer guide
-nav_order: 3
+nav_order: 30
 ---
 
 # Delegate job to worker (api Feature)

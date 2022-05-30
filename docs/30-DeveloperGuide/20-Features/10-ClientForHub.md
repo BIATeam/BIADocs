@@ -3,7 +3,7 @@ layout: default
 title: Client for hub
 parent: Features
 grand_parent: Developer guide
-nav_order: 1
+nav_order: 10
 ---
 
 # Client for hub (Worker Feature)

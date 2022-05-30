@@ -3,7 +3,7 @@ layout: default
 title: Translation server side
 parent: Features
 grand_parent: Developer guide
-nav_order: 4
+nav_order: 50
 ---
 
 # Translation server side
@@ -17,7 +17,7 @@ This file explains what to add the translation on some fields on an existing ent
 Within the framework of the BIA, the chosen approach is **Separate translation table approach** : 
 In this approach Instead of putting all translation under the same table, we will write a separate translation table for each table which requires localization.
 
-![Database Internationnalization](../Images/DatabaseInternationnalization.png)
+![Database Internationnalization](../../Images/DatabaseInternationnalization.png)
 
 ## Implementation
 

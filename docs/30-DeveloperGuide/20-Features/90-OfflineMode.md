@@ -3,7 +3,7 @@ layout: default
 title: Offline Mode
 parent: Features
 grand_parent: Developer guide
-nav_order: 10
+nav_order: 90
 ---
 
 # Offline mode

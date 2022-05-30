@@ -10,7 +10,7 @@ nav_order: 3
 
 Install [Git for windows](https://git-scm.com/download/win)
 When working for a company behind a proxy with certificate interception, it is advised to choose "Use the native Windows Secure Channel library" in order to validate server certificates with Windows Certificates Stores
-![Git Windows ssl](../Images/GitSsl.png)
+![Git Windows ssl](../../Images/GitSsl.png)
 In order to avoid to do unnecessary merges it is also advised to configure the default behavior of "git pull" to "pull rebase"
 When working only on Windows, in order to avoid issues with line feeds, choose the "Checkout as is, commit as" option
 

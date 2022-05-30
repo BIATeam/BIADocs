@@ -3,7 +3,7 @@ layout: default
 title: Hub for Clients
 parent: Features
 grand_parent: Developer guide
-nav_order: 4
+nav_order: 40
 ---
 
 # Hub for Clients (Api and Worker Feature)
