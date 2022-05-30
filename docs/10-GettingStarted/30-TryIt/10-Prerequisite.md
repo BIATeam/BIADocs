@@ -15,6 +15,6 @@ nav_order: 10
 * [Angular](https://angular.io/)
 * [RXJS](https://www.learnrxjs.io/)
 * [NGRX](https://ngrx.io/)
-* [PrimeNG component list](https://www.primefaces.org/primeng/v9.1.4-lts/)
+* [PrimeNG component list](https://www.primefaces.org/primeng/setup)
 * [angular/flex-layout](https://github.com/angular/flex-layout/wiki)
 
