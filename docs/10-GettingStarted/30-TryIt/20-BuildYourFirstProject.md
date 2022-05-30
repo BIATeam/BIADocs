@@ -12,4 +12,4 @@ Comming soon ...
 
 
 
-For the moment use [Create a new project](../../30-DeveloperGuide/10-Start/10-CreateANewProject.md)
+* For the moment use [Create a new project](../../30-DeveloperGuide/10-Start/10-CreateANewProject.md)

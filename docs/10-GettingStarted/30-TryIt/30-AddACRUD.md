@@ -11,5 +11,5 @@ nav_order: 30
 Comming soon ...
 
 
-For the back take inspiration of BIADemo project.
-For the front use [Create a CRUD](../../30-DeveloperGuide/30-Front/20-20-CreateACRUD.md)
+* For the back take inspiration of BIADemo project.
+* For the front use [Create a CRUD](../../30-DeveloperGuide/30-Front/20-20-CreateACRUD.md)
