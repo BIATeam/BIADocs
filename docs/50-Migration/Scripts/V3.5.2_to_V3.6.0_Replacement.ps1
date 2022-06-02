@@ -66,6 +66,8 @@ ReplaceInProject -Source $Source -OldRegexp 'Das.getList\(([^{].*)\)' -NewRegexp
 
 ReplaceInProject -Source $Source -OldRegexp 'Das.getListByPost\(([^{].*)\)' -NewRegexp 'Das.getListByPost({ event: $1 })' -Include *.ts
 
+ReplaceInProject -Source $Source -OldRegexp '\.getListItemsByPost<((?!TOut).*)>\(([^{].*)\)' -NewRegexp '.getListItemsByPost<$1>({ event: $2 })' -Include *.ts
+
 ReplaceInProject -Source $Source -OldRegexp 'Das.get\(([^{].*)\).pipe' -NewRegexp 'Das.get({ id: $1 }).pipe' -Include *.ts
 
 

@@ -14,5 +14,5 @@ The BIA Framework is a set of components. It give the possibility to build quick
 * [What is BIA Framework](./docs/10-GettingStarted/10-What_is_BIA_Framework/What_is_BIA_Framework.md)
 <!-- * [The live demo](https://biateam.github.io/BIADemo/) -->
 * [Setup environment](./docs/10-GettingStarted/20-SetupEnvironment/SetupEnvironment.md)
-* [Prerequisite for development](./docs/10-GettingStarted/30-TryIt/10-BuildYourFirstProject/10-Prerequisite.md)
+* [Prerequisite for development](./docs/10-GettingStarted/30-TryIt/10-Prerequisite.md)
 * [Create the sample project](./docs/30-DeveloperGuide/10-Start/10-CreateANewProject.md)
