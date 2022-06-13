@@ -35,7 +35,43 @@ private static void ConfigureInfrastructureServiceContainer(IServiceCollection c
 }
 ```
 
-### How to use it
+### how to serialize/deserialize a file
+
+File are transfered by FileQueueDto :
+```csharp
+    /// <summary>
+    /// DTO of File Queue
+    /// </summary>
+    [Serializable]
+    public class FileQueueDto
+    {
+        /// <summary>
+        /// Gets or Sets the filename.
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the output path folder to put the file.
+        /// </summary>
+        public string OutputPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the data of the files en bytes.
+        /// </summary>
+        public byte[] Data { get; set; }
+    }
+```
+
+which can be instanciate from a file path :
+
+```csharp
+    FileQueueDto file = new FileQueueDto();
+    file.FileName = System.IO.Path.GetFileName(filePath);
+    file.OutputPath = outputPath;
+    file.Data = File.ReadAllBytes(filePath);
+```
+
+### How to recieve a file
 
 To recieve a file, create an observer of FileQueueDto
 
@@ -63,6 +99,25 @@ To recieve a file, create an observer of FileQueueDto
 	
 ```
 
+Then subscribe to the observable, create a QueueDto
+
+```csharp
+    /// <summary>
+    /// Dto to define address of RabbitMQ server and queue.
+    /// </summary>
+    public class QueueDto
+    {
+        /// <summary>
+        /// The RabbitMQ server URI.
+        /// </summary>
+        public string Endpoint { get; set; }
+
+        /// <summary>
+        /// The rabbitMQ Queue to listen
+        /// </summary>
+        public string QueueName { get; set; }
+    }
+```
 
 ```csharp
     private readonly IFileQueueRepository fileQueueRepository;
@@ -71,60 +126,17 @@ To recieve a file, create an observer of FileQueueDto
 	
 	fileQueueRepository.Configure(fileRecieverConfigurations.Select(x => new QueueDto { Endpoint = XXX, QueueName = YYY }));
 	fileQueueRepository.Subscribe(fileRecieverHandler);
+```
+
+### How to send a file
+
+To send
+
+```csharp
+    private readonly IFileQueueRepository fileQueueRepository;
 	
-```
-
-### Back End
-
-On your web server, disable windows authentication for your back end application.
-
-At the source code level, in the **launchSettings.json** file, Change these settings as follows:
-
-```json
-{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    ...
-  },
-}
-```
-
-In **Api.Controllers.Base.AuthControllerBase**, replace **BiaControllerBaseNoToken** by **BiaControllerBaseIdP**
-
-```
-public abstract class AuthControllerBase : BiaControllerBaseIdP
-```
-
-Add the Keycloak configuration in your different files **bianetconfig.XXX.json**
-
-(Values are to be adapted according to your Keycloak)
-
-```json
-"Authentication": {
-      "Keycloak": {
-        "BaseUrl": "http://localhost:8080",
-        "Configuration": {
-          "Authority": "/realms/BIA-Realm",
-          "RequireHttpsMetadata": false,
-          "ValidAudience": "account"
-        },
-        "Api": {
-          "TokenConf": {
-            "RelativeUrl": "/realms/BIA-Realm/protocol/openid-connect/token",
-            "ClientId": "biademo-front",
-            "GrantType": "password",
-            "CredentialKeyInWindowsVault": "BIA:KeycloakSearchUserAccount"
-          },
-          "SearchUserRelativeUrl": "/admin/realms/BIA-Realm/users"
-        }
-      },
-      ...
-}
-```
-
-The login and password of the keycloak account that owns the role **view-users** must be registered in the vault via this command while connected with the application pool account:
-
-```bat
-%windir%\system32\cmdkey.exe /generic:BIA:KeycloakSearchUserAccount /user:"MyLogin" /pass:"MyPassword"
+	...
+	
+	fileQueueRepository.Configure(fileRecieverConfigurations.Select(x => new QueueDto { Endpoint = XXX, QueueName = YYY }));
+	fileQueueRepository.Subscribe(fileRecieverHandler);
 ```
