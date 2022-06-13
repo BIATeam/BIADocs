@@ -130,13 +130,12 @@ Then subscribe to the observable, create a QueueDto
 
 ### How to send a file
 
-To send
+To send, juste use SendFile method with server URI, queue name and a FileQueueDto
 
 ```csharp
     private readonly IFileQueueRepository fileQueueRepository;
 	
 	...
 	
-	fileQueueRepository.Configure(fileRecieverConfigurations.Select(x => new QueueDto { Endpoint = XXX, QueueName = YYY }));
-	fileQueueRepository.Subscribe(fileRecieverHandler);
+	fileQueueRepository.SendFile(Seveur, queueName, file);
 ```
