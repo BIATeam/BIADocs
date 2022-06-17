@@ -11,7 +11,7 @@ nav_order: 10
 ### DotNet
 * Add Linux Container compatibility
 ### Angular
-* Keep state of the BiaTable View when live and comeback to a screen (only when views activated)
+* Keep state of the BiaTable View when live and come back to a screen (only when view is activated)
 * Possibility to sort the column.
 * Extract based on the sort and selection of the column. 
 
