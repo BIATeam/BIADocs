@@ -6,6 +6,21 @@ nav_order: 10
 ---
 
 # ChangeLog
+## V3.7.0 (2022-08-17)
+* Add KekCloack compatibility
+### DotNet
+* Add Linux Container compatibility
+### Angular
+* Keep state of the BiaTable View when live and comeback to a screen (only when views activated)
+* Possibility to sort the column.
+* Extract based on the sort and selection of the column. 
+
+## V3.6.2 (2022-06-17)
+### DotNet
+* Correct right for admin at start uo (add permission for role Admin: User_Options, Roles_Option, "Notification_List_Access", "Notification_Delete", "Notification_Read" + Get the current Teams when Admin)
+* Correct deployement (BiaNetConfig.json bad formated)
+* Correct the Bulk Update and Delete when pool user not db_owner of the dataBase
+
 ## V3.6.1 (2022-05-06)
 * Change the format of the NotificationTeamDto
 ### DotNet
