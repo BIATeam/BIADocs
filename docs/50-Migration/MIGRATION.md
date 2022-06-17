@@ -12,7 +12,13 @@ has_children: true
 * Read the value of FrameworkVersion
 
 ## Apply successively the migration:
-* Use the BIAToolKit to apply the migration.
-* Follow the detailled steps describe in all files corresponding to your migration.
+1. Use the BIAToolKit to apply the migration.
+2. Manage the confict (2 solutions)
+   1. In BIAToolKit click on "4 - merge Rejected" and search "<<<<<" in all files.  
+    * Resolve the conflit manualy.
+   2. Analyse the .rej file (search "diff a/" in VS code) that have been created in your project folder
+     * Apply manualy the change.
+  
+3. Follow the detailled steps describe in all files corresponding to your migration.
   * If several steps are passed durring the migration apply them succesively.
 {: .fs-6 .fw-300 }
