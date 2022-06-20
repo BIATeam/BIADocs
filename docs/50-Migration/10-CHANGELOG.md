@@ -7,7 +7,7 @@ nav_order: 10
 
 # ChangeLog
 ## V3.7.0 (2022-08-17)
-* Add KekCloack compatibility
+* Add KeyCloack compatibility
 ### DotNet
 * Add Linux Container compatibility
 ### Angular
@@ -20,6 +20,9 @@ nav_order: 10
 * Correct right for admin at start uo (add permission for role Admin: User_Options, Roles_Option, "Notification_List_Access", "Notification_Delete", "Notification_Read" + Get the current Teams when Admin)
 * Correct deployement (BiaNetConfig.json bad formated)
 * Correct the Bulk Update and Delete when pool user not db_owner of the dataBase
+### Front
+* Offline bug : post do not past endpoint and 2 execution when back online
+
 
 ## V3.6.1 (2022-05-06)
 * Change the format of the NotificationTeamDto
