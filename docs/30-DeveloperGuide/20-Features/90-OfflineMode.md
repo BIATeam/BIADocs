@@ -65,25 +65,26 @@ If you want to keep in memory the data of a domain for example, you just have to
 ```ts
 this.planeTypeDas.getList({ endpoint: 'allOptions', offlineMode: BiaOnlineOfflineService.isModeEnabled }).pipe(...
 ```
+
 ### BiaOnlineOfflineService
+
 The **BiaOnlineOfflineService** (\src\app\core\bia-core\services\bia-online-offline.service.ts) service offers two properties:
 
 * isModeEnabled : Allows you to know if the offline feature has been activated or not (see the chapter above, Activation)
 * serverAvailable$: is an observable returning true if the server is available
+* syncCompleted$: is an observable returning true if synchronization is completed.
 
 Here an example of use
 
 ```ts
 // if the offline feature is enabled
-if (OnlineOfflineService.isModeEnabled) {
-      this.sub.add(
-        // I subscribe to the observable serverAvailable$
-        this.injector.get<OnlineOfflineService>(OnlineOfflineService).serverAvailable$.pipe(skip(1)).subscribe(serverAvailable => {
-          if (serverAvailable === true) {
-            // If the server becomes available again, I refresh my table.
-            this.onLoadLazy(this.planeListComponent.getLazyLoadMetadata());
-          }
-        })
-      );
-    }
+if (BiaOnlineOfflineService.isModeEnabled) {
+  this.sub.add(
+    // I subscribe to the observable serverAvailable$
+    this.injector.get<BiaOnlineOfflineService>(BiaOnlineOfflineService).syncCompleted$.pipe(skip(1), filter(x => x === true)).subscribe(() => {
+      // If the server becomes available again, I refresh my table.
+      this.onLoadLazy(this.planeListComponent.getLazyLoadMetadata());
+    })
+  );
+}
 ```
