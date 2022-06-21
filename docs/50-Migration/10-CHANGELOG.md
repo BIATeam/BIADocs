@@ -21,8 +21,7 @@ nav_order: 10
 * Correct deployement (BiaNetConfig.json bad formated)
 * Correct the Bulk Update and Delete when pool user not db_owner of the dataBase
 ### Front
-* Offline bug : post do not past endpoint and 2 execution when back online
-
+* Offline bug : Endpoint missing in post, multiple call to back, token that does not refresh, add an observable triggered at the end of the syncho.
 
 ## V3.6.1 (2022-05-06)
 * Change the format of the NotificationTeamDto
