@@ -46,7 +46,7 @@ has_children: true
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 
 ## Prepare BIACompany Files and release BIATemplate:
-- Copy the last version folder in   **..\CompanyFiles** to **..\CompanyFiles\VX.Y.Z**
+- Copy the last version folder in   **..\BIACompanyFiles** to **..\BIACompanyFiles\VX.Y.Z**
 - Launch **...\BIADemo\Tools\DeliverBIATemplateAndCompanyFileVersion.ps1**
 - Verirfy that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
 
