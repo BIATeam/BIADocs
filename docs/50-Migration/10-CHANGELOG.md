@@ -13,7 +13,8 @@ nav_order: 10
 ### Angular
 * Keep state of the BiaTable View when live and come back to a screen (only when view is activated)
 * Possibility to sort the column.
-* Extract based on the sort and selection of the column. 
+* Extract based on the sort and selection of the column.
+* The table header controller component design changes. the view and show lists are now positioned on the left. The list scrollbar is higher.
 
 ## V3.6.2 (2022-06-17)
 ### DotNet

@@ -110,4 +110,4 @@ async Task GetAsync()
 
 ## Bearer Token
 
-Since version 3.7, you can pass a token to your requests. To do this, you must set the **useBearerToken** input parameter to **true** and implement the **GetBearerTokenAsync()** method via override.
+Since version 3.7, you can pass a token to your requests. To do this, you must set the **useBearerToken** input parameter to **true** and override the **GetBearerTokenAsync()** method.
