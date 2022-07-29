@@ -48,7 +48,7 @@ function ReplaceInProjectRec {
 
 Write-Host "Migration replacement"
 
-ReplaceInProject -Source $Source -OldRegexp 'this\.columns\.map\(\(x\) => \(columns\[x\.value\.split\("'"\."'"\)\[1\]\] = this\.translateService\.instant\(x\.value\)\)\);' -NewRegexp 'this.nameOfTheListComponent.getPrimeNgTable().columns.map((x: PrimeTableColumn) => (columns[x.header.split('.')[1]] = this.translateService.instant(x.header)));' -Include *index.component.ts
+ReplaceInProject -Source $Source -OldRegexp 'this\.columns\.map\(\(x\) => \(columns\[x\.value\.split\("'"\."'"\)\[1\]\] = this\.translateService\.instant\(x\.value\)\)\);' -NewRegexp 'this.nameOfTheListComponent.getPrimeNgTable().columns.map((x: PrimeTableColumn) => (columns[x.field] = this.translateService.instant(x.header)));' -Include *index.component.ts
 ReplaceInProject -Source $Source -OldRegexp 'public override Func<(.*), object\[\]> DtoToRecord\(\)' -NewRegexp 'public override Func<$1, object[]> DtoToRecord(List<string> headerNames = null)' -Include *.cs
 
 cd $Source/DotNet
