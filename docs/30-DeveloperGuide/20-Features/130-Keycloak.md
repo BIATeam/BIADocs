@@ -30,24 +30,6 @@ export const allEnvironments = {
 };
 ```
 
-And add here the configuration of your keycloak in your environment files
-
-(Values are to be adapted according to your Keycloak)
-
-```ts
-export const environment = {
-  ...
-  keycloak: {
-    conf: {
-      realm: 'BIA-Realm',
-      authServerUrl: 'http://localhost:8080/',
-      resource: 'biademo-front'
-    }
-  }
-  ...
-};
-```
-
 ### Back End
 
 On your web server, disable windows authentication for your back end application.
@@ -77,8 +59,11 @@ Add the Keycloak configuration in your different files **bianetconfig.XXX.json**
 ```json
 "Authentication": {
       "Keycloak": {
+        "IsActive": true,
         "BaseUrl": "http://localhost:8080",
         "Configuration": {
+          "idpHint": "darwin",
+          "realm": "BIA-Realm",
           "Authority": "/realms/BIA-Realm",
           "RequireHttpsMetadata": false,
           "ValidAudience": "account"
@@ -86,7 +71,7 @@ Add the Keycloak configuration in your different files **bianetconfig.XXX.json**
         "Api": {
           "TokenConf": {
             "RelativeUrl": "/realms/BIA-Realm/protocol/openid-connect/token",
-            "ClientId": "biademo-front",
+            "ClientId": "biademo",
             "GrantType": "password",
             "CredentialKeyInWindowsVault": "BIA:KeycloakSearchUserAccount"
           },
@@ -102,3 +87,50 @@ The login and password of the keycloak account that owns the role **view-users**
 ```bat
 %windir%\system32\cmdkey.exe /generic:BIA:KeycloakSearchUserAccount /user:"MyLogin" /pass:"MyPassword"
 ```
+
+## How Restore Windows Authentication
+
+### Front End
+
+Change this parameter to **false**.
+
+```ts
+export const allEnvironments = {
+    ...
+    useKeycloak: false,
+    ...
+};
+```
+
+### Back End
+
+On your web server, enable windows authentication for your back end application.
+
+At the source code level, in the **launchSettings.json** file, Change these settings as follows:
+
+```json
+{
+  "iisSettings": {
+    "windowsAuthentication": true,
+    "anonymousAuthentication": true,
+    ...
+  },
+}
+```
+
+In **Api.Controllers.Base.AuthControllerBase**, replace **BiaControllerBaseIdP** by **BiaControllerBaseNoToken**
+
+```csharp
+public abstract class AuthControllerBase : BiaControllerBaseNoToken
+```
+
+In your different files **bianetconfig.XXX.json**, set the **IsActive** param to **false**.
+
+```json
+"Authentication": {
+      "Keycloak": {
+        "IsActive": false,
+        ...
+      },
+      ...
+}
