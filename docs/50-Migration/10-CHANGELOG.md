@@ -10,11 +10,13 @@ nav_order: 10
 * Add KeyCloack compatibility
 ### DotNet
 * Add Linux Container compatibility
+* The worker service run in a service (no more in a web application)
 ### Angular
 * Keep state of the BiaTable View when live and come back to a screen (only when view is activated)
 * Possibility to sort the column.
 * Extract based on the sort and selection of the column.
 * The table header controller component design changes. the view and show lists are now positioned on the left. The list scrollbar is higher.
+* Lighter application (remove unused dependencies)
 
 ## V3.6.2 (2022-06-17)
 ### DotNet
