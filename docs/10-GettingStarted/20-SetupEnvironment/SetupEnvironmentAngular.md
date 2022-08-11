@@ -40,3 +40,6 @@ Install [Visual Studio Code](https://code.visualstudio.com/Download) and add the
 * shd101wyy.markdown-preview-enhanced
 * VisualStudioExptTeam.vscodeintellicode
 * yzhang.markdown-all-in-one
+
+### Chrome Extension
+* [Redux DevTools](https://github.com/reduxjs/redux-devtools/)
