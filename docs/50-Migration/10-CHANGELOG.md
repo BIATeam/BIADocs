@@ -8,10 +8,12 @@ nav_order: 10
 # ChangeLog
 ## V3.7.0 (2022-08-17)
 * Add KeyCloack compatibility
+* Correct Matomo tracking (bug introduce in V3.6.0)
 ### DotNet
 * Add Linux Container compatibility
 * The worker service run in a service (no more in a web application)
 ### Angular
+* Angular 13, PrimeNg 13, PrimeIcon V5
 * Keep state of the BiaTable View when live and come back to a screen (only when view is activated)
 * Possibility to sort the column.
 * Extract based on the sort and selection of the column.
