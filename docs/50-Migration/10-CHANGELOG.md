@@ -7,6 +7,7 @@ nav_order: 10
 
 # ChangeLog
 ## V3.7.0 (2022-08-17)
+* ```npm start``` is now for IIS Express (use ```npm run start4iis``` to launch the angular for IIS)
 * Add KeyCloack compatibility
 * Correct Matomo tracking (bug introduce in V3.6.0)
 ### DotNet

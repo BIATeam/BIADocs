@@ -7,8 +7,18 @@ nav_order: 10
 ---
 
 # Presentation API project
+You have 2 alternatives: 
+* use IIS express
+  * advantage : faster to configurate 
+* use IIS
+  * advantage : no need to run visual studio each time
+## Prepare the Presentation WebApi (for iis express):
+1. Compile the solution 
+- Set Presentation Api as startup project
+- Launch it with IIS Express
+  
+## Prepare the Presentation WebApi (for iis):
 
-## Prepare the Presentation WebApi:
 1. Compile the solution 
 - Set Presentation Api as startup project
 - Launch it a first time with IIS

@@ -16,4 +16,4 @@ This document explains how to start an existing  project.
   * Follow the steps " Preparation of the Database" in [04 - INFRASTRUCTURE.DATA.md](../../30-DeveloperGuide/40-Back/30-InfrastructureDataProject.md)
 * In Angular project do  
   * npm install
-  * npm start
+  * npm start (If your back run in IIS express) or npm run start4iis (If your back run in IIS)
