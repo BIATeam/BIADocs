@@ -7,10 +7,15 @@ nav_order: 20
 ---
 
 # Presentation Worker service project
-
-## Prepare the Worker service Site:
+**Since V3.7.0 the worker service is a windows service. Before it was an application pool**
+## Prepare the Worker service (>=V3.7.0):
 1. Compile the solution 
-- Set Presentation Api as startup project
+- Set Worker service as startup project
+- Launch it
+
+## Prepare the Worker service Site (<V3.7.0):
+1. Compile the solution 
+- Set Worker service as startup project
 - Launch it a first time with IIS
 
 2. Open IIS manager. 
