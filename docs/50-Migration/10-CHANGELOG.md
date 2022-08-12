@@ -11,6 +11,7 @@ nav_order: 10
 * Add KeyCloack compatibility
 * Correct Matomo tracking (bug introduce in V3.6.0)
 ### DotNet
+* .Net6.0
 * Add Linux Container compatibility
 * The worker service run in a service (no more in a web application)
 ### Angular
@@ -20,6 +21,7 @@ nav_order: 10
 * Extract based on the sort and selection of the column.
 * The table header controller component design changes. the view and show lists are now positioned on the left. The list scrollbar is higher.
 * Lighter application (remove unused dependencies)
+* Solve bug in CRUD index when deselect all.
 
 ## V3.6.2 (2022-06-17)
 ### DotNet
