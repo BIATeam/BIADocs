@@ -159,15 +159,105 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
 * The list should be OptionDto list in domain. See [this page](OPTION.md) to create the domain feature option.
 
 ## Enable Views
-* Just change the variable useView = false; to useView = true; in the **...-index.component.ts**
+* Just change the variable useView = false; to useView = true; in the **views/...-index.component.ts**
 
 ## Enable SignalR:
-* Just change the variable useSignalR = false; to useSignalR = true; in the **...-index.component.ts**
+* Just change the variable useSignalR = false; to useSignalR = true; in the **views/...-index.component.ts**
 
 ## Spreadsheet mode
-* Just change the variable useCalc = false; to useCalc = true; in the **...-index.component.ts**
+* Just change the variable useCalc = false; to useCalc = true; in the **views/...-index.component.ts**
 
-### Specific Input
+## Specific Input and Output
+### Since V3.7.0
+* You can see an exemple in BIADemo with the Crud 'planes-specific'
+  * In **views/...-index.component.ts**
+    * Add the function onChange at the end of the file
+  ```ts
+    onChange() {
+      this.aircraftTableComponent.onChange();
+    }
+  ```
+    * In function initTableConfiguration() add the flag (specificOutput: true and\or specificInput:true) on field where you want to use a specific input (for calc mode only) or output (=read only)
+  * In **views/...-index.component.html** 
+    * for non calc mode add the template specificOutput in bia-table
+    ```html
+      <bia-table
+        ...
+      >
+        <ng-template pTemplate="specificOutput" let-col="col" let-rowData="rowData">
+          <ng-container [ngSwitch]="col.field">
+            <ng-container *ngSwitchCase="'isActive'">
+              <i class="pi pi-circle-fill" [style]="'color: ' + (rowData[col.field]?'green':'red')"></i>
+            </ng-container> <!-- isActive -->
+            <ng-container *ngSwitchCase="'capacity'">
+              <ng-container *ngIf="rowData[col.field] < 0">
+                - Negative -
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] === 0">
+                0 Empty 0
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] > 0 && rowData[col.field] < 10">
+                + Small +
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] >= 10 && rowData[col.field] < 100">
+                ++ Medium ++
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] >= 100">
+                +++ Large +++
+              </ng-container>
+            </ng-container> <!-- capacity -->
+          </ng-container>
+        </ng-template>
+      </bia-table>
+    ```
+
+    * for Calc mode add the template specificInput and\or specificOutput in app-aircraft-table:
+    ```html
+      <app-aircraft-table
+      ...
+      >
+      <ng-template pTemplate="specificOutput" let-col="col" let-rowData="rowData">
+        <ng-container [ngSwitch]="col.field">
+          <ng-container *ngSwitchCase="'isActive'">
+            <i class="pi pi-circle-fill" [style]="'color: ' + (rowData[col.field]?'green':'red')"></i>
+          </ng-container> <!-- isActive -->
+          <ng-container *ngSwitchCase="'capacity'">
+            <ng-container *ngIf="rowData[col.field] < 0">
+              - Negative -
+            </ng-container>
+            <ng-container *ngIf="rowData[col.field] === 0">
+              0 Empty 0
+            </ng-container>
+            <ng-container *ngIf="rowData[col.field] > 0 && rowData[col.field] < 10">
+              + Small +
+            </ng-container>
+            <ng-container *ngIf="rowData[col.field] >= 10 && rowData[col.field] < 100">
+              ++ Medium ++
+            </ng-container>
+            <ng-container *ngIf="rowData[col.field] >= 100">
+              +++ Large +++
+            </ng-container>
+          </ng-container> <!-- capacity -->
+        </ng-container>
+      </ng-template>
+      <ng-template pTemplate="specificInput" let-col="col" let-rowData="rowData" let-form="form">
+        <div [formGroup]="form">
+          <ng-container [ngSwitch]="col.field">
+            <ng-container *ngSwitchCase="'isActive'">
+              <p-checkbox [binary]="true" [formControlName]="col.field" (onChange)="onChange()"></p-checkbox>
+            </ng-container> <!-- isActive -->
+            <ng-container *ngSwitchCase="'capacity'">
+              <input pInputText type="number" [formControlName]="col.field" (change)="onChange()" />
+            </ng-container> <!-- capacity -->
+          </ng-container>
+        </div>
+      </ng-template>
+    </app-aircraft-table>
+    ```
+
+
+
+### Before V3.7.0 the procedure was only for Specific Input:
 For specific properties that are not managed by the Framework, your table component must have an html. In this html, you have to copy/paste the content of the html from **bia-calc-table.component.html**.
 
 In this html, you must add your components in the **SPECIFIC INPUT** zone and **SPECIFIC OUTPUT** zone.
