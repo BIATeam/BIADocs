@@ -17,6 +17,15 @@ To check the installed version of [node.js](https://nodejs.org/en/download/relea
 If you work behind a company proxy, run the following command to configure the proxy for npm : 
 > npm config set proxy **add_your_proxy_url_here**
 
+### Align npm version
+The npm version should be align on the node version (https://nodejs.org/fr/download/releases/)
+To install the version 8.1.0 (corresponde to node V16.16.0) run the following command:
+```npm install -g npm@8.11.0```
+
+### (Optionnal) Instal Angular globaly
+Use to create a new Angular empy project at the last version. (but not requiered by creation with BIAToolkit):
+```npm install -g @angular/cli@13.3.9```
+
 ### install project npm packages (including angular)
 Go to the Angular folder and run the followind command  `npm install`   
 
