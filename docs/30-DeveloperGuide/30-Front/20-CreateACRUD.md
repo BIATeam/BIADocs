@@ -216,43 +216,43 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
       <app-aircraft-table
       ...
       >
-      <ng-template pTemplate="specificOutput" let-col="col" let-rowData="rowData">
-        <ng-container [ngSwitch]="col.field">
-          <ng-container *ngSwitchCase="'isActive'">
-            <i class="pi pi-circle-fill" [style]="'color: ' + (rowData[col.field]?'green':'red')"></i>
-          </ng-container> <!-- isActive -->
-          <ng-container *ngSwitchCase="'capacity'">
-            <ng-container *ngIf="rowData[col.field] < 0">
-              - Negative -
-            </ng-container>
-            <ng-container *ngIf="rowData[col.field] === 0">
-              0 Empty 0
-            </ng-container>
-            <ng-container *ngIf="rowData[col.field] > 0 && rowData[col.field] < 10">
-              + Small +
-            </ng-container>
-            <ng-container *ngIf="rowData[col.field] >= 10 && rowData[col.field] < 100">
-              ++ Medium ++
-            </ng-container>
-            <ng-container *ngIf="rowData[col.field] >= 100">
-              +++ Large +++
-            </ng-container>
-          </ng-container> <!-- capacity -->
-        </ng-container>
-      </ng-template>
-      <ng-template pTemplate="specificInput" let-col="col" let-rowData="rowData" let-form="form">
-        <div [formGroup]="form">
+        <ng-template pTemplate="specificOutput" let-col="col" let-rowData="rowData">
           <ng-container [ngSwitch]="col.field">
             <ng-container *ngSwitchCase="'isActive'">
-              <p-checkbox [binary]="true" [formControlName]="col.field" (onChange)="onChange()"></p-checkbox>
+              <i class="pi pi-circle-fill" [style]="'color: ' + (rowData[col.field]?'green':'red')"></i>
             </ng-container> <!-- isActive -->
             <ng-container *ngSwitchCase="'capacity'">
-              <input pInputText type="number" [formControlName]="col.field" (change)="onChange()" />
+              <ng-container *ngIf="rowData[col.field] < 0">
+                - Negative -
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] === 0">
+                0 Empty 0
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] > 0 && rowData[col.field] < 10">
+                + Small +
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] >= 10 && rowData[col.field] < 100">
+                ++ Medium ++
+              </ng-container>
+              <ng-container *ngIf="rowData[col.field] >= 100">
+                +++ Large +++
+              </ng-container>
             </ng-container> <!-- capacity -->
           </ng-container>
-        </div>
-      </ng-template>
-    </app-aircraft-table>
+        </ng-template>
+        <ng-template pTemplate="specificInput" let-col="col" let-rowData="rowData" let-form="form">
+          <div [formGroup]="form">
+            <ng-container [ngSwitch]="col.field">
+              <ng-container *ngSwitchCase="'isActive'">
+                <p-checkbox [binary]="true" [formControlName]="col.field" (onChange)="onChange()"></p-checkbox>
+              </ng-container> <!-- isActive -->
+              <ng-container *ngSwitchCase="'capacity'">
+                <input pInputText type="number" [formControlName]="col.field" (change)="onChange()" />
+              </ng-container> <!-- capacity -->
+            </ng-container>
+          </div>
+        </ng-template>
+      </app-aircraft-table>
     ```
 
 
