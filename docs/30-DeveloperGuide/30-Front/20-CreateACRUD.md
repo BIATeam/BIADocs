@@ -211,7 +211,7 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
       </bia-table>
     ```
 
-    * for Calc mode add the template specificInput and\or specificOutput in app-aircraft-table:
+    * for Calc mode add the template specificInput and\or specificOutput in app-aircraft-table
     ```html
       <app-aircraft-table
       ...
