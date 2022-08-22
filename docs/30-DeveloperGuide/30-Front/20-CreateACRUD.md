@@ -214,7 +214,7 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
     * for Calc mode add the template specificInput and\or specificOutput in app-aircraft-table
     ```html
       <app-aircraft-table
-      ...
+        ...
       >
         <ng-template pTemplate="specificOutput" let-col="col" let-rowData="rowData">
           <ng-container [ngSwitch]="col.field">
