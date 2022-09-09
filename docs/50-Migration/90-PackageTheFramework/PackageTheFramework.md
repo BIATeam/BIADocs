@@ -21,9 +21,11 @@ has_children: true
   - **..\BIADemo\Angular\src\environments\environment.prod.ts**
 - If it is a major version modify it in 
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
+- If the year change update footer :
+  - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\classic-footer\classic-footer.component.html**
 - Test Authent AD Group + ReadOnly Database + Unitary Test
 - COMMIT BIADemo
-- Test a deployement in INT, UAT and PRD. 
+- Test a deployement in INT, UAT and PRD.
 
 ## Compile the BIA packages:
 - Change the version number of all BIA.Net.Core packages to match the version to be released.
