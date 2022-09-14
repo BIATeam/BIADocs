@@ -17,7 +17,7 @@ git log --pretty=format:"%h - %an, %ad"
 2. select the correct commit id corresponding to the date 
 3. Create the tag directly in the azure devops interface:
 (https://github.com/BIATeam/BIATemplate/tags)
-1. Sync your local repository BIATemplate
+4. Sync your local repository BIATemplate
 
 ## Create the git differential patch 
 1. Use git batch (V2.30.1 or higher) and run command (ex for V3.2.0 to V3.2.2):
