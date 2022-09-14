@@ -43,11 +43,13 @@ has_children: true
 - test the BIADemo project.
 
 ## Prepare BIATemplate:
+- Synchronize your BIATemplate local folder with github.
 - Launch **...\BIADemo\Tools\1-Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
 - Launch **...\BIADemo\Tools\2-DotNet-BIADemo-BIATemplate.ps1**
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 
 ## Prepare BIACompany Files and release BIATemplate:
+- Synchronize your BIACompanyFiles local folder with github.
 - Copy the last version folder in   **..\BIACompanyFiles** to **..\BIACompanyFiles\VX.Y.Z**
 - Launch **...\BIADemo\Tools\3-DeliverBIATemplateAndCompanyFileVersion.ps1**
 - Verirfy that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
