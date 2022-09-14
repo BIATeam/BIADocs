@@ -22,6 +22,7 @@ nav_order: 10
 * The table header controller component design changes. the view and show lists are now positioned on the left. The list scrollbar is higher.
 * Lighter application (remove unused dependencies)
 * Solve bug in CRUD index when deselect all.
+* Possibility to switch modes of CRUD (view, calc, offline, popup)
 
 ## V3.6.2 (2022-06-17)
 ### DotNet
