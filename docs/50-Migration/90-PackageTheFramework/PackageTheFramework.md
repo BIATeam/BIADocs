@@ -76,4 +76,4 @@ npm run deploy
 - Mail all developer to informe than a new version is available.
 
 ## Prepare Migration
-- Follow those steps: [PREPARE MIGRATION](./PREPARE%20MIGRATION.md)
+- Follow those steps: [PREPARE MIGRATION](./10-PrepareMigration.md)
