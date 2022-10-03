@@ -74,7 +74,7 @@ npm run deploy
 
 ## Deliver the version
 - Create a release of the version in the 3 repository BIADocs, BIADemo and BIATemplate
-- Mail all developer to informe than a new version is available.
+- Post message for developers, to informe than a new version is available.
 
 ## Prepare Migration
 - Follow those steps: [PREPARE MIGRATION](./10-PrepareMigration.md)
