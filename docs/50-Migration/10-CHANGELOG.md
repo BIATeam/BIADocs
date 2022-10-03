@@ -6,12 +6,11 @@ nav_order: 10
 ---
 
 # ChangeLog
-## V3.7.1 (2022-10-07)
-* header filter can know take complex criteria.
+## V3.7.1 (2022-10-03)
+* Header filter can know take complex criteria (date before, after, contains, begins... and, or).
 ### Angular
 * Advanced filter more robust
 * Standardize Sites, Users and Members CRUD
-
 
 ## V3.7.0 (2022-09-14)
 * ```npm start``` is now for IIS Express (use ```npm run start4iis``` to launch the angular for IIS)
