@@ -17,7 +17,7 @@ Do not do the "Call the job" step.
 
 ## Add your Task CRON 
 ### Calculate the CRON 
-You can use the site https://crontab.cronhub.io/ to calculate the cron.
+You can use the site [https://crontab.cronhub.io/](https://crontab.cronhub.io/) to calculate the cron.
 
 ### Complete the Tasks parameters
 Edit your DeployDB/appsetting.json
