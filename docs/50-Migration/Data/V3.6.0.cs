@@ -359,8 +359,33 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-        // added manualy
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Code", "Label" },
+                values: new object[,]
+                {
+                    { 10001, "Admin", "Administrator" },
+                    { 10002, "Back_Admin", "Background task administrator" },
+                    { 10003, "Back_Read_Only", "Visualization of background tasks" }
+                });
 
+            migrationBuilder.InsertData(
+                table: "TeamTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Root" },
+                    { 2, "Site" }
+                });
+
+        // added manualy after InsertData("TeamTypes"
+        
+            migrationBuilder.Sql(@"
+                SET IDENTITY_INSERT [dbo].[Teams] ON
+                INSERT INTO[dbo].[Teams] (Id, TeamTypeId, Title) SELECT Id, '2', Title FROM[dbo].[Sites]
+                SET IDENTITY_INSERT [dbo].[Teams] OFF
+            ");
+            
             migrationBuilder.Sql(@"
                 INSERT INTO[dbo].[NotificationTeam] (NotificationId, TeamId) SELECT Id, SiteId FROM[dbo].[Notifications]
             ");
@@ -389,34 +414,6 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Permission");
-
-        // end added manualy
-
-            migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "Id", "Code", "Label" },
-                values: new object[,]
-                {
-                    { 10001, "Admin", "Administrator" },
-                    { 10002, "Back_Admin", "Background task administrator" },
-                    { 10003, "Back_Read_Only", "Visualization of background tasks" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "TeamTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Root" },
-                    { 2, "Site" }
-                });
-
-        // added manualy after InsertData("TeamTypes"
-            migrationBuilder.Sql(@"
-                SET IDENTITY_INSERT [dbo].[Teams] ON
-                INSERT INTO[dbo].[Teams] (Id, TeamTypeId, Title) SELECT Id, '2', Title FROM[dbo].[Sites]
-                SET IDENTITY_INSERT [dbo].[Teams] OFF
-            ");
 
             migrationBuilder.DropColumn(
                 name: "Title",
