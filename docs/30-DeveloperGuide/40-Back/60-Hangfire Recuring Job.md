@@ -6,7 +6,7 @@ grand_parent: Developer guide
 nav_order: 50
 ---
 
-# Hangfire Job
+# Hangfire Reccuring Job
 This document explains how to implement a recuring job with hangfire
 
 
