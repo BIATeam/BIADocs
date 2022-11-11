@@ -7,11 +7,18 @@ nav_order: 10
 ---
 
 # Presentation API project
+If you do not use a BIACompany file you should create 5 settings files :
+  - appsettings.Development.json (in DeployDB project)
+  - appsettings.Development.json and bianetconfig.Development.json (in Presentation.Api project)
+  - appsettings.Development.json and bianetconfig.Development.json (in WorkerService project)
+You can copy the exemple files provide to begin. But you certainly have to adapt them to you network in soon future.
+
 You have 2 alternatives: 
 * use IIS express
   * advantage : faster to configurate 
 * use IIS
   * advantage : no need to run visual studio each time
+
 ## Prepare the Presentation WebApi (for iis express):
 1. Compile the solution 
 - Set Presentation Api as startup project
