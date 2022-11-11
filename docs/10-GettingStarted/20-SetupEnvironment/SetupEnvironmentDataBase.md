@@ -3,7 +3,7 @@ layout: default
 title: Setup Database
 parent: Setup environment
 grand_parent: Getting Started
-nav_order: 3
+nav_order: 4
 ---
 
 # Setup Database 
