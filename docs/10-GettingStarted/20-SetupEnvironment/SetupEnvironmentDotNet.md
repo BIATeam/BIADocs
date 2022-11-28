@@ -17,10 +17,14 @@ Install [Visual Studio 2019 16.8 or later](https://visualstudio.microsoft.com/fr
 
 Add those components during installation :
 - [Development Time IIS Support](https://devblogs.microsoft.com/aspnet/development-time-iis-support-for-asp-net-core-applications/)
-  When installing IIS, make sur that "WWW Services -> Security -> Windows Authentication" is ckecked and restart IIS
+  When installing IIS, make sur that 
+  * "WWW Services -> Security -> Windows Authentication" is ckecked 
   ![IIS Windows Authentication](../../Images/IISWindowsAuthent.jpg)
-
-If Visual Studio 2019 is already installed, you can add those components by launching the VS Installer.
+  * "WWW  -> App Dev Features -> ASP.Net 4.x" is h
+  ![IIS ASP Net](../../Images/IISASPNET.JPG)
+  * And restart IIS
+  
+  If Visual Studio 2019 is already installed, you can add those components by launching the VS Installer.
 
 **Configuration :**
 
