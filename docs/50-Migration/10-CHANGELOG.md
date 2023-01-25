@@ -6,6 +6,10 @@ nav_order: 10
 ---
 
 # ChangeLog
+## V3.7.2 (2022-12-05)
+### Angular
+* Correct update roles on existing member.
+
 ## V3.7.1 (2022-10-03)
 * Header filter can now take complex criteria (date before, after, contains, begins... and, or).
 ### Angular
