@@ -34,6 +34,6 @@ Here is an example of impersonation. We are going to use another account to retr
                 string password = "MyPassword";
 
                 // Here we execute the code File.OpenRead(path) with specific credentials
-                return WindowsIdentityHelper.RunImpersonated(domainName, account, password, func);
+                return WindowsIdentityHelper.RunImpersonated(domain, account, password, func);
         }
 ```
