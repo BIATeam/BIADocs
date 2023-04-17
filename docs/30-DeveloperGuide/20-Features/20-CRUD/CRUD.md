@@ -4,6 +4,7 @@ title: CRUD
 parent: Features
 grand_parent: Developer guide
 nav_order: 20
+has_children: true
 ---
 
 # CRUD

@@ -14,6 +14,16 @@ Update the version of the application. To do this, change the `version` variable
 Warning in **src\environments\environment.ts** the apiUrl could be : 'http://localhost/[ProjectName]/**WebApi**/api' or 'http://localhost/[ProjectName]/api' it depend how you have configure the backend api in IIS (or properties of the Visual studio project)
 And serverLoggingUrl: 'http://localhost/JobMonitor/**WebApi**/api/logs' or http://localhost/JobMonitor/api/logs'
 
+## Start the project
+* npm install : this command install the package
+* npm run start : this command run the project with environement variable corresponding to a back running with IIS Express
+* npm run start4iis : this command run the project with environement variable corresponding to a back running with IIS
+
+## Before commit
+before committing your changes, run the following commands:
+* ng lint: You must have the following message: "All files pass linting".
+* ng build --aot: You must not get an error message.
+
 ## File not to be modified
 Some files are part of the Framework and should not be modified.
 
@@ -45,10 +55,4 @@ For the layout, [angular/flex-layout](https://github.com/angular/flex-layout/wik
 ## NGRX Store
 The framework and management of the store is based on this application. You can follow this example for the implementation of your store:   
 [angular-contacts-app-example](https://github.com/avatsaev/angular-contacts-app-example)
-
-## Before commit
-before committing your changes, run the following commands:
-
-* ng lint: You must have the following message: "All files pass linting".
-* ng build --aot: You must not get an error message.
 

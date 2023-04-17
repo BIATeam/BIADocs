@@ -4,6 +4,7 @@ title: Hub Client/Server
 parent: Features
 grand_parent: Developer guide
 nav_order: 40
+has_children: true
 ---
 
 # Hub Client Server

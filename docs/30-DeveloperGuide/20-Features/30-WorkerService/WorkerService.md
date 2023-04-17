@@ -4,6 +4,7 @@ title: Worker Service
 parent: Features
 grand_parent: Developer guide
 nav_order: 30
+has_children: true
 ---
 
 # Worker Service

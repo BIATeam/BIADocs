@@ -4,6 +4,7 @@ title: Right management
 parent: Features
 grand_parent: Developer guide
 nav_order: 10
+has_children: true
 ---
 
 # Right management
