@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Delegate job to worker
-parent: Features
-grand_parent: Developer guide
+parent: Worker Service
+grand_parent: Features
 nav_order: 30
 ---
 

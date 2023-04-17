@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Database Handler
-parent: Features
-grand_parent: Developer guide
-nav_order: 20
+parent: Worker Service
+grand_parent: Features
+nav_order: 40
 ---
 
 # Database Handler (Worker Feature)

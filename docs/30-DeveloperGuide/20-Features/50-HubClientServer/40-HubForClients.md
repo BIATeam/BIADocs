@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Hub for Clients
-parent: Features
-grand_parent: Developer guide
+parent: Hub Client/Server
+grand_parent: Features
 nav_order: 40
 ---
 

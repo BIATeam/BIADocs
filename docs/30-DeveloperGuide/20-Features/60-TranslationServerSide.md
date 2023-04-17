@@ -3,7 +3,7 @@ layout: default
 title: Translation server side
 parent: Features
 grand_parent: Developer guide
-nav_order: 50
+nav_order: 60
 ---
 
 # Translation server side

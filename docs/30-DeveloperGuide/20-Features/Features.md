@@ -10,8 +10,12 @@ has_children: true
 The features activable in BIA framework.
 
 ## Main features:
-    * User management
-    * Permission management
+    * Right management
+        * User management
+        * Teams
+        * Service filtered
+        * Roles (Multi or single)
+        * Permission (mapping and service)
     * CRUD
         * 3 Edit  mode : in popup, in full page or inline in the table
         * Create and select views: select columns, filter, search.
@@ -19,17 +23,17 @@ The features activable in BIA framework.
         * SignalR synchronization = it do not need an user action to see modification done by other users 
         * Simple or advanced filters
         * Export data in different format….
+    * Worker Service
+        * Hangfire Jobs
+        * Hangfire Dashboard
     * Notifications
+    * Hub Client/Server
 
 ## Technical features:
     * Related element (OptionDTO)
-    * Service filtered
     * Service for CRUD
     * Query customizer
-    * Hangfire jobs
-    * Client for Hub (SignalR)
     * Database Handler
-    * Multi or single role mode
     * Swagger
 
 ## Guaranteed external compatibility:
