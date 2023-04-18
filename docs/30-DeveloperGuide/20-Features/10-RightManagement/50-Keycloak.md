@@ -3,7 +3,7 @@ layout: default
 title: Keycloak
 parent: Right management
 grand_parent: Features
-nav_order: 130
+nav_order: 50
 ---
 
 # Keycloak authentication
