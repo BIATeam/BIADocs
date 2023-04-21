@@ -114,7 +114,13 @@ nav_order: 10
 * .Net5.0
 * Bulk function in repository.
 * PostgreSQL compatibility.
-  
+
+## V3.3.4 (Patch - 2023-04-21)
+### DotNet
+* Check identity on Login only
+* User In DB
+* Separe role UserManager
+
 ## V3.3.3 (2021-06-25)
 ### DotNet
 * New helper in common to compare string.
