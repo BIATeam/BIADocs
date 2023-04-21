@@ -66,7 +66,7 @@ has_children: true
 - Wait the confirmation by mail of all packages
 - COMMIT BIADemo, BIACompanyFiles and BIATemplate
 
-## Publish the demo site:
+## ONLY FOR LATEST VERSION (ie : not for patch) - Publish the demo site:
 - Launch in the terminal of VSCode in **...BIADemo\Angular** folder:
 ```
 npm run deploy
