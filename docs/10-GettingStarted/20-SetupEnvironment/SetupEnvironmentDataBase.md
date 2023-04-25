@@ -8,8 +8,48 @@ nav_order: 4
 
 # Setup Database 
 ## To work with SQL Server:
-Install [SQL Server](https://www.microsoft.com/en-en/sql-server/sql-server-downloads)
-You can choose SQL Server 2019 Developer that is free. (But be carefull you cannot install it on production server)
+Install [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+You can choose SQL Server 2022 Developer that is free. (But be carefull you cannot install it on production server)
+After downloading the SQL Server 2022 Developer, double click on the icon to start the install process.
+
+ - Choose "CUSTOM" option
+ ![SQL Server Developer Custom](../../Images/SQLServerDeveloperCustom.PNG)
+ 
+ - Either specify an install location or leace it as is, then click on "Install"
+ ![SQL Server Developer Install](../../Images/SQLServerDeveloperInstall.PNG)
+
+ - Choose "Installation" on the left side, and select "New SQL Server standalone installation or add features to an existing installation" first option from the list
+ ![SQL Server Developer First Option](../../Images/SQLServerDeveloperFirstOption.PNG)
+
+ - In "Specify a free edition:", leave "Developer" as default
+ ![SQL Server Developer Developer](../../Images/SQLServerDeveloperDeveloper.PNG)
+
+ - Accept the license terms and click Next
+ ![SQL Server Developer Accept](../../Images/SQLServerDeveloperAccept.PNG)
+
+ - It will run check for Install Rules and click Next
+ ![SQL Server Developer Rules](../../Images/SQLServerDeveloperRules.PNG)
+
+ - Uncheck "Azure Extension for SQL Server" and click Next
+ ![SQL Server Developer Uncheck](../../Images/SQLServerDeveloperUncheck.PNG)
+
+ - Check all options in Instance Features except for "PolyBase Query Service for External Data" and click Next
+ ![SQL Server Developer Instance Features](../../Images/SQLServerDeveloperInstanceFeature.PNG)
+
+ - Select "Default instance" and click Next (Need to remember Instance ID to be able to login in SSMS)
+ ![SQL Server Developer Default](../../Images/SQLServerDeveloperDefault.PNG)
+
+ - Click Next in the "Server Configuration" screen
+
+ - Choose "Windows authentication mode", then "Add Current User" and add your LB account as well by clicking on "Add..." button
+ ![SQL Server Developer Authentication](../../Images/SQLServerDeveloperAuthentication.PNG)
+
+ - Add your current user and LB account in "Analysis Services Configuration" then click Next
+ ![SQL Server Developer Analysis](../../Images/SQLServerDeveloperAnalysis.PNG)
+
+ - Review the summary, click Install, and close the setup windows
+ ![SQL Server Developer Ready Install](../../Images/SQLServerDeveloperReadyInstall.PNG)
+
 At the end of the installation
 [Install SSMS](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
 
