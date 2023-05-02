@@ -240,14 +240,14 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
             </ng-container> <!-- capacity -->
           </ng-container>
         </ng-template>
-        <ng-template pTemplate="specificInput" let-col="col" let-rowData="rowData" let-form="form">
+        <ng-template pTemplate="specificInput" let-field="field" let-form="form">
           <div [formGroup]="form">
-            <ng-container [ngSwitch]="col.field">
+            <ng-container [ngSwitch]="field.field">
               <ng-container *ngSwitchCase="'isActive'">
-                <p-checkbox [binary]="true" [formControlName]="col.field" (onChange)="onChange()"></p-checkbox>
+                <p-checkbox [binary]="true" [formControlName]="field.field" (onChange)="onChange()"></p-checkbox>
               </ng-container> <!-- isActive -->
               <ng-container *ngSwitchCase="'capacity'">
-                <input pInputText type="number" [formControlName]="col.field" (change)="onChange()" />
+                <input pInputText type="number" [formControlName]="field.field" (change)="onChange()" />
               </ng-container> <!-- capacity -->
             </ng-container>
           </div>
