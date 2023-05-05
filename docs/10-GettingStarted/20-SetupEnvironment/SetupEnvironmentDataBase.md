@@ -33,7 +33,7 @@ After downloading the SQL Server 2022 Developer, double click on the icon to sta
  - Uncheck "Azure Extension for SQL Server" and click Next
  ![SQL Server Developer Uncheck](../../Images/SQLServerDeveloperUncheck.PNG)
 
- - Check all options in Instance Features except for "PolyBase Query Service for External Data" and click Next
+ - Check "Database Engine service" and click Next
  ![SQL Server Developer Instance Features](../../Images/SQLServerDeveloperInstanceFeature.PNG)
 
  - Select "Default instance" and click Next (Need to remember Instance ID to be able to login in SSMS)
@@ -41,11 +41,8 @@ After downloading the SQL Server 2022 Developer, double click on the icon to sta
 
  - Click Next in the "Server Configuration" screen
 
- - Choose "Windows authentication mode", then "Add Current User" and add your LB account as well by clicking on "Add..." button
+ - Choose "Windows authentication mode", then "Add Current User" and add your Admin account as well by clicking on "Add..." button
  ![SQL Server Developer Authentication](../../Images/SQLServerDeveloperAuthentication.PNG)
-
- - Add your current user and LB account in "Analysis Services Configuration" then click Next
- ![SQL Server Developer Analysis](../../Images/SQLServerDeveloperAnalysis.PNG)
 
  - Review the summary, click Install, and close the setup windows
  ![SQL Server Developer Ready Install](../../Images/SQLServerDeveloperReadyInstall.PNG)
