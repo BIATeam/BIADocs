@@ -50,6 +50,6 @@ After downloading the SQL Server 2022 Developer, double click on the icon to sta
 At the end of the installation
 [Install SSMS](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
 
-## To work with PostgreSQl:
+## To work with PostgreSQL:
 Install [PostgreSQL](https://www.postgresql.org/download/)
 To browse the base you can use (pgAdmin 4)[https://www.postgresql.org/ftp/pgadmin/pgadmin4/v6.15/windows/]
