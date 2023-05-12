@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Setup dotnet development environment
+title: Setup dotnet environment
 parent: Setup environment
 grand_parent: Getting Started
 nav_order: 2

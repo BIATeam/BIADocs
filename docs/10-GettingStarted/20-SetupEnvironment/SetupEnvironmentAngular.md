@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Setup angular development environment
+title: Setup angular environment
 parent: Setup environment
 grand_parent: Getting Started
 nav_order: 1
