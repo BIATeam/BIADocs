@@ -94,6 +94,12 @@ nav_order: 10
 * Angular 12
 * NG lint ok
 
+## V3.4.3 (Patch - 2023-05-12)
+### DotNet
+* Check identity on Login only
+* User In DB
+* Separe role UserManager
+
 ## V3.4.2 (2021-10-08)
 * notification system (translation of title and description can be temporally done in i18n or not, but it will change in next version)
 * The signalR message are now filter by feature and site.
