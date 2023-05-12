@@ -6,6 +6,13 @@ nav_order: 10
 ---
 
 # ChangeLog
+
+## V3.7.3 (Patch - 2023-05-12)
+### DotNet
+* Check identity on Login only
+* User In DB
+* Separe role UserManager
+
 ## V3.7.2 (2022-12-05)
 ### Angular
 * Correct update roles on existing member.
@@ -35,6 +42,12 @@ nav_order: 10
 * Lighter application (remove unused dependencies)
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
+
+## V3.6.3 (Patch - 2023-05-12)
+### DotNet
+* Check identity on Login only
+* User In DB
+* Separe role UserManager
 
 ## V3.6.2 (2022-06-17)
 ### DotNet
@@ -67,6 +80,12 @@ nav_order: 10
 * Helper impersonation
 ### Angular
 * New organistion for bia domain and bia reposotory, placed in separate folder
+
+## V3.5.3 (Patch - 2023-05-12)
+### DotNet
+* Check identity on Login only
+* User In DB
+* Separe role UserManager
 
 ## V3.5.1 (2022-02-08)
 * Possibility to inject ExternalJS in front depending on back environement. 
