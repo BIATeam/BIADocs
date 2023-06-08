@@ -142,6 +142,12 @@ nav_order: 10
 * Bulk function in repository.
 * PostgreSQL compatibility.
 
+## V3.3.5 (Patch - 2023-06-08)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.3.4 (Patch - 2023-04-21)
 ### DotNet
 * Check identity on Login only
