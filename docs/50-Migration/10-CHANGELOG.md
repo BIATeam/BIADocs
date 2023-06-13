@@ -113,7 +113,7 @@ nav_order: 10
 * Angular 12
 * NG lint ok
 
-## V3.4.3 (Patch - 2023-06-13)
+## V3.4.4 (Patch - 2023-06-13)
 ### DotNet
 * Add the Mode LdapWithSidHistory.
 * Faster management of ForeignSecurityIdentity.
