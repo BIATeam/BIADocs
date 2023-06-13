@@ -113,6 +113,12 @@ nav_order: 10
 * Angular 12
 * NG lint ok
 
+## V3.4.3 (Patch - 2023-06-13)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.4.3 (Patch - 2023-05-12)
 ### DotNet
 * Check identity on Login only
