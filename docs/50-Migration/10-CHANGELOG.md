@@ -81,6 +81,12 @@ nav_order: 10
 ### Angular
 * New organistion for bia domain and bia reposotory, placed in separate folder
 
+## V3.5.4 (Patch - 2023-06-14)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.5.3 (Patch - 2023-05-12)
 ### DotNet
 * Check identity on Login only
