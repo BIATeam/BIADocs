@@ -43,6 +43,12 @@ nav_order: 10
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
 
+## V3.6.4 (Patch - 2023-06-15)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.6.3 (Patch - 2023-05-12)
 ### DotNet
 * Check identity on Login only
