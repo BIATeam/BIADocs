@@ -7,6 +7,12 @@ nav_order: 10
 
 # ChangeLog
 
+## V3.7.4 (Patch - 2023-06-16)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.7.3 (Patch - 2023-05-12)
 ### DotNet
 * Check identity on Login only
