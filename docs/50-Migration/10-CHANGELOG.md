@@ -7,6 +7,12 @@ nav_order: 10
 
 # ChangeLog
 
+## V3.7.4 (Patch - 2023-06-16)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.7.3 (Patch - 2023-05-12)
 ### DotNet
 * Check identity on Login only
@@ -42,6 +48,12 @@ nav_order: 10
 * Lighter application (remove unused dependencies)
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
+
+## V3.6.4 (Patch - 2023-06-15)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
 
 ## V3.6.3 (Patch - 2023-05-12)
 ### DotNet
@@ -81,6 +93,12 @@ nav_order: 10
 ### Angular
 * New organistion for bia domain and bia reposotory, placed in separate folder
 
+## V3.5.4 (Patch - 2023-06-14)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
+
 ## V3.5.3 (Patch - 2023-05-12)
 ### DotNet
 * Check identity on Login only
@@ -112,6 +130,12 @@ nav_order: 10
 ### Angular
 * Angular 12
 * NG lint ok
+
+## V3.4.4 (Patch - 2023-06-13)
+### DotNet
+* Add the Mode LdapWithSidHistory.
+* Faster management of ForeignSecurityIdentity.
+* Add Filter on ldapDomain to search faster users.
 
 ## V3.4.3 (Patch - 2023-05-12)
 ### DotNet
