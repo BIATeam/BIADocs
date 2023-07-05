@@ -57,11 +57,11 @@ The strategy depend on the size of the project:
     - Enter the tag name (=version name) at the format Vx.y.z
 
 - In case of hotFix
-  - Type F1 + GitFlow: HotFit: start 
-    - Enter an explicit name for the HotFit
-  - Push small commits (~daily) on the created hotfix Branch.
-  - Ensure you have change the version name in de constant.cs (DotNet) and environment.json (Angular) files.
-  - Type F1 + GitFlow: HotFit: finish
+  - Type F1 + GitFlow: HotFix: start 
+    - Enter for the name of the HotFix the new version at the format : Vx.y.z (you should increment the last digit)
+  - Push small commits (~daily) on the created hotfix\Vx.y.z Branch.
+  - Ensure you have change the version name in de constant.cs (DotNet) and environment.json (Angular) files to match with HotFix name.
+  - Type F1 + GitFlow: HotFix: finish
   
 ## Visualize the branches:
 - You can use the VS Code Git Graph extension to visualize all the branches.
