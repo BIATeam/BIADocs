@@ -14,7 +14,7 @@ The standard flow is Git flow
 
 ![GitFlow](../../Images/GitFlow.png)
 
-The strategie depend on the size of the project:
+The strategy depend on the size of the project:
 
 # Common strategie :
 - Use a main branch and Develop branch.
