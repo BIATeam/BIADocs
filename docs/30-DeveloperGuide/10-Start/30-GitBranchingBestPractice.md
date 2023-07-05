@@ -60,6 +60,7 @@ The strategy depend on the size of the project:
   - Type F1 + GitFlow: HotFit: start 
     - Enter an explicit name for the HotFit
   - Push small commits (~daily) on the created hotfix Branch.
+  - Ensure you have change the version name in de constant.cs (DotNet) and environment.json (Angular) files.
   - Type F1 + GitFlow: HotFit: finish
   
 ## Visualize the branches:
