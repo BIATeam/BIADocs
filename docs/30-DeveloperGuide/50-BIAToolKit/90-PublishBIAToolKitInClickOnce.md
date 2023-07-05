@@ -15,7 +15,7 @@ Place it in the folder BIAToolKit\BIA.ToolKit\Properties\PublishProfiles
 
 ## Create the publish file
 Create a file BIAToolKit\BIA.ToolKit\Properties\PublishProfiles\ClickOnceProfile.pubxml
-with the following content (replace \\BIAShare\ by the path of the shared folder):
+with the following content (replace \\share.bia.[MyCompany]\ by the path of the shared folder):
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -33,15 +33,15 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     <GenerateManifests>True</GenerateManifests>
     <Install>True</Install>
     <InstallFrom>Unc</InstallFrom>
-    <InstallUrl>\\BIAShare\BIAToolKit\</InstallUrl>
+    <InstallUrl>\\share.bia.[MyCompany]\BIAToolKit\</InstallUrl>
     <IsRevisionIncremented>True</IsRevisionIncremented>
     <IsWebBootstrapper>False</IsWebBootstrapper>
     <MapFileExtensions>True</MapFileExtensions>
     <MinimumRequiredVersion>1.2.0.0</MinimumRequiredVersion>
     <OpenBrowserOnPublish>False</OpenBrowserOnPublish>
     <Platform>Any CPU</Platform>
-    <PublishDir>\\BIAShare\BIAToolKit\</PublishDir>
-    <PublishUrl>\\BIAShare\BIAToolKit\</PublishUrl>
+    <PublishDir>\\share.bia.[MyCompany]\BIAToolKit\</PublishDir>
+    <PublishUrl>\\share.bia.[MyCompany]\BIAToolKit\</PublishUrl>
     <PublishProtocol>ClickOnce</PublishProtocol>
     <PublishReadyToRun>False</PublishReadyToRun>
     <PublishSingleFile>False</PublishSingleFile>
@@ -80,7 +80,7 @@ Send to all develloper following message
 BIAToolKit in ClickOnce
 
 The BIAToolKit is available in ClickOnce by installing it via this link:
-\\BIAShare\BIAToolKit\setup.exe
+\\share.bia.[MyCompany]\BIAToolKit\setup.exe
 
 => This creates a link on the desktop that always launches the latest version. (and will also work offline)
 => To pin a ClickOnce application in the Windows bar you have to drag and drop the desktop link. And not pin it to the program once launched (otherwise there is no verification of the latest version at launch)

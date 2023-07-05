@@ -13,7 +13,7 @@ nav_order: 5
   * If not create it with the instruction [Publish BIA Tool Kit in click once](../../30-DeveloperGuide/50-BIAToolKit/90-PublishBIAToolKitInClickOnce.md)
   
 * Install the tool kit : 
-  * Open folder \\\\BIAShare\\BIAToolKit\\
+  * Open folder \\\\share.bia.[MyCompany]\\BIAToolKit\\
   * Double click on setup.exe
   * Click on Install
   * This creates a link on the desktop that always launches the latest version. (and will also work offline)
