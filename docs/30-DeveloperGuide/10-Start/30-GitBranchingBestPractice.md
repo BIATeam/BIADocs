@@ -16,7 +16,7 @@ The standard flow is Git flow
 
 The strategy depend on the size of the project:
 
-# Common strategie :
+# Common strategy :
 - Use a main branch and Develop branch.
 - Create a release Branch for each delivery
 - For hotfix create a specific branch.
@@ -38,20 +38,32 @@ The strategy depend on the size of the project:
 
 ## Use the gitflow extension
 - Develop on Develop branch:
-  - Pull the last version of the deveop branch and push small commit (~daily) on it.
-
+  - Pull the last version of the deveop branch and push small commits (~daily) on it.
 - Develop on Feature branch:
-  -  Type F1 + GitFlow: Feature: start => enter an explicit name for the feature. This action create the "feature\[Name of the feature]" branch.
-  -  Push small commit (~daily) on this feature branch.
+  -  Type F1 + GitFlow: Feature: start
+     -  Enter an explicit name for the feature. 
+        => This action create the "feature\[Name of the feature]" branch.
+  -  Push small commits (~daily) on this feature branch.
   -  2 soultion to finalize the feature:
      -  Type F1 + GitFlow: Feature: finish 
      -  Create a pull request from feature branch to develop. Warning **the feature branch should be delete** in case of squash validation.
   -  .... repeat for every feature ...
+- To deliver in the both case:
+  - Ensure you have change the version name in de constant.cs (DotNet) and environment.json (Angular) files :
+  - Type F1 + GitFlow: Release: start
+    - For the release name enter the name of the version at the format : Vx.y.z
+  - You can verify that all compile.
+  - Type F1 + GitFlow: Release: finish 
+    - Enter the tag name (=version name) at the format Vx.y.z
 
-- To deliver in the both case, ensure you have change the version name in de constant.cs (DotNet) and environment.json (Angular) files :
- - Type F1 + GitFlow: Release: start => for the release name enter the name of the version at the format : Vx.y.z
- - You can verify that all compile.
- - Type F1 + GitFlow: Release: finish => enter the tag name (=version name) at the format Vx.y.z
+- In case of hotFix
+  - Type F1 + GitFlow: HotFit: start 
+    - Enter an explicit name for the HotFit
+  - Push small commits (~daily) on the created hotfix Branch.
+  - Type F1 + GitFlow: HotFit: finish
+  
+## Visualize the branches:
+- You can use the VS Code Git Graph extension to visualize all the branches.
 
 ## External source:
 * [gitflow](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/gitflow-workflow/)
