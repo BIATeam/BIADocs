@@ -11,7 +11,7 @@ nav_order: 20
 The goal of this page is to harmonize the git branching usage for all projects build with the BIAFramework.
 
 The standard flow is Git flow
-![GitFlow](../Images/GitFlow.png)
+![GitFlow](../../Images/GitFlow.png)
 The strategie depend on the size of the project:
 
 # Common strategie :
@@ -29,9 +29,9 @@ The strategie depend on the size of the project:
 
 ## Initialize gitflow extension
 - Just install the gitflow extension for VS Code.
-  ![GitFlowExtension](../Images/GitFlowExtension.png)
+  ![GitFlowExtension](../../Images/GitFlowExtension.png)
 - If the initialisation have never be done press F1 (=shortcut to open VS Code Command Palette) and select 'GitFlow: Initialize repository for gitflow' (if you have an error at the first init, try a second one)
-- ![GitFlowInitializeRepository](../Images/GitFlowInitializeRepository.png)
+- ![GitFlowInitializeRepository](../../Images/GitFlowInitializeRepository.png)
 - Follow the command prompts and accept the defaults...
 
 ## Use the gitflow extension
