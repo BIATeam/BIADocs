@@ -1,0 +1,56 @@
+---
+layout: default
+title: Git Branching best practice
+parent: Start
+grand_parent: Developer guide
+nav_order: 20
+---
+
+# Git Branching best practice
+
+The goal of this page is to harmonize the git branching usage for all projects build with the BIAFramework.
+
+The standard flow is Git flow
+![GitFlow](../Images/GitFlow.png)
+The strategie depend on the size of the project:
+
+# Common strategie :
+- Use a main branch and Develop branch.
+- Create a release Brach for each delivery
+- For hotfix create a specific branch.
+
+## Project with 1 or 2 developers:
+- Standard usage : work on Develop Branch
+- For hudge feature you can create a dedicated branch.
+  
+## Project more the 2 developers:
+- Standard usage : Develop all your Features on dedicated Branch
+- For very small change you can work directly on Develop Branch
+
+## Initialize gitflow extension
+- Just install the gitflow extension for VS Code.
+  ![GitFlowExtension](../Images/GitFlowExtension.png)
+- If the initialisation have never be done press F1 (=shortcut to open VS Code Command Palette) and select 'GitFlow: Initialize repository for gitflow' (if you have an error at the first init, try a second one)
+- ![GitFlowInitializeRepository](../Images/GitFlowInitializeRepository.png)
+- Follow the command prompts and accept the defaults...
+
+## Use the gitflow extension
+- Develop on Develop branch:
+  - Pull the last version of the deveop branch and push small commit (~daily) on it.
+
+- Develop on Feature branch:
+  -  Type F1 + GitFlow: Feature: start => enter an explicit name for the feature. This action create the "feature\[Name of the feature]" branch.
+  -  Push small commit (~daily) on this feature branch.
+  -  Type F1 + GitFlow: Feature: finish 
+  -  .... repeat for every feature ...
+
+- To deliver in the both case, ensure you have change the version name in de constant.cs (DotNet) and environment.json (Angular) files :
+ - Type F1 + GitFlow: Release: start => for the release name enter the name of the version at the format : Vx.y.z
+ - You can verify that all compile.
+ - Type F1 + GitFlow: Release: finish => enter the tag name (=version name) at the format Vx.y.z
+
+## External source:
+* [gitflow](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/gitflow-workflow/)
+* [gitflow extension](https://github.com/vector-of-bool/vscode-gitflow)
+* [Git Graph extension](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
+
