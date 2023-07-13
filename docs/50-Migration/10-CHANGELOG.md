@@ -7,6 +7,10 @@ nav_order: 10
 
 # ChangeLog
 
+## V3.7.4.1 (Patch - 2023-07-12)
+### DotNet
+* BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
+
 ## V3.7.4 (Patch - 2023-06-16)
 ### DotNet
 * Add the Mode LdapWithSidHistory.
@@ -49,6 +53,10 @@ nav_order: 10
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
 
+## V3.6.4.1 (Patch - 2023-07-12)
+### DotNet
+* BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
+  
 ## V3.6.4 (Patch - 2023-06-15)
 ### DotNet
 * Add the Mode LdapWithSidHistory.
@@ -93,6 +101,10 @@ nav_order: 10
 ### Angular
 * New organistion for bia domain and bia reposotory, placed in separate folder
 
+## V3.5.4.1 (Patch - 2023-07-12)
+### DotNet
+* BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
+  
 ## V3.5.4 (Patch - 2023-06-14)
 ### DotNet
 * Add the Mode LdapWithSidHistory.
@@ -131,6 +143,10 @@ nav_order: 10
 * Angular 12
 * NG lint ok
 
+## V3.4.4.1 (Patch - 2023-07-13)
+### DotNet
+* BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
+
 ## V3.4.4 (Patch - 2023-06-13)
 ### DotNet
 * Add the Mode LdapWithSidHistory.
@@ -165,6 +181,10 @@ nav_order: 10
 * .Net5.0
 * Bulk function in repository.
 * PostgreSQL compatibility.
+
+## V3.3.5.1 (Patch - 2023-07-13)
+### DotNet
+* BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
 
 ## V3.3.5 (Patch - 2023-06-08)
 ### DotNet
