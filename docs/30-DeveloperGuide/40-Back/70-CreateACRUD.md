@@ -43,7 +43,7 @@ The Bia Framework provides for data segregation and user role managment by Team.
 Here the entity representing a Team is Site.
 With this segregation, a Plane created by a user of site A cannot be consulted by a user of an other site B.
 
-For Team concept consult the specific page [Team](../10-RightManagement/20-Teams.md) 
+For Team concept consult the specific page [Team](../20-Features/10-RightManagement/20-Teams.md) 
 
 ```csharp
 // BIADemo only
