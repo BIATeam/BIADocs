@@ -30,7 +30,7 @@ The first code to write is the Entity. The entity have to located into a Module 
 The Aggregate folder can content several entity. The concept of Aggregate come from Domain Driven Design. 
 In summary, we can considerate that an entity in relationship with the main entity of an aggregate can be remove when the main entity is deleted.
 
-![Entity folder](../../../Images/EntityPath.jpg)
+![Entity folder](../../Images/EntityPath.jpg)
 
 ### Code
 The entity class have to inherit of VersionnedTable and IEntity which is parametrized by key type.
