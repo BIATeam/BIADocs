@@ -156,7 +156,7 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
   * the members of the classe, 
   * the constructor 
   * the function loadAllOptions.
-* The list should be OptionDto list in domain. See [this page](OPTION.md) to create the domain feature option.
+* The list should be OptionDto list in domain. See [this page](CreateAnOption.md) to create the domain feature option.
 
 ## Enable Views
 * Just change the variable useView = false; to useView = true; in the **views/...-index.component.ts**
