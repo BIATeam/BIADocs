@@ -6,18 +6,19 @@ grand_parent: Developer guide
 nav_order: 10
 ---
 
-# Presentation API project
-If you do not use a BIACompany file you should create 5 settings files :
-  - appsettings.Development.json (in DeployDB project)
-  - appsettings.Development.json and bianetconfig.Development.json (in Presentation.Api project)
-  - appsettings.Development.json and bianetconfig.Development.json (in WorkerService project)
-You can copy the exemple files provide to begin. But you certainly have to adapt them to you network in soon future.
-
-You have 2 alternatives: 
+You have 2 alternatives to run this project: 
 * use IIS express
   * advantage : faster to configurate 
 * use IIS
   * advantage : no need to run visual studio each time
+  
+# Presentation API project
+If you do not use a BIACompany file you should create 5 settings files :
+  - appsettings.Development.json (in DeployDB project)
+  - [For IISExpress] appsettings.Development.json and bianetconfig.Development.json (in Presentation.Api project)
+  - [For IIS] appsettings.Development4iis.json and bianetconfig.Development4iss.json (in Presentation.Api project)
+  - appsettings.Development.json and bianetconfig.Development.json (in WorkerService project)
+You can copy the exemple files provide to begin. But you certainly have to adapt them to you network in soon future.
 
 ## Prepare the Presentation WebApi (for iis express):
 1. Compile the solution 
@@ -31,7 +32,9 @@ You have 2 alternatives:
 - Launch it a first time with IIS
 
 2. Open IIS manager. 
-- Set the physical path of the Folder (with the name of the application [ProjectName]) to d:\www\[ProjectName] (in basic settings)
+- At root level (Default web site) or at the  [ProjectName]\WepApi level. Use the **Configuration editor** to add Environment variable "ASPNETCORE_ENVIRONMENT" = "Development4iis" in system.webServer/aspNetCore
+  ![IIS variable](../../Images/IISVariable.PNG)
+- Set the physical path of the Folder (with the name of the application [ProjectName]) to c:\www\[ProjectName] (in basic settings)
 - On the [ProjectName]\WepApi site :
     - Open Basic setting 
     - Note the name of the application pool (automaticaly created by Visual studio during the first run)
@@ -47,7 +50,7 @@ You have 2 alternatives:
     - Move the Wepi Api Application Pool to [ProjectName]WebApi
     - Verify the authentication : Anonymous and windows authentication should be enable.
 
-3. Restart Visual Studio
+1. Restart Visual Studio
 - Close Visual Studio
 - Restart Visual Studio and open the solution
 - Launch it with IIS
