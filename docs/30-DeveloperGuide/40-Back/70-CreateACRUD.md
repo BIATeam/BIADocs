@@ -45,7 +45,7 @@ With this segregation, a Plane created by a user of site A cannot be consulted b
 
 For Team concept consult the specific page [Team](../10-RightManagement/20-Teams.md) 
 
-```C
+```csharp
 // BIADemo only
 // <copyright file="Plane.cs" company="TheBIADevCompany">
 //     Copyright (c) TheBIADevCompany. All rights reserved.
@@ -95,7 +95,7 @@ Here you can see the exemple of Plane Model Builder file.
 As an aggregate can have several classes, a modelBuilder file can describ several tables.
 
 
-```C
+```csharp
 namespace TheBIADevCompany.BIADemo.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
@@ -170,7 +170,7 @@ After creating the modelbuilder file, we can modify the DataContext file to :
 - Add the call to the modelbuilder classe.
 
 
-```C
+```csharp
         /// <summary>
         /// Gets or sets the Plane DBSet.
         /// </summary>
@@ -214,7 +214,7 @@ You can see in PlaneMapper class of BiaDemo poprject how theses methods are impl
 The ApplicationServie code inherit of CrudAppServiceBase which implement all the methods necessary for CRUD operations.
 So all the code you have to write is to recover the team to which the entity belongs.
 
-```C
+```csharp
     /// <summary>
     /// The application service used for plane.
     /// </summary>
@@ -257,7 +257,7 @@ The methods into the controller are subject to autorization.
 So, you have to add a static class for the new feature into the Rigth.cs file. 
 This file is into CrossCutting.Common project.
 
-```C
+```csharp
         /// <summary>
         /// The planes rights.
         /// </summary>
@@ -297,7 +297,7 @@ This file is into CrossCutting.Common project.
 
 ## Permission into biaconfig file
 You have to modify the bianetconfig file in order to configure the permissions corresponding to the role:
-```C
+```csharp
       // Plane
       {
         "Names": [ "Plane_List_Access", "Plane_Read" ],
@@ -317,7 +317,7 @@ You have to modify the bianetconfig file in order to configure the permissions c
 Finaly the last file to change is the IocContainer.
 
 Add this lien into ConfigureApplicationContainer method : 
- ```C
+ ```csharp
  private static void ConfigureApplicationContainer(IServiceCollection collection)
         {
             // Application Layer
@@ -333,11 +333,11 @@ Add this lien into ConfigureApplicationContainer method :
 
 After that you have to update the database with following commands into Package Manager Console:
 
-```C
+```csharp
 Add-Migration 'new feature plane' -Context DataContext 
 ```
 and 
 
-```C
+```csharp
 Update-DataBase -Context DataContext
 ```
