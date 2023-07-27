@@ -2,7 +2,7 @@
 layout: default
 title: Role
 parent: Right management
-grand_parent: Features
+grand_parent: Developer guide
 nav_order: 30
 ---
 

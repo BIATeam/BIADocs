@@ -2,7 +2,7 @@
 layout: default
 title: User management
 parent: Right management
-grand_parent: Features
+grand_parent: Developer guide
 nav_order: 10
 ---
 
