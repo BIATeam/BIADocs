@@ -1,9 +1,8 @@
 ---
 layout: default
 title: Right management
-parent: Features
-grand_parent: Developer guide
-nav_order: 10
+parent: Developer guide
+nav_order: 15
 has_children: true
 ---
 

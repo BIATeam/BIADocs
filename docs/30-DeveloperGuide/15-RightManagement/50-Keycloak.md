@@ -2,7 +2,7 @@
 layout: default
 title: Keycloak
 parent: Right management
-grand_parent: Features
+grand_parent: Developer guide
 nav_order: 50
 ---
 

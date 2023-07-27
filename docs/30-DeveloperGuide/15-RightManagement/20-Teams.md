@@ -2,7 +2,7 @@
 layout: default
 title: Teams
 parent: Right management
-grand_parent: Features
+grand_parent: Developer guide
 nav_order: 20
 ---
 
