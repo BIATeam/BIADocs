@@ -5,6 +5,7 @@ parent: Understanding BIA Framework
 nav_order: 10
 has_children: false
 ---
+
 # Plan the application development
 
 ## Specify with mockup
