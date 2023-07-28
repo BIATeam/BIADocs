@@ -5,6 +5,7 @@ parent: Understanding BIA Framework
 nav_order: 20
 has_children: false
 ---
+
 # Plan the application development
 
 This methodology is model-driven.
