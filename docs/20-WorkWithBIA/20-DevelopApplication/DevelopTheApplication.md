@@ -24,7 +24,9 @@ At that moment the notion of right will be introduce :
   - Draw the team table at the top and items table below.
   - You should see at lease a link that start from every item table and arrive to a team table. (it can pass by relation with others item table)
 
-![BIADemo Data Model](../../Images/DataModel.dark.png)
+
+![BIADemo Data Model](../../Images/DataModel.dark.png#gh-dark-mode-only)
+![BIADemo Data Model](../../Images/DataModel.light.png#gh-light-mode-only)
 
 
 => At this step some review can be done with business to ensure there are agree with the model.
