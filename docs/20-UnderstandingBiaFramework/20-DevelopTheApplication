@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Develop the application
-parent: Understanding BIA Framework
+title: Develop application
+parent: Work with BIA
 nav_order: 20
 has_children: false
 ---
