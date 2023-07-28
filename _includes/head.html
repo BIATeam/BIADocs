@@ -24,17 +24,19 @@
   
     <script>
         var stylesDark = `
+        <style>
             .light-mode-only { 
                 display: none;
             }
+        </style>
             `
         var stylesLight = `
+        <style>
             .dark-mode-only { 
                 display: none;
             }
-            `  
-        var styleSheet = document.createElement("style")
-
+        </style>
+            `
 
         /* If `prefers-color-scheme` is not supported, fall back to default mode */
         if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
@@ -43,15 +45,28 @@
             'beforeend',
             '<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}" onload="document.documentElement.style.display = \'\'">',
             );
-            styleSheet.innerText = stylesLight
+            document.head.insertAdjacentHTML(
+            'beforeend',
+            stylesDark,
+            );
         }
         else {
-            styleSheet.innerText = stylesDark
+            document.head.insertAdjacentHTML(
+            'beforeend',
+            stylesLight,
+            );
         }
-        document.head.appendChild(styleSheet)
+ 
     
     </script>
   
+
+    <style>
+        .light-mode-only { 
+            display: none;
+        }
+    </style>
+
     <link
       rel="stylesheet"
       href="{{ '/assets/css/just-the-docs-dark.css' | relative_url }}"
