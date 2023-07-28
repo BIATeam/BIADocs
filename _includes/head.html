@@ -23,14 +23,33 @@
     {% endif %}
   
     <script>
-      /* If `prefers-color-scheme` is not supported, fall back to default mode */
-      if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
-        /* document.documentElement.style.display = 'none'; */
-        document.head.insertAdjacentHTML(
-          'beforeend',
-          '<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}" onload="document.documentElement.style.display = \'\'">',
-        );
-      }
+        var stylesDark = `
+            .light-mode-only { 
+                display: none;
+            }
+            `
+        var stylesLight = `
+            .dark-mode-only { 
+                display: none;
+            }
+            `  
+        var styleSheet = document.createElement("style")
+
+
+        /* If `prefers-color-scheme` is not supported, fall back to default mode */
+        if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
+            /* document.documentElement.style.display = 'none'; */
+            document.head.insertAdjacentHTML(
+            'beforeend',
+            '<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}" onload="document.documentElement.style.display = \'\'">',
+            );
+            styleSheet.innerText = stylesLight
+        }
+        else {
+            styleSheet.innerText = stylesDark
+        }
+        document.head.appendChild(styleSheet)
+    
     </script>
   
     <link
