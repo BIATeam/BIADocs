@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Plan the application development
-parent: Understanding BIA Framework
+title: Plan development
+parent: Work with BIA
 nav_order: 10
 ---
 

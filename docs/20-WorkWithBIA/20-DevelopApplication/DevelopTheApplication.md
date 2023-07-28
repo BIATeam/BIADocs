@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Develop the application
-parent: Understanding BIA Framework
+title: Develop application
+parent: Work with BIA
 nav_order: 20
 ---
 
-# Plan the application development
+# Development an application
 
 This methodology is model-driven.
 
