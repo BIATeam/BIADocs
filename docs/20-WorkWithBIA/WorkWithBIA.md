@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Understanding BIA Framework
+title: Work with BIA
 nav_order: 20
 has_children: true
 ---
