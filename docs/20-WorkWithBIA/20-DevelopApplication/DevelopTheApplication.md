@@ -26,7 +26,10 @@ At that moment the notion of right will be introduce :
 
 
 ![BIADemo Data Model](../../Images/DataModel.dark.png#gh-dark-mode-only)
+{: .dark-mode-only}
+
 ![BIADemo Data Model](../../Images/DataModel.light.png#gh-light-mode-only)
+{: .dark-mode-only}
 
 
 => At this step some review can be done with business to ensure there are agree with the model.
