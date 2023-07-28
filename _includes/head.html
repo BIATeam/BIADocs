@@ -23,44 +23,56 @@
     {% endif %}
   
     <script>
+      /* If `prefers-color-scheme` is not supported, fall back to default mode */
+      if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
+        /* document.documentElement.style.display = 'none'; */
+        document.head.insertAdjacentHTML(
+          'beforeend',
+          '<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}" onload="document.documentElement.style.display = \'\'">',
+        );
+      }
+      
         var stylesDark = `
         <style>
             .light-mode-only { 
                 display: none;
             }
-        </style>
-            `;
+        </style>`;
         var stylesLight = `
         <style>
             .dark-mode-only { 
                 display: none;
             }
-        </style>
-            `;
+        </style>`;
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.head.insertAdjacentHTML(
+                'beforeend',
+                stylesDark,
+                );
+            } else {
+                document.head.insertAdjacentHTML(
+                'beforeend',
+                stylesLight,
+                );
+            }
+            });
 
-        /* If `prefers-color-scheme` is not supported, fall back to default mode */
-        if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
-            /* document.documentElement.style.display = 'none'; */
-            document.head.insertAdjacentHTML(
-            'beforeend',
-            '<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}" onload="document.documentElement.style.display = \'\'">',
-            );
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.head.insertAdjacentHTML(
             'beforeend',
             stylesDark,
             );
         }
-        else {
+        else
+        {
             document.head.insertAdjacentHTML(
-            'beforeend',
-            stylesLight,
-            );
+                'beforeend',
+                stylesLight,
+                );
         }
- 
-    
     </script>
   
-
     <link
       rel="stylesheet"
       href="{{ '/assets/css/just-the-docs-dark.css' | relative_url }}"
