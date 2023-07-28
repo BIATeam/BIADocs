@@ -7,7 +7,7 @@ nav_order: 30
 ---
 
 # Filter data
-This file explains how to filter data by the team mechanism.
+This file explains how to filter data by the team.
 
 ## Data model
 
