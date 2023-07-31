@@ -31,46 +31,6 @@
           '<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-default.css' | relative_url }}" onload="document.documentElement.style.display = \'\'">',
         );
       }
-      
-        var stylesDark = `
-        <style>
-            .light-mode-only { 
-                display: none;
-            }
-        </style>`;
-        var stylesLight = `
-        <style>
-            .dark-mode-only { 
-                display: none;
-            }
-        </style>`;
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (event.matches) {
-                document.head.insertAdjacentHTML(
-                'beforeend',
-                stylesDark,
-                );
-            } else {
-                document.head.insertAdjacentHTML(
-                'beforeend',
-                stylesLight,
-                );
-            }
-            });
-
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.head.insertAdjacentHTML(
-            'beforeend',
-            stylesDark,
-            );
-        }
-        else
-        {
-            document.head.insertAdjacentHTML(
-                'beforeend',
-                stylesLight,
-                );
-        }
     </script>
   
     <link

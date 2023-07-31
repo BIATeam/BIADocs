@@ -1,0 +1,9 @@
+{% if site.color_scheme and site.color_scheme == "dark" %}
+.dark-mode-only { 
+    display: none;
+}
+{% else %}
+.light-mode-only { 
+    display: none;
+}
+{% endif %}
