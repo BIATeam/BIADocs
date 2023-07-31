@@ -98,7 +98,7 @@ In addition, to finish update the database.
 - In Angular\src\environments\all-environments.ts
   - add the following line and adapt roleMode and inHeader similary to loginParam in back
   ```ts
-        { teamTypeId: TeamTypeId.[YourTeamType], roleMode: RoleMode.AllRoles, inHeader: true },
+    { teamTypeId: TeamTypeId.[YourTeamType], roleMode: RoleMode.AllRoles, inHeader: true },
   ```
 
 
