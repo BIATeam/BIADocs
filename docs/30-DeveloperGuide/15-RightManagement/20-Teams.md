@@ -16,9 +16,57 @@ Therefore, when you add a new type of team you can create many teams of this typ
 The initial generation of the project, generate a default type of team. It is the type "Site".
 You can start the application and go in Site menu to understand the usage.
 
+In the following code sample replace [YourTeamType] by the name of your type type.
+
 ## Back
 
-You can duplicate the files of Site elements and replace Site by the name of your team.
+### Add the team type
+
+Add the TeamType :
+- In Crosscutting.Common\Enum\TeamTypeId.cs 
+  - add in enum TeamTypeId: the new teamType and increment the Id value.
+  ```csharp
+    /// <summary>
+    /// Value for site.
+    /// </summary>
+    [YourTeamType] = [IdTeamType],
+  ```
+  - add in TeamTypeRightPrefixe.mapping: the prefixe string use for right...
+  ```csharp
+    { TeamTypeId.[YourTeamType], "[YourTeamType]" },
+  ```
+- (Optionnaly) In Crosscutting.Common\Enum\RoleId.cs in enum RoleId
+  - add the role that will be use for this type of team (one line per role). ex :
+  ```csharp
+    [YourRoleName] = [IdRole],
+  ```  
+- In Infrastructure.Data\ModelBuilders\UserModelBuilder.cs
+  - in function CreateTeamTypeModel add your teamType in base:
+  ```csharp
+    modelBuilder.Entity<TeamType>().HasData(new TeamType { Id = (int)TeamTypeId.[YourTeamType], Name = "[YourTeamType]" });
+  ```
+  - (Optionnaly) in function CreateTeamTypeRoleModel add the mapping between the role and your teamType. (one line per role)
+  ```csharp
+    rt.HasData(new { TeamTypesId = (int)TeamTypeId.[YourTeamType], RolesId = (int)RoleId.[YourRoleName] });
+  ```
+
+- In Application\User\AuthAppService.cs
+  - (Optionnaly) add computed role
+  ```csharp
+    if (currentTeam.TeamTypeId == (int)TeamTypeId.[YourRoleName])
+    {
+        allRoles.Add(Constants.Role.[YourRoleName]Member);
+    }
+  ```
+- In AuthControler > function Login() > variable loginParam
+  - add following line adapt roleMode and inHeader
+  ```csharp
+    new TeamConfigDto { TeamTypeId = (int)TeamTypeId.[YourTeamType], RoleMode = RoleMode.AllRoles, InHeader = true },
+  ```
+
+### Add the team CRUD
+
+Duplicate the files of Site elements and replace Site by the name of your team.
 You have: 
 - Infrastructure.Data\ModelBuilders\SiteModelBuilder.cs
 - Domain\SiteModule\ ...
@@ -37,4 +85,22 @@ For injection similar to [CRUD_Back](../40-Back/70-CreateACRUD.md) update:
 In addition, to finish update the database.
 
 ## Front
+### Add the team type
+- In Angular\src\app\shared\constants.ts
+  - In TeamTypeId add the team type id (similar to back)
+  ```ts
+    [YourTeamType] = [IdTeamType],
+  ```
+  - In TeamTypeRightPrefixe dictionnary add the mapping with prefixe (similar to back) 
+  ```ts
+    {key: TeamTypeId.[YourTeamType], value: "[YourTeamType]"},
+  ```
+- In Angular\src\environments\all-environments.ts
+  - add the following line and adapt roleMode and inHeader similary to loginParam in back
+  ```ts
+        { teamTypeId: TeamTypeId.[YourTeamType], roleMode: RoleMode.AllRoles, inHeader: true },
+  ```
+
+
+### Add the team CRUD
 The procedure is similar to the [CRUD_Front](../30-Front/20-CreateACRUD.md) but you will use the zip **aircraft-maintenance-companies.zip** instead of **feature-planes.zip**
