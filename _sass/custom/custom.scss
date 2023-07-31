@@ -1,9 +1,11 @@
-{% if site.color_scheme and site.color_scheme == "dark" %}
 .dark-mode-only { 
     display: none;
+    @media (prefers-color-scheme: dark) {
+        display: inherit;
+    }
 }
-{% else %}
 .light-mode-only { 
-    display: none;
+    @media (prefers-color-scheme: dark) {
+        display: none;
+    }
 }
-{% endif %}
