@@ -15,7 +15,7 @@ The analyze of the mockup will give an overview of the model to implement.
 - The relation between the table should be determine (0-1, 0-\*, 1-\* or \*-\*)
   
 At that moment the notion of right will be introduce :
-- There is only 3 types of table
+- There is only 4 types of table
   - The “parameters” tables (only change at deployment or by global application administrator)
   - The “teams” tables that give roles on some users.
   - The “items” tables that should be link to at least one team table.
