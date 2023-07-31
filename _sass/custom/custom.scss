@@ -1,3 +1,11 @@
 .dark-mode-only { 
     display: none;
+    @media (prefers-color-scheme: dark) {
+        display: inherit;
+    }
+}
+.light-mode-only { 
+    @media (prefers-color-scheme: dark) {
+        display: none;
+    }
 }
