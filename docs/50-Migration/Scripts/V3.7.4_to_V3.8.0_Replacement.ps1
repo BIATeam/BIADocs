@@ -104,11 +104,11 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignY="space-around"' -N
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignY="space-between"' -NewRegexp 'class="flex align-content-between"' -Include *.html
 
 #fxFlex
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="([0-9]*)px"' -NewRegexp 'class="flex flex-1" style="max-width:$1px;"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="([0-9]*)"' -NewRegexp 'class="flex flex-1" style="max-width:$1%;"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="({{[^"]*}})"' -NewRegexp 'class="flex flex-1" style="max-width:$1%;"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="\*"' -NewRegexp 'class="flex flex-1"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex ' -NewRegexp 'class="flex flex-1" ' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="([0-9]*)px"' -NewRegexp 'class="flex-1" style="max-width:$1px;"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="([0-9]*)"' -NewRegexp 'class="flex-1" style="max-width:$1%;"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="({{[^"]*}})"' -NewRegexp 'class="flex-1" style="max-width:$1%;"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="\*"' -NewRegexp 'class="flex-1"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex ' -NewRegexp 'class="flex-1" ' -Include *.html
 
 #fxFlexAlign
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="start"' -NewRegexp 'class="flex align-self-start"' -Include *.html
