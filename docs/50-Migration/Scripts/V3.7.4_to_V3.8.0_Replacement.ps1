@@ -110,14 +110,29 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="({{[^"]*}})"' -NewRegexp 
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex="\*"' -NewRegexp 'class="flex flex-1"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlex ' -NewRegexp 'class="flex flex-1" ' -Include *.html
 
+#fxFlexAlign
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="start"' -NewRegexp 'class="flex align-self-start"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="center"' -NewRegexp 'class="flex align-self-center"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="end"' -NewRegexp 'class="flex align-self-end"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="baseline"' baseline 'class="flex align-self-baseline"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="stretch"' -NewRegexp 'class="flex align-self-stretch"' -Include *.html
+
+
 # Aggregation of Class and style
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)" class="([^"]*)"' -NewRegexp 'class="$1 $2"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)"([^>]*)class="([^"]*)"' -NewRegexp 'class="$1 $3"$2' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)" class="([^"]*)"' -NewRegexp 'class="$1 $2"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)"([^>]*)class="([^"]*)"' -NewRegexp 'class="$1 $3"$2' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'style="([^"]*)" style="([^"]*)"' -NewRegexp 'style="$1; $2"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'style="([^"]*)"([^>]*)style="([^"]*)"' -NewRegexp 'style="$1; $3"$2' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'style="([^"]*)" style="([^"]*)"' -NewRegexp 'style="$1; $2"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'style="([^"]*)"([^>]*)style="([^"]*)"' -NewRegexp 'style="$1; $3"$2' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'style="([^"]*);;([^"]*)"' -NewRegexp 'style="$1;$2' -Include *.html
 
 #Reduce nomber of class flex
+ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)\sflex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="$1 flex $2 $3"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'class="flex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="flex $1 $2"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)\sflex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="$1 flex $2 $3"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="flex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="flex $1 $2"' -Include *.html
 
 cd $Source/DotNet
