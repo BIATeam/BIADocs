@@ -30,6 +30,11 @@ Migration BIADemo Angular version:
     ng update rxjs@7.5 
     ng update @type/node@16
     ```
+    (exemple for Angular 16):
+    ```cmd
+    ng update @angular/cli@16 @angular/animations@16 @angular/cdk@16 @angular/common@16 @angular/compiler@16 @angular/core@16 @angular/forms@16 @angular/platform-browser@16 @angular/platform-browser-dynamic@16 @angular/router@16 @angular/service-worker@16 @ngrx/effects@16 @ngrx/entity@16 @ngrx/store@16 @ngx-translate/core@15 keycloak-angular@14 keycloak-js@21 primeng@16 @angular-eslint/schematics@16 typescript@5 
+
+    ```
 Finalize with the update of the theme if requiered:
 •	https://biateam.github.io/BIADocs/docs/30-DeveloperGuide/30-Front/40-CustomizePrimeNGTheme.html
 
