@@ -67,34 +67,22 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayout="column"' -NewRegexp 'cl
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayout="row-reverse"' -NewRegexp 'class="flex flex-row-reverse"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayout="column-reverse"' -NewRegexp 'class="flex flex-column-reverse"' -Include *.html
 
-# fxLayoutAlign Cross Axis
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="start"' -NewRegexp 'class="flex justify-content-start align-items-start align-content-start"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="flex-start"' -NewRegexp 'class="flex justify-content-start align-items-start align-content-start"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="center"' -NewRegexp 'class="flex justify-content-center align-items-center align-content-center"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="flex-end"' -NewRegexp 'class="flex justify-content-end align-items-end align-content-end"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="end"' -NewRegexp 'class="flex justify-content-end align-items-end align-content-end"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-around"' -NewRegexp 'class="flex justify-content-around align-content-around"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-between"' -NewRegexp 'class="flex justify-content-between align-content-between"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="baseline"' -NewRegexp 'style="align-items: baseline; align-content: stretch;"' -Include *.html
+# fxLayoutAlign Both Axis
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="([^"]*)\s([^"]*)"' -NewRegexp 'fxLayoutAlign="$1" fxLayoutAlignY="$2"' -Include *.html
 
 # fxLayoutAlign Main Axis
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="start"' -NewRegexp 'class="flex justify-content-start"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="flex-start"' -NewRegexp 'class="flex justify-content-start"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="center"' -NewRegexp 'class="flex justify-content-center"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="flex-end"' -NewRegexp 'class="flex justify-content-end"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="end"' -NewRegexp 'class="flex justify-content-end"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-around"' -NewRegexp 'class="flex justify-content-around"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-between"' -NewRegexp 'class="flex justify-content-between"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-evenly"' -NewRegexp 'class="flex justify-content-evenly"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="baseline"' -NewRegexp 'class="flex align-self-baseline"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="stretch"' -NewRegexp 'class="flex align-self-stretch"' -Include *.html
 
-# fxLayoutAlign Both Axis
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="([^"]*)\s([^"]*)"' -NewRegexp 'fxLayoutAlignX="$1" fxLayoutAlignY="$2"' -Include *.html
-
-# fxLayoutAlign X Axis
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="start"' -NewRegexp 'class="flex justify-content-start"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="flex-start"' -NewRegexp 'class="flex justify-content-start"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="center"' -NewRegexp 'class="flex justify-content-center"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="end"' -NewRegexp 'class="flex justify-content-end"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="flex-end"' -NewRegexp 'class="flex justify-content-end"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="space-around"' -NewRegexp 'class="flex justify-content-around"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="space-between"' -NewRegexp 'class="flex justify-content-between"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="baseline"' -NewRegexp 'style="align-items: baseline; align-content: stretch;"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignX="stretch"' -NewRegexp 'style="max-width: 100%;"' -Include *.html
-
-# fxLayoutAlign Y Axis
+# fxLayoutAlign Cross Axis
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignY="start"' -NewRegexp 'class="flex align-items-start align-content-start"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignY="flex-start"' -NewRegexp 'flex align-items-start class="align-content-start"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignY="center"' -NewRegexp 'class="flex align-items-center align-content-center"' -Include *.html
