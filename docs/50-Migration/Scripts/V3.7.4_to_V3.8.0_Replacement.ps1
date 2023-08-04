@@ -78,9 +78,9 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="flex-end"' -NewReg
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="end"' -NewRegexp 'class="flex justify-content-end"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-around"' -NewRegexp 'class="flex justify-content-around"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-between"' -NewRegexp 'class="flex justify-content-between"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="baseline"' -NewRegexp 'style="align-items: baseline; align-content: stretch;"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="space-evenly"' -NewRegexp 'class="flex justify-content-evenly"' -Include *.html
-ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="stretch"' -NewRegexp 'style="max-width: 100%;"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="baseline"' -NewRegexp 'class="flex align-self-baseline"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlign="stretch"' -NewRegexp 'class="flex align-self-stretch"' -Include *.html
 
 # fxLayoutAlign Cross Axis
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutAlignY="start"' -NewRegexp 'class="flex align-items-start align-content-start"' -Include *.html
