@@ -2,6 +2,7 @@
 layout: default
 title: Update front
 parent: Update the dependencies
+grand_parent: Migrate an existing project
 nav_order: 10
 ---
 
