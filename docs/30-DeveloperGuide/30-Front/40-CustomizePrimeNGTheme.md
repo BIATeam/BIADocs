@@ -43,3 +43,5 @@ It will regenerate :
 * src/assets/bia/primeng/layout/style/theme/theme-light/theme-light.css
 
 Rename those files with a MD5 Hash of each files with this site: <a href="https://emn178.github.io/online-tools/md5_checksum.html">md5 checksum</a>.  
+
+And change the Angular/src/index.html and index.prod.html to use thoses new files.
