@@ -21,30 +21,25 @@ In the projects generated with the bia framework, the content of the theme can b
 It should be complete by the files provide by primeface in sass folder. Copy the folders and file :
 * layout
 * theme
-* variables
-* _fonts.scss
 
-You must install node-sass globally with the following command (example for node 12.18.3): 
-```cmd
-npm install -g node-sass@6.0.1 --unsafe-perm true.
-```
-In this command adapt the version of the node-sass to your installed node version. See the compatibility list <a href="https://github.com/sass/node-sass#node-sass">here</a>.
+You must install [dart-sass](https://sass-lang.com/dart-sass/) as Dart Library
+=> It is possible to just [downloading the SDK as a zip file](https://dart.dev/get-dart/archive)
+=> don't forget to add its bin directory is on your PATH
 
 You can adapt the files in folder
-* src/assets/bia/primeng/sass/overrides
-* src/assets/bia/primeng/sass/overrides/customs
-* src/assets/bia/primeng/layout
-* src/assets/bia/primeng/theme/biaTheme
+* src/assets/bia/primeng/bia
+* src/assets/bia/primeng/bia/overrides
+* src/assets/bia/primeng/bia/overrides/customs
+* src/assets/bia/primeng/layout (except styles folder)
 
 Once the changes have been made run
 ``` cmd
 npm run styles
 ```
 
-It will generate :
-* src/assets/bia/primeng/layout/css/layout-dark.css
-* src/assets/bia/primeng/layout/css/layout-light.css
-* src/assets/bia/primeng/theme/biaTheme/theme-dark.css
-* src/assets/bia/primeng/theme/biaTheme/theme-light.css
+It will regenerate :
+* src/assets/bia/primeng/layout/style/layout/layout.css
+* src/assets/bia/primeng/layout/style/theme/theme-dark/theme-dark.css
+* src/assets/bia/primeng/layout/style/theme/theme-light/theme-light.css
 
 Rename those files with a MD5 Hash of each files with this site: <a href="https://emn178.github.io/online-tools/md5_checksum.html">md5 checksum</a>.  
