@@ -3,7 +3,7 @@ layout: default
 title: Filter data
 parent: Right management
 grand_parent: Developer guide
-nav_order: 30
+nav_order: 40
 ---
 
 # Filter data
@@ -41,7 +41,7 @@ You can write the filter with an linq syntaxt that compare the team of the item 
     }
 ```
 
-### Implement a filter read on role on lock update on current team
+### Implement a filter read on permission on lock update on current team
 General usage for a service of a **team table**:
 The user with AccesAll right can see every team (it is for the administrators)
 The users can see the teams where there are member.
