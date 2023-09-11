@@ -53,7 +53,7 @@ nav_order: 10
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
 
-## V3.6.5 (Patch - 2023-09-08)
+## V3.6.5 (Patch - 2023-09-11)
 * More compliante with IISExpress
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
