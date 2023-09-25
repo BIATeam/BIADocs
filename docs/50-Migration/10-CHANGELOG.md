@@ -6,6 +6,11 @@ nav_order: 10
 ---
 
 # ChangeLog
+## V3.7.5 (Patch - 2023-09-14)
+* More compliant with IISExpress
+### DotNet
+* Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
+* Correct daily synchrnonisation in UserInDB mode.
 
 ## V3.7.4.1 (Patch - 2023-07-12)
 ### DotNet
@@ -53,8 +58,8 @@ nav_order: 10
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
 
-## V3.6.5 (Patch - 2023-09-08)
-* More compliante with IISExpress
+## V3.6.5 (Patch - 2023-09-14)
+* More compliant with IISExpress
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
 * Correct daily synchrnonisation in UserInDB mode.
@@ -106,7 +111,13 @@ nav_order: 10
 * WebApi connector (abstract class)
 * Helper impersonation
 ### Angular
-* New organistion for bia domain and bia reposotory, placed in separate folder
+* New organistion for bia domain and bia repository, placed in separate folder
+
+## V3.5.5 (Patch - 2023-09-18)
+* More compliant with IISExpress
+### DotNet
+* Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
+* Correct daily synchrnonisation in UserInDB mode.
 
 ## V3.5.4.1 (Patch - 2023-07-12)
 ### DotNet
@@ -150,6 +161,12 @@ nav_order: 10
 * Angular 12
 * NG lint ok
 
+## V3.4.5 (Patch - 2023-09-18)
+* More compliant with IISExpress
+### DotNet
+* Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
+* Correct daily synchrnonisation in UserInDB mode.
+  
 ## V3.4.4.1 (Patch - 2023-07-13)
 ### DotNet
 * BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
@@ -189,6 +206,12 @@ nav_order: 10
 * Bulk function in repository.
 * PostgreSQL compatibility.
 
+## V3.3.6 (Patch - 2023-09-15)
+* More compliant with IISExpress
+### DotNet
+* Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
+* Correct daily synchrnonisation in UserInDB mode.
+  
 ## V3.3.5.1 (Patch - 2023-07-13)
 ### DotNet
 * BIA.Net.Core.Infrastructure.Service: Correct a bug with user group synchronization.
