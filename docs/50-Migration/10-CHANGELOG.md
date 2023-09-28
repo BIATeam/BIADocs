@@ -6,6 +6,21 @@ nav_order: 10
 ---
 
 # ChangeLog
+## V3.8.0
+* More compliant with IISExpress
+### Angular
+* Angular 15
+* Remove flex-layout
+* Add badge on filter
+* Add custom validators
+### DotNet
+* UserManager is optionnal
+* Keycloack authentication review
+* Add Draw io model
+* Add TOptionDto for non int id
+* Separate setting between IIS and IISExpress
+* Add direct navigation in junction (for new crud only)
+
 ## V3.7.5 (Patch - 2023-09-14)
 * More compliant with IISExpress
 ### DotNet
@@ -34,9 +49,13 @@ nav_order: 10
 
 ## V3.7.1 (2022-10-03)
 * Header filter can now take complex criteria (date before, after, contains, begins... and, or).
+* Teams: Remove TeamId Parameter
+* Teams: Template style for member
 ### Angular
 * Advanced filter more robust
 * Standardize Sites, Users and Members CRUD
+* Team new format  (for new creation only)
+* Fix Date Format
 
 ## V3.7.0 (2022-09-14)
 * ```npm start``` is now for IIS Express (use ```npm run start4iis``` to launch the angular for IIS)
