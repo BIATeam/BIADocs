@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Use Keycloak
-parent: Keycloak
-grand_parent: RightManagement
-nav_order: 20
+title: Keycloak
+parent: Right management
+grand_parent: Developer guide
+nav_order: 50
 ---
 
 # Keycloak authentication
