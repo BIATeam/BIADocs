@@ -9,6 +9,7 @@ nav_order: 20
 # Keycloak authentication
 
 This file explains the Keycloak authentication.
+As a prerequisite, you must have configured a Keycloak, see the tutorial in **Setup environment**
 
 ## Overview
 

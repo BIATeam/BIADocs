@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Initialize Keycloak
-parent: Keycloak
-grand_parent: RightManagement
-nav_order: 10
+title: Setup Keycloak
+parent: Setup environment
+grand_parent: Getting Started
+nav_order: 6
 ---
 
 # Initialize Keycloak
