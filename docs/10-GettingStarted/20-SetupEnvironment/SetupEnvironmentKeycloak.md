@@ -56,12 +56,20 @@ Go to the tab **Client scopes** and click on the link **biaapp-dedicated** conta
  ![dedicated-mappers-realm-roles](../../Images/Keycloak/dedicated-mappers-realm-roles.jpg)
 
  ## Role client
- In the chapter above, we explain how to add the client and realm roles.
+  
+ Go to **Realm Roles**, create the role **bia-app-admin**
+ Go to **Clients** > **biapp**, click on the tab **Roles**, create the role **bia-app-user-manager**.
  
- In the **Realm Roles** menu, you can create roles. same thing in the **Client** tab for your client.
+ ## Group
  
- Once the roles have been created, go to **Users** tab, select a user and assign the roles.
- 
+Go to **Groups**, create the group **APP_Admin** and the group **APP_BIADemo_UserManager**
+
+Click on the group **APP_Admin** and map the role **bia-app-admin**
+
+Click on the group **APP_BIADemo_UserManager** and map the role **bia-app-user-manager**
+
+For group **APP_Admin** and **APP_BIADemo_UserManager**, click on **Members** tab and add users.
+
 ## Service Account
 
 You must create a user in Keycloak which will be used to query the list of users in your realm.
