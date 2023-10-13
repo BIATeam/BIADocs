@@ -7,19 +7,35 @@ nav_order: 10
 
 # ChangeLog
 ## V3.8.0
-* More compliant with IISExpress 
+* More compliant with IISExpress
+* Posibility to be databaseless for WebApi used as Connector:
+  * Remove User info in Token light.
+  * Bouton token light added swagger to be able to test.
+  * Disable distibued cache is possible.
+  * BIADistibuedCache switch to BIALocalCache if distibued cache is disable
 ### Angular
-* Angular 15
-* Remove flex-layout
-* Add badge on filter
-* Add custom validators
+* Angular 16.
+* Remove flex-layout.
+* Add badge on filter when there is a filter on a column.
+* Add custom validators.
+* Translate of the role in User list, fix when langage change.
 ### DotNet
-* UserManager is optionnal
-* Keycloack authentication review
-* Add Draw io model
-* Add TOptionDto for non int id
-* Separate setting between IIS and IISExpress
-* Add direct navigation in junction (for new crud only)
+* UserManager is optionnal, specifique mapping Role to permission can be manage by environment. 
+* Keycloack authentication review.
+* Add Draw io model.
+* Add TOptionDto for non int id.
+* Separate setting between IIS and IISExpress.
+* Add direct navigation in junction (for new crud only).
+* Add NLog rule for EntityFrameworkCore.
+* Add the permission Background_Task_Admin for Admin.
+* Remove uncrypted token.
+* Swager GetAll works without change parametres
+* Display error message when deployDB crash at deployement.
+* Get AD Group form authentication claims (faster and no cache needed).
+
+## V3.7.5.1 (Patch - 2023-09-19)
+### DotNet
+* Add NLog rule for EntityFrameworkCore.
 
 ## V3.7.5 (Patch - 2023-09-14)
 * More compliant with IISExpress
@@ -77,6 +93,10 @@ nav_order: 10
 * Solve bug in CRUD index when deselect all.
 * Possibility to switch modes of CRUD (view, calc, offline, popup)
 
+## V3.6.5.1 (Patch - 2023-09-19)
+### DotNet
+* Add NLog rule for EntityFrameworkCore.
+
 ## V3.6.5 (Patch - 2023-09-14)
 * More compliant with IISExpress
 ### DotNet
@@ -132,6 +152,10 @@ nav_order: 10
 ### Angular
 * New organistion for bia domain and bia repository, placed in separate folder
 
+## V3.5.5.1 (Patch - 2023-09-19)
+### DotNet
+* Add NLog rule for EntityFrameworkCore.
+
 ## V3.5.5 (Patch - 2023-09-18)
 * More compliant with IISExpress
 ### DotNet
@@ -180,6 +204,10 @@ nav_order: 10
 * Angular 12
 * NG lint ok
 
+## V3.4.5.1 (Patch - 2023-09-19)
+### DotNet
+* Add NLog rule for EntityFrameworkCore.
+
 ## V3.4.5 (Patch - 2023-09-18)
 * More compliant with IISExpress
 ### DotNet
@@ -224,6 +252,10 @@ nav_order: 10
 * .Net5.0
 * Bulk function in repository.
 * PostgreSQL compatibility.
+
+## V3.3.6.1 (Patch - 2023-09-19)
+### DotNet
+* Add NLog rule for EntityFrameworkCore.
 
 ## V3.3.6 (Patch - 2023-09-15)
 * More compliant with IISExpress
