@@ -148,6 +148,13 @@ Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
         type: TypeTS.Number
       })
 ```
+If you want to display a 'PrimeNg' icon instead of text label for colum header, you must define the column as follows: 
+```typescript
+Object.assign(new PrimeTableColumn('msn', 'aircraft.msn'), {
+         icon: PrimeIcons.POWER_OFF,
+      })
+```
+
 
 ## Relation to Option
 ### Universal Mode
