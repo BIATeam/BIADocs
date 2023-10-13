@@ -13,12 +13,14 @@ nav_order: 10
   * Bouton token light added swagger to be able to test.
   * Disable distibued cache is possible.
   * BIADistibuedCache switch to BIALocalCache if distibued cache is disable
+  
 ### Angular
 * Angular 16.
 * Remove flex-layout.
 * Add badge on filter when there is a filter on a column.
 * Add custom validators.
 * Translate of the role in User list, fix when langage change.
+
 ### DotNet
 * UserManager is optionnal, specifique mapping Role to permission can be manage by environment. 
 * Keycloack authentication review.
@@ -39,6 +41,7 @@ nav_order: 10
 
 ## V3.7.5 (Patch - 2023-09-14)
 * More compliant with IISExpress
+
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
 * Correct daily synchrnonisation in UserInDB mode.
