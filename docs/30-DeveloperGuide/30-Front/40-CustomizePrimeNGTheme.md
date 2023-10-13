@@ -18,13 +18,22 @@ A zip will be provide by primeface. It contains a Sass folder.
 In the projects generated with the bia framework, the content of the theme can be found in the following folders :
 **src/assets/bia/primeng**
 
-It should be complete by the files provide by primeface in sass folder. Copy the folders and file :
-* layout
-* theme
+It should be complete by the files provide by primeface:
+- Copy all folders in primeface styles folder to your project sass folder.
+- Exemple for V16.0.0: 
+    (Ultima Themes\ultima-ng-16.0.0\src\assets\layout\styles => Angular\src\assets\bia\primeng\sass ). 
+    Copy the folders :
+    * layout
+    * theme
 
 You must install [dart-sass](https://sass-lang.com/dart-sass/) as Dart Library
-=> It is possible to just [downloading the SDK as a zip file](https://dart.dev/get-dart/archive)
-=> don't forget to add its bin directory is on your PATH
+=> Just [downloading the SDK as a zip file](https://dart.dev/get-dart/archive)
+=> Don't forget to add its bin directory is on your PATH
+
+Run the dependency resolver (it can requiered to configure or bypass proxy...)
+``` cmd
+ dart pub get
+```
 
 You can adapt the files in folder
 * src/assets/bia/primeng/bia
