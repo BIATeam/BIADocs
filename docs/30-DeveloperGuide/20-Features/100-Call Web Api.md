@@ -111,3 +111,25 @@ async Task GetAsync()
 ## Bearer Token
 
 Since version 3.7, you can pass a token to your requests. To do this, you must set the **useBearerToken** input parameter to **true** and override the **GetBearerTokenAsync()** method.
+
+You will find an example of implementation in class
+
+**TheBIADevCompany.BIADemo.Infrastructure.Service.Repositories.RemotePlaneRepository**
+
+and in class
+
+**TheBIADevCompany.BIADemo.Infrastructure.Service.Repositories.IdentityProviderRepository**
+
+## Retry
+
+Sometimes, when an error occurs when calling a WebApi, we need to try again. The framework >= 3.8 implements Retry functionality by default (The retry is only executed once). Retry is based on a method that checks the retry conditions. Below is the default code. If the conditions do not suit you, you can change them.
+
+```csharp
+ protected virtual bool CheckConditionRetry(HttpResponseMessage response, bool useBearerToken)
+ {
+     return useBearerToken &&
+         (response.StatusCode == System.Net.HttpStatusCode.Forbidden ||
+         response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
+         (int)response.StatusCode == 498); // Token expired/invalid
+ }
+```
