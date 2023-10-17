@@ -41,6 +41,9 @@ has_children: true
 - Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
 - test the BIADemo project.
+- Remark: If after this step you have to perform change in the package you should clean the local nuget cache and reinstall package:
+  - delete files in : C:\Users\[username]\.nuget
+  - and force reinstall : Update-Package -reinstall
 
 ## Prepare BIATemplate:
 - Synchronize your BIATemplate local folder with github.
