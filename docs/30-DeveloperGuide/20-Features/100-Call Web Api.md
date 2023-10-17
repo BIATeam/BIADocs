@@ -122,7 +122,7 @@ and in class
 
 ## Retry
 
-Sometimes, when an error occurs when calling a WebApi, we need to try again. The framework >= 3.8 implements Retry functionality by default (The retry is only executed once). Retry is based on a method that checks the retry conditions. Below is the default code. If the conditions do not suit you, you can change them.
+Sometimes, when an error occurs when calling a WebApi, we need to try again. The framework >= 3.8 implements Retry functionality by default (The retry is only executed once). Retry is based on a method that checks the retry conditions. Below is the default code. If the conditions do not suit you, you can change them by **override**.
 
 ```csharp
  protected virtual bool CheckConditionRetry(HttpResponseMessage response, bool useBearerToken)

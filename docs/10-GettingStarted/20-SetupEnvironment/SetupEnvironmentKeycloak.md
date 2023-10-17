@@ -26,6 +26,8 @@ Among the fields requested in the **User** table in database, look at what the *
 
 ![user-federation-mapper](../../Images/Keycloak/user-federation-mapper.jpg)
 
+For **Groups**, don't forget to fill the field **LDAP Groups DN**. For example: ***OU=Roles,OU=Groups,OU=DM,OU=Service,OU=XXXXXX,DC=eu,DC=xxxxxx,DC=xxxxxx***
+
 At the top right, select from the list, **Sync all users**
 
 ![user-federation-mapper](../../Images/Keycloak/sync-all-user.jpg)
@@ -51,15 +53,14 @@ Go to the tab **Client scopes** and click on the link **biaapp-dedicated** conta
 
  ![dedicated-mappers-distinguishedName](../../Images/Keycloak/dedicated-mappers-distinguishedName.jpg)
 
- ![dedicated-mappers-client-roles](../../Images/Keycloak/dedicated-mappers-client-roles.jpg)
+ ![dedicated-mappers-groups](../../Images/Keycloak/dedicated-mappers-groups.jpg)
 
  ![dedicated-mappers-realm-roles](../../Images/Keycloak/dedicated-mappers-realm-roles.jpg)
 
  ## Role client
   
- Go to **Realm Roles**, create the role **bia-app-admin**
- Go to **Clients** > **biapp**, click on the tab **Roles**, create the role **bia-app-user-manager**.
- 
+ Go to **Realm Roles**, create the role **bia-app-admin** and **bia-app-user-manager**.
+  
  ## Group
  
 Go to **Groups**, create the group **APP_Admin** and the group **APP_BIADemo_UserManager**
