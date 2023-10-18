@@ -42,9 +42,6 @@ Install [Visual Studio Code](https://code.visualstudio.com/Download) and add the
 * Mikael.Angular-BeastCode
 * ms-dotnettools.csharp
 * ms-vscode.powershell
-* ms-vscode.vscode-typescript-tslint-plugin
-* ms-vsts.team
-* msjsdiag.debugger-for-chrome
 * PKief.material-icon-theme
 * shd101wyy.markdown-preview-enhanced
 * VisualStudioExptTeam.vscodeintellicode
