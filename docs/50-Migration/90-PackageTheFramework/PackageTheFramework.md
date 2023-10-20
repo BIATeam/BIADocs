@@ -52,7 +52,8 @@ has_children: true
 - Launch **...\BIADemo\Tools\1-Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
 - Launch **...\BIADemo\Tools\2-DotNet-BIADemo-BIATemplate.ps1**
 - Compile the solution BIATemplate, Test and verify the absence of warning.
-
+- Copy the file DataModel.drawio from BIADemo to BIATemplate
+  
 ## Prepare BIACompany Files and release BIATemplate:
 - Synchronize your BIACompanyFiles local folder with github.
 - Copy the last version folder in   **..\BIACompanyFiles** to **..\BIACompanyFiles\VX.Y.Z**

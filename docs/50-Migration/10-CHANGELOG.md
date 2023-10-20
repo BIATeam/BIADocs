@@ -34,6 +34,10 @@ nav_order: 10
 * Swager GetAll works without change parametres
 * Display error message when deployDB crash at deployement.
 * Get AD Group form authentication claims (faster and no cache needed).
+* Stop deployement if error durring deployDB
+* Timeout for deploydb is configurable
+* Fix sync user crash when login not in AD
+* Fix stop service and App pool at deployement.
 
 ## V3.7.5.1 (Patch - 2023-09-19)
 ### DotNet
