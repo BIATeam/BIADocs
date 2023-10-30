@@ -51,6 +51,7 @@ has_children: true
 - Stop the BIATemplate IIS process.
 - Launch **...\BIADemo\Tools\1-Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
 - Launch **...\BIADemo\Tools\2-DotNet-BIADemo-BIATemplate.ps1**
+- Disable the serviceWorker in the angular.json file : ```"serviceWorker": false```
 - Compile the solution BIATemplate, Test and verify the absence of warning.
 - Copy the file DataModel.drawio from BIADemo to BIATemplate
   
