@@ -7,7 +7,7 @@ nav_order: 10
 
 # ChangeLog
 ## V3.8.0
-* More compliant with IISExpress
+* More compliant with IISExpress and use port 32128
 * Posibility to be databaseless for WebApi used as Connector:
   * Remove User info in Token light.
   * Bouton token light added swagger to be able to test.
