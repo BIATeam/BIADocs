@@ -20,6 +20,8 @@ nav_order: 10
 * Add badge on filter when there is a filter on a column.
 * Add custom validators.
 * Translate of the role in User list, fix when langage change.
+* Remove icon in liste title if not sorted
+* Possibility to set an icon instead of the title in CRUD list.
 
 ### DotNet
 * UserManager is optionnal, specifique mapping Role to permission can be manage by environment. 
