@@ -16,7 +16,9 @@ When working only on Windows, in order to avoid issues with line feeds, choose t
 
 The git plugin for Visual Studio is automatically installed by default with Visual Studio but you can also install a dedicated GUI client (for instance [Git extensions](https://gitextensions.github.io/))
 if behind a company proxy, in order to be able to fech a github repo, run the following command :
-> git config --global http.https://<area>github.com.proxy [**add_here_your_proxy_url**]
+```cmd
+git config --global http.https://<area>github.com.proxy [**add_here_your_proxy_url**]
+```
 
 this should add the following lines to your **.gitconfig** file
 ```
