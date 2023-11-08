@@ -28,3 +28,11 @@ this should add the following lines to your **.gitconfig** file
 
 To find the path to the **.gitconfig** file, type the following command:   
 `git config --list --show-origin`   
+
+
+Add your name and email in your **.gitconfig** file, by adding a section like this:
+```
+[user]
+	name = [**add_here_your_first_name**] [**add_here_your_last_name**]
+	email = [**add_here_your_email**]
+```
