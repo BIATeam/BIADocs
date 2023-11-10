@@ -10,17 +10,33 @@ nav_order: 1
 
 ## Minimum requirement
 
-### Node.js
+### NodeJS and NPM With Admin right
+#### Node.js
 Install the same version of node.js as the one installed on the build server ([16.16.0](https://nodejs.org/download/release/v16.16.0/))   
 Choose either the x64 msi version or if you choose a zip version, modify the PATH env variable to add the path to the nodejs folder containing the npm command
 To check the installed version of [node.js](https://nodejs.org/en/download/releases/), use the following command: `node -v`   
 If you work behind a company proxy, run the following command to configure the proxy for npm : 
 > npm config set proxy **add_your_proxy_url_here**
 
-### Align npm version
+#### Align npm version
 The npm version should be align on the node version (https://nodejs.org/fr/download/releases/)
 To install the version 8.11.0 (corresponde to node V16.16.0) run the following command:
 ```npm install -g npm@8.11.0```
+
+### NodeJS and NPM Without Admin right
+* Download a zip of the 64-bit Windows binary https://nodejs.org/download/release/v16.16.0/node-v16.16.0-win-x64.zip
+* Create folder %USERPROFILE%\bin\nodejs, then extract the zip contents into this folder
+* Open Command Prompt and set environment variables for your account
+```cmd
+ setx NODEJS_HOME "%USERPROFILE%\bin\nodejs\node-v16.16.0-win-x64"
+ setx PATH "%NODEJS_HOME%;%PATH%"
+```
+* Restart Command Prompt
+* Confirm installation
+```cmd
+ node --version
+ npm --version
+```
 
 ### (Optionnal) Instal Angular globaly
 Use to create a new Angular empy project at the last version. (but not requiered by creation with BIAToolkit):
