@@ -123,6 +123,19 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'class="flex\s([^"]*)\sflex\s([^"]
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)\sflex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="$1 flex $2 $3"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="flex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="flex $1 $2"' -Include *.html
 
+
+#Replace Navigation
+ReplaceInProject -Source $SourceNG -OldRegexp 'this.router.navigate\(\[''\.\./'' \+(.*) \+ ''/(.*)''\]' -NewRegexp 'this.router.navigate([$1, ''$2'']' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'this.router.navigate\(\[''\.\./([a-z]+)''\]' -NewRegexp 'this.router.navigate([''$1'']' -Include *.html
+
+#Replace Primeflex class
+ReplaceInProject -Source $SourceNG -OldRegexp 'p-m(.)-' -NewRegexp 'm$1-' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'p-grid' -NewRegexp 'grid' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'p-col-' -NewRegexp 'col-' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'p-col"' -NewRegexp 'col"' -Include *.html
+ReplaceInProject -Source $SourceNG -OldRegexp 'p-col ' -NewRegexp 'col ' -Include *.html
+
+
 cd $Source/DotNet
 dotnet restore --no-cache
 
