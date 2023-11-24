@@ -1,7 +1,8 @@
 $Source = "C:\Sources\Github.com\BIATeam\BIADemo";
 $SourceNG =  $Source + "\Angular\src\app"
+$SourceNet =  $Source + "\DotNet"
 
-$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular')
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', 'bin', 'obj')
 
 function ReplaceInProject {
   param (
@@ -135,6 +136,9 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'p-col-' -NewRegexp 'col-' -Includ
 ReplaceInProject -Source $SourceNG -OldRegexp 'p-col"' -NewRegexp 'col"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'p-col ' -NewRegexp 'col ' -Include *.html
 
+#Revert Auto migration V3.7.0 to V3.7.1 (code warning)
+ReplaceInProject -Source $SourceNet -OldRegexp '\(([^\s]*) != null && (\1\?\.Any\(\) == true)\)' -NewRegexp '($2)' -Include *.cs
+ReplaceInProject -Source $SourceNet -OldRegexp '\(([^\s]*) == null \|\| (\1\?\.Any\(\) != true)\)' -NewRegexp '($2)' -Include *.cs
 
 cd $Source/DotNet
 dotnet restore --no-cache
