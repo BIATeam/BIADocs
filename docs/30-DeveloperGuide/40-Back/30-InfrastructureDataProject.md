@@ -14,7 +14,7 @@ nav_order: 30
 2. Rename and modify the appsetting file
     - appsettings.Example_Development.json => appsettings.Development.json
     - if needed rename the serveur localhost to your local server name
-3. Launch the Package Manager Console in VS 2019 (Tools > Nuget Package Manager > Package Manager Console).
+3. Launch the Package Manager Console in VS 2022 (Tools > Nuget Package Manager > Package Manager Console).
 4. Be sure to have the project **[YourCompanyName].[YourProjectName].Infrastructure.Data** selected as the Default Project in the console and the project **[YourCompanyName].[YourProjectName].Presentation.Api** as the Startup Project of your solution.
 5. (ONLY if no migration have been done = new project or never use) Run the **Add-Migration** command to initialize the migrations for the database project. `Add-Migration [nameOfYourMigration] -Context "DataContext"`
 6. Run the **Update-Database** command to update you database schema (you can check if everything is fine in SQL Server Management Studio).  `Update-Database -Context "DataContext"`
