@@ -7,7 +7,7 @@ nav_order: 40
 ---
 
 # Customize PrimeNG Theme
-## License Ultima theme is requiered
+## License Ultima theme is required
 The PrimeNG theme chosen for this framework is the <a href="https://www.primefaces.org/ultima-ng/">Ultima theme</a>.
 
 To customize the bia theme and regenerate the css from the scss files you should by this theme <a href="https://www.primefaces.org/store/templates.xhtml">here. Click PrimeNG + "BUY" on ultima theme</a>. Adapt the license to your need (commercial or not).
@@ -30,7 +30,7 @@ You must install [dart-sass](https://sass-lang.com/dart-sass/) as Dart Library
 => Just [downloading the SDK as a zip file](https://dart.dev/get-dart/archive)
 => Don't forget to add its bin directory is on your PATH
 
-Run the dependency resolver (it can requiered to configure or bypass proxy...)
+Run the dependency resolver (it can required to configure or bypass proxy...)
 ``` cmd
  dart pub get
 ```

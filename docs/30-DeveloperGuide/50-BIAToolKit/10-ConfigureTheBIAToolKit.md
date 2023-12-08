@@ -16,7 +16,7 @@ Take the last version of the BIAToolKit from [release](https://github.com/BIATea
 
 ## Configure your BIA Template repository
 In the first tab, in the upper left corner, chose if you want to use a local folder to synchronise it.
-* It is not requiered so if you don't have clone the BIATemplate localy select the first radio button "Use the BIAtemplate GitHub repository" the local folder will be : C:\Users\YourLogin\AppData\Local\BIA.ToolKit\BIA.ToolKit\1.0.0\BIATemplate\Repo
+* It is not required so if you don't have clone the BIATemplate localy select the first radio button "Use the BIAtemplate GitHub repository" the local folder will be : C:\Users\YourLogin\AppData\Local\BIA.ToolKit\BIA.ToolKit\1.0.0\BIATemplate\Repo
 * If you work regulary on BIATemplate or if you synchronize regulary you select the second option "use a local cloned folder" and enter the local pat of this folder.
 
 Click on the "synchronize" button to do a git sync between the GitHub repo and the local folder.

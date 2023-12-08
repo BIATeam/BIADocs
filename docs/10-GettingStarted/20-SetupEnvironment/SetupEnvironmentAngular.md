@@ -39,7 +39,7 @@ To install the version 8.11.0 (corresponde to node V16.16.0) run the following c
 ```
 
 ### (Optionnal) Instal Angular globaly
-Use to create a new Angular empy project at the last version. (but not requiered by creation with BIAToolkit):
+Use to create a new Angular empy project at the last version. (but not required by creation with BIAToolkit):
 ```npm install -g @angular/cli@13.3.9```
 
 ### install project npm packages (including angular)

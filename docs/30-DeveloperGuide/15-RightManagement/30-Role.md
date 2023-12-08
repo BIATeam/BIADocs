@@ -17,7 +17,7 @@ When a user is connected to the application he can change of current team in the
 He gains the roles associate to the user in the current team (only the selected one in Single or Multi Role).
 Warning : You can have several type of team, so you can have several combo in header. In this case you have several current teams (one by type).
 
-When the user navigate in the application one of the current team can be change by code in Angular Front app, if requiered.
+When the user navigate in the application one of the current team can be change by code in Angular Front app, if required.
 This action is done by the fonction changeCurrentTeamId of AuthService.
 Example in the service of a Team CRUD:
 ```js
@@ -78,7 +78,7 @@ export let ROUTES: Routes = [
 ```
 
 ### Permission in Back
-In the controller decorate the function with the requiered permission
+In the controller decorate the function with the required permission
 ```csharp
         [Authorize(Roles = Rights.Notifications.ListAccess)]
         public async Task<IActionResult> GetUnreadIds()

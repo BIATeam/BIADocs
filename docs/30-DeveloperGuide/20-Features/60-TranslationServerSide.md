@@ -70,10 +70,10 @@ In this approach Instead of putting all translation under the same table, we wil
         public string Description { get; set; }
     }
     ```
-* Add the fonction to define the model with constraint (and Data if requiered) in Infrastructure.Data/ModelsBuilders/TranslationModelBuilder.cs
+* Add the fonction to define the model with constraint (and Data if required) in Infrastructure.Data/ModelsBuilders/TranslationModelBuilder.cs
   * it should contain :
     * the HasKey(r => r.Id)
-    * the requiered constrainte on LanguageId and the entity to translate id (NotificationId  in this exemple)
+    * the required constrainte on LanguageId and the entity to translate id (NotificationId  in this exemple)
     * the HasIndex on those 2 keys (to avoid duplication of translation on same language and same entity)
     * the contrante on fields to translate identical to the constraints in the entity required or not, lenght... (Title + Description in this exemple).
     ``` csharp

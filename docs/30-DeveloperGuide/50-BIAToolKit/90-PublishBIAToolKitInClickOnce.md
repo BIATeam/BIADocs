@@ -67,7 +67,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 ## Publish
 In visual studio open the solution and right click on project BIA.ToolKit and click publish.
 In "More action" click edit.
-With "Next" go to the step "sign manifest" and select the certificat. Enter the password if requiered.
+With "Next" go to the step "sign manifest" and select the certificat. Enter the password if required.
 ![BIAToolKit Click Once Certif](./../Images/BIAToolKit/ClickOnceCert.PNG)
 
 Click finish

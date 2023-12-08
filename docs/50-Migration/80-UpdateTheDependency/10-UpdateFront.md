@@ -12,7 +12,7 @@ Other project should be upgrade with the BIAToolKit and following the Migration 
 
 Migration BIADemo Angular version:
 - The reference is [Angular Update Guide](https://update.angular.io/)
-- But change the update @angular... to match with targeted version and to specify all package that requiered to be update :
+- But change the update @angular... to match with targeted version and to specify all package that required to be update :
   - check keycloak-angular and keycloak-js corresponding version : [Keycloak Angular](https://www.npmjs.com/package/keycloak-angular)
   - check the TypeScript and RxJS corresponding version : [NgRx - V16 Update Guide](https://ngrx.io/guide/migration/v16)
   - check corresponding version for ngx-translate: (ngx-translate/core)[https://github.com/ngx-translate/core]
@@ -35,7 +35,7 @@ Migration BIADemo Angular version:
     ng update @angular/cli@16 @angular/animations@16 @angular/cdk@16 @angular/common@16 @angular/compiler@16 @angular/core@16 @angular/forms@16 @angular/platform-browser@16 @angular/platform-browser-dynamic@16 @angular/router@16 @angular/service-worker@16 @ngrx/effects@16 @ngrx/entity@16 @ngrx/store@16 @ngx-translate/core@15 keycloak-angular@14 keycloak-js@21 primeng@16 @angular-eslint/schematics@16 typescript@5 
 
     ```
-Finalize with the update of the theme if requiered:
+Finalize with the update of the theme if required:
 •	https://biateam.github.io/BIADocs/docs/30-DeveloperGuide/30-Front/40-CustomizePrimeNGTheme.html
 
 
