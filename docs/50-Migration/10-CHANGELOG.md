@@ -6,6 +6,10 @@ nav_order: 10
 ---
 
 # ChangeLog
+## V3.9.0
+* Mapper are injectable, and can be customize with injectable paramaters (userId, permission...)
+* Right on team are review to be more flexible with children teams.
+  
 ## V3.8.0
 * More compliant with IISExpress
 * Posibility to be databaseless for WebApi used as Connector:
