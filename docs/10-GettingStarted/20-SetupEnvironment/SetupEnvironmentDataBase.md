@@ -41,7 +41,7 @@ After downloading the SQL Server 2022 Developer, double click on the icon to sta
 
  - Click Next in the "Server Configuration" screen
 
- - Choose "Windows authentication mode", then "Add Current User" and add your Admin account as well by clicking on "Add..." button
+ - Choose "Windows authentication mode", then add your account as SQL Server administrator by clicking on "Add..." button
  ![SQL Server Developer Authentication](../../Images/SQLServerDeveloperAuthentication.PNG)
 
  - Review the summary, click Install, and close the setup windows
