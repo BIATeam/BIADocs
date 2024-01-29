@@ -55,7 +55,7 @@ git apply --reject --whitespace=fix "3.2.2-3.3.0.patch"
 
 2. Analyse the .rej file (search "diff a/" in VS code) that have been created in your project folder
 => It is change that cannot be apply automaticaly.
-=> Apply manualy the change.
+=> Apply manually the change.
 ```
 
 * Complete the migration document : Write custom change to apply to back and front.

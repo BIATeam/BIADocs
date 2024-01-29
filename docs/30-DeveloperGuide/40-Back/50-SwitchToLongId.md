@@ -82,13 +82,13 @@ Use long ithe list of ids in Remove function
 Add-Migration "<span style="background-color:#327f00">Plane</span>LongId" -Context "DataContext"
 
 ## Adapt the migration
-Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey and ForeignKey on each element modified, and recreate them after change in Up and Down function.
+Due to a known bug in ef5.0 you have to add manually the remove of the PrimaryKey and ForeignKey on each element modified, and recreate them after change in Up and Down function.
   ``` csharp
     public partial class PlaneLongId : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Begin Manualy Added
+            // Begin Manually Added
             migrationBuilder.DropForeignKey(
                 name: "FK_PlaneAirport_Planes_PlaneId",
                 table: "PlaneAirport");
@@ -98,7 +98,7 @@ Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey
             migrationBuilder.DropPrimaryKey(
                 name: "PK_PlaneAirport",
                 table: "PlaneAirport");
-            // End Manualy Added
+            // End Manually Added
 
             migrationBuilder.AlterColumn<long>(
                 name: "Id",
@@ -118,7 +118,7 @@ Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey
                 oldClrType: typeof(int),
                 oldType: "int");
 
-            // Begin Manualy Added
+            // Begin Manually Added
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Planes",
                 table: "Planes",
@@ -134,12 +134,12 @@ Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey
                 name: "PK_PlaneAirport",
                 table: "PlaneAirport",
                 columns: new string[] {"PlaneId", "AirportId"});
-            // End Manualy Added
+            // End Manually Added
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Begin Manualy Added
+            // Begin Manually Added
             migrationBuilder.DropForeignKey(
                 name: "FK_PlaneAirport_Planes_PlaneId",
                 table: "PlaneAirport");
@@ -149,7 +149,7 @@ Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey
             migrationBuilder.DropPrimaryKey(
                 name: "PK_PlaneAirport",
                 table: "PlaneAirport");
-            // End Manualy Added
+            // End Manually Added
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -169,7 +169,7 @@ Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey
                 oldClrType: typeof(long),
                 oldType: "bigint");
 
-            // Begin Manualy Added
+            // Begin Manually Added
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Planes",
                 table: "Planes",
@@ -185,7 +185,7 @@ Due to a known bug in ef5.0 you have to add manualy the remove of the PrimaryKey
                 name: "PK_PlaneAirport",
                 table: "PlaneAirport",
                 columns: new string[] { "PlaneId", "AirportId" });
-            // End Manualy Added
+            // End Manually Added
         }
     }
   ```

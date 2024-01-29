@@ -25,7 +25,7 @@ Click on the "synchronize" button to do a git sync between the GitHub repo and t
 The Company files are use to remplace some files like logos, congifiguration files at the creation of the project or during migration.
 The company files can be a shared folder or a git repository.
 
-It is not necessary but it is recommanded to have those files if you implement severals projects with the framework. It avoid you to manualy make the replacement on each project.
+It is not necessary but it is recommanded to have those files if you implement severals projects with the framework. It avoid you to manually make the replacement on each project.
 
 If you do not have company files check the check box in the right part.
 Select if you want to use a git repo or a local folder.

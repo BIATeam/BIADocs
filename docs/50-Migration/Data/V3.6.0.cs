@@ -83,7 +83,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
                 table: "NotificationTranslations",
                 newName: "IX_NotificationTranslations_LanguageId");
 
-        // remove manualy
+        // remove manually
             //migrationBuilder.AlterColumn<int>(
             //    name: "Id",
             //    table: "Sites",
@@ -92,9 +92,9 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
             //    oldClrType: typeof(int),
             //    oldType: "int")
             //    .OldAnnotation("SqlServer:Identity", "1, 1");
-        // end remove manualy
+        // end remove manually
 
-        // added manualy
+        // added manually
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ViewSite_Sites_SiteId",
@@ -140,7 +140,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
             //    principalColumn: "Id",
             //    onDelete: ReferentialAction.Cascade);
 
-        // end added manualy
+        // end added manually
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_NotificationTranslations",
@@ -323,7 +323,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-        // added manualy
+        // added manually
             
             migrationBuilder.Sql(@"
                 INSERT INTO[dbo].[ViewTeam] (TeamId, ViewId, IsDefault) SELECT SiteId, ViewId, IsDefault FROM[dbo].[ViewSite]
@@ -332,7 +332,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
             migrationBuilder.DropTable(
                 name: "ViewSite");
 
-        // end added manualy
+        // end added manually
 
             migrationBuilder.CreateTable(
                 name: "NotificationTeamRole",
@@ -378,7 +378,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
                     { 2, "Site" }
                 });
 
-        // added manualy after InsertData("TeamTypes"
+        // added manually after InsertData("TeamTypes"
         
             migrationBuilder.Sql(@"
                 SET IDENTITY_INSERT [dbo].[Teams] ON
@@ -418,7 +418,7 @@ namespace TheBIADevCompany.BIATemplate.Infrastructure.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "Title",
                 table: "Sites");
-        // end added manualy
+        // end added manually
 
             migrationBuilder.InsertData(
                 table: "RoleTeamTypes",

@@ -1,6 +1,6 @@
 $Source = "C:\Sources\Github.com\BIATeam\BIADemo";
-$SourceNG =  $Source + "\Angular\src\app"
-$SourceNet =  $Source + "\DotNet"
+$SourceNG = $Source + "\Angular\src\app"
+$SourceNet = $Source + "\DotNet"
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', 'bin', 'obj')
 
@@ -10,14 +10,13 @@ function ReplaceInProject {
     [string]$OldRegexp,
     [string]$NewRegexp,
     [string[]]$Include
-
   )
-	Write-Host "ReplaceInProject $OldRegexp by $NewRegexp";
-	#Write-Host $Source;
-	#Write-Host $OldRegexp;
-	#Write-Host $NewRegexp;
-	#Write-Host $Filter;
-    ReplaceInProjectRec -Source $Source -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
+  Write-Host "ReplaceInProject $OldRegexp by $NewRegexp";
+  #Write-Host $Source;
+  #Write-Host $OldRegexp;
+  #Write-Host $NewRegexp;
+  #Write-Host $Filter;
+  ReplaceInProjectRec -Source $Source -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
 }
 
 function ReplaceInProjectRec {
@@ -26,30 +25,28 @@ function ReplaceInProjectRec {
     [string]$OldRegexp,
     [string]$NewRegexp,
     [string[]]$Include
-
   )
-	foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
-		ReplaceInProjectRec -Source $childDirectory.FullName -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
-	}
+  foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
+    ReplaceInProjectRec -Source $childDirectory.FullName -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
+  }
 	
-    Get-ChildItem -LiteralPath $Source -File -Include $Include | ForEach-Object  {
-        $oldContent = [System.IO.File]::ReadAllText($_.FullName);
-        $found = $oldContent | select-string -Pattern $OldRegexp
-        if ($found.Matches)
-        {
-            $newContent = $oldContent -Replace $OldRegexp, $NewRegexp 
-            if ($oldContent -ne $newContent) {
-                Write-Host "     => " $_.FullName
-                [System.IO.File]::WriteAllText($_.FullName, $newContent)
-            }
-        }
+  Get-ChildItem -LiteralPath $Source -File -Include $Include | ForEach-Object {
+    $oldContent = [System.IO.File]::ReadAllText($_.FullName);
+    $found = $oldContent | select-string -Pattern $OldRegexp -CaseSensitive
+
+    if ($found.Matches) {
+      $newContent = $oldContent -creplace $OldRegexp, $NewRegexp 
+      if ($oldContent -cne $newContent) {
+        Write-Host "     => " $_.FullName
+        [System.IO.File]::WriteAllText($_.FullName, $newContent)
+      }
     }
+
+  }
 }
 
 
 Write-Host "Migration replacement"
-
-
 
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayout="([^"]*)\swrap"' -NewRegexp 'fxLayout="$1" class="flex-wrap"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxLayoutWrap="wrap"' -NewRegexp 'class="flex-wrap"' -Include *.html
@@ -106,7 +103,6 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="end"' -NewRegexp 'cl
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="baseline"' baseline 'class="flex align-self-baseline"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'fxFlexAlign="stretch"' -NewRegexp 'class="flex align-self-stretch"' -Include *.html
 
-
 # Aggregation of Class and style
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)" class="([^"]*)"' -NewRegexp 'class="$1 $2"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)"([^>]*)class="([^"]*)"' -NewRegexp 'class="$1 $3"$2' -Include *.html
@@ -124,7 +120,6 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'class="flex\s([^"]*)\sflex\s([^"]
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="([^"]*)\sflex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="$1 flex $2 $3"' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'class="flex\s([^"]*)\sflex\s([^"]*)"' -NewRegexp 'class="flex $1 $2"' -Include *.html
 
-
 #Replace Navigation
 ReplaceInProject -Source $SourceNG -OldRegexp 'this.router.navigate\(\[''\.\./'' \+(.*) \+ ''/(.*)''\]' -NewRegexp 'this.router.navigate([$1, ''$2'']' -Include *.html
 ReplaceInProject -Source $SourceNG -OldRegexp 'this.router.navigate\(\[''\.\./([a-z]+)''\]' -NewRegexp 'this.router.navigate([''$1'']' -Include *.html
@@ -139,6 +134,19 @@ ReplaceInProject -Source $SourceNG -OldRegexp 'p-col ' -NewRegexp 'col ' -Includ
 #Revert Auto migration V3.7.0 to V3.7.1 (code warning)
 ReplaceInProject -Source $SourceNet -OldRegexp '\(([^\s]*) != null && (\1\?\.Any\(\) == true)\)' -NewRegexp '($2)' -Include *.cs
 ReplaceInProject -Source $SourceNet -OldRegexp '\(([^\s]*) == null \|\| (\1\?\.Any\(\) != true)\)' -NewRegexp '($2)' -Include *.cs
+
+# Angular 14 migration
+ReplaceInProject -Source $SourceNG -OldRegexp 'FormBuilder' -NewRegexp 'UntypedFormBuilder' -Include *.ts
+ReplaceInProject -Source $SourceNG -OldRegexp 'FormGroup' -NewRegexp 'UntypedFormGroup' -Include *.ts
+ReplaceInProject -Source $SourceNG -OldRegexp 'FormArray' -NewRegexp 'UntypedFormArray' -Include *.ts
+ReplaceInProject -Source $SourceNG -OldRegexp 'FormControl' -NewRegexp 'UntypedFormControl' -Include *.ts
+ReplaceInProject -Source $SourceNG -OldRegexp 'UntypedUntyped' -NewRegexp 'Untyped' -Include *.ts
+
+# Angular 15 migration
+ReplaceInProject -Source $SourceNG -OldRegexp '[@]HostBinding[(]''class.bia-flex''[)] flex = true;' -NewRegexp '@HostBinding(''class'') classes = ''bia-flex'';' -Include *.ts
+ReplaceInProject -Source $SourceNG -OldRegexp 'new EventEmitter[(][)];' -NewRegexp 'new EventEmitter<void>();' -Include *.ts
+ReplaceInProject -Source $SourceNG -OldRegexp 'getPrimeNgTable[(][)].columns.map' -NewRegexp 'getPrimeNgTable().columns?.map' -Include *.ts
+ReplaceInProject -Source $SourceNet -OldRegexp 'this.filtersContext.Add' -NewRegexp 'this.FiltersContext.Add' -Include *.cs
 
 cd $Source/DotNet
 dotnet restore --no-cache
