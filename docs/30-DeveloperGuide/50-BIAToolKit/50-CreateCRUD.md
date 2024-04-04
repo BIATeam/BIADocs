@@ -54,15 +54,13 @@ You need to complete the plurial name before CRUD generation.
 ## 7. Generate CRUD
 By clicking on the third button (*Generate CRUD*), CRUD files are generated automatically on project.
 
-###
 > At first CRUD generation on the project, an historic file is made on project folder (*CrudGeneration.bia*).
 > 
 > After first generation, if you want change plurial CRUD name, restart step 6 + 7.
 > 
 > In case of regeneration, data are filled automatically from historic file.
 
-
-Open DotNet and Angular porjects, rebuild each one and fix issues if exists.
+Open DotNet and Angular projects, rebuild each one and fix issues if exists.
 
 ### Known issues
 * After generation, go to navigation file (*navigation.ts*) on Angular folder, and rework **path** property (delete *examples* and change name to camel case).
