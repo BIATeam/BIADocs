@@ -1,20 +1,18 @@
 ---
 layout: default
-title: Create your first Child
+title: Create your first Option
 parent: Try it
 grand_parent: Getting Started
-nav_order: 25
+nav_order: 40
 ---
 
-# Create your first Child
-We will create in first the feature 'PlaneType'.
+# Create your first Option
+We will create the feature 'PlaneType'.
 
 1. Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 
 2. Create the entity 'PlaneType':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain' create 'PlaneModule' folder.
-* Create 'Aggregate' subfolder.
-* Create empty class 'PlaneType.cs' and add: 
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneType.cs' and add: 
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -43,16 +41,15 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
     }
 }
 ```
+
 3. Create the DTO 'PlaneTypeDto':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto' create 'Plane' folder.
-* Create empty class 'PlaneTypeDto.cs' and add:  
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto\Plane' folder, create empty class 'PlaneTypeDto.cs' and add:  
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 {
     using System;
     using BIA.Net.Core.Domain.Dto.Base;
     using BIA.Net.Core.Domain.Dto.CustomAttribute;
-
 
     /// <summary>
     /// The DTO used to represent a plane.
@@ -75,7 +72,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 ```
 
 4. Create the Mapper 'PlaneTypeMapper':
-* In same folder as 'PlaneType' entity create empty class 'PlaneTypeMapper' and add:    
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneTypeMapper' and add:    
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -181,38 +178,23 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 ```
 
 5. Create the ModelBuilder
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', create empty class 'PlaneModelBuilder.cs' and add:  
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add:  
 ```csharp
-namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
+public static void CreateModel(ModelBuilder modelBuilder)
 {
-    using Microsoft.EntityFrameworkCore;
-    using MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate;
+  ...
+    CreatePlaneTypeModel(modelBuilder);
+}
 
-    /// <summary>
-    /// Class used to update the model builder for plane domain.
-    /// </summary>
-    public static class PlaneModelBuilder
-    {
-        /// <summary>
-        /// Create the model for projects.
-        /// </summary>
-        /// <param name="modelBuilder">The model builder.</param>
-        public static void CreateModel(ModelBuilder modelBuilder)
-        {
-            CreatePlaneTypeModel(modelBuilder);
-        }
-
-        /// <summary>
-        /// Create the model for planes.
-        /// </summary>
-        /// <param name="modelBuilder">The model builder.</param>
-        private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<PlaneType>().HasKey(p => p.Id);
-            modelBuilder.Entity<PlaneType>().Property(p => p.Title).IsRequired().HasMaxLength(64);
-            modelBuilder.Entity<PlaneType>().Property(p => p.CertificationDate).IsRequired(false);
-        }
-    }
+/// <summary>
+/// Create the model for planes.
+/// </summary>
+/// <param name="modelBuilder">The model builder.</param>
+private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<PlaneType>().HasKey(p => p.Id);
+    modelBuilder.Entity<PlaneType>().Property(p => p.Title).IsRequired().HasMaxLength(64);
+    modelBuilder.Entity<PlaneType>().Property(p => p.CertificationDate).IsRequired(false);
 }
 ```
 
@@ -224,19 +206,15 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 /// </summary>
 public DbSet<PlaneType> PlanesTypes { get; set; }
 ```
-* On 'OnModelCreating' method add the 'PlaneModelBuilder':
-```csharp
-PlaneModelBuilder.CreateModel(modelBuilder);
-```
 
 7. Update the DataBase
 * Launch the Package Manager Console (Tools > Nuget Package Manager > Package Manager Console).
 * Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution
 * Run first command:    
 ```ps
-Add-Migration 'new_feature_TypePlane' -Context DataContext 
+Add-Migration 'new_feature_PlaneType' -Context DataContext 
 ```
-* Verify new file *'xxx_new_feature_TypePlane.cs'* is created on '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations' folder, and file is not empty.
+* Verify new file *'xxx_new_feature_PlaneType.cs'* is created on '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations' folder, and file is not empty.
 * Update the database when running this command: 
 ```ps
 Update-DataBase -Context DataContext
@@ -256,6 +234,7 @@ We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end +
 * Parse zip files:
   * Check "Generate WebApi"
   * Check "Generate CRUD"
+  * Check "Generate Option"
   * Click on "Parse Zip" button
 * Generation Crud:
   * Choose "Display item": *Title*
@@ -265,7 +244,6 @@ We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end +
 
 9. Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-* On '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Presentation.Api\Controllers\PlaneType' folder, rename file and class *PlaneTypesTypesController* to *PlaneTypesController*
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
   
@@ -283,6 +261,54 @@ import { OptionDto } from 'src/app/shared/bia-shared/model/option-dto';
 import { Validators } from '@angular/forms';
 import { PrimeNGFiltering } from 'src/app/shared/bia-shared/model/bia-field-config';
 ```
-* Open 'src/app/shared/navigation.ts' file and update path value to *'/planesTypes'* for block with "labelKey" value is *'app.planesTypes'*
+* Open 'src/app/shared/navigation.ts' file and update path value to *'/planesTypes'* for block with "labelKey" value is *'app.planesTypes'*   
+(see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANESTYPES"* tab to display 'PlaneType' page.
+
+11. Add traduction
+* Open 'src/assets/i18n/app/en.json' and add:
+```json
+  "app": {
+    ...
+    "planesTypes": "Planes types",
+  },
+ "planeType": {
+    "add": "Add type of planes",
+    "certificationDate": "Certification date",
+    "edit": "Edit type of planes",
+    "listOf": "List of types of planes",
+    "title" : "Title"
+  },
+```  
+* Open 'src/assets/i18n/app/fr.json' and add:
+```json
+  "app": {
+    ...
+    "planesTypes": "Types d'avions",
+  },
+  "planeType": {
+    "add": "Ajouter type d'avions",
+    "certificationDate": "Date de certification",
+    "edit": "Modifier type d'avions",
+    "listOf": "Liste des types d'avions",
+    "title": "Titre"
+  },
+```
+* Open 'src/assets/i18n/app/es.json' and add:
+```json
+  "app": {
+    ...
+    "planesTypes": "Tipos de planos",
+  },
+ "planeType": {
+    "add": "Añadir tipos de planos",
+    "certificationDate": "Fecha de certificación",
+    "edit": "Editar tipos de planos",
+    "listOf": "Lista de tipos de planos",
+    "title": "Título"
+  },
+```  
+* Open web navigator on adress: *http://localhost:4200/* to display front page
+* Verify 'PlaneType' page have the good name (name put on previous file).
+* Open 'PlaneType' page and verify labels have been replaced too.

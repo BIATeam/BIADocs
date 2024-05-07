@@ -51,7 +51,14 @@ You need to complete the plurial name before CRUD generation.
 
 ![CRUDName](../../Images/BIAToolKit/CRUDName.PNG)
 
-## 7. Generate CRUD
+## 7. Add option (not mandatory)
+It is possible to generation Option link with the CRUD.
+On associated combobox, choose the option previously generated.
+This field is not mandatory to generate CRUD.
+
+![DisplayOption](../../Images/BIAToolKit/SelectOptionItem.PNG)
+
+## 8. Generate CRUD
 By clicking on the third button (*Generate CRUD*), CRUD files are generated automatically on project.
 
 > At first CRUD generation on the project, an historic file is made on project folder (*CrudGeneration.bia*).

@@ -78,10 +78,38 @@ namespace TheBIADevCompany.BIADemo.Domain.PlaneModule.Aggregate
         ...
 
         /// <summary>
+        /// Gets or sets the last flight date.
+        /// </summary>
+        public DateTime? LastFlightDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delivery date.
+        /// </summary>
+        [Column(TypeName = "date")]
+        public DateTime? DeliveryDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the daily synchronisation hour.
+        /// </summary>
+        [Column(TypeName = "time")]
+        public TimeSpan? SyncTime { get; set; }
+
+        ...
+
+        /// <summary>
         /// Gets or sets the site id.
         /// </summary>
         public int SiteId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the  plane type.
+        /// </summary>
+        public virtual PlaneType PlaneType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plane type id.
+        /// </summary>
+        public int? PlaneTypeId { get; set; }
     }
 }
 ```
@@ -198,9 +226,61 @@ The DTO code represente two concepts:
   
 In CRUD feature, the Rest API resource contains the same properties of the corresponding entity excepted for the relationship.
 
-A entity with relationships to other entity has a DTO where all relationship as converted to an OptionDto.
+```csharp
+ /// <summary>
+ /// The DTO used to represent a plane.
+ /// </summary>
+ public class PlaneDto : BaseDto<int>
+ {
+    /// <summary>
+    /// Gets or sets the Manufacturer's Serial Number.
+    /// </summary>
+    [BIADtoField(Required = true)]
+    public string Msn { get; set; }
 
+    ...
+
+    /// <summary>
+    /// Gets or sets the last flight date and time.
+    /// </summary>
+    [BIADtoField(Type = "datetime", Required = false)]
+    public DateTime? LastFlightDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the delivery date.
+    /// </summary>
+    [BIADtoField(Type = "date", Required = false)]
+    public DateTime? DeliveryDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the daily synchronisation hour.
+    /// </summary>
+    [BIADtoField(Type = "time", Required = false)]
+    public string SyncTime { get; set; }
+
+    ...
+
+    /// <summary>
+    /// Gets or sets the site.
+    /// </summary>
+    [BIADtoField(IsParent = true, Required = true)]
+    public int SiteId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the  plane type title.
+    /// </summary>
+    [BIADtoField(Required = false)]
+    public OptionDto PlaneType { get; set; }
+ }
+```
+
+A entity with relationships to other entity has a DTO where all relationship as converted to an OptionDto (*'PlaneType'* on your example).
 For OptionDto concept you can consult the specific page [OptionDto](80-OptionDTO.md) (comming soon).
+
+For each entity attributes, use 'BIADtoField' annotation to specify: 
+* 'Type' as explicit type (for example: datetime, date only or time only).
+* 'Required' if attribute is mandatory or no.
+* 'IsParent' to define parent relationship.
 
 ### 1.5 Mapper file
 The Mapper contain two methods in order to convert entity to Dto and vice versa.
