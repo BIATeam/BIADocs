@@ -30,16 +30,14 @@ The goal of this page is to harmonize the versionning usage for all projects bui
 ### When update the fix:
 - For a bug fix only.
 
-
-
 ## Where change the version
 One time the version is determined you should change it:
-- In the front source in **Angular\src\environments\all-environments.ts**  
 - In the back source in **DoteNet\Company.Project.Crosscutting.Common\Constants.cs**
   - You have 2 variables : BackEndVersion and FrontEndVersion. They can be differente if you do not want to force the reload of the front after a minor change or bug fix in back part.
   - But 
     - the FrontEndVersion should be the same than in the front source.
     - the BackEndVersion should always be equals or greater than FrontEndVersion.
+- In the front source in **Angular\src\environments\all-environments.ts**  
 - At the creation of the release with GitFlow at format V1.2.3 (see : [Git Branching best practices](./30-GitBranchingBestPractices.md))
 - At the deployement you have to specified the version name at format V1.2.3.
 
