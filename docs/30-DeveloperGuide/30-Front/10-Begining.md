@@ -9,11 +9,6 @@ nav_order: 10
 # Begining
 This document explains how to customize a project based on the BIA Angular framework.   
 
-## Change version
-Update the version of the application. To do this, change the `version` variable in **src\environments\environment.ts** and **src\environments\environment.prod.ts**.   
-Warning in **src\environments\environment.ts** the apiUrl could be : 'http://localhost/[ProjectName]/**WebApi**/api' or 'http://localhost/[ProjectName]/api' it depend how you have configure the backend api in IIS (or properties of the Visual studio project)
-And serverLoggingUrl: 'http://localhost/JobMonitor/**WebApi**/api/logs' or http://localhost/JobMonitor/api/logs'
-
 ## Start the project
 * npm install : this command install the package
 * npm run start : this command run the project with environement variable corresponding to a back running with IIS Express
