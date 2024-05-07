@@ -104,3 +104,25 @@ In addition, to finish update the database.
 
 ### Add the team CRUD
 The procedure is similar to the [CRUD_Front](../30-Front/20-CreateACRUD.md) but you will use the zip **aircraft-maintenance-companies.zip** instead of **feature-planes.zip**
+
+### Filter Sub teams in header
+In case of a team type child of team type you have to filer the chidrens teams by ther parent.
+Modify the LoginOnTeamsAsync(LoginParamDto loginParam) function in AuthAppService.cs.
+Exemple for a team type "MaintenanceTeam" child of a team type "AircraftMaintenanceCompany"
+```csharp
+    AdditionalInfoDto additionnalInfo = null;
+    if (loginParam.AdditionalInfos)
+    {
+        // TO REMOVE additionnalInfo = new AdditionalInfoDto { UserInfo = userInfo, UserProfile = userProfile, Teams = allTeams.ToList() };
+
+        // BEGIN CUSTOMISATION
+        CurrentTeamDto currentAircraftMaintenanceCompany = userData.CurrentTeams?.FirstOrDefault(ct => ct.TeamTypeId == (int)TeamTypeId.AircraftMaintenanceCompany);
+        additionnalInfo = new AdditionalInfoDto
+        {
+            UserInfo = userInfo, UserProfile = userProfile,
+            Teams = allTeams.Where(t => t.TeamTypeId != (int)TeamTypeId.MaintenanceTeam || t.ParentTeamId == currentAircraftMaintenanceCompany?.TeamId).ToList(),
+        };
+
+        // END CUSTOMISATION
+    }
+```

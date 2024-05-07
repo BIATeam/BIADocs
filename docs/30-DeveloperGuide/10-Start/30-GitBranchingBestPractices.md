@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Git Branching best practice
+title: Git Branching best practices
 parent: Start
 grand_parent: Developer guide
-nav_order: 20
+nav_order: 30
 ---
 
 # Git Branching best practice

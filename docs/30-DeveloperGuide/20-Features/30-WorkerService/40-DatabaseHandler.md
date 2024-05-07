@@ -10,6 +10,12 @@ nav_order: 40
 This file explains what to use the the database handler feature in your V3 project.
 
 ## Prerequisite
+The user **sa** must be the owner of the database:
+
+```SQL
+ALTER AUTHORIZATION ON DATABASE::YourProjectDatabase TO sa;
+GO
+```
 
 ### Knowledge to have:
 * [SQL language](https://sql.sh/)
