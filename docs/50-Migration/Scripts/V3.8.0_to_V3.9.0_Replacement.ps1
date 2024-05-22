@@ -182,8 +182,10 @@ InsertFunctionInClass -Source $SourceFrontEnd -MatchBegin "export namespace (Fea
   export const clearCurrent = createAction('[' + EngineCRUDConfiguration.storeKey +'] Clear current');
 "@ -ReplaceSeqences @("Engine") -ReplaceByMatch1 @(" (\w+)CRUDConfiguration\.storeKey") -NoMatchCondition "export const clearAll" -MatchCondition "CRUDConfiguration\.storeKey"
 
-[string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'this\.biaMessageService\.showError\(\)' -NewRegexp 'this.biaMessageService.showErrorHttpResponse(err)' -Include *-effects.ts
 
+
+[string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
 
 if (-not ([string]::IsNullOrWhiteSpace($presentationApiFolder))) {

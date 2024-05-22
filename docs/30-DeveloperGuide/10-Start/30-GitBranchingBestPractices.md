@@ -6,7 +6,7 @@ grand_parent: Developer guide
 nav_order: 30
 ---
 
-# Git Branching best practice
+# Git Branching best practices
 
 The goal of this page is to harmonize the git branching usage for all projects build with the BIAFramework.
 
