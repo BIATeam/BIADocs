@@ -9,7 +9,7 @@ function ReplaceInProject {
     [string]$Source,
     [string]$OldRegexp,
     [string]$NewRegexp,
-    [string[]]$Include
+    [string]$Include
 
   )
   Write-Host "ReplaceInProject $OldRegexp by $NewRegexp";
@@ -25,13 +25,13 @@ function ReplaceInProjectRec {
     [string]$Source,
     [string]$OldRegexp,
     [string]$NewRegexp,
-    [string[]]$Include
+    [string]$Include
   )
   foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
     ReplaceInProjectRec -Source $childDirectory.FullName -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
   }
 	
-  Get-ChildItem -LiteralPath $Source -File -Include $Include | ForEach-Object {
+  Get-ChildItem -LiteralPath $Source -File -Filter $Include | ForEach-Object {
     $oldContent = [System.IO.File]::ReadAllText($_.FullName);
     $found = $oldContent | select-string -Pattern $OldRegexp
     if ($found.Matches) {
@@ -96,25 +96,21 @@ function InsertFunctionInClassRec() {
     # Vérifiez si la classe hérite de CrudItemService
     if ($contenuFichier -match $MatchBegin) {
       $nomClasse = $matches[1]
-      if ($MatchCondition -eq "" -or $contenuFichier -match $MatchCondition)
-      {
+      if ($MatchCondition -eq "" -or $contenuFichier -match $MatchCondition) {
         # Vérifiez si les fonctions ne sont pas déjà présentes
         if ($contenuFichier -notmatch $NoMatchCondition) {
           # Utilisez une fonction pour trouver la position de la fermeture de la classe
           $positionFermetureClasse = TrouverPositionFermetureClasse $contenuFichier $MatchBegin
 
           $FunctionBodyRep = $FunctionBody;
-          For($i=0; $i -lt $ReplaceSeqences.Length;$i++)
-          {
+          For ($i = 0; $i -lt $ReplaceSeqences.Length; $i++) {
             $ReplaceByMatch = $ReplaceByMatch1[$i]
-            if ($contenuFichier -match $ReplaceByMatch)
-            {
+            if ($contenuFichier -match $ReplaceByMatch) {
               $Match = $matches[1]
               Write-Host "Replacement found : $ReplaceByMatch  : $Match" 
               $FunctionBodyRep = $FunctionBodyRep.Replace($ReplaceSeqences[$i], $Match)
             }
-            else
-            {
+            else {
               Write-Host "Replacement not found : $ReplaceByMatch" 
             }
           }
@@ -131,7 +127,7 @@ function InsertFunctionInClassRec() {
 }
 
 # Fonction pour trouver la position de la fermeture de la classe
-function TrouverPositionFermetureClasse ($contenuFichier,$MatchBegin) {
+function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   $nombreAccoladesOuvrantes = 0
   $nombreAccoladesFermantes = 0
   $index = 0
@@ -141,23 +137,23 @@ function TrouverPositionFermetureClasse ($contenuFichier,$MatchBegin) {
   # Parcourez le contenu du fichier ligne par ligne
   $contenuFichier -split "`n" | ForEach-Object {
 
-      # Vérifiez si la ligne contient la déclaration de la classe
-      if ($trouveClasse -eq $false -and $_ -match  $MatchBegin) {
-          $trouveClasse = $true
-      }
+    # Vérifiez si la ligne contient la déclaration de la classe
+    if ($trouveClasse -eq $false -and $_ -match $MatchBegin) {
+      $trouveClasse = $true
+    }
 
-      # Si la classe a été trouvée, mettez à jour les compteurs d'accolades
-      if ($trouveClasse) {
-          $nombreAccoladesOuvrantes += ($_ -split "{").Count - 1
-          $nombreAccoladesFermantes += ($_ -split "}").Count - 1
-      }
+    # Si la classe a été trouvée, mettez à jour les compteurs d'accolades
+    if ($trouveClasse) {
+      $nombreAccoladesOuvrantes += ($_ -split "{").Count - 1
+      $nombreAccoladesFermantes += ($_ -split "}").Count - 1
+    }
 
-      # Si le nombre d'accolades fermantes est égal au nombre d'accolades ouvrantes
-      # pour la classe en cours, retournez l'index actuel
-      if ($trouveClasse -and $nombreAccoladesFermantes -gt 0 -and $nombreAccoladesFermantes -eq $nombreAccoladesOuvrantes -and $positionFermeture -eq 0) {
-          $positionFermeture = $index
-      }
-      $index += $_.Length + 1
+    # Si le nombre d'accolades fermantes est égal au nombre d'accolades ouvrantes
+    # pour la classe en cours, retournez l'index actuel
+    if ($trouveClasse -and $nombreAccoladesFermantes -gt 0 -and $nombreAccoladesFermantes -eq $nombreAccoladesOuvrantes -and $positionFermeture -eq 0) {
+      $positionFermeture = $index
+    }
+    $index += $_.Length + 1
   }
 
   # Retournez la dernière position si la classe n'a pas de fermeture explicite
@@ -173,7 +169,7 @@ InsertFunctionInClass -Source $SourceFrontEnd -MatchBegin "class (\w+Service) ex
       this._currentCrudItemId = 0;
       this.store.dispatch(FeatureEnginesActions.clearCurrent());
   }
-"@ -ReplaceSeqences @("Engines","Engine") -ReplaceByMatch1 @("\(Feature(\w+)Actions.loadAllByPost","class (\w+)Service extends CrudItemService") -NoMatchCondition "public clearAll\(\)"  -MatchCondition ""
+"@ -ReplaceSeqences @("Engines", "Engine") -ReplaceByMatch1 @("\(Feature(\w+)Actions.loadAllByPost", "class (\w+)Service extends CrudItemService") -NoMatchCondition "public clearAll\(\)"  -MatchCondition ""
 
 InsertFunctionInClass -Source $SourceFrontEnd -MatchBegin "export namespace (Feature\w+Actions)" -FunctionBody @"
   
@@ -184,6 +180,10 @@ InsertFunctionInClass -Source $SourceFrontEnd -MatchBegin "export namespace (Fea
 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'this\.biaMessageService\.showError\(\)' -NewRegexp 'this.biaMessageService.showErrorHttpResponse(err)' -Include *-effects.ts
 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck\('event'\),(([^{]|\n)*)switchMap\(\(\) =>" -NewRegexp 'switchMap(() =>' -Include notifications-effects.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck\('([^']*)'\)" -NewRegexp 'map(x => x?.$1)' -Include *-effects.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck," -NewRegexp '' -Include *-effects.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck" -NewRegexp '' -Include *-effects.ts
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
