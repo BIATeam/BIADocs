@@ -1,4 +1,5 @@
 $Source = "C:\Sources\Github.com\BIATeam\BIADemo";
+# $Source = "D:\Source\GitHub\BIATeam\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 
@@ -184,6 +185,11 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck\('event'\),(([^{]|\n)
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck\('([^']*)'\)" -NewRegexp 'map(x => x?.$1)' -Include *-effects.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck," -NewRegexp '' -Include *-effects.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck" -NewRegexp '' -Include *-effects.ts
+
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \* as FileSaver from 'file-saver';" -NewRegexp "import { saveAs } from 'file-saver';" -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "FileSaver.saveAs" -NewRegexp "saveAs" -Include *.ts
+
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "throwError\(([^']*)\)" -NewRegexp 'throwError(() => $1)' -Include *.ts
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
