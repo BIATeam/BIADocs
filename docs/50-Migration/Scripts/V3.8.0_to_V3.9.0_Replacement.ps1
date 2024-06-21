@@ -190,6 +190,10 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \* as FileSaver from
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "FileSaver.saveAs" -NewRegexp "saveAs" -Include *.ts
 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "throwError\(([^']*)\)" -NewRegexp 'throwError(() => $1)' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "throwError\(\(\) => \(\) =>" -NewRegexp 'throwError(() =>' -Include *.ts
+
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp ".loadAllByPost, \(state, \{ event \}\)" -NewRegexp ".loadAllByPost, state" -Include *-reducer.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp ".failure, \(state, \{ error \}\)" -NewRegexp ".failure, state" -Include *-reducer.ts
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
