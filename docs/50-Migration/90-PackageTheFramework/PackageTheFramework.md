@@ -18,8 +18,6 @@ has_children: true
   - Edit the **package.json** file to replace the **Current** version with the **Wanted** version
   - Delete the **package-lock.json** file
   - Launch the command **npm install**
-  - Launch the command **npm update**
-  - Launch the command **npm update --save-dev**
   - In the package.json file, under dependencies and devDependencies, delete all **^** and **~**. Example: "primeng": "16.9.1", "rxjs": "7.8.1",
 - Ng lint the angular poject and remove all errors and warnings. From version >= 3.9, run the command **npm run clean**
 - Change the framework version in 
