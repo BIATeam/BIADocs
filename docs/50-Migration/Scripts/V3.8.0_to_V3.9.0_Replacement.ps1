@@ -37,7 +37,7 @@ function ReplaceInProjectRec {
     $found = $oldContent | select-string -Pattern $OldRegexp
     if ($found.Matches) {
       $newContent = $oldContent -Replace $OldRegexp, $NewRegexp 
-      if ($oldContent -ne $newContent) {
+      if ($oldContent -cne $newContent) {
         Write-Host "     => " $_.FullName
         [System.IO.File]::WriteAllText($_.FullName, $newContent)
       }
@@ -194,6 +194,26 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "throwError\(\(\) => \(\) =>
 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp ".loadAllByPost, \(state, \{ event \}\)" -NewRegexp ".loadAllByPost, state" -Include *-reducer.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp ".failure, \(state, \{ error \}\)" -NewRegexp ".failure, state" -Include *-reducer.ts
+
+# naming-convention
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.| ])SortTeams\(' -NewRegexp '$1sortTeams('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.| ])SortRoles\(' -NewRegexp '$1sortRoles('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.| ])GetCurrentViewName\(' -NewRegexp '$1getCurrentViewName('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.| ])InitSub\(' -NewRegexp '$1initSub('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([. | ])GetViewPreference\(' -NewRegexp '$1getViewPreference('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([. | ])OnDisplay\(' -NewRegexp '$1onDisplay('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([. | ])OnHide\(' -NewRegexp '$1onHide('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([. | ])DecodeToken\(' -NewRegexp '$1decodeToken('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([. | ])ReLogin\(' -NewRegexp '$1reLogin('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([. | ])DifferentialNotificationTeam\(' -NewRegexp '$1differentialNotificationTeam('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp ' DifferentialTranslation<T' -NewRegexp ' differentialTranslation<T'
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.])DifferentialTranslation\(' -NewRegexp '$1differentialTranslation('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp ' Differential<T' -NewRegexp ' differential<T'
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.])Differential\(' -NewRegexp '$1differential('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp ' Clone<T' -NewRegexp ' clone<T'
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.])Clone\(' -NewRegexp '$1clone('
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "InjectComponent: " -NewRegexp "injectComponent: " -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\['InjectComponent'\]" -NewRegexp "['injectComponent']" -Include *.ts
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
