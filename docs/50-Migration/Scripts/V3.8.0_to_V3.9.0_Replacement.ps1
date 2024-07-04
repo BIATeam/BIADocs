@@ -214,6 +214,13 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp ' Clone<T' -NewRegexp ' clon
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.])Clone\(' -NewRegexp '$1clone('
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "InjectComponent: " -NewRegexp "injectComponent: " -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\['InjectComponent'\]" -NewRegexp "['injectComponent']" -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'SiteFieldsConfiguration' -NewRegexp 'siteFieldsConfiguration' -Include *site*
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'MemberFieldsConfiguration' -NewRegexp 'memberFieldsConfiguration' -Include *member*
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'UserFieldsConfiguration' -NewRegexp 'userFieldsConfiguration' -Include *user*
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'SiteCRUDConfiguration' -NewRegexp 'siteCRUDConfiguration' -Include *site*
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'MemberCRUDConfiguration' -NewRegexp 'memberCRUDConfiguration' -Include *member*
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'UserCRUDConfiguration' -NewRegexp 'userCRUDConfiguration' -Include *user*
+
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
