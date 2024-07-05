@@ -9,6 +9,20 @@ nav_order: 10
 ## V3.9.0
 * Mapper are injectable, and can be customize with injectable paramaters (userId, permission...)
 * Right on team are review to be more flexible with children teams.
+### Angular
+* CRUD:
+  * Multi sort (can sort by several column with ctrl key)
+* CRUD + forms : Additionnal paremeter on field
+  * isVisible: possibility to hide a field
+  * isOnlyInitializable: field can be change at creation but not at update
+  * isOnlyUpdatable: field can be change at update but not at creation
+  * displayFormat: BiaFieldNumberFormat > manage the display format for decimal field
+  * Site members : display and sort by last name (and not first name)
+  * Add filters : not end with / not start with / empty date / not empty date
+
+### DotNet
+* Acces unauthorize render a 403 error (no more 500)
+* 
   
 ## V3.8.0
 * More compliant with IISExpress and use port 32128
