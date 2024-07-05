@@ -25,8 +25,7 @@ has_children: true
   - **..\BIADemo\Angular\src\app\shared\bia-shared\framework-version.ts**
 - Verify the project version should be 0.0.0 in
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
-  - **..\BIADemo\Angular\src\environments\environment.ts**
-  - **..\BIADemo\Angular\src\environments\environment.prod.ts**
+  - **..\BIADemo\Angular\src\environments\all-environment.ts**
 - If it is a major version modify it in 
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - If the year change update footer :
