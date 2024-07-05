@@ -221,6 +221,17 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'SiteCRUDConfiguration' -New
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'MemberCRUDConfiguration' -NewRegexp 'memberCRUDConfiguration' -Include *member*
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'UserCRUDConfiguration' -NewRegexp 'userCRUDConfiguration' -Include *user*
 
+#Warning supression
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIATeamConfig' -NewRegexp 'BiaTeamConfig' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIATeamChildrenConfig' -NewRegexp 'BiaTeamChildrenConfig' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIATeamParentConfig' -NewRegexp 'BiaTeamParentConfig' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIAHybridCache' -NewRegexp 'BiaHybridCache' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIALocalCache' -NewRegexp 'BiaLocalCache' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIADistributedCache' -NewRegexp 'BiaDistributedCache' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIADataContext' -NewRegexp 'BiaDataContext' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIAClaimsPrincipal' -NewRegexp 'BiaClaimsPrincipal' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIADictionary' -NewRegexp 'BiaDictionary' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIAConstants' -NewRegexp 'BiaConstants' -Include *.cs
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"
