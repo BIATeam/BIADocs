@@ -10,8 +10,16 @@ has_children: true
 ## Refine the BIADemo project
 - In the .Net Part: put comments "// BIADemo only" at the beginning of each file which must not appear in the template
 - Put behind comments "// Begin BIADemo" and "// End BIADemo" the parts of the files to make disappear in the template
+- Update all nugets based on the .Net Core version of the project.
 - Remove all warnings in .Net core.
-- Ng lint the angular poject and remove all errors and warnings.
+- Update npm package
+  - In the **package.json** file, under **dependencies** and **devDependencies**, if they are not there, add an **^** next to the version number for all packages except for packages **rxjs**, **ts-node** and **typescript** or you will put a **~**. Example: "primeng": "^16.9.1", "rxjs": "~7.8.1",
+  - launch the cmd **npm outdated**
+  - Edit the **package.json** file to replace the **Current** version with the **Wanted** version
+  - Delete the **package-lock.json** file
+  - Launch the command **npm install**
+  - In the package.json file, under dependencies and devDependencies, delete all **^** and **~**. Example: "primeng": "16.9.1", "rxjs": "7.8.1",
+- Ng lint the angular poject and remove all errors and warnings. From version >= 3.9, run the command **npm run clean**
 - Change the framework version in 
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\app\shared\bia-shared\framework-version.ts**
