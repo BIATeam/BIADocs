@@ -30,12 +30,16 @@ has_children: true
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - If the year change update footer :
   - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\classic-footer\classic-footer.component.html**
+  - And Replace all copyright ex: ```<Copyright>Copyright © TheBIADevCompany 2024</Copyright>``` by ```<Copyright>Copyright © TheBIADevCompany 2025</Copyright>```
 - Test Authent AD Group + ReadOnly Database + Unitary Test
 - COMMIT BIADemo
 - Test a deployement in INT, UAT and PRD.
 
 ## Compile the BIA packages:
-- Change the version number of all BIA.Net.Core packages to match the version to be released.
+- Change the version number of all BIA.Net.Core packages to match the version to be released:
+  - ex : Replace All ```<Version>3.9.0</Version>``` by ```<Version>3.10.0</Version>```
+- If the year change change the copyright:
+  - ex : Replace all ```<Copyright>Copyright © BIA 2024</Copyright>``` by ```<Copyright>Copyright © BIA 2025</Copyright>```
 - Compile the whole solution in release
 - Publish all the packages (right click on each project, publish, "Copy to NuGetPackage folder", Publish)
 
@@ -44,7 +48,7 @@ has_children: true
     ```
     dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.5.*
     ```
-- In Visual Studio select the local 
+- In Visual Studio select the local Package source (on your folder ...\BIADemo\DotNet\BIAPackage\NuGetPackage)
 - Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
 - test the BIADemo project.
