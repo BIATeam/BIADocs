@@ -5,8 +5,8 @@ parent: Migrate an existing project
 nav_order: 10
 ---
 
-# ChangeLog
-## V3.9.0
+# ChangeLog 
+## V3.9.0 (2024-07-09)
 * Mapper are injectable, and can be customize with injectable paramaters (userId, permission...)
 * Right on team are review to be more flexible with children teams.
 ### Angular
@@ -52,7 +52,7 @@ nav_order: 10
 * Improve GetAllElementsAndCountAsync with ReadOnly
 
   
-## V3.8.0
+## V3.8.0 (2023-10-31)
 * More compliant with IISExpress and use port 32128
 * Posibility to be databaseless for WebApi used as Connector:
   * Remove User info in Token light.
