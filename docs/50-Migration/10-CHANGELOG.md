@@ -5,12 +5,54 @@ parent: Migrate an existing project
 nav_order: 10
 ---
 
-# ChangeLog
-## V3.9.0
+# ChangeLog 
+## V3.9.0 (2024-07-09)
 * Mapper are injectable, and can be customize with injectable paramaters (userId, permission...)
 * Right on team are review to be more flexible with children teams.
+### Angular
+* CRUD:
+  * Multi sort (can sort by several column with ctrl key)
+  * Site members : display and sort by last name (and not first name).
+  * Add filters : not end with / not start with / empty date / not empty date.
+  * Filter header udapted to all type
+  * Possibility to export/import at csv format for massif add, update or delete.
+  * Fix position of a column.
+* CRUD + forms : Additionnal paremeter on field
+  * isVisible: possibility to hide a field.
+  * isOnlyInitializable: field can be change at creation but not at update.
+  * isOnlyUpdatable: field can be change at update but not at creation.
+  * displayFormat: BiaFieldNumberFormat > manage the display format for decimal and currency field.
+* Added error log in all controller actions.
+* Translation of roles in headers
+* Fix time display + 2 after edit
+* Fix notification does not go to read
+* Fix pb shared view team setting by default
+* Fix right management for team child of team.
+* Improve lint.
+* Fix pb scroll navigation if number of lines displayed important.
+* Fix field disabled, the value disappears from the edit inline list.
+* Fix When you activate the Angular service worker and deactivate it => weird behavior.
+* Expand combox list of columns.
+* Name extracted .csv file contains the view name.
+* Fix Excel like decorrelate canEdit/canAdd
+* Fix bug dropdown excel like
+* Fix error selected elements BiaTable.
+* Fix If 2 identical views, impossible to select the 2nd.
+* Fix Searching for "column display" combobox doesn't work.
+* Fix combobox color problem "SelectRole".
+* Replace deprecated function in front.
+
+### DotNet
+* .Net 8
+* Acces unauthorize render a 403 error (no more 500)
+* Use a list of WebApp to wake up to not have to comment code when back or front only or 2 front.
+* Clean distributed cache at deploy db.
+* Replace Bulk insert by a mode (only compatible SQLserver)
+* Bulk Update and Delete are deprecated => should use .Net 8 native methode.
+* Improve GetAllElementsAndCountAsync with ReadOnly
+
   
-## V3.8.0
+## V3.8.0 (2023-10-31)
 * More compliant with IISExpress and use port 32128
 * Posibility to be databaseless for WebApi used as Connector:
   * Remove User info in Token light.
