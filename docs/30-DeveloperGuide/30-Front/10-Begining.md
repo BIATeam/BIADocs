@@ -16,6 +16,9 @@ This document explains how to customize a project based on the BIA Angular frame
 
 ## Before commit
 before committing your changes, run the following commands:
+For version after or equal V3.9.0:
+* npm run clean : if ng lint pop errors. Fix the errors.
+For version before V3.9.0:
 * ng lint: You must have the following message: "All files pass linting".
 * ng build --aot: You must not get an error message.
 
