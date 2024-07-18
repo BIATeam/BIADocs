@@ -91,6 +91,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
     /// <summary>
     /// The DTO used to represent a plane.
     /// </summary>
+    [BiaDtoClass(AncestorTeam = "Site")]
     public class PlaneDto : BaseDto<int>
     {
         /// <summary>
@@ -393,8 +394,8 @@ We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front
   * Choose Dto file: *PlaneDto.cs*
   * Click on "Parse Dto" button
 * Parse zip files:
-  * Check "Generate WebApi"
-  * Check "Generate CRUD"
+  * Check "WebApi" and "Front" for Generation
+  * Check "CRUD" for Generation Type
   * Click on "Parse Zip" button
 * Generation Crud:
   * Choose "Display item": *Msn*
@@ -415,10 +416,7 @@ npm start
 ```
 * Errors can occured like *'OptionDto' is declared but its value is never read.*, 
   * go to the file 'src/app/features/planes/model/plane.ts' 
-  * delete declarations/imports in errors:
-```csharp
-import { OptionDto } from 'src/app/shared/bia-shared/model/option-dto';
-```
+  * delete *imports* in errors
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planes'* for block with "labelKey" value is *'app.planes'* 
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on adress: *http://localhost:4200/* to display front page
