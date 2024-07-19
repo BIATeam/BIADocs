@@ -232,9 +232,8 @@ We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end +
   * Choose Dto file: *PlaneTypeDto.cs*
   * Click on "Parse Dto" button
 * Parse zip files:
-  * Check "Generate WebApi"
-  * Check "Generate CRUD"
-  * Check "Generate Option"
+  * Check "WebApi" and "Front" for Generation
+  * Check "CRUD' and "Option" for Generation Type
   * Click on "Parse Zip" button
 * Generation Crud:
   * Choose "Display item": *Title*
@@ -255,12 +254,7 @@ npm start
 ```
 * Errors can occured like *'OptionDto' is declared but its value is never read.*, 
   * go to the file 'src/app/features/planes-types/model/plane-type.ts' 
-  * delete declarations/imports in errors:
-```csharp
-import { OptionDto } from 'src/app/shared/bia-shared/model/option-dto';
-import { Validators } from '@angular/forms';
-import { PrimeNGFiltering } from 'src/app/shared/bia-shared/model/bia-field-config';
-```
+  * delete *imports* in errors
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planesTypes'* for block with "labelKey" value is *'app.planesTypes'*   
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on adress: *http://localhost:4200/* to display front page

@@ -31,7 +31,7 @@ public int? PlaneTypeId { get; set; }
 /// <summary>
 /// Gets or sets the  plane type title.
 /// </summary>
-[BIADtoField(Required = false)]
+[BiaDtoField(ItemType = "PlaneType")]
 public OptionDto PlaneType { get; set; }
 ```
 
@@ -93,6 +93,7 @@ private static void CreatePlaneModel(ModelBuilder modelBuilder)
 {
     ...
     modelBuilder.Entity<Plane>().Property(p => p.PlaneTypeId).IsRequired(false); // relationship 0..1-*
+    modelBuilder.Entity<Plane>().HasOne(x => x.PlaneType).WithMany().HasForeignKey(x => x.PlaneTypeId);
 }
 ```
 
