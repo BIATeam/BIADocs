@@ -18,51 +18,47 @@ This document explains how to create a CRUD with the BIAToolKit.
   
 ![ProjectFolders](../../Images/BIAToolKit/NewProject.PNG)
 
-## 0. Choose Project Folder
-Choosen the project directory to work on by choosing 'project parent path' and selecting 'project folder' ('Dto file' combobox is automatically populate).<br>
-Zips contains on '.bia' folders are automatically parsed.
+## 0. Project Folder
+Choose the project directory to work on by choosing 'project parent path' and selecting 'project folder' ('Dto file' combobox is automatically populate). Zips contains on '.bia' folders are automatically parsed.
 
-## 1. Choose Dto file linked to CRUD to generate
-The Dto file combobox lists all Dto files on your project.<br> 
-If you have created new Dto file and you don't see it, you can refresh the list with the button on right side of combobox.<br>
+## 1. Dto file linked to CRUD to generate
+The 'Dto file' combobox lists all Dto files on your project (based on file name).<br> 
 ![DtoFiles](../../Images/BIAToolKit/SelectDto.PNG)<br>
-Entity name is deducted from dto file name.<br>
-Option item combobox is filled after choosen dto file.<br>
-Dto file selected is automatically parsed. The 'Entity name (singular)' is filled and the 'Display item name' combobox is populated.
+Dto file selected is automatically parsed. The 'Entity name (singular)' is filled and the 'Display item name' combobox is populated.<br>
+If you have created new Dto file and you don't see it, you can refresh the list with the button on right side of combobox.<br>
 
-## 2. Select CRUD generation
+## 2. Items generation
 Choose items you want to generate for the CRUD:
-1. Generation: 
+* Generation: 
    * Back: WebAPi (selected by default)
    * Front: Front (selected by default)
-2. Generation Type: (minimum a choice is mandatory)
+* Generation Type: (minimum a choice is mandatory)
    *  CRUD
    *  Option
    *  (and Team in the future)
 
 ![CRUDGeneration](../../Images/BIAToolKit/CRUDGeneration.PNG)
 
-## 3. Fill CRUD name
-Singular entity name is fill up by default but you can change it.<br>
+## 3. CRUD name
+Singular entity name is fill up by default but you can change it.
 You need to complete the plurial name before generation.<br>
 ![CRUDName](../../Images/BIAToolKit/CRUDName.PNG)
 
-## 4. Choose display item
+## 4. Display item
 On associated combobox, choose the field you want to display on front page.<br>
 ![DisplayItem](../../Images/BIAToolKit/SelectDisplayItem.PNG)
 
-## 5. Add option (not mandatory)
+## 5. Option (not mandatory)
 __*Option Generation Type must not be checked.*__<br>
-It is possible to generate link Option with the CRUD.<br>
-On associated combobox, choose 1 or more option previously generated.<br>
+It is possible to generate link Option with the CRUD. On associated combobox, choose 1 or more option previously generated.<br>
 ![DisplayOption](../../Images/BIAToolKit/SelectOptionItem.PNG)<br>
 *This field is not mandatory to generate a CRUD.*
 
-## 6. Generate CRUD
+## 6. Generation
 By clicking on the button 'Generate', CRUD files are generated automatically on project.
 
 > At first CRUD generation on the project, an historic file is made on project folder (*CrudGeneration.bia*).<br>
-> In case of regeneration, data are automatically filled from historic file, and warning message is displayed to inform you.
+> In case of regeneration, data are automatically filled from historic file, and warning message is displayed to inform you.<br>
 ![DtoSelected](../../Images/BIAToolKit/DtoAlreadyUsed.PNG)<br>
 
 Open DotNet and Angular projects, rebuild each one and fix issues if exists.
@@ -78,4 +74,4 @@ In case of you want previous generation:
 * then, click on 'Delete previous generation' button
 
 ## Delete annotations
-After generations, if you want to clean code, you can choose to delete annotations. Be carreful, because in this case, <u>**you can't regenerate or delete previous features generated**</u>. But you can continue to generate new features.
+After generations, if you want to clean code, you can choose to delete annotations. <br>Be carreful, because in this case, <u>you can't regenerate or delete previous features generated</u>, but you can **continue to generate new features**.

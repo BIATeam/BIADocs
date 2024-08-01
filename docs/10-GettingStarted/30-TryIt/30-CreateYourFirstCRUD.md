@@ -390,25 +390,21 @@ We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front
   * Projects parent path to "C:\Sources\Test"
   * Project folder to *MyFirstProject*
 * Open "Add CRUD" tab
-* Parse the Dto file:
+* Generation:
   * Choose Dto file: *PlaneDto.cs*
-  * Click on "Parse Dto" button
-* Parse zip files:
   * Check "WebApi" and "Front" for Generation
   * Check "CRUD" for Generation Type
-  * Click on "Parse Zip" button
-* Generation Crud:
-  * Choose "Display item": *Msn*
   * Verify "Entity name (singular)" value: *Plane*
   * Set "Entity name (plural)" value: *Planes*
-  * Click on "Generate CRUD" button
+  * Choose "Display item": *Msn*
+  * Click on "Generate" button
 
-9. Finalize DotNet generation
+1. Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-10. Finalize Angular generation
+1.   Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -422,7 +418,7 @@ npm start
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANES"* tab to display 'Planes' page.
 
-11. Add traduction
+1.   Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {
