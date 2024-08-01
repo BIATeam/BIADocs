@@ -117,18 +117,16 @@ Update-DataBase -Context DataContext
   * Projects parent path to "C:\Sources\Test"
   * Project folder to *MyFirstProject*
 * Open "Add CRUD" tab
-* Parse the Dto file:
+* Generation:
   * Choose Dto file: *PlaneDto.cs*
   * Information message appear: "Generation was alerady done for this Dto file"
-  * Click on "Parse Dto" button
-* Parse zip files:
-  * Verify "Generate WebApi" and "Generate CRUD" are checked
-  * Click on "Parse Zip" button
-* Generation Crud:
-  * verify "Display item"  value is *Msn*
+  * Verify "WebApi" and "Front" Generation are checked
+  * Verify only "CRUD" Generation Type is checked
   * Verify "Entity name (singular)" value is *Plane*
   * Verify "Entity name (plural)" value is *Planes*
-  * Click on "Generate CRUD" button
+  * Verify "Display item"  value is *Msn*
+  * On option item list, check "PlaneType" value
+  * Click on "Generate" button
 
 8. Check DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
@@ -146,7 +144,7 @@ npm start
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"PLANES"* tab to display 'Planes' page.
 
-10. Add traduction
+10.  Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "plane": {

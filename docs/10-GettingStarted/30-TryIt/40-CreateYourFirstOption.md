@@ -221,32 +221,28 @@ Update-DataBase -Context DataContext
 ```
 * Verify 'PlanesTypes' table is created in the database.
 
-8. Automatically CRUD generation     
+8. Automatically Option generation     
 We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end + front-end.
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Choose:
   * Projects parent path to "C:\Sources\Test"
   * Project folder to *MyFirstProject*
 * Open "Add CRUD" tab
-* Parse the Dto file:
+* Generation:
   * Choose Dto file: *PlaneTypeDto.cs*
-  * Click on "Parse Dto" button
-* Parse zip files:
   * Check "WebApi" and "Front" for Generation
   * Check "CRUD' and "Option" for Generation Type
-  * Click on "Parse Zip" button
-* Generation Crud:
-  * Choose "Display item": *Title*
   * Verify "Entity name (singular)" value: *PlaneType*
   * Set "Entity name (plural)" value: *PlanesTypes*
-  * Click on "Generate CRUD" button
+  * Choose "Display item": *Title*
+  * Click on "Generate" button
 
 9. Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
   
-10. Finalize Angular generation
+10.  Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -260,7 +256,7 @@ npm start
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANESTYPES"* tab to display 'PlaneType' page.
 
-11. Add traduction
+11.  Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {
