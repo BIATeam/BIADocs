@@ -13,6 +13,7 @@ We will create a relation between CRUD 'Plane' and option 'PlaneType' (previousl
 
 2. Open the entity 'Plane':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' open class 'Plane.cs' and add 'PlaneType' declaration: 
+  
 ```csharp
 /// <summary>
 /// Gets or sets the  plane type.
@@ -27,6 +28,7 @@ public int? PlaneTypeId { get; set; }
 
 3. Update the DTO 'PlaneDto':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto\Pane' open class 'PlaneDto.cs' and add 'PlaneType' declaration:  
+  
 ```csharp
 /// <summary>
 /// Gets or sets the  plane type title.
@@ -36,7 +38,8 @@ public OptionDto PlaneType { get; set; }
 ```
 
 4. Update the Mapper 'PlaneMapper':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, open class 'PlaneMapper' and add:    
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, open class 'PlaneMapper' and add:   
+ 
 ```csharp
 public override ExpressionCollection<Plane> ExpressionCollection
 {
@@ -83,7 +86,8 @@ public struct HeaderName
 ```
 
 5. Update the ModelBuilder
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add 'PlaneType' relationship:  
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add 'PlaneType' relationship: 
+ 
 ```csharp
 /// <summary>
 /// Create the model for planes.
@@ -144,7 +148,7 @@ npm start
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"PLANES"* tab to display 'Planes' page.
 
-10.  Add traduction
+10. Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "plane": {

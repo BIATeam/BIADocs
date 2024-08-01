@@ -13,6 +13,7 @@ We will create the feature 'PlaneType'.
 
 2. Create the entity 'PlaneType':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneType.cs' and add: 
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -44,6 +45,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 
 3. Create the DTO 'PlaneTypeDto':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto\Plane' folder, create empty class 'PlaneTypeDto.cs' and add:  
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 {
@@ -73,6 +75,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 
 4. Create the Mapper 'PlaneTypeMapper':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneTypeMapper' and add:    
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -179,6 +182,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 
 5. Create the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add:  
+
 ```csharp
 public static void CreateModel(ModelBuilder modelBuilder)
 {
@@ -200,6 +204,7 @@ private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
 
 6. Update DataContext file
 * Open '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs' file and declare the DbSet associated to PlaneType:
+
 ```csharp
 /// <summary>
 /// Gets or sets the Plane DBSet.
@@ -242,7 +247,7 @@ We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end +
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
   
-10.  Finalize Angular generation
+10.   Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -256,7 +261,7 @@ npm start
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANESTYPES"* tab to display 'PlaneType' page.
 
-11.  Add traduction
+11.   Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {
