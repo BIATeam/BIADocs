@@ -254,7 +254,7 @@ In CRUD feature, the Rest API resource contains the same properties of the corre
     /// <summary>
     /// Gets or sets the daily synchronisation hour.
     /// </summary>
-    [BIADtoField(Type = "time", Required = false)]
+    [BIADtoField(Type = "time")]
     public string SyncTime { get; set; }
 
     ...
@@ -280,17 +280,17 @@ In CRUD feature, the Rest API resource contains the same properties of the corre
 ```
 
 A entity with relationships to other entity has a DTO where all relationship as converted to an OptionDto (*'PlaneType'* on your example).
-For OptionDto concept you can consult the specific page [OptionDto](80-OptionDTO.md) (comming soon).
+For OptionDto concept you can consult the specific page [OptionDto](80-OptionDTO.md).
 
 <u>Dto entity class can have specific annotation</u>.<br>
 For the class, use __'BiaDtoClass'__, to specify:
 * 'AncestorTeam' (Specify the ancestor team, essentially used to filter views by team)
 
 For each attribute, use __'BIADtoField'__ annotation to specify: 
-* 'Type' as explicit type (for example: datetime, date only or time only).
+* 'Type' as explicit type: datetime, date (only) or time (only).
 * 'Required' if attribute is mandatory or no (*false* by default if attribute is missing).
 * 'IsParent' to define parent relationship.
-* 'ItemType' to define target 'Type' for 1-n or n-n relationship.
+* 'ItemType' to define target 'Type' for 1-n or n-n relationship (The "type" replaced by "OptionDto" on dto file).
 
 ### 1.5 Mapper file
 The Mapper contain two methods in order to convert entity to Dto and vice versa.<br>

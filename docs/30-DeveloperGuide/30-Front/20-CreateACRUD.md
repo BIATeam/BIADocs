@@ -22,8 +22,8 @@ The back-end is ready, i.e. steps before paragraph 3 are already done.
 
 ## Generate new feature
 Use the BIAToolKit on [CRUD Generation](../50-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'Front'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked (and Generation _'WebApi'_ recommanded).<br>
-Don't forget to fill new crud name on singular (i.e. <span style="background-color:#327f00">aircraft-type</span>) and plural form (i.e. <span style="background-color:#327f00">aircrafts-types</span>).<br>
-After parsing, it is necessary to choose 'Display item name'.
+Don't forget to fill new **crud name on singular** (i.e. <span style="background-color:#327f00">aircraft-type</span>) and **plural form** (i.e. <span style="background-color:#327f00">aircrafts-types</span>).<br>
+It is also necessary to choose **'Display item name'**.
 
 If you want to **link existing options** to the crud, choose option (1 or more) in combobox 'Option item'.
 
