@@ -2,7 +2,7 @@
 layout: default
 title: Create your first Option
 parent: Try it
-grand_parent: Getting Started
+grand_parent: Introduction
 nav_order: 40
 ---
 

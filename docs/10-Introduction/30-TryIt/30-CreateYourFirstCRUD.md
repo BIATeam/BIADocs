@@ -2,7 +2,7 @@
 layout: default
 title: Create your first CRUD
 parent: Try it
-grand_parent: Getting Started
+grand_parent: Introduction
 nav_order: 30
 ---
 

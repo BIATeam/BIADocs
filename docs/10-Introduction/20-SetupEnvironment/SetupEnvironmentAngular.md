@@ -2,7 +2,7 @@
 layout: default
 title: Setup angular environment
 parent: Setup environment
-grand_parent: Getting Started
+grand_parent: Introduction
 nav_order: 1
 ---
 
