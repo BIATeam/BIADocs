@@ -13,6 +13,7 @@ We will create the feature 'PlaneType'.
 
 2. Create the entity 'PlaneType':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneType.cs' and add: 
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -44,6 +45,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 
 3. Create the DTO 'PlaneTypeDto':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto\Plane' folder, create empty class 'PlaneTypeDto.cs' and add:  
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 {
@@ -73,6 +75,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 
 4. Create the Mapper 'PlaneTypeMapper':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneTypeMapper' and add:    
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -179,6 +182,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 
 5. Create the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add:  
+
 ```csharp
 public static void CreateModel(ModelBuilder modelBuilder)
 {
@@ -200,6 +204,7 @@ private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
 
 6. Update DataContext file
 * Open '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs' file and declare the DbSet associated to PlaneType:
+
 ```csharp
 /// <summary>
 /// Gets or sets the Plane DBSet.
@@ -221,33 +226,28 @@ Update-DataBase -Context DataContext
 ```
 * Verify 'PlanesTypes' table is created in the database.
 
-8. Automatically CRUD generation     
+8. Automatically Option generation     
 We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end + front-end.
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Choose:
   * Projects parent path to "C:\Sources\Test"
   * Project folder to *MyFirstProject*
 * Open "Add CRUD" tab
-* Parse the Dto file:
+* Generation:
   * Choose Dto file: *PlaneTypeDto.cs*
-  * Click on "Parse Dto" button
-* Parse zip files:
-  * Check "Generate WebApi"
-  * Check "Generate CRUD"
-  * Check "Generate Option"
-  * Click on "Parse Zip" button
-* Generation Crud:
-  * Choose "Display item": *Title*
+  * Check "WebApi" and "Front" for Generation
+  * Check "CRUD' and "Option" for Generation Type
   * Verify "Entity name (singular)" value: *PlaneType*
   * Set "Entity name (plural)" value: *PlanesTypes*
-  * Click on "Generate CRUD" button
+  * Choose "Display item": *Title*
+  * Click on "Generate" button
 
 9. Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
   
-10. Finalize Angular generation
+10.   Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -255,18 +255,13 @@ npm start
 ```
 * Errors can occured like *'OptionDto' is declared but its value is never read.*, 
   * go to the file 'src/app/features/planes-types/model/plane-type.ts' 
-  * delete declarations/imports in errors:
-```csharp
-import { OptionDto } from 'src/app/shared/bia-shared/model/option-dto';
-import { Validators } from '@angular/forms';
-import { PrimeNGFiltering } from 'src/app/shared/bia-shared/model/bia-field-config';
-```
+  * delete *imports* in errors
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planesTypes'* for block with "labelKey" value is *'app.planesTypes'*   
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANESTYPES"* tab to display 'PlaneType' page.
 
-11. Add traduction
+11.   Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {

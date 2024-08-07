@@ -15,6 +15,7 @@ We will create in first the feature 'Plane'.
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain' create 'PlaneModule' folder.
 * Create 'Aggregate' subfolder.
 * Create empty class 'Plane.cs' and add: 
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -81,6 +82,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 3. Create the DTO 'PlaneDto':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto' create 'Plane' folder.
 * Create empty class 'PlaneDto.cs' and add:  
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 {
@@ -91,6 +93,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
     /// <summary>
     /// The DTO used to represent a plane.
     /// </summary>
+    [BiaDtoClass(AncestorTeam = "Site")]
     public class PlaneDto : BaseDto<int>
     {
         /// <summary>
@@ -140,6 +143,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 
 4. Create the Mapper 'PlaneMapper':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneMapper' and add:    
+
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
@@ -316,6 +320,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 
 5. Create the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', create empty class 'PlaneModelBuilder.cs' and add:  
+
 ```csharp
 namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 {
@@ -357,6 +362,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 
 6. Update DataContext file
 * Open '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs' file and declare the DbSet associated to Plane:
+
 ```csharp
 /// <summary>
 /// Gets or sets the Plane DBSet.
@@ -364,6 +370,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 public DbSet<Plane> Planes { get; set; }
 ```
 * On 'OnModelCreating' method add the 'PlaneModelBuilder':
+
 ```csharp
 PlaneModelBuilder.CreateModel(modelBuilder);
 ```
@@ -389,25 +396,21 @@ We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front
   * Projects parent path to "C:\Sources\Test"
   * Project folder to *MyFirstProject*
 * Open "Add CRUD" tab
-* Parse the Dto file:
+* Generation:
   * Choose Dto file: *PlaneDto.cs*
-  * Click on "Parse Dto" button
-* Parse zip files:
-  * Check "Generate WebApi"
-  * Check "Generate CRUD"
-  * Click on "Parse Zip" button
-* Generation Crud:
-  * Choose "Display item": *Msn*
+  * Check "WebApi" and "Front" for Generation
+  * Check "CRUD" for Generation Type
   * Verify "Entity name (singular)" value: *Plane*
   * Set "Entity name (plural)" value: *Planes*
-  * Click on "Generate CRUD" button
+  * Choose "Display item": *Msn*
+  * Click on "Generate" button
 
 9. Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-10. Finalize Angular generation
+10.   Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -415,16 +418,13 @@ npm start
 ```
 * Errors can occured like *'OptionDto' is declared but its value is never read.*, 
   * go to the file 'src/app/features/planes/model/plane.ts' 
-  * delete declarations/imports in errors:
-```csharp
-import { OptionDto } from 'src/app/shared/bia-shared/model/option-dto';
-```
+  * delete *imports* in errors
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planes'* for block with "labelKey" value is *'app.planes'* 
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANES"* tab to display 'Planes' page.
 
-11. Add traduction
+11.   Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {

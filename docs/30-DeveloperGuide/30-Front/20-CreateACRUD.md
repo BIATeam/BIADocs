@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Create a CRUD
+title: Create a CRUD (front)
 parent: Front
 grand_parent: Developer guide
 nav_order: 20
 ---
 
-# Create a CRUD
+# Create a CRUD (front)
 This document explains how to quickly create a CRUD module feature universal.
 It means that you can switch this functionnalities:
 - Navigation in Page mode / Popup Mode
@@ -21,12 +21,16 @@ It is strongly recommended to generate front-end CRUD in same time of [back-end]
 The back-end is ready, i.e. steps before paragraph 3 are already done.
 
 ## Generate new feature
-Use the BIAToolKit on [CRUD Generation](../50-BIAToolKit/50-CreateCRUD.md) tab with _'Generate CRUD'_ checkbox checked at least (and _'Generate WebApi'_ recommanded).
-Don't forget to fill new crud name on singular (i.e. <span style="background-color:#327f00">aircraft-type</span>) and plural form (i.e. <span style="background-color:#327f00">aircrafts-types</span>).
+Use the BIAToolKit on [CRUD Generation](../50-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'Front'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked (and Generation _'WebApi'_ recommanded).<br>
+Don't forget to fill new **crud name on singular** (i.e. <span style="background-color:#327f00">aircraft-type</span>) and **plural form** (i.e. <span style="background-color:#327f00">aircrafts-types</span>).<br>
+It is also necessary to choose **'Display item name'**.
+
+If you want to **link existing options** to the crud, choose option (1 or more) in combobox 'Option item'.
+
 
 <u>After generation don't forget to :</u>
 
-### Update navigation
+- ### Update navigation
 Open the file **src\app\shared\navigation.ts** and in the array **NAVIGATION**, update *path* like this 
 ```typescript
 {
@@ -36,16 +40,17 @@ Open the file **src\app\shared\navigation.ts** and in the array **NAVIGATION**, 
 }
 ```
 
-### Update translations
-Open the file **src\assets\i18n\app\en.json** and: 
-- add in `"app"`
+- ### Update translations
+1. Open the file **src\assets\i18n\app\en.json** and:<br> 
+
+add in `"app"`
 ``` json
 "app": {
     ...
     "aircraftsType": "Aircrafts types"
   }
 ```
-- add 
+add 
 ``` json
 "aircraftType": {
   "add": "Add aircraft type",
@@ -53,17 +58,18 @@ Open the file **src\assets\i18n\app\en.json** and:
   "listOf": "List of aircrafts types"
   }
 ```
-- and add translations of interface properties.
+and add translations of interface properties.
 
-Open the file **src\assets\i18n\app\fr.json** and
-- add in `"app"`
+2. Open the file **src\assets\i18n\app\fr.json** and:<br>
+
+add in `"app"`
 ``` json
 "app": {
     ...
     "aircraftsType": "Type d'aéronefs"
   }
 ```
-- add
+add
 ``` json
 "aircraftType": {
     "add": "Ajouter type d'aéronef",
@@ -71,17 +77,18 @@ Open the file **src\assets\i18n\app\fr.json** and
     "listOf": "Liste des types d'aéronefs"
   }
 ```
-- and add translations of interface properties.
+and add translations of interface properties.
 
-Open the file **src\assets\i18n\app\es.json** and
-- add in `"app"`
+3. Open the file **src\assets\i18n\app\es.json** and:<br>
+
+add in `"app"`
 ``` json
 "app": {
     ...
     "aircraftsType": "Aeronaves"
   }
 ```
-- add
+add
 ``` json
 "aircraftType": {
    "add": "Añadir tipo de aeronave",
@@ -89,7 +96,7 @@ Open the file **src\assets\i18n\app\es.json** and
     "listOf": "Lista de tipos de aeronaves"
   }
 ```
-- and add translations of interface properties.
+and add translations of interface properties.
 
 When you have finished adding translations, use this site to sort your json:
 https://novicelab.org/jsonabc/
@@ -97,7 +104,7 @@ https://novicelab.org/jsonabc/
 
 ## Relation to Option
 ### Universal Mode
-* In universal mode the loading of the relations are done in **...OptionsService**
+* In universal mode the loading of the relations are done in **...-options-service.ts**
 * Adapt the lists to display in combo box in :
   * the members of the classe, 
   * the constructor 
@@ -105,13 +112,16 @@ https://novicelab.org/jsonabc/
 * The list should be OptionDto list in domain. See [this page](30-CreateAnOption.md) to create the domain feature option.
 
 ## Enable Views
-* Just change the variable useView = false; to useView = true; in the **...constants.ts**
+* Just change the variable useView = false; to useView = true; in the **...constants.ts**.
 
 ## Enable SignalR:
-* Just change the variable useSignalR = false; to useSignalR = true; in the **...constants.ts**
+* Just change the variable useSignalR = false; to useSignalR = true; in the **...constants.ts**.
 
 ## Spreadsheet mode
-* Just change the variable useCalcMode = false; to useCalcMode = true; in the **...constants.ts**
+* Just change the variable useCalcMode = false; to useCalcMode = true; in the **...constants.ts**.
+  
+## Bulk mode
+* Just change variables useInsert/useUpdate/useDelete = false; to useInsert/useUpdate/useDelete = true; in the **...constants.ts** (in bulkMode part).
 
 ## Specific Input and Output
 ### Since V3.7.0
