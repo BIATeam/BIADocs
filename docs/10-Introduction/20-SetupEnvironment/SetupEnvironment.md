@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Setup environment
-parent: Getting Started
+parent: Introduction
 nav_order: 20
 has_children: true
 ---

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Try it
-parent: Getting Started
+parent: Introduction
 nav_order: 30
 has_children: true
 ---

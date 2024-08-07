@@ -18,57 +18,60 @@ This document explains how to create a CRUD with the BIAToolKit.
   
 ![ProjectFolders](../../Images/BIAToolKit/NewProject.PNG)
 
-## 1. Choose Dto file linked to CRUD to generate
-The Dto file combobox lists all Dto files on your project. 
+## 0. Project Folder
+Choose the project directory to work on by choosing 'project parent path' and selecting 'project folder' ('Dto file' combobox is automatically populate). Zips contains on '.bia' folders are automatically parsed.
 
-If you have created new Dto file and you don't see it, you can refresh the list with the button on right side of combobox.
+## 1. Dto file linked to CRUD to generate
+The 'Dto file' combobox lists all Dto files on your project (based on file name).<br> 
+![DtoFiles](../../Images/BIAToolKit/SelectDto.PNG)<br>
+Dto file selected is automatically parsed. The 'Entity name (singular)' is filled and the 'Display item name' combobox is populated.<br>
+If you have created new Dto file and you don't see it, you can refresh the list with the button on right side of combobox.<br>
 
-![DtoFiles](../../Images/BIAToolKit/SelectDto.PNG)
-
-## 2. Parse Dto file
-By clicking on the first button (*Parse Dto*), Dto file (previously selected) is parsed.
-
-## 3. Select CRUD generation
+## 2. Items generation
 Choose items you want to generate for the CRUD:
-   * Back: WebAPi
-   * Front: CRUD, Option (and Team in the future)
-After selection, zip files usings for generation are displaying on 'Data model zip' area.
+* Generation: 
+   * Back: WebAPi (selected by default)
+   * Front: Front (selected by default)
+* Generation Type: (minimum a choice is mandatory)
+   *  CRUD
+   *  Option
+   *  (and Team in the future)
 
 ![CRUDGeneration](../../Images/BIAToolKit/CRUDGeneration.PNG)
 
-## 4. Parse Zip files
-By clicking on the secund button (*Parse Zip*), choosen previous zip files are parsed.
-
-## 5. Choose display item
-On associated combobox, choose the field you want to display on front page.
-
-![DisplayItem](../../Images/BIAToolKit/SelectDisplayItem.PNG)
-
-## 6. Fill CRUD name
-Singular entity name is fill up by default but you can change it. 
-
-You need to complete the plurial name before CRUD generation.
-
+## 3. CRUD name
+Singular entity name is fill up by default but you can change it.
+You need to complete the plurial name before generation.<br>
 ![CRUDName](../../Images/BIAToolKit/CRUDName.PNG)
 
-## 7. Add option (not mandatory)
-It is possible to generation Option link with the CRUD.
-On associated combobox, choose the option previously generated.
-This field is not mandatory to generate CRUD.
+## 4. Display item
+On associated combobox, choose the field you want to display on front page.<br>
+![DisplayItem](../../Images/BIAToolKit/SelectDisplayItem.PNG)
 
-![DisplayOption](../../Images/BIAToolKit/SelectOptionItem.PNG)
+## 5. Option (not mandatory)
+__*Option Generation Type must not be checked.*__<br>
+It is possible to generate link Option with the CRUD. On associated combobox, choose 1 or more option previously generated.<br>
+![DisplayOption](../../Images/BIAToolKit/SelectOptionItem.PNG)<br>
+*This field is not mandatory to generate a CRUD.*
 
-## 8. Generate CRUD
-By clicking on the third button (*Generate CRUD*), CRUD files are generated automatically on project.
+## 6. Generation
+By clicking on the button 'Generate', CRUD files are generated automatically on project.
 
-> At first CRUD generation on the project, an historic file is made on project folder (*CrudGeneration.bia*).
-> 
-> After first generation, if you want change plurial CRUD name, restart step 6 + 7.
-> 
-> In case of regeneration, data are filled automatically from historic file.
+> At first CRUD generation on the project, an historic file is made on project folder (*CrudGeneration.bia*).<br>
+> In case of regeneration, data are automatically filled from historic file, and warning message is displayed to inform you.<br>
+![DtoSelected](../../Images/BIAToolKit/DtoAlreadyUsed.PNG)<br>
 
 Open DotNet and Angular projects, rebuild each one and fix issues if exists.
 
-### Known issues
-* After generation, go to navigation file (*navigation.ts*) on Angular folder, and rework **path** property (delete *examples* and change name to camel case).
+### <u>Known issues</u>
+* After generation, on Angular folder, go to navigation file (*navigation.ts*) and rework **path** property (delete *examples*).
+* On front side, when compilling angular project, if **import** are not used (mostly on model), deleted its to avoid errors.
 * Traduction is not already implemented, so **i18n** files (fr.json/en.json/es.json) must be completed with missing labels. 
+
+## Delete previous CRUD generation
+In case of you want previous generation:
+* in first, select the Dto file <br>
+* then, click on 'Delete previous generation' button
+
+## Delete annotations
+After generations, if you want to clean code, you can choose to delete annotations. <br>Be carreful, because in this case, <u>you can't regenerate or delete previous features generated</u>, but you can **continue to generate new features**.

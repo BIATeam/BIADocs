@@ -2,7 +2,7 @@
 layout: default
 title: Setup Keycloak
 parent: Setup environment
-grand_parent: Getting Started
+grand_parent: Introduction
 nav_order: 6
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: What is BIA Framework
-parent: Getting Started
+parent: Introduction
 nav_order: 10
 ---
 # What is BIA Framework

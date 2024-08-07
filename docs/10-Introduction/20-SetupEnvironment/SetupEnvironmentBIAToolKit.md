@@ -2,7 +2,7 @@
 layout: default
 title: Setup BIA Tool Kit
 parent: Setup environment
-grand_parent: Getting Started
+grand_parent: Introduction
 nav_order: 5
 ---
 

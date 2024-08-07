@@ -187,13 +187,14 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck," -NewRegexp '' -Incl
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pluck" -NewRegexp '' -Include *-effects.ts
 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \* as FileSaver from 'file-saver';" -NewRegexp "import { saveAs } from 'file-saver';" -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import FileSaver from 'file-saver';" -NewRegexp "import { saveAs } from 'file-saver';" -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "FileSaver.saveAs" -NewRegexp "saveAs" -Include *.ts
 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "throwError\(([^']*)\)" -NewRegexp 'throwError(() => $1)' -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "throwError\(\(\) => \(\) =>" -NewRegexp 'throwError(() =>' -Include *.ts
 
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp ".loadAllByPost, \(state, \{ event \}\)" -NewRegexp ".loadAllByPost, state" -Include *-reducer.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp ".failure, \(state, \{ error \}\)" -NewRegexp ".failure, state" -Include *-reducer.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "loadAllByPost, \(state, \{ event \}\)" -NewRegexp "loadAllByPost, state" -Include *-reducer.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "failure, \(state, \{ error \}\)" -NewRegexp "failure, state" -Include *-reducer.ts
 
 # naming-convention
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp '([.| ])SortTeams\(' -NewRegexp '$1sortTeams('
@@ -232,6 +233,15 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIADataContext' -NewRegexp '
 ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIAClaimsPrincipal' -NewRegexp 'BiaClaimsPrincipal' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIADictionary' -NewRegexp 'BiaDictionary' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp 'BIAConstants' -NewRegexp 'BiaConstants' -Include *.cs
+
+## .Display() .DisplayShort()
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp '.FirstName \+ " " \+ \S+(\.\S+)?\.LastName \+ " \(" \+ \S+(\.\S+)?\.Login \+ "\)"' -NewRegexp '.Display()' -Include *.cs
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp '.LastName \+ " " \+ \S+(\.\S+)?\.FirstName \+ " \(" \+ \S+(\.\S+)?\.Login \+ "\)"' -NewRegexp '.Display()' -Include *.cs
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp '.FirstName \+ \S+(\.\S+)?\.LastName \+ " \(" \+ \S+(\.\S+)?\.Login \+ "\)"' -NewRegexp '.Display()' -Include *.cs
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp '.LastName \+ \S+(\.\S+)?\.FirstName \+ " \(" \+ \S+(\.\S+)?\.Login \+ "\)"' -NewRegexp '.Display()' -Include *.cs
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp '.FirstName \+ " " \+ \S+(\.\S+)?\.LastName' -NewRegexp '.DisplayShort()' -Include *.cs
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp '.LastName \+ " " \+ \S+(\.\S+)?\.FirstName' -NewRegexp '.DisplayShort()' -Include *.cs
+# ReplaceInProject -Source $SourceBackEnd -OldRegexp 'FirstName \+([\s\S]*)LastName' -NewRegexp 'LastName +$1FirstName' -Include *Mapper.cs
 
 [string] $presentationApiFolder = GetPresentationApiFolder -Source $SourceBackEnd
 Write-Host "Migration BackEnd"

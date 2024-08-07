@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Create a CRUD
+title: Create a CRUD (Rest API)
 parent: Back
 grand_parent: Developer guide
 nav_order: 70
 ---
 
-# Create a CRUD
+# Create a CRUD (Rest API)
 This document explains how to quickly create a CRUD Rest API from zero.
 It means that you will see all the files to be modified from the DB mapping to the controller:
 - Into the Domain layer you have to code an Entity corresponding to your table in the database.
@@ -18,7 +18,7 @@ It means that you will see all the files to be modified from the DB mapping to t
   - Delete.
 - Into the Presentation Layer, you have to code the Rest API corresponding to the CRUD operations.
   
-<u>For this example, we imagine that we want to create a new feature with the name: <span style="background-color:#327f00">Plane</span>.   </u>
+<u>For this example, we imagine that we want to create a new feature with the name: <span style="background-color:#327f00">Plane</span>.</u>
 
 
 ## Prerequisite
@@ -116,10 +116,8 @@ namespace TheBIADevCompany.BIADemo.Domain.PlaneModule.Aggregate
 
 ### 1.2 Model Builder file
 Now the entity is created, we can create the ModelBuilder file corresponding into the InfrastructureData project. 
-Each feature has a ModelBuilder file prefixed by the name of the feature. For example PlaneModelBuilder.cs.
-
-Theses files are included into the DataContext file.
-
+Each feature has a ModelBuilder file prefixed by the name of the feature. For example PlaneModelBuilder.cs.<br>
+Theses files are included into the DataContext file.<br>
 Here you can see the exemple of Plane Model Builder file.
 As an aggregate can have several classes, a modelBuilder file can describ several tables.
 
@@ -230,6 +228,7 @@ In CRUD feature, the Rest API resource contains the same properties of the corre
  /// <summary>
  /// The DTO used to represent a plane.
  /// </summary>
+ [BiaDtoClass(AncestorTeam = "Site")]
  public class PlaneDto : BaseDto<int>
  {
     /// <summary>
@@ -255,7 +254,7 @@ In CRUD feature, the Rest API resource contains the same properties of the corre
     /// <summary>
     /// Gets or sets the daily synchronisation hour.
     /// </summary>
-    [BIADtoField(Type = "time", Required = false)]
+    [BIADtoField(Type = "time")]
     public string SyncTime { get; set; }
 
     ...
@@ -269,53 +268,60 @@ In CRUD feature, the Rest API resource contains the same properties of the corre
     /// <summary>
     /// Gets or sets the  plane type title.
     /// </summary>
-    [BIADtoField(Required = false)]
+    [BiaDtoField(ItemType = "PlaneType")]
     public OptionDto PlaneType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of connecting airports.
+    /// </summary>
+    [BiaDtoField(ItemType = "Airport")]
+    public ICollection<OptionDto> ConnectingAirports { get; set; }
  }
 ```
 
 A entity with relationships to other entity has a DTO where all relationship as converted to an OptionDto (*'PlaneType'* on your example).
-For OptionDto concept you can consult the specific page [OptionDto](80-OptionDTO.md) (comming soon).
+For OptionDto concept you can consult the specific page [OptionDto](80-OptionDTO.md).
 
-For each entity attributes, use 'BIADtoField' annotation to specify: 
-* 'Type' as explicit type (for example: datetime, date only or time only).
-* 'Required' if attribute is mandatory or no.
+<u>Dto entity class can have specific annotation</u>.<br>
+For the class, use __'BiaDtoClass'__, to specify:
+* 'AncestorTeam' (Specify the ancestor team, essentially used to filter views by team)
+
+For each attribute, use __'BIADtoField'__ annotation to specify: 
+* 'Type' as explicit type: datetime, date (only) or time (only).
+* 'Required' if attribute is mandatory or no (*false* by default if attribute is missing).
 * 'IsParent' to define parent relationship.
+* 'ItemType' to define target 'Type' for 1-n or n-n relationship (The "type" replaced by "OptionDto" on dto file).
 
 ### 1.5 Mapper file
-The Mapper contain two methods in order to convert entity to Dto and vice versa.
-
-There is also methods used to filtering during the querying operations.
-
-The method **DtoToRecord** is used during the csv extract function to convert entity to csv record.
-
+The Mapper contain two methods in order to convert entity to Dto and vice versa.<br>
+There is also methods used to filtering during the querying operations.<br>
+The method __DtoToRecord__ is used during the csv extract function to convert entity to csv record.<br>
 You can see in PlaneMapper class of BiaDemo project, how theses methods are implemented.
 
 ## 2. Update the DataBase
 After that you have to update the database with following commands into Package Manager Console:
 
 ```csharp
-Add-Migration 'new feature plane' -Context DataContext 
-```
-and 
-
+Add-Migration 'XYZ' -Context DataContext 
+``` 
+*replace 'XYZ' by your own name (for example: newFeaturePlane)*<br>
+and
 ```csharp
 Update-DataBase -Context DataContext
 ```
 
 ## 3. Finalize CRUD generation automatically
 All previous steps are **mandatory** to finalize back-end CRUD generation. 
-Use the BIAToolKit on [CRUD Generation](../50-BIAToolKit/50-CreateCRUD.md) tab with _'Generate WebApi'_ checkbox checked (at least) to automatically:
-- generate
+Use the BIAToolKit on [CRUD Generation](../50-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'WebApi'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked to automatically:
+- Generate
   * ApplicationService files 
   * Controller file 
-- update:
-  * Rigth file
+- Update:
+  * Right file
   * Permission into biaconfig file
   * IocContainer file
 
 Automaticaly back-end CRUD generation can be done in same time of [front-end](../30-Front/20-CreateACRUD.md) CRUD generation, but back-end generation can be done independently.
-
 
 ### 3.1 ApplicationService file
 The ApplicationServie code inherit of CrudAppServiceBase which implement all the methods necessary for CRUD operations.
