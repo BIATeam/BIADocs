@@ -17,6 +17,10 @@ We will create in first the feature 'Plane'.
 * Create empty class 'Plane.cs' and add: 
 
 ```csharp
+// <copyright file="Plane.cs" company="MyCompany">
+//     Copyright (c) MyCompany. All rights reserved.
+// </copyright>
+
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
     using System;
@@ -84,6 +88,10 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 * Create empty class 'PlaneDto.cs' and add:  
 
 ```csharp
+// <copyright file="PlaneDto.cs" company="MyCompany">
+//     Copyright (c) MyCompany. All rights reserved.
+// </copyright>
+
 namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 {
     using System;
@@ -99,43 +107,43 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
         /// <summary>
         /// Gets or sets the Manufacturer's Serial Number.
         /// </summary>
-        [BIADtoField(Required = true)]
+        [BiaDtoField(Required = true)]
         public string Msn { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the plane is active.
         /// </summary>
-        [BIADtoField(Required = true)]
+        [BiaDtoField(Required = true)]
         public bool IsActive { get; set; }
 
         /// <summary>
         /// Gets or sets the last flight date and time.
         /// </summary>
-        [BIADtoField(Type = "datetime", Required = false)]
+        [BiaDtoField(Type = "datetime", Required = false)]
         public DateTime? LastFlightDate { get; set; }
 
         /// <summary>
         /// Gets or sets the delivery date.
         /// </summary>
-        [BIADtoField(Type = "date", Required = false)]
+        [BiaDtoField(Type = "date", Required = false)]
         public DateTime? DeliveryDate { get; set; }
 
         /// <summary>
         /// Gets or sets the daily synchronisation hour.
         /// </summary>
-        [BIADtoField(Type = "time", Required = false)]
+        [BiaDtoField(Type = "time", Required = false)]
         public string SyncTime { get; set; }
 
         /// <summary>
         /// Gets or sets the capacity.
         /// </summary>
-        [BIADtoField(Required = true)]
+        [BiaDtoField(Required = true)]
         public int Capacity { get; set; }
 
         /// <summary>
         /// Gets or sets the site.
         /// </summary>
-        [BIADtoField(IsParent = true, Required = true)]
+        [BiaDtoField(IsParent = true, Required = true)]
         public int SiteId { get; set; }
     }
 }
@@ -145,6 +153,10 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneMapper' and add:    
 
 ```csharp
+// <copyright file="PlaneMapper.cs" company="MyCompany">
+//     Copyright (c) MyCompany. All rights reserved.
+// </copyright>
+
 namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
     using System;
