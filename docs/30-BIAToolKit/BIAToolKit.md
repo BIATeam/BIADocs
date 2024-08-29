@@ -1,8 +1,7 @@
 ---
 layout: default
 title: BIAToolKit
-parent: Developer guide
-nav_order: 50
+nav_order: 40
 has_children: true
 ---
 

@@ -8,15 +8,15 @@ nav_order: 20
 
 # Build your first project
 
-1. Create a project "MyFirstProject" with company name "MyCompany" using the BIAToolKit in folder "C:\Sources\Test". [Step desribe here](../../30-DeveloperGuide/50-BIAToolKit/20-CreateProject.md). If you have company files used them to have correct settings.
+1. Create a project "MyFirstProject" with company name "MyCompany" using the BIAToolKit in folder "C:\Sources\Test". [Step desribe here](../../30-BIAToolKit/20-CreateProject.md). If you have company files used them to have correct settings.
   ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-1-BIATollKit.PNG)
 
-2. Open the folder "C:\Sources\Test\MyFirstProject"   
+1. Open the folder "C:\Sources\Test\MyFirstProject"   
    ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-2-Files.PNG)
 
-3. Open with Visual Studio 2022 the solution "C:\Sources\Test\MyFirstProject\DotNet\MyFirstProject.sln"
+2. Open with Visual Studio 2022 the solution "C:\Sources\Test\MyFirstProject\DotNet\MyFirstProject.sln"
    
-4. ONLY If you have not compagny files contaning configuration files
+3. ONLY If you have not compagny files contaning configuration files
    1.  In project MyCompany.MyFirstProject.DeployDB remane files 
        1. appsettings.Example_Development.json => appsettings.Development.json
 
@@ -29,27 +29,27 @@ nav_order: 20
       1. appsettings.Example_Development.json => appsettings.Development.json
       2. bianetconfig.Example_Development.json => bianetconfig.Development.json
    
-5. Open Sql Server Management Studio and create a database named "MyFirstProject"   
+4. Open Sql Server Management Studio and create a database named "MyFirstProject"   
    ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-3-Database.PNG)
 
-6. Launch the Package Manager Console in VS 2022 (Tools > Nuget Package Manager > Package Manager Console).
+5. Launch the Package Manager Console in VS 2022 (Tools > Nuget Package Manager > Package Manager Console).
 
-7.  Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution.
+6.  Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution.
 
-8.  In the package manager console, run the **Add-Migration** command to initialize the migrations for the database project. 
+7.  In the package manager console, run the **Add-Migration** command to initialize the migrations for the database project. 
     1.  Run the command: `Add-Migration Init -Context "DataContext"`
     2.  Console must display no error message   
       ![CreateYourFirstProject-1-BIATollKit](../../Images/Tuto/AddMigrationInit.PNG)   
     3.  Verify new file *'Init'* is created:    
       ![CreateYourFirstProject-1-BIATollKit](../../Images/Tuto/AddMigrationInitFile.PNG)  
 
-9.  In the package manager console, run the **Update-Database** command to create tables in the database . 
+8.  In the package manager console, run the **Update-Database** command to create tables in the database . 
     1.  Run the command: `Update-Database -Context "DataContext"`
     2.  Console must display no error message
     3.  Verify tables are created in the database:   
     ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-4-Tables.PNG)
 
-10. Be sure startup project is "MyCompany.MyFirstProject.Presentation.Api".   
+9.  Be sure startup project is "MyCompany.MyFirstProject.Presentation.Api".   
 Run it. 
     
 1.  The swagger page will be open.  

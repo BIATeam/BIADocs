@@ -27,7 +27,7 @@ But the applications can communicate together.
 Creating a new app is very fast => you can easily multiply the number of application.
 Migrate them is automatic and can be done independently.
 
-The framework onboard a lot of native [Features](../../30-DeveloperGuide/20-Features/Features.md).
+The framework onboard a lot of native [Features](../../40-DeveloperGuide/20-Features/Features.md).
 
 The configuration and design of the applications generated can be customize by each Company wich use the framework.
 This customization can be place in a git repository to be share with every developer inside or outside the company.
