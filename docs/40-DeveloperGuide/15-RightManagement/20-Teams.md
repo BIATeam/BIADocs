@@ -74,11 +74,11 @@ You have:
 - Application\Site\ ...
 - Presentation.Api\Controllers\Site\SitesController.cs
 
-And similar to [CRUD_Back](../40-Back/70-CreateACRUD.md) the basic right just be added in
+And similar to [CRUD_Back](../20-CRUD/10-CreateACRUD.md) the basic right just be added in
 - CrossCutting.Common\Right.cs
 - Presentation.Api\bianetconfig.json
   
-For injection similar to [CRUD_Back](../40-Back/70-CreateACRUD.md) update:
+For injection similar to [CRUD_Back](../20-CRUD/10-CreateACRUD.md) update:
 - Crosscutting.Ioc\IocContainer.cs:
     => Into the “ConfigureApplicationContainer” function add a Transient on the service.
 
@@ -103,7 +103,7 @@ In addition, to finish update the database.
 
 
 ### Add the team CRUD
-The procedure is similar to the [CRUD_Front](../30-Front/20-CreateACRUD.md) but you will use the zip **aircraft-maintenance-companies.zip** instead of **feature-planes.zip**
+The procedure is similar to the [CRUD_Front](../20-CRUD/20-CreateACRUD.md) but you will use the zip **aircraft-maintenance-companies.zip** instead of **feature-planes.zip**
 
 ### Filter Sub teams in header
 In case of a team type child of team type you have to filer the chidrens teams by ther parent.
