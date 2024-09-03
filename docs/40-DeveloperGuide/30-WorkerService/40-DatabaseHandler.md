@@ -9,7 +9,15 @@ nav_order: 40
 # Database Handler (Worker Feature)
 This file explains what to use the the database handler feature in your V3 project.
 
-## Prerequisite
+## Introduction
+The database handlers can work in two modes :
+- Using polling (default mode)
+- Using SQL Data Broker (see [Prerequisite](#sql-data-broker-prerequisite))
+
+Polling mode is compatible with SQL Server and PostgreSQL.
+SQL Data Broker is only compatible with SQL Server with mandatory configuration as seen in the [Prerequisite](#sql-data-broker-prerequisite).
+
+## SQL Data Broker Prerequisite
 The user **sa** must be the owner of the database:
 
 ```SQL
@@ -29,7 +37,7 @@ ALTER DATABASE [YourProjectDatabase] SET ENABLE_BROKER;
 ALTER DATABASE [YourProjectDatabase] SET MULTI_USER WITH ROLLBACK IMMEDIATE
 ```
 
-WARNING: If the database is in an availability group, you should remove the database from availability group before apply this script.
+**WARNING**: If the database is in an availability group, you should remove the database from availability group before apply this script.
 And readded after (required to delete before the databse in secondary server).
 
 Give the right to the YourUserRW to read and write the database and run this script (replace the YourUserRW by the corresponding user):
@@ -68,13 +76,12 @@ GRANT RECEIVE ON QueryNotificationErrorsQueue TO "YourUserRW";
 GO
 ```
 
-## Overview
+## Database Handler Overview
 * The worker service run code when there is change on the database.
-* A fine selection of the rows to track can be done with a SQL query.
+* A fine selection of the rows to track can be done with a query.
 
 ## Activation
-### Api: 
-* bianetconfig.json
+* **bianetconfig.json**
 In the BIANet Section add:
 ``` json
     "WorkerFeatures": {
@@ -85,60 +92,84 @@ In the BIANet Section add:
 ```
 
 ## Usage
-## Create the handler repositories:
-Create a repository classe in the worker project in floder Features this classe inherit of DatabaseHandlerRepository.
-``` csharp
+### Create the handler repositories
+For each request to track in database, create a repository class in the worker project in folder Features. This class must inherits from `DatabaseHandlerRepository<T>` that implements the interface `IDatabaseHandlerRepository` :
+```csharp 
 namespace [YourCompanyName].[YourProjectName].WorkerService.Features
 {
-    using System.Data.SqlClient;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using BIA.Net.Core.Common.Configuration;
     using BIA.Net.Core.WorkerService.Features.DataBaseHandler;
-    using BIA.Net.Core.WorkerService.Features.HubForClients;
+    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
 
-    public class PlaneHandlerRepository : DatabaseHandlerRepository
+    public class DemoHandlerRepository : DatabaseHandlerRepository<DemoHandlerRepository>
     {
-        public PlaneHandlerRepository(IConfiguration configuration)
+        public DemoHandlerRepository(IServiceProvider serviceProvider, IConfiguration configuration)
             : base(
-            configuration.GetConnectionString("[YourProjectName]Database"),
-            "SELECT RowVersion FROM [dbo].[Planes]",
-            "" /*"SELECT TOP (1) [Id] FROM [dbo].[Planes] ORDER BY [RowVersion] DESC"*/,
-            r => PlaneChange(r))
-            { }
-
-        public static void PlaneChange(SqlDataReader reader)
+                  serviceProvider,
+                  configuration.GetConnectionString("DemoDatabase"),
+                  configuration.GetDBEngine("DemoDatabase"),
+                  "SELECT Id, Name, RowVersion FROM [dbo].[Users]",
+                  "Id",
+                  pollingInterval: TimeSpan.FromSeconds(1),
+                  useSqlDataBroker: configuration.GetSqlDataBroker("DemoDatabase"),
+                  sqlFilterNotificationInfos: new List<SqlNotificationInfo> { SqlNotificationInfo.Delete, SqlNotificationInfo.Update, SqlNotificationInfo.Insert })
         {
-            //int id = reader.GetInt32(0);
+        }
 
-            _ = HubForClientsService.SendMessage("refresh-planes", "");
+        protected override Task OnChange(DataBaseHandlerChangedData changedData)
+        {
+            string userName;
+			if (changedData.ChangeType == DatabaseHandlerChangeType.Delete && changedData.PreviousData.TryGetValue("Name", out object oldUsername))
+			{
+				userName = (string)oldUsername;
+			}
+			else if (changedData.CurrentData.TryGetValue("Name", out object currentUserName))
+			{
+				userName = (string)currentUserName;
+			}
+
+			Debug.WriteLine($"User {userName} has changed !")
+            return Task.CompletedTask;
         }
     }
 }
 ```
-In the constructor base you specify the parameters:
-- The connection string
-- The SQL query to track change
-- The SQL query to execute when a change appear (if empty it do not execute query)
-- The callback fonction to execute when a change appear
+#### Mandatory constructor parameters :
+- **serviceProvider** : injected with dependency injection
+- **configuration** : injected with dependency injection
 
-In the callback function :
-- you can read the result of the query passed in 3th parameters, by using the reader passed in parameter.
-- If the 3th paramter of the base constructor is empty the reader parameter is null.
+#### Mandatory base override methods :
+- **OnChange** : method called when changes has been detected by the handler. `DataBaseHandlerChangedData` parameter represents the affected row with the change type (Add, Delete or Modify), previous and current value as `Dictionary<string, object>` where the key is the column name and the value the column value.
+
+#### Mandatory base constructor parameters :
+- **serviceProvider** : to use injected service provider of inherited class
+- **connectionString** : to connect to the database
+- **databaseEngine** : type of database engine (sqlserver or postgresql)
+- **onChangeEventHandlerRequest** : the query to track changes. Each column to track and include into the changes must be namely specified
+- **indexKey** : the index key of the query to track. Must be included in the query
+
+#### Optional base constructor parameters :
+- **useSqlDataBroker** : force the use of SQL Data Broker mode if true (false by default)
+- **pollingInterval** : set the interval of polling (default is 5 seconds)
+- **sqlFilterNotificationInfos** : list of valid `SqlNotificationInfo` sent by SQL Server when using SQL Data Broker mode that triggers the detection of changes. If null or empty, all `SqlNotificationInfo` will be treated as valid.
+
+#### Using SQL Data Broker
+* **appsettings.json**
+Add a section SQLDataBroker below DBEngine section :
+``` json
+    "SQLDataBroker": {
+  		"DemoDatabase": "true"
+	},
+```
 
 ### Parameters those repositories
-In program.cs you should pass the list of all yours database handler repositories class in the function config.DatabaseHandler.Activate.
+In Startup you should inject all the implementations of the `IDatabaseHandlerRepository` as **singleton** :
 ``` csharp
-        services.AddBiaWorkerFeatures(config =>
-        {
-            config.Configuration = hostContext.Configuration;
-            var biaNetSection = new BiaNetSection();
-            config.Configuration.GetSection("BiaNet").Bind(biaNetSection);
-
-            if (biaNetSection.WorkerFeatures.DatabaseHandler.IsActive)
-            {
-                config.DatabaseHandler.Activate(new List<DatabaseHandlerRepository>()
-                {
-                    new PlaneHandlerRepository(hostContext.Configuration),
-                });
-            }
-        });
+services.AddSingleton<IDatabaseHandlerRepository, DemoHandlerRepository>();
+services.AddSingleton<IDatabaseHandlerRepository, OtherHandlerRepository>();
 ```
+
