@@ -7,11 +7,11 @@ nav_order: 140
 
 # File Queuing
 
-This file explains how to send and recieve File by Queuing (RabbitMQ).
+This file explains how to send and receive File by Queuing (RabbitMQ).
 
 ## Overview
 
-The BIA.Net.Queue autorise to send/Receive file by Message Queuing using a RabbitMQ server.
+The BIA.Net.Queue authorize to send/Receive file by Message Queuing using a RabbitMQ server.
 
 ## How to install
 
@@ -22,9 +22,9 @@ Add BIA.Net.Queue's Packages from nuget.org on the the proper project in your so
 BIA.Net.Queue.Domain
 BIA.Net.Queue.Domain.Dto
 BIA.Net.Queue.Infrastructure.Service
-BIA.Net.Queue.Crosscutring.Common
+BIA.Net.Queue.Crosscutting.Common
 
-Add the following line in the infrastructureservice methods in IOCContainer Class.
+Add the following line in the infrastructure service methods in IOCContainer Class.
 
 ```csharp
 private static void ConfigureInfrastructureServiceContainer(IServiceCollection collection)
@@ -36,7 +36,7 @@ private static void ConfigureInfrastructureServiceContainer(IServiceCollection c
 
 ### how to serialize/deserialize a file
 
-File are transfered by FileQueueDto :
+File are transferred by FileQueueDto :
 ```csharp
     /// <summary>
     /// DTO of File Queue
@@ -61,7 +61,7 @@ File are transfered by FileQueueDto :
     }
 ```
 
-which can be instanciate from a file path :
+which can be instantiate from a file path :
 
 ```csharp
     FileQueueDto file = new FileQueueDto();
@@ -70,9 +70,9 @@ which can be instanciate from a file path :
     file.Data = File.ReadAllBytes(filePath);
 ```
 
-### How to recieve a file
+### How to receive a file
 
-To recieve a file, create an observer of FileQueueDto
+To receive a file, create an observer of FileQueueDto
 
 ```csharp
 	public class FileReceiverHandler : IObserver<FileQueueDto>
@@ -123,18 +123,18 @@ Then subscribe to the observable, create a QueueDto
 	
 	...
 	
-	fileQueueRepository.Configure(fileRecieverConfigurations.Select(x => new QueueDto { Endpoint = XXX, QueueName = YYY }));
-	fileQueueRepository.Subscribe(fileRecieverHandler);
+	fileQueueRepository.Configure(fileReceiverConfigurations.Select(x => new QueueDto { Endpoint = XXX, QueueName = YYY }));
+	fileQueueRepository.Subscribe(fileReceiverHandler);
 ```
 
 ### How to send a file
 
-To send, juste use SendFile method with server URI, queue name and a FileQueueDto
+To send, just use SendFile method with server URI, queue name and a FileQueueDto
 
 ```csharp
     private readonly IFileQueueRepository fileQueueRepository;
 	
 	...
 	
-	fileQueueRepository.SendFile(Seveur, queueName, file);
+	fileQueueRepository.SendFile(Sever, queueName, file);
 ```

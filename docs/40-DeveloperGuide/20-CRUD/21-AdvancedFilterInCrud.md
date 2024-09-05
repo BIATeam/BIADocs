@@ -24,7 +24,7 @@ To add an advanced filter in an existing CRUD:
 ```
 
 3. in [YourFeature]s\views\[YourFeature]s-index\YourFeature]s-index.component.html:
-  replace the begining :
+  replace the beginning :
   ```html
   <div>
     <div>
@@ -43,7 +43,7 @@ To add an advanced filter in an existing CRUD:
         <bia-table-header
   ```
 
-  And add at the end a clossing div
+  And add at the end a closing div
   ```html
   </div>
   ```

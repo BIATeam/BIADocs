@@ -44,45 +44,45 @@ nav_order: 10
 
 ### DotNet
 * .Net 8
-* Acces unauthorize render a 403 error (no more 500)
+* Access unauthorize render a 403 error (no more 500)
 * Use a list of WebApp to wake up to not have to comment code when back or front only or 2 front.
 * Clean distributed cache at deploy db.
 * Replace Bulk insert by a mode (only compatible SQLserver)
-* Bulk Update and Delete are deprecated => should use .Net 8 native methode.
+* Bulk Update and Delete are deprecated => should use .Net 8 native method.
 * Improve GetAllElementsAndCountAsync with ReadOnly
 
   
 ## V3.8.0 (2023-10-31)
 * More compliant with IISExpress and use port 32128
-* Posibility to be databaseless for WebApi used as Connector:
+* Possibility to be databaseless for WebApi used as Connector:
   * Remove User info in Token light.
-  * Bouton token light added swagger to be able to test.
-  * Disable distibued cache is possible.
-  * BIADistibuedCache switch to BIALocalCache if distibued cache is disable
+  * Button token light added swagger to be able to test.
+  * Disable distributed cache is possible.
+  * BIADistributedCache switch to BIALocalCache if distributed cache is disable
   
 ### Angular
 * Angular 16.
 * Remove flex-layout.
 * Add badge on filter when there is a filter on a column.
 * Add custom validators.
-* Translate of the role in User list, fix when langage change.
-* Remove icon in liste title if not sorted
+* Translate of the role in User list, fix when language change.
+* Remove icon in list title if not sorted
 * Possibility to set an icon instead of the title in CRUD list.
 
 ### DotNet
-* UserManager is optionnal, specifique mapping Role to permission can be manage by environment. 
-* Keycloack authentication review.
+* UserManager is optional, specific mapping Role to permission can be manage by environment. 
+* Keycloak authentication review.
 * Add Draw io model.
 * Add TOptionDto for non int id.
 * Separate setting between IIS and IISExpress.
 * Add direct navigation in junction (for new crud only).
 * Add NLog rule for EntityFrameworkCore.
 * Add the permission Background_Task_Admin for Admin.
-* Remove uncrypted token.
-* Swager GetAll works without change parametres
-* Display error message when deployDB crash at deployement.
+* Remove unencrypted token.
+* Swagger GetAll works without change parameters
+* Display error message when deployDB crash at deployment.
 * Get AD Group form authentication claims (faster and no cache needed).
-* Stop deployement if error durring deployDB
+* Stop deployment if error during deployDB
 * Timeout for deploydb is configurable
 * Fix sync user crash when login not in AD
 * Fix stop service and App pool at deployement.

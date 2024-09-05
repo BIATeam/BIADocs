@@ -44,7 +44,7 @@ ProjectParentPath/
 ```
 
 ## Set the company name and project name
-The company name and project name will appear in the namspace of the application :
+The company name and project name will appear in the namespace of the application :
 ``` csharp
 namespace [CompanyName].[ProjectName].Presentation.Api
 ```
@@ -56,7 +56,7 @@ Click on the save settings button to save the "Project parent path" and "Company
 
 ## Select the version and option.
 You can select the version of the framework and if you have Company files you can select the version of the company files (corresponding to the framework version) and profiles and option.
-Generaly the profiles impact the design (background picture, colors...) and the option are related to the configuration. But all is possible and you should consult your company files administrator to have the details.
+Generally the profiles impact the design (background picture, colors...) and the option are related to the configuration. But all is possible and you should consult your company files administrator to have the details.
 
 ## Create the project
 Click on the create button to create the project. It will be create in  [ProjectParentPath]/[ProjectName]

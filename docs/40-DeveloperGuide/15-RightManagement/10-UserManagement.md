@@ -50,18 +50,18 @@ In name you should specify the short name of the domaine (ie the word you use be
 }
 ```
 
-For keycloack consult the specific page [Keycloak](./50-Keycloak.md)
+For keycloak consult the specific page [Keycloak](./50-Keycloak.md)
 
-## Autorization
-Autorization is based on roles.
+## Authorization
+Authorization is based on roles.
 The roles of an users are calculated when the user login and store in the jwt token.
-Main roles comes from ownership to AD Groups, KeyCloack Groups and be in the table user.
-  The role "User" give the autorization to acces to the application.
-  The role "Admin" give the autorization to acces to the application and some important fonction to configure the application at startup.
+Main roles comes from ownership to AD Groups, keycloak Groups and be in the table user.
+  The role "User" give the authorization to access to the application.
+  The role "Admin" give the authorization to access to the application and some important function to configure the application at startup.
 Fine roles are directly set to the user in the application.
 
 Roles is parametrized in the bianetconfig files (depending of the environment) in section Roles
-You can use fixed role for every user (generaly use during development):
+You can use fixed role for every user (generally use during development):
 ```json
   "Roles": [
     {
@@ -112,7 +112,7 @@ Or because user have been add in database:
       },
 ```
 
-Or because user is in a Keycloack group:
+Or because user is in a Keycloak group:
 ```json
       {
         "Label": "Admin",
@@ -126,6 +126,6 @@ On the user screen there is a button that synchronize the user properties with L
 A worker task synchronize them after cleaning the cache.
 
 If the roles use AD groups the member of the groups are synchronize with the button and the Worker task (there is a cache of 200 minutes settings LdapCacheGroupDuration in bianetconfig.json)
-The group cahce is clear by the Worker Task or when a user is added or deleted in the application.
+The group cache is clear by the Worker Task or when a user is added or deleted in the application.
 
 The action to add or delete a user force the synchronization.

@@ -20,7 +20,7 @@ In the projects generated with the bia framework, the content of the theme can b
 
 It should be complete by the files provide by primeface:
 - Copy all folders in primeface styles folder to your project sass folder.
-- Exemple for V16.0.0: 
+- Example for V16.0.0: 
     (Ultima Themes\ultima-ng-16.0.0\src\assets\layout\styles => Angular\src\assets\bia\primeng\sass ). 
     Copy the folders :
     * layout
@@ -53,4 +53,4 @@ It will regenerate :
 
 Rename those files with a MD5 Hash of each files with this site: <a href="https://emn178.github.io/online-tools/md5_checksum.html">md5 checksum</a>.  
 
-And change the Angular/src/index.html and index.prod.html to use thoses new files.
+And change the Angular/src/index.html and index.prod.html to use those new files.

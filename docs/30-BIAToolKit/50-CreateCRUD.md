@@ -41,7 +41,7 @@ Choose items you want to generate for the CRUD:
 
 ## 3. CRUD name
 Singular entity name is fill up by default but you can change it.
-You need to complete the plurial name before generation.<br>
+You need to complete the plural name before generation.<br>
 ![CRUDName](../../Images/BIAToolKit/CRUDName.PNG)
 
 ## 4. Display item
@@ -65,7 +65,7 @@ Open DotNet and Angular projects, rebuild each one and fix issues if exists.
 
 ### <u>Known issues</u>
 * After generation, on Angular folder, go to navigation file (*navigation.ts*) and rework **path** property (delete *examples*).
-* On front side, when compilling angular project, if **import** are not used (mostly on model), deleted its to avoid errors.
+* On front side, when compiling angular project, if **import** are not used (mostly on model), deleted its to avoid errors.
 * Traduction is not already implemented, so **i18n** files (fr.json/en.json/es.json) must be completed with missing labels. 
 
 ## Delete previous CRUD generation
@@ -74,4 +74,4 @@ In case of you want previous generation:
 * then, click on 'Delete previous generation' button
 
 ## Delete annotations
-After generations, if you want to clean code, you can choose to delete annotations. <br>Be carreful, because in this case, <u>you can't regenerate or delete previous features generated</u>, but you can **continue to generate new features**.
+After generations, if you want to clean code, you can choose to delete annotations. <br>Be careful, because in this case, <u>you can't regenerate or delete previous features generated</u>, but you can **continue to generate new features**.

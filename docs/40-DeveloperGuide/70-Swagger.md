@@ -35,7 +35,7 @@ In the BIANet Section add:
     },
 ```
 ### recommendation
-It is not recommanded to Activate this feature in UAT and Production. It can be activate in Integration only for test.
+It is not recommended to Activate this feature in UAT and Production. It can be activate in Integration only for test.
 
-It is recomanded to configure your Presentation.Api project in Visual Studio to launch the swagger UI at start of debug:
+It is recommended to configure your Presentation.Api project in Visual Studio to launch the swagger UI at start of debug:
 ![Swagger VS Configuration](../../Images/SwaggerVSConfig.png)

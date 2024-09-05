@@ -16,23 +16,23 @@ Some classes have been incorporate to accelerate the creation of a service:
     - CrudAppServiceBase (inherit of FilteredServiceBase)
     - CrudAppServiceListAndItemBase (inherit of FilteredServiceBase)
 
-It is recommanded to always create service that inherit of FilteredServiceBase to be able to correctly filter the acces to the data.
+It is recommended to always create service that inherit of FilteredServiceBase to be able to correctly filter the access to the data.
 
 ### FilteredServiceBase
-It add a filter that can be based on the usercontext or functionnal need.
-Exemple are explain in [FilterData](../15-RightManagement/40-FilterData.md).
+It add a filter that can be based on the user context or functional need.
+Example are explain in [FilterData](../15-RightManagement/40-FilterData.md).
 
-With an implemented dtos and mapper between dto and entity, this classe offer add, read, update and delete function securised by the filter.
+With an implemented dtos and mapper between dto and entity, this class offer add, read, update and delete function secured by the filter.
 
 ### CrudAppServiceBase
-This classe is use a dto and a mapper passed in the declaration. And simplify the usage of the functions.
+This class is use a dto and a mapper passed in the declaration. And simplify the usage of the functions.
 
 ### CrudAppServiceListAndItemBase
-This classe is use 2 dtos and 2 mapper passed in the declaration. And simplify the usage of the functions.
+This class is use 2 dtos and 2 mapper passed in the declaration. And simplify the usage of the functions.
 A dto is use to add, read, update and delete a simple item.
 The second for of list items.
 
-It can be use in CRUD when detail screeen request more complexe info than list. To increase performances of the list.
+It can be use in CRUD when detail screen request more complex info than list. To increase performances of the list.
 
 ## Transaction
 If a service preform several update add or delete actions, it should encapsulate in a transaction.

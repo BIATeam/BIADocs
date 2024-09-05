@@ -8,7 +8,7 @@ nav_order: 20
 
 # Create a CRUD (front)
 This document explains how to quickly create a CRUD module feature universal.
-It means that you can switch this functionnalities:
+It means that you can switch this functionalities:
 - Navigation in Page mode / Popup Mode
 - Use view / Not use view
 - Modification in the table / in dedicated form 
@@ -21,7 +21,7 @@ It is strongly recommended to generate front-end CRUD in same time of [back-end]
 The back-end is ready, i.e. steps before paragraph 3 are already done.
 
 ## Generate new feature
-Use the BIAToolKit on [CRUD Generation](../../30-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'Front'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked (and Generation _'WebApi'_ recommanded).<br>
+Use the BIAToolKit on [CRUD Generation](../../30-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'Front'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked (and Generation _'WebApi'_ recommended).<br>
 Don't forget to fill new **crud name on singular** (i.e. <span style="background-color:#327f00">aircraft-type</span>) and **plural form** (i.e. <span style="background-color:#327f00">aircrafts-types</span>).<br>
 It is also necessary to choose **'Display item name'**.
 
@@ -106,7 +106,7 @@ https://novicelab.org/jsonabc/
 ### Universal Mode
 * In universal mode the loading of the relations are done in **...-options-service.ts**
 * Adapt the lists to display in combo box in :
-  * the members of the classe, 
+  * the members of the class, 
   * the constructor 
   * the function loadAllOptions.
 * The list should be OptionDto list in domain. See [this page](30-CreateAnOption.md) to create the domain feature option.
@@ -125,7 +125,7 @@ https://novicelab.org/jsonabc/
 
 ## Specific Input and Output
 ### Since V3.7.0
-* You can see an exemple in BIADemo with the Crud 'planes-specific'
+* You can see an example in BIADemo with the Crud 'planes-specific'
   * In **views/...-index.component.ts**
     * Add the function onChange at the end of the file
   ```ts

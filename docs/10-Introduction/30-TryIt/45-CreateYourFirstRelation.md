@@ -123,7 +123,7 @@ Update-DataBase -Context DataContext
 * Open "Add CRUD" tab
 * Generation:
   * Choose Dto file: *PlaneDto.cs*
-  * Information message appear: "Generation was alerady done for this Dto file"
+  * Information message appear: "Generation was already done for this Dto file"
   * Verify "WebApi" and "Front" Generation are checked
   * Verify only "CRUD" Generation Type is checked
   * Verify "Entity name (singular)" value is *Plane*
@@ -145,7 +145,7 @@ npm start
 ```
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planes'* for block with "labelKey" value is *'app.planes'*   
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
-* Open web navigator on adress: *http://localhost:4200/* to display front page
+* Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"PLANES"* tab to display 'Planes' page.
 
 10. Add traduction
@@ -178,5 +178,5 @@ npm start
     "planeType": "Tipos de planos",
   },
 ```  
-* Open web navigator on adress: *http://localhost:4200/* to display front page
+* Open web navigator on address: *http://localhost:4200/* to display front page
 * Open 'Plane' page and verify label has been replaced.

@@ -7,7 +7,7 @@ nav_order: 90
 ---
 
 # Log Helper
-This document explains how to use the log helper to log the execution time of functions or intructions
+This document explains how to use the log helper to log the execution time of functions or instructions
 
 ## Usage
 A log utility class LogHelper is available in the framework in BIA.Net.Core.Common.Helpers to help log execution times of functions.
@@ -17,7 +17,7 @@ Two methods are available :
 
 ## Example
 
-LogHelper functions take the logger of your application as first parameter. You can get it by injecting ILogger in your contructor or if you have access to serviceProvider by calling serviceProvider.GetService<ILogger<MyService>>();
+LogHelper functions take the logger of your application as first parameter. You can get it by injecting ILogger in your constructor or if you have access to serviceProvider by calling serviceProvider.GetService<ILogger<MyService>>();
 
 ```csharp
 using BIA.Net.Core.Common.Helpers;

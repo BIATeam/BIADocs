@@ -10,7 +10,7 @@ nav_order: 10
 This document explains how to quickly create a CRUD Rest API from zero.
 It means that you will see all the files to be modified from the DB mapping to the controller:
 - Into the Domain layer you have to code an Entity corresponding to your table in the database.
-- Into the Infracstructure Layer, you have to code the mapping between the database and the new entity.
+- Into the Infrastructure Layer, you have to code the mapping between the database and the new entity.
 - Into the Application Layer, you have to code a new service to manage the operations done on the entity.
   - Create,
   - Read or Querying with or without filter, pagination,
@@ -34,12 +34,12 @@ In summary, we can considerate that an entity in relationship with the main enti
 ![Entity folder](../../Images/EntityPath.jpg)
 
 #### Code
-The entity class have to inherit of VersionnedTable and IEntity which is parametrized by key type.
+The entity class have to inherit of VersionedTable and IEntity which is parametrized by key type.
 
 #### Team constraint
-The Bia Framework provides for data segregation and user role managment by Team. So all entity must be :
+The Bia Framework provides for data segregation and user role management by Team. So all entity must be :
 - either an other entity as parent 
-- or a entity reprensenting a Team.
+- or a entity representing a Team.
   
 Here the entity representing a Team is Site.
 With this segregation, a Plane created by a user of site A cannot be consulted by a user of an other site B.
@@ -89,7 +89,7 @@ namespace TheBIADevCompany.BIADemo.Domain.PlaneModule.Aggregate
         public DateTime? DeliveryDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the daily synchronisation hour.
+        /// Gets or sets the daily synchronization hour.
         /// </summary>
         [Column(TypeName = "time")]
         public TimeSpan? SyncTime { get; set; }
@@ -118,8 +118,8 @@ namespace TheBIADevCompany.BIADemo.Domain.PlaneModule.Aggregate
 Now the entity is created, we can create the ModelBuilder file corresponding into the InfrastructureData project. 
 Each feature has a ModelBuilder file prefixed by the name of the feature. For example PlaneModelBuilder.cs.<br>
 Theses files are included into the DataContext file.<br>
-Here you can see the exemple of Plane Model Builder file.
-As an aggregate can have several classes, a modelBuilder file can describ several tables.
+Here you can see the example of Plane Model Builder file.
+As an aggregate can have several classes, a modelBuilder file can describe several tables.
 
 
 ```csharp
@@ -178,7 +178,7 @@ namespace TheBIADevCompany.BIADemo.Infrastructure.Data.ModelBuilders
         }
 
         /// <summary>
-        /// Create the model for aiports.
+        /// Create the model for airports.
         /// </summary>
         /// <param name="modelBuilder">The model builder.</param>
         private static void CreateAirportModel(ModelBuilder modelBuilder)
@@ -192,9 +192,9 @@ namespace TheBIADevCompany.BIADemo.Infrastructure.Data.ModelBuilders
 ```
 
 ### 1.3 DataContext file
-After creating the modelbuilder file, we can modify the DataContext file to :
+After creating the model builder file, we can modify the DataContext file to :
 - add the DBSet
-- add the call to the modelbuilder class.
+- add the call to the model builder class.
 
 
 ```csharp
@@ -215,12 +215,12 @@ After creating the modelbuilder file, we can modify the DataContext file to :
         }
 ```
 
-The call of modelbuilder class must be coded after //Begin BIADemo in order to preserve the future Framework evolution.
+The call of model builder class must be coded after //Begin BIADemo in order to preserve the future Framework evolution.
 
 ### 1.4 DTO file
-The DTO code represente two concepts: 
+The DTO code represent two concepts: 
 - data coming from the front,
-- data contained into the ressource managed by a Rest API.
+- data contained into the resource managed by a Rest API.
   
 In CRUD feature, the Rest API resource contains the same properties of the corresponding entity excepted for the relationship.
 
@@ -252,7 +252,7 @@ In CRUD feature, the Rest API resource contains the same properties of the corre
     public DateTime? DeliveryDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the daily synchronisation hour.
+    /// Gets or sets the daily synchronization hour.
     /// </summary>
     [BIADtoField(Type = "time")]
     public string SyncTime { get; set; }
@@ -318,28 +318,28 @@ Use the BIAToolKit on [CRUD Generation](../../30-BIAToolKit/50-CreateCRUD.md) ta
   * Controller file 
 - Update:
   * Right file
-  * Permission into biaconfig file
+  * Permission into bianetconfig file
   * IocContainer file
 
-Automaticaly back-end CRUD generation can be done in same time of [front-end](./20-CreateACRUD.md) CRUD generation, but back-end generation can be done independently.
+Automatically back-end CRUD generation can be done in same time of [front-end](./20-CreateACRUD.md) CRUD generation, but back-end generation can be done independently.
 
 ### 3.1 ApplicationService file
-The ApplicationServie code inherit of CrudAppServiceBase which implement all the methods necessary for CRUD operations.
+The ApplicationService code inherit of CrudAppServiceBase which implement all the methods necessary for CRUD operations.
 
 ### 3.2 Controller file
 The Controller inherit of BiaControllerBase and implement all method corresponding to the CRUD operation and more.
 
-The controller have conditionnal code determinated by the variable <i>UseHubForClientInPlane</i>.
+The controller have conditional code determinate by the variable <i>UseHubForClientInPlane</i>.
 This mean that if define, the controller manage SignalR hub to send message to the client front.
-Be carefull to the configuration of signalR URL. On local execution with IIExpress, the url must be like that : 
+Be careful to the configuration of signalR URL. On local execution with IIExpress, the url must be like that : 
 ```"SignalRUrl": "http://localhost:54321/HubForClients" ```.
 
 ### 3.3 Right file
-The methods into the controller are subject to autorization. 
+The methods into the controller are subject to authorization. 
 Each new feature has his static class into the _Right.cs_ file.
 This file is into CrossCutting.Common project.
 
-### 3.4 Permission into biaconfig file
+### 3.4 Permission into bianetconfig file
 This file configure permissions corresponding to the role.
 
 ### 3.5 IocContainer file

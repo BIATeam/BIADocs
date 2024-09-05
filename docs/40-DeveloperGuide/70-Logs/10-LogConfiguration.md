@@ -22,7 +22,7 @@ Notable properties:
 **minlevel**: set the level of logs kept. Order: Trace > Debug > Info > Warn > Error > Fatal > Off (Trace logging everything and Off logging Nothing )
 **fileName**: change the location and/or name of the log files
 **archiveAboveSize**: size limit of a log file. When size is reached, the file is archived and another one is created for subsequent logs
-**archiveEvery**: lifetime of a logfile. After that time as passed, the file is archived and another one is created for subsequent logs,
+**archiveEvery**: lifetime of a log file. After that time as passed, the file is archived and another one is created for subsequent logs,
 **maxArchiveFiles**: number of files kept at a time. After that number is reached, older files are deleted when newer files are created
 **layout**: *should not be changed*. Define the structure of the header of each new lines in the log file. The format should be the same for each application for easy interpretation of the logs
 

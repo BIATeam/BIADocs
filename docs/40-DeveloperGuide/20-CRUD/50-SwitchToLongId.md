@@ -7,7 +7,7 @@ nav_order: 50
 ---
 
 # Switch to long Id
-This document explains how to switch an entity id from int to long. It can be use similary to switch to GUID.   
+This document explains how to switch an entity id from int to long. It can be use similar to switch to GUID.   
 <u>For this example, we have switch the id of the entity: <span style="background-color:#327f00">plane</span>.</u>
 
 
@@ -40,22 +40,22 @@ If the entity id is reference by other table change the type in related entities
     public class PlaneAirport : VersionedTable
     {
         /// <summary>
-        /// Gets or sets the conformcertif.
+        /// Gets or sets the Plane.
         /// </summary>
         public Plane Plane { get; set; }
 
         /// <summary>
-        /// Gets or sets the conformcertif id.
+        /// Gets or sets the Plane id.
         /// </summary>
         public long PlaneId { get; set; }
 
         /// <summary>
-        /// Gets or sets the site.
+        /// Gets or sets the Airport.
         /// </summary>
         public Airport Airport { get; set; }
 
         /// <summary>
-        /// Gets or sets the site id.
+        /// Gets or sets the Airport id.
         /// </summary>
         public int AirportId { get; set; }
     }
@@ -73,7 +73,7 @@ Use long as TKey type in the inheritance ICrudAppServiceBase
   ```
 
 ## Transform the controller
-Use long ithe list of ids in Remove function
+Use long in the list of ids in Remove function
   ``` csharp
         public async Task<IActionResult> Remove([FromQuery] List<long> ids)
   ```

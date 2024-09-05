@@ -16,7 +16,7 @@ This file explains what to add the translation on some fields on an existing ent
 Within the framework of the BIA, the chosen approach is **Separate translation table approach** : 
 In this approach Instead of putting all translation under the same table, we will write a separate translation table for each table which requires localization.
 
-![Database Internationnalization](../../Images/DatabaseInternationnalization.png)
+![Database Internationalization](../Images/DatabaseInternationnalization.png)
 
 ## Implementation
 
@@ -25,8 +25,8 @@ In this approach Instead of putting all translation under the same table, we wil
   * it should contain :
     * an id
     * a link on language (Language + LanguageId)
-    * a link on the entity to translate (Notification + NotificationId in this exemple)
-    * the fields to translate (Title + Description in this exemple).
+    * a link on the entity to translate (Notification + NotificationId in this example)
+    * the fields to translate (Title + Description in this example).
     ``` csharp
         /// <summary>
     /// The role entity.
@@ -69,12 +69,12 @@ In this approach Instead of putting all translation under the same table, we wil
         public string Description { get; set; }
     }
     ```
-* Add the fonction to define the model with constraint (and Data if required) in Infrastructure.Data/ModelsBuilders/TranslationModelBuilder.cs
+* Add the function to define the model with constraint (and Data if required) in Infrastructure.Data/ModelsBuilders/TranslationModelBuilder.cs
   * it should contain :
     * the HasKey(r => r.Id)
-    * the required constrainte on LanguageId and the entity to translate id (NotificationId  in this exemple)
+    * the required constraint on LanguageId and the entity to translate id (NotificationId  in this example)
     * the HasIndex on those 2 keys (to avoid duplication of translation on same language and same entity)
-    * the contrante on fields to translate identical to the constraints in the entity required or not, lenght... (Title + Description in this exemple).
+    * the constraint on fields to translate. it should be identical to the constraints in the entity required or not, length... (Title + Description in this example).
     ``` csharp
             /// <summary>
         /// Create the model for notification.
@@ -91,9 +91,9 @@ In this approach Instead of putting all translation under the same table, we wil
             modelBuilder.Entity<NotificationTranslation>().Property(m => m.Description).IsRequired().HasMaxLength(256);
         }
     ```
-  * in case of data to enter at migration add the translation in all language in this fonction:
+  * in case of data to enter at migration add the translation in all language in this function:
     * increment the id of 100 when changing of entity (in case of adding language in the future)
-    * exemple of adding notification Type translation in French, spanich and german.
+    * example of adding notification Type translation in French, spanish and german.
     ``` csharp
             modelBuilder.Entity<NotificationTypeTranslation>().HasData(new NotificationTypeTranslation { NotificationTypeId = 1, LanguageId = LanguageId.French, Id = 101, Label = "Tâche" });
             modelBuilder.Entity<NotificationTypeTranslation>().HasData(new NotificationTypeTranslation { NotificationTypeId = 1, LanguageId = LanguageId.Spanish, Id = 102, Label = "Tarea" });
@@ -163,14 +163,14 @@ In this approach Instead of putting all translation under the same table, we wil
     ``` csharp
         Display = entity.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Label,
     ```
-  *  for an entity diplay in CRUD
+  *  for an entity display in CRUD
     *  translate for sort and filter in ExpressionCollection<Notification>
     *  for display in EntityToDto() add :
     ``` csharp
         TitleTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Title).FirstOrDefault() ?? entity.Title,
         DescriptionTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Description).FirstOrDefault() ?? entity.Description,
     ```
-    * for item only ( if (mapperMode == MapperMode.Item)) retrieve all translation (see exemple in NotificationMapper):
+    * for item only ( if (mapperMode == MapperMode.Item)) retrieve all translation (see example in NotificationMapper):
     ``` csharp
             NotificationTranslations = entity.NotificationTranslations.Select(nt => new NotificationTranslationDto
             {

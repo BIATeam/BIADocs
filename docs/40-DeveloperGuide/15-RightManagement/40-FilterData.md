@@ -10,13 +10,13 @@ nav_order: 40
 This file explains how to filter data by the team.
 
 ## Data model
-Check that the data model is compliant with the recomandation in :
+Check that the data model is compliant with the recommendation in :
  [Develop application](../../20-WorkWithBIA/20-DevelopApplication/DevelopTheApplication.md)
 
 ## Filter in service
 If the data model is correct for every item table you have an link on an unique team.
 
-For all service that inharit of **FilteredServiceBase** (or **CrudAppServiceBase** ...) you can implement a security filter in the service constructor.
+For all service that inherit of **FilteredServiceBase** (or **CrudAppServiceBase** ...) you can implement a security filter in the service constructor.
 Filter can be apply at different level : All, Read, Update, Delete
 - If **Delete** filter is not defined the Delete filter use the **Update** filter
 - If **Update** filter is not defined the Update filter use the **Read** filter
@@ -30,7 +30,7 @@ All actions that delete data (RemoveAsync ...) use the Delete filter by default 
 ### Implement a filter on current team
 General usage for a service of a **item table**:
 The current team (selected in upper right combo) is accessible with userData.GetCurrentTeamId.
-You can write the filter with an linq syntaxt that compare the team of the item with the current Site (p => p.SiteId in following example) 
+You can write the filter with an linq syntax that compare the team of the item with the current Site (p => p.SiteId in following example) 
 ```csharp
     public PlaneAppService(ITGenericRepository<Plane, int> repository, IPrincipal principal)
         : base(repository)
@@ -43,41 +43,32 @@ You can write the filter with an linq syntaxt that compare the team of the item 
 
 ### Implement a filter read on permission on lock update on current team
 General usage for a service of a **team table**:
-The user with AccesAll right can see every team (it is for the administrators)
+The user with AccessAll right can see every team (it is for the administrators)
 The users can see the teams where there are member.
-The update is lock on current team, with the additionnal security of right in controller it ensure that only authorised user can perform modification.
+The update is lock on current team, with the additional security of right in controller it ensure that only authorized user can perform modification.
 
 ```csharp
     public AircraftMaintenanceCompanyAppService(ITGenericRepository<AircraftMaintenanceCompany, int> repository, IPrincipal principal)
         : base(repository)
     {
-        var userData = (principal as BIAClaimsPrincipal).GetUserData<UserDataDto>();
-        var currentAircraftMaintenanceCompanyId = userData != null ? userData.GetCurrentTeamId((int)TeamTypeId.AircraftMaintenanceCompany) : 0;
-
-        IEnumerable<string> currentUserPermissions = (principal as BIAClaimsPrincipal).GetUserPermissions();
-        bool accessAll = currentUserPermissions?.Any(x => x == Rights.Teams.AccessAll) == true;
-        int userId = (principal as BIAClaimsPrincipal).GetUserId();
-
-        // You can see evrey team if your are member
-        // For AircraftMaintenanceCompany we add
-        //          - right for privilate acces (AccessAll) = Admin
         this.FiltersContext.Add(
             AccessMode.Read,
-            new DirectSpecification<AircraftMaintenanceCompany>(p => accessAll || p.Members.Any(m => m.UserId == userId)));
+            TeamAppService.ReadSpecification<AircraftMaintenanceCompany>(TeamTypeId.AircraftMaintenanceCompany, principal));
 
-        // In teams the right in jwt depends on current teams. So you should ensure that you are working on current team.
         this.FiltersContext.Add(
             AccessMode.Update,
-            new DirectSpecification<AircraftMaintenanceCompany>(p => p.Id == currentAircraftMaintenanceCompanyId));
+            TeamAppService.UpdateSpecification<AircraftMaintenanceCompany>(TeamTypeId.AircraftMaintenanceCompany, principal));
     }
 ```
 
 
 ### Implement a filter read on role on lock update on current team and parent team
 General usage for a service of a **team table** that is child of an other **team table**:
-The user with AccesAll right can see every teams children of the current parent team.
+The user with AccessAll right can see every teams children of the current parent team.
 The users can see the teams children of the current parent team where there are member .
-The update is lock on current team, with the additionnal security of right in controller it ensure that only authorised user can perform modification.
+The update is lock on current team, with the additional security of right in controller it ensure that only authorized user can perform modification.
+
+The add function is protected by forcing the parent Id.
 ```csharp
         /// <summary>
         /// Initializes a new instance of the <see cref="MaintenanceTeamAppService"/> class.
@@ -87,33 +78,34 @@ The update is lock on current team, with the additionnal security of right in co
         public MaintenanceTeamAppService(ITGenericRepository<MaintenanceTeam, int> repository, IPrincipal principal)
             : base(repository)
         {
-            var userData = (principal as BIAClaimsPrincipal).GetUserData<UserDataDto>();
+            /* Begin Parent AircraftMaintenanceCompany */
+            var userData = (principal as BiaClaimsPrincipal).GetUserData<UserDataDto>();
             this.currentAircraftMaintenanceCompanyId = userData != null ? userData.GetCurrentTeamId((int)TeamTypeId.AircraftMaintenanceCompany) : 0;
-            var currentMaintenanceTeamyId = userData != null ? userData.GetCurrentTeamId((int)TeamTypeId.MaintenanceTeam) : 0;
+            /* End Parent AircraftMaintenanceCompany */
 
-            IEnumerable<string> currentUserPermissions = (principal as BIAClaimsPrincipal).GetUserPermissions();
-            bool accessAll = currentUserPermissions?.Any(x => x == Rights.MaintenanceTeams.ListViewAll) == true;
-            int userId = (principal as BIAClaimsPrincipal).GetUserId();
-
-            // You can see every team if your are member
-            // For MaintenanceTeam we add
-            //          - filter on current AircraftMaintenanceCompany to see only MaintenanceTeam of the current AircraftMaintenanceCompany
-            //          - right for privilate acces (ListViewAll) = Admin and Supervisor of the Parent team (AircraftMaintenanceCompany)
-            //          - right for member of the current AircraftMaintenanceCompany
             this.FiltersContext.Add(
                 AccessMode.Read,
-                new DirectSpecification<MaintenanceTeam>(p => p.AircraftMaintenanceCompanyId == this.currentAircraftMaintenanceCompanyId && (accessAll || p.Members.Any(m => m.UserId == userId || p.AircraftMaintenanceCompany.Members.Any(m => m.UserId == userId)))));
+                TeamAppService.ReadSpecification<MaintenanceTeam>(TeamTypeId.MaintenanceTeam, principal));
 
-            // In teams the right in jwt depends on current teams. So you should ensure that you are working on current team.
             this.FiltersContext.Add(
                 AccessMode.Update,
-                new DirectSpecification<MaintenanceTeam>(p => p.Id == currentMaintenanceTeamyId));
+                TeamAppService.UpdateSpecification<MaintenanceTeam>(TeamTypeId.MaintenanceTeam, principal));
         }
+                /* Begin Parent AircraftMaintenanceCompany */
+
+        /// <inheritdoc/>
+        public override Task<MaintenanceTeamDto> AddAsync(MaintenanceTeamDto dto, string mapperMode = null)
+        {
+            dto.AircraftMaintenanceCompanyId = this.currentAircraftMaintenanceCompanyId;
+            return base.AddAsync(dto, mapperMode);
+        }
+
+        /* End Parent AircraftMaintenanceCompany */
 ```
 
 ### Implement a filter for parameter table
 General usage for a service of a **parameter table**
-Data are filter on a buisnes rule.
+Data are filter on a business rule.
 ```csharp
     /// <summary>
     /// Initializes a new instance of the <see cref="UserAppService" /> class.

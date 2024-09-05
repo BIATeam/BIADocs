@@ -5,7 +5,7 @@ parent: Best Practices
 nav_order: 30
 ---
 
-# Begining
+# Beginning
 This document explains how the rules to respect in the project based on the BIA Angular framework.   
 
 ## Before commit

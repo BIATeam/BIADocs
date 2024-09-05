@@ -16,7 +16,7 @@ This file explains what to use the the hub for client feature in your V3 project
 
 ## Overview
 The activation of this feature in the worker give the possibility to send message to all connected Clients directly from the worker service.
-Concretly the service is connected to a front taht propagate the message. 
+Concretely the service is connected to a front that propagate the message. 
 
 ## Activation
 * bianetconfig.json

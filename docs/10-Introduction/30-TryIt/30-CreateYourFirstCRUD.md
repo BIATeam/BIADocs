@@ -60,7 +60,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
         public DateTime? DeliveryDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the daily synchronisation hour.
+        /// Gets or sets the daily synchronization hour.
         /// </summary>
         [Column(TypeName = "time")]
         public TimeSpan? SyncTime { get; set; }
@@ -129,7 +129,7 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
         public DateTime? DeliveryDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the daily synchronisation hour.
+        /// Gets or sets the daily synchronization hour.
         /// </summary>
         [BiaDtoField(Type = "time", Required = false)]
         public string SyncTime { get; set; }
@@ -428,12 +428,12 @@ We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front
 ```ps
 npm start
 ```
-* Errors can occured like *'OptionDto' is declared but its value is never read.*, 
+* Errors can occurred like *'OptionDto' is declared but its value is never read.*, 
   * go to the file 'src/app/features/planes/model/plane.ts' 
   * delete *imports* in errors
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planes'* for block with "labelKey" value is *'app.planes'* 
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
-* Open web navigator on adress: *http://localhost:4200/* to display front page
+* Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANES"* tab to display 'Planes' page.
 
 11.   Add traduction

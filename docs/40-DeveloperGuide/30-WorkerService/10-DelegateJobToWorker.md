@@ -16,13 +16,13 @@ This file explains what to use the the delegate job to worker feature in your V3
 * JobMonitor Project
 
 ### Database:
-* The hangfire database is generaly initialised by the JobMonitor project
+* The hangfire database is generally initialized by the JobMonitor project
 * The connection string to this database is configured in the bianetconfig.[Env].json files (see Activation chapter)
 
 ## Overview
 * When a controller is called it can create a task that is run asynchronously on the worker service server.
 * It is a smart way to not slow the front server, when the task is long.
-* It can be use to treat huge file or do complexe calculation.
+* It can be use to treat huge file or do complex calculation.
 
 ## Activation
 * bianetconfig.json
@@ -40,7 +40,7 @@ replace **[YourAppConnectionStringName]** by the name of your connection string 
 
 ## Usage
 ### Create the job
-In the Application layer (this layer is share with the worker service) create the job classe in the Job folder.
+In the Application layer (this layer is share with the worker service) create the job class in the Job folder.
 ``` csharp
 namespace [YourCompanyName].[YourProjectName].Application.Job
 {
@@ -88,7 +88,7 @@ namespace [YourCompanyName].[YourProjectName].Application.Job
 ```
 
 ### Call the job
-In the Presentation.Api layer add the package Hangfire 1.7.18 (repect the version to keep a database compatibility)
+In the Presentation.Api layer add the package Hangfire 1.7.18 (respect the version to keep a database compatibility)
 
 You can call the job like that from a controller:
 ``` csharp

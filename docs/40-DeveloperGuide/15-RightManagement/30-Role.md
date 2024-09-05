@@ -10,15 +10,15 @@ nav_order: 30
 This file explains how user gain role and how it is transform in permission.
 
 ## User roles in team
-With the user interface of the application authorised users can navigate on the team CRUD.
-By clicking on a team they acces to the member CRUD. And they can add member with roles on teams.
+With the user interface of the application authorized users can navigate on the team CRUD.
+By clicking on a team they access to the member CRUD. And they can add member with roles on teams.
 
 When a user is connected to the application he can change of current team in the upper right combo.
 He gains the roles associate to the user in the current team (only the selected one in Single or Multi Role).
 Warning : You can have several type of team, so you can have several combo in header. In this case you have several current teams (one by type).
 
 When the user navigate in the application one of the current team can be change by code in Angular Front app, if required.
-This action is done by the fonction changeCurrentTeamId of AuthService.
+This action is done by the function changeCurrentTeamId of AuthService.
 Example in the service of a Team CRUD:
 ```js
     public set currentCrudItemId(id: any) {
@@ -32,13 +32,13 @@ Example in the service of a Team CRUD:
 ```
 
 ## User roles for application
-With the user interface of the application authorised users can navigate on the user CRUD.
+With the user interface of the application authorized users can navigate on the user CRUD.
 By clicking on a user you can add roles on the users.
 
 Those roles do not depend on teams and are available for the all the navigation in the apps. 
 
 ## Roles to permission
-Role are translated in permission conformly to the file bianetconfig.json in the table Permissions
+Role are translated in permission conform to the file bianetconfig.json in the table Permissions
 ```json
     "Permissions": [
       {
@@ -54,7 +54,7 @@ Role are translated in permission conformly to the file bianetconfig.json in the
 ```
 The permission are send in the jwt token and can be use in the Back and the Front code.
 ### Permission in Front
-In the front application you should manage access to action butons with the function this.authService.hasPermission
+In the front application you should manage access to action buttons with the function this.authService.hasPermission
 ```js
   protected setPermissions() {
     this.canEdit = this.authService.hasPermission(Permission.Site_Update);
@@ -65,7 +65,7 @@ In the front application you should manage access to action butons with the func
   }
 ```
 
-The acces to the screens are filtered with the data.permision attribut in the Routes definition of the module.
+The access to the screens are filtered with the data.permission attribute in the Routes definition of the module.
 ```js
 export let ROUTES: Routes = [
   {
@@ -85,11 +85,11 @@ In the controller decorate the function with the required permission
 ```
 The permission can be use to filter service. See [Filter data](./40-FilterData.md)
 
-## Hightlight on Single or Multi Role Mode
+## Highlight on Single or Multi Role Mode
 ### 3 ways to use the role in this framework:
 * In the standard mode the user get always all the roles that he have for the selected Site.
-* An other posibility is to give the possibility to the user to select only one role. In this case a combo appear at the left on the site selection to select the role he want.
-* An other posibility is to give the possibility to the user to select several roles. In this case a multi select combo appear at the left on the site selection to select the roles he want.
+* An other possibility is to give the possibility to the user to select only one role. In this case a combo appear at the left on the site selection to select the role he want.
+* An other possibility is to give the possibility to the user to select several roles. In this case a multi select combo appear at the left on the site selection to select the roles he want.
 
 ### Select of the Single Role Mode:
 In file ...\Angular\src\environments\all-environment.ts

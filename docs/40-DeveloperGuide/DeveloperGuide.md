@@ -39,10 +39,10 @@ has_children: true
 ## Guaranteed external compatibility:
     * Microsoft SQL Server
     * PostgreSQL
-    * Hightchart
+    * Highcharts
     * Matomo
     * Docker
-    * Azure DevOps CI \ deployement
-    * GitLab CI \ deployement
+    * Azure DevOps CI \ deployment
+    * GitLab CI \ deployment
   
 {: .fs-6 .fw-300 }

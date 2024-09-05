@@ -31,11 +31,11 @@ Add the TeamType :
     /// </summary>
     [YourTeamType] = [IdTeamType],
   ```
-  - add in TeamTypeRightPrefixe.mapping: the prefixe string use for right...
+  - add in TeamTypeRightPrefix.mapping: the prefix string use for right...
   ```csharp
     { TeamTypeId.[YourTeamType], "[YourTeamType]" },
   ```
-- (Optionnaly) In Crosscutting.Common\Enum\RoleId.cs in enum RoleId
+- (Optionally) In Crosscutting.Common\Enum\RoleId.cs in enum RoleId
   - add the role that will be use for this type of team (one line per role). ex :
   ```csharp
     [YourRoleName] = [IdRole],
@@ -45,20 +45,20 @@ Add the TeamType :
   ```csharp
     modelBuilder.Entity<TeamType>().HasData(new TeamType { Id = (int)TeamTypeId.[YourTeamType], Name = "[YourTeamType]" });
   ```
-  - (Optionnaly) in function CreateTeamTypeRoleModel add the mapping between the role and your teamType. (one line per role)
+  - (Optionally) in function CreateTeamTypeRoleModel add the mapping between the role and your teamType. (one line per role)
   ```csharp
     rt.HasData(new { TeamTypesId = (int)TeamTypeId.[YourTeamType], RolesId = (int)RoleId.[YourRoleName] });
   ```
 
 - In Application\User\AuthAppService.cs
-  - (Optionnaly) add computed role
+  - (Optionally) add computed role
   ```csharp
     if (currentTeam.TeamTypeId == (int)TeamTypeId.[YourRoleName])
     {
         allRoles.Add(Constants.Role.[YourRoleName]Member);
     }
   ```
-- In AuthControler > function Login() > variable loginParam
+- In AuthController > function Login() > variable loginParam
   - add following line adapt roleMode and inHeader
   ```csharp
     new TeamConfigDto { TeamTypeId = (int)TeamTypeId.[YourTeamType], RoleMode = RoleMode.AllRoles, InHeader = true },
@@ -91,12 +91,12 @@ In addition, to finish update the database.
   ```ts
     [YourTeamType] = [IdTeamType],
   ```
-  - In TeamTypeRightPrefixe dictionnary add the mapping with prefixe (similar to back) 
+  - In TeamTypeRightPrefix dictionary add the mapping with prefix (similar to back) 
   ```ts
     {key: TeamTypeId.[YourTeamType], value: "[YourTeamType]"},
   ```
 - In Angular\src\environments\all-environments.ts
-  - add the following line and adapt roleMode and inHeader similary to loginParam in back
+  - add the following line and adapt roleMode and inHeader similarly to loginParam in back
   ```ts
     { teamTypeId: TeamTypeId.[YourTeamType], roleMode: RoleMode.AllRoles, inHeader: true },
   ```
@@ -106,23 +106,23 @@ In addition, to finish update the database.
 The procedure is similar to the [CRUD_Front](../20-CRUD/20-CreateACRUD.md) but you will use the zip **aircraft-maintenance-companies.zip** instead of **feature-planes.zip**
 
 ### Filter Sub teams in header
-In case of a team type child of team type you have to filer the chidrens teams by ther parent.
+In case of a team type child of team type you have to filer the children teams by their parent.
 Modify the LoginOnTeamsAsync(LoginParamDto loginParam) function in AuthAppService.cs.
-Exemple for a team type "MaintenanceTeam" child of a team type "AircraftMaintenanceCompany"
+Example for a team type "MaintenanceTeam" child of a team type "AircraftMaintenanceCompany"
 ```csharp
-    AdditionalInfoDto additionnalInfo = null;
+    AdditionalInfoDto additionalInfo = null;
     if (loginParam.AdditionalInfos)
     {
-        // TO REMOVE additionnalInfo = new AdditionalInfoDto { UserInfo = userInfo, UserProfile = userProfile, Teams = allTeams.ToList() };
+        // TO REMOVE additionalInfo = new AdditionalInfoDto { UserInfo = userInfo, UserProfile = userProfile, Teams = allTeams.ToList() };
 
-        // BEGIN CUSTOMISATION
+        // BEGIN CUSTOMIZATION
         CurrentTeamDto currentAircraftMaintenanceCompany = userData.CurrentTeams?.FirstOrDefault(ct => ct.TeamTypeId == (int)TeamTypeId.AircraftMaintenanceCompany);
-        additionnalInfo = new AdditionalInfoDto
+        additionalInfo = new AdditionalInfoDto
         {
             UserInfo = userInfo, UserProfile = userProfile,
             Teams = allTeams.Where(t => t.TeamTypeId != (int)TeamTypeId.MaintenanceTeam || t.ParentTeamId == currentAircraftMaintenanceCompany?.TeamId).ToList(),
         };
 
-        // END CUSTOMISATION
+        // END CUSTOMIZATION
     }
 ```

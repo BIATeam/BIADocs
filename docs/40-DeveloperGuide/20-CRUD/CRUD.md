@@ -7,7 +7,7 @@ has_children: true
 ---
 
 # CRUD
-This feature give you the possibility to create quickly CRUD. Back-End and Front-end code can be easyly generated and you will have a couple of screen to manage a object corresponding to an entity: 
+This feature give you the possibility to create quickly CRUD. Back-End and Front-end code can be easily generated and you will have a couple of screen to manage a object corresponding to an entity: 
 
         * 3 Edit  mode : in popup, in full page or inline in the table
         * Create and select views: select columns, filter, search.

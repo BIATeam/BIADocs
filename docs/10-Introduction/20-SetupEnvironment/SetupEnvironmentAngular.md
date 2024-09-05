@@ -22,7 +22,7 @@ To be able to compile Angular projects that use a version lower than 13, add thi
 > node-options="--openssl-legacy-provider"
 #### Align npm version
 The npm version should be align on the node version (https://nodejs.org/fr/download/releases/)
-To install the version 10.2.4 (corresponde to node V20.11.1) run the following command:
+To install the version 10.2.4 (correspond to node V20.11.1) run the following command:
 ```npm install -g npm@10.2.4```
 
 ### NodeJS and NPM Without Admin right
@@ -40,12 +40,12 @@ To install the version 10.2.4 (corresponde to node V20.11.1) run the following c
  npm --version
 ```
 
-### (Optionnal) Instal Angular globaly
+### (Optional) Instal Angular globally
 Use to create a new Angular empy project at the last version. (but not required by creation with BIAToolkit):
 ```npm install -g @angular/cli@16.2.12```
 
 ### install project npm packages (including angular)
-Go to the Angular folder and run the followind command  `npm install`   
+Go to the Angular folder and run the following command  `npm install`   
 
 ### Visual Studio Code
 Install [Visual Studio Code](https://code.visualstudio.com/Download) and add the following extensions:

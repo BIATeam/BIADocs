@@ -6,8 +6,8 @@ grand_parent: Developer guide
 nav_order: 20
 ---
 
-# Hangfire Reccuring Job
-This document explains how to implement a recuring job with hangfire
+# Hangfire Recurring Job
+This document explains how to implement a recurring job with hangfire
 
 
 ## Create the application Job
@@ -33,7 +33,7 @@ ex:
   },
 ```
 
-### Record the cron at db deployement :
+### Record the cron at db deployment :
 Edit  your DeployDB/Program.cs
 ```csharp
     services.AddHangfire(config =>
@@ -41,7 +41,7 @@ Edit  your DeployDB/Program.cs
         config.UseSqlServerStorage(configuration.GetConnectionString("BIADemoDatabase"));
         string projectName = configuration["Project:Name"];
 
-        // Initialize here the recuring jobs
+        // Initialize here the recurring jobs
         RecurringJob.AddOrUpdate<WakeUpTask>($"{projectName}.{typeof(WakeUpTask).Name}", t => t.Run(), configuration["Tasks:WakeUp:CRON"]);
         RecurringJob.AddOrUpdate<SynchronizeUserTask>($"{projectName}.{typeof(SynchronizeUserTask).Name}", t => t.Run(), configuration["Tasks:SynchronizeUser:CRON"]);
     });

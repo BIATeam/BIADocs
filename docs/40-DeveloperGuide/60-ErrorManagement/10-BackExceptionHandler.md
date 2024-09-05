@@ -136,7 +136,7 @@ protected override Exception HandleFrontUserException(FrontUserException frontUs
 		// Do something...
 	}
 	// Return the FrontUserException handling by base service
-	return base.HandeFrontUserException(frontUserException);
+	return base.HandleFrontUserException(frontUserException);
 	
 	// Return a new FrontUserException by specific ErrorMessageKey
 	return frontUserException switch

@@ -19,7 +19,7 @@ has_children: true
   - Delete the **package-lock.json** file
   - Launch the command **npm install**
   - In the package.json file, under dependencies and devDependencies, delete all **^** and **~**. Example: "primeng": "16.9.1", "rxjs": "7.8.1",
-- Ng lint the angular poject and remove all errors and warnings. From version >= 3.9, run the command **npm run clean**
+- Ng lint the angular project and remove all errors and warnings. From version >= 3.9, run the command **npm run clean**
 - Change the framework version in 
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\app\shared\bia-shared\framework-version.ts**
@@ -31,9 +31,9 @@ has_children: true
 - If the year change update footer :
   - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\classic-footer\classic-footer.component.html**
   - And Replace all copyright ex: ```<Copyright>Copyright © TheBIADevCompany 2024</Copyright>``` by ```<Copyright>Copyright © TheBIADevCompany 2025</Copyright>```
-- Test Authent AD Group + ReadOnly Database + Unitary Test
+- Test Authentication AD Group + ReadOnly Database + Unitary Test
 - COMMIT BIADemo
-- Test a deployement in INT, UAT and PRD.
+- Test a deployment in INT, UAT and PRD.
 
 ## Compile the BIA packages:
 - Change the version number of all BIA.Net.Core packages to match the version to be released:
@@ -70,7 +70,7 @@ has_children: true
 - Synchronize your BIACompanyFiles local folder with github.
 - Copy the last version folder in   **..\BIACompanyFiles** to **..\BIACompanyFiles\VX.Y.Z**
 - Launch **...\BIADemo\Tools\3-DeliverBIATemplateAndCompanyFileVersion.ps1**
-- Verirfy that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
+- Verify that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
 
 
 ## Test the project creation using the VX.Y.Z
@@ -91,7 +91,7 @@ npm run deploy
 
 ## Deliver the version
 - Create a release of the version in the 3 repository BIADocs, BIADemo and BIATemplate
-- Post message for developers, to informe than a new version is available.
+- Post message for developers, to inform than a new version is available.
 
 ## Prepare Migration
 - Follow those steps: [PREPARE MIGRATION](./10-PrepareMigration.md)

@@ -6,7 +6,7 @@ nav_order: 80
 ---
 
 # Audit
-This file explains how to activate/desactivate the audit feature (users' modifications tracing) and how to customize it.
+This file explains how to activate/deactivate the audit feature (users' modifications tracing) and how to customize it.
 
 ## Prerequisite
 
@@ -91,7 +91,7 @@ The usage of a dedicated table simplify the history of change in a user interfac
         public string Domain { get; set; }
     }
 ```
-* cutomize the ..Infrastructure.Data/Features/AuditFeature to map the entity with the custom audit table. change the code in "AuditTypeMapper"
+* customize the ..Infrastructure.Data/Features/AuditFeature to map the entity with the custom audit table. change the code in "AuditTypeMapper"
 ```csharp
         .AuditTypeMapper(type => AuditTypeMapper(type))
 

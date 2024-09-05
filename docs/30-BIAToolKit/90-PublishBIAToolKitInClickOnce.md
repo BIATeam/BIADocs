@@ -7,10 +7,10 @@ nav_order: 90
 ---
 
 # Publish BIAToolKit in click once
-This document explains how to publish the BIAToolKit in click once on a shared folder to simplify the usage and update for every developper
+This document explains how to publish the BIAToolKit in click once on a shared folder to simplify the usage and update for every developer
 
-## Obtain a signing code certificat
-You have to obtain a certificat for code signing trusted by you company.
+## Obtain a signing code certificate
+You have to obtain a certificate for code signing trusted by you company.
 Place it in the folder BIAToolKit\BIA.ToolKit\Properties\PublishProfiles
 
 ## Create the publish file
@@ -67,7 +67,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 ## Publish
 In visual studio open the solution and right click on project BIA.ToolKit and click publish.
 In "More action" click edit.
-With "Next" go to the step "sign manifest" and select the certificat. Enter the password if required.
+With "Next" go to the step "sign manifest" and select the certificate. Enter the password if required.
 ![BIAToolKit Click Once Certif](./../Images/BIAToolKit/ClickOnceCert.PNG)
 
 Click finish
@@ -75,7 +75,7 @@ Now click Publish button it will publish the BIAToolKit in click Once in the sha
 Next time you do not need to reset the certificat.
 
 ## Inform the users
-Send to all develloper following message
+Send to all developer following message
 ```
 BIAToolKit in ClickOnce
 

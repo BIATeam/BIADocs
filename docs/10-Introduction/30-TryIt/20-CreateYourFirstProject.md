@@ -8,7 +8,7 @@ nav_order: 20
 
 # Build your first project
 
-1. Create a project "MyFirstProject" with company name "MyCompany" using the BIAToolKit in folder "C:\Sources\Test". [Step desribe here](../../30-BIAToolKit/20-CreateProject.md). If you have company files used them to have correct settings.
+1. Create a project "MyFirstProject" with company name "MyCompany" using the BIAToolKit in folder "C:\Sources\Test". [Step describe here](../../30-BIAToolKit/20-CreateProject.md). If you have company files used them to have correct settings.
   ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-1-BIATollKit.PNG)
 
 1. Open the folder "C:\Sources\Test\MyFirstProject"   
@@ -16,16 +16,16 @@ nav_order: 20
 
 2. Open with Visual Studio 2022 the solution "C:\Sources\Test\MyFirstProject\DotNet\MyFirstProject.sln"
    
-3. ONLY If you have not compagny files contaning configuration files
-   1.  In project MyCompany.MyFirstProject.DeployDB remane files 
+3. ONLY If you have not company files containing configuration files
+   1.  In project MyCompany.MyFirstProject.DeployDB rename files 
        1. appsettings.Example_Development.json => appsettings.Development.json
 
-   2. In project MyCompany.MyFirstProject.Presentation.Api remane files 
+   2. In project MyCompany.MyFirstProject.Presentation.Api rename files 
       1. appsettings.Example_Development.json => appsettings.Development.json
       2. bianetconfig.Example_Development.json => bianetconfig.Development.json
       3. in bianetconfig.Development.json, in LdapDomains section enter the short name and long name of your domain : Replace DOMAIN_BIA_1 by the short name and the-user-domain1-name.bia by the long name.
 
-   3. In project MyCompany.MyFirstProject.WorkerService remane files 
+   3. In project MyCompany.MyFirstProject.WorkerService rename files 
       1. appsettings.Example_Development.json => appsettings.Development.json
       2. bianetconfig.Example_Development.json => bianetconfig.Development.json
    
@@ -61,7 +61,7 @@ The button will be green.
 
 2.  Run VS code and open the folder "C:\Sources\Test\MyFirstProject"
     
-3.  Open a new terminal (Terminal > New Terminal) and enter the commande:
+3.  Open a new terminal (Terminal > New Terminal) and enter the command:
     ```ps
     cd .\Angular\
     npm install
@@ -69,5 +69,5 @@ The button will be green.
     ```
     ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-6-VSCode.PNG)
 
-4.  Open a browser at adress http://localhost:4200/ (IIS express in Visual sudio should be always running)  
+4.  Open a browser at address http://localhost:4200/ (IIS express in Visual studio should be always running)  
     ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-7-Application.PNG)

@@ -25,7 +25,7 @@ As explained [here](https://docs.microsoft.com/en-us/previous-versions/visualstu
 * Every test suite shall be a class with the **<code>[TestClass]</code>** attribute. 
 A test suite is class containing several tests related to the same topic.
 * Every test shall be a method with the **<code>[TestMethod]</code>** attribute inside a test suite.
-* If you want to test the same thing but with different inputs, you can use a **<code>[DataTestMethod]</code>** attribute intead of the **<code>TestMethod</code>** one.
+* If you want to test the same thing but with different inputs, you can use a **<code>[DataTestMethod]</code>** attribute instead of the **<code>TestMethod</code>** one.
 This attribute can be used in combination with several **<code>[DataRow(x, y, z)]</code>** attributes. Each **<code>DataRow</code>** will be an execution of the test with the given inputs (x, y, z).
 Note: you can add as many input parameters as you want.
 Example:
@@ -93,7 +93,7 @@ If you want to know what to do in order to add unit tests to your project, this 
 * Rename the folder and csproj in order to match your company and project names, but keep the pattern **[YourCompanyName].[YourProjectName].Test**.
 * Add the project to your solution (usually inside a "**99 - Test**" folder).
 * Check the properties of your test project and (if necessary) change information in the "Package" tab in order to match your project information.
-* Replace all **TheBIADevCompany.BIADemo** occurences by **[YourCompanyName].[YourProjectName]** (Ctrl+Shift+H on Visual Studio).
+* Replace all **TheBIADevCompany.BIADemo** occurrences by **[YourCompanyName].[YourProjectName]** (Ctrl+Shift+H on Visual Studio).
 
 #### Remove examples
 * Some example classes/interfaces have been added in order to show how to implement unit tests in a more realistic way.
@@ -118,7 +118,7 @@ Some additional modifications have to be made on your project (not the unit test
 * **ClaimsPrincipal**
   * Modify **[YourCompanyName].[YourProjectName].Presentation.Api.Startup** in order to change the IoC for **<code>IPrincipal</code>** (required because we cannot mock extension methods). 
   If the previous value was **<code>services.AddTransient<IPrincipal>(provider => xxxx);</code>**,
-  it should now be **<code>services.AddTransient<IPrincipal>(provider => new BIAClaimsPrincipal(xxxx));</code>** (just add <code>new BIAClaimsPrincipal()</code> around what was previsouly injected)
+  it should now be **<code>services.AddTransient<IPrincipal>(provider => new BIAClaimsPrincipal(xxxx));</code>** (just add <code>new BIAClaimsPrincipal()</code> around what was previously injected)
   * Everywhere you use **<code>ClaimsPrincipal</code>**, replace it by **<code>BIAClaimsPrincipal</code>**
 * **UserDataDto**
   * This class has been moved to **BIA.Net.Core.Domain.Dto.User**. 
@@ -191,7 +191,7 @@ This can allow you to centralize some initialization in the **<code>[TestInitial
   This boolean parameter is used to define if we shall call the **<code>MockEntityFrameworkInMemory.InitDefaultData()</code>** before each test or not (in order to add some default data in the DB). It is up to you to decide if you want to use <code>true</code> or <code>false</code>.
   * **[Optional]** With a method with the **<code>[TestInitialize]</code>** attribute.
   In this method, you can setup a context that is common to every test.
-  For example, you can instanciate the controller/service you want to test, add some data in the DB, mock some user related data, etc.
+  For example, you can instantiate the controller/service you want to test, add some data in the DB, mock some user related data, etc.
 
 ##### Tests
 * To easily create a test for each method of a service/controller, you can do the following in Visual Studio:
@@ -207,7 +207,7 @@ This can allow you to centralize some initialization in the **<code>[TestInitial
   * Remove the constructor test.
   * **[Optional]** Remove the "**()**" in each **<code>[TestMethod()]</code>** attribute or fill it with the desired display name.
 * Each test shall be a method with the **<code>[TestMethod]</code>** or **<code>[DataTestMethod]</code>** attribute.
-You can add an optional parameter to this attribute in order to configure the name which will be displayed in the test report. It can be a good idea to do so, because by default it only uses the method name (so if you have several methods with the same name in different test suites, you won't directly differenciate them).
+You can add an optional parameter to this attribute in order to configure the name which will be displayed in the test report. It can be a good idea to do so, because by default it only uses the method name (so if you have several methods with the same name in different test suites, you won't directly differentiate them).
 * Refer to [Unit test best practices and naming conventions](https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices) in order to name your tests correctly.
 * Try to keep your tests small and with one single objective.
 * For **controller tests**, you can:
@@ -237,7 +237,7 @@ You can add an optional parameter to this attribute in order to configure the na
     * Or by using **<code>this.DbMock.GetDbContext()</code>** which gives you a direct access to the **<code>DbSet</code>** objects.
 
 ##### IoC and mock
-* Use **<code>GetService\<T></code>** and **<code>GetControllerWithHttpContext\<TController></code>** methods from **<code>BIAAbstractUnitTest</code>** to instanciate your services and controllers through IoC.
+* Use **<code>GetService\<T></code>** and **<code>GetControllerWithHttpContext\<TController></code>** methods from **<code>BIAAbstractUnitTest</code>** to instantiate your services and controllers through IoC.
 For the controllers, it will automatically configure an HttpContext that is required by most of the APIs we implemented in V3 projects.
 * Use **<code>this.DbMock</code>** in order to access to the database and:
   * Check if the correct data is stored in DB,

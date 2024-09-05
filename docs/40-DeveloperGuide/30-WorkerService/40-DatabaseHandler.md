@@ -38,7 +38,7 @@ ALTER DATABASE [YourProjectDatabase] SET MULTI_USER WITH ROLLBACK IMMEDIATE
 ```
 
 **WARNING**: If the database is in an availability group, you should remove the database from availability group before apply this script.
-And readded after (required to delete before the databse in secondary server).
+And readd it after (required to delete before the database in secondary server).
 
 Give the right to the YourUserRW to read and write the database and run this script (replace the YourUserRW by the corresponding user):
  
@@ -49,7 +49,7 @@ USE [YourProjectDatabase];
 CREATE USER SqlDependencySchemaOwner WITHOUT LOGIN;
 GO
 
---create schema for SqlDependency ojbects
+--create schema for SqlDependency objects
 CREATE SCHEMA SqlDependency AUTHORIZATION SqlDependencySchemaOwner;
 GO
 

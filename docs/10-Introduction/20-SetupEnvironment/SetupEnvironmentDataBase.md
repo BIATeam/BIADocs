@@ -9,13 +9,13 @@ nav_order: 4
 # Setup Database 
 ## To work with SQL Server:
 Install [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
-You can choose SQL Server 2022 Developer that is free. (But be carefull you cannot install it on production server)
+You can choose SQL Server 2022 Developer that is free. (But be careful you cannot install it on production server)
 After downloading the SQL Server 2022 Developer, double click on the icon to start the install process.
 
  - Choose "CUSTOM" option
  ![SQL Server Developer Custom](../../Images/SQLServerDeveloperCustom.PNG)
  
- - Either specify an install location or leace it as is, then click on "Install"
+ - Either specify an install location or let it as is, then click on "Install"
  ![SQL Server Developer Install](../../Images/SQLServerDeveloperInstall.PNG)
 
  - Choose "Installation" on the left side, and select "New SQL Server standalone installation or add features to an existing installation" first option from the list
