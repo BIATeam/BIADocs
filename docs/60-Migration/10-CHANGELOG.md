@@ -7,17 +7,17 @@ nav_order: 10
 
 # ChangeLog 
 ## V3.9.0 (2024-07-09)
-* Mapper are injectable, and can be customize with injectable paramaters (userId, permission...)
+* Mapper are injectable, and can be customize with injectable parameters (userId, permission...)
 * Right on team are review to be more flexible with children teams.
 ### Angular
 * CRUD:
   * Multi sort (can sort by several column with ctrl key)
   * Site members : display and sort by last name (and not first name).
   * Add filters : not end with / not start with / empty date / not empty date.
-  * Filter header udapted to all type
+  * Filter header adapted to all type
   * Possibility to export/import at csv format for massif add, update or delete.
   * Fix position of a column.
-* CRUD + forms : Additionnal paremeter on field
+* CRUD + forms : Additional parameter on field
   * isVisible: possibility to hide a field.
   * isOnlyInitializable: field can be change at creation but not at update.
   * isOnlyUpdatable: field can be change at update but not at creation.
@@ -32,12 +32,12 @@ nav_order: 10
 * Fix pb scroll navigation if number of lines displayed important.
 * Fix field disabled, the value disappears from the edit inline list.
 * Fix When you activate the Angular service worker and deactivate it => weird behavior.
-* Expand combox list of columns.
+* Expand combo list of columns.
 * Name extracted .csv file contains the view name.
-* Fix Excel like decorrelate canEdit/canAdd
+* Fix Excel like uncorrelate canEdit/canAdd
 * Fix bug dropdown excel like
 * Fix error selected elements BiaTable.
-* Fix If 2 identical views, impossible to select the 2nd.
+* Fix If 2 identical view s, impossible to select the 2nd.
 * Fix Searching for "column display" combobox doesn't work.
 * Fix combobox color problem "SelectRole".
 * Replace deprecated function in front.
@@ -54,7 +54,7 @@ nav_order: 10
   
 ## V3.8.0 (2023-10-31)
 * More compliant with IISExpress and use port 32128
-* Possibility to be databaseless for WebApi used as Connector:
+* Possibility to be without database for WebApi used as Connector:
   * Remove User info in Token light.
   * Button token light added swagger to be able to test.
   * Disable distributed cache is possible.
@@ -83,9 +83,9 @@ nav_order: 10
 * Display error message when deployDB crash at deployment.
 * Get AD Group form authentication claims (faster and no cache needed).
 * Stop deployment if error during deployDB
-* Timeout for deploydb is configurable
+* Timeout for deployDb is configurable
 * Fix sync user crash when login not in AD
-* Fix stop service and App pool at deployement.
+* Fix stop service and App pool at deployment.
 
 ## V3.7.5.1 (Patch - 2023-09-19)
 ### DotNet
@@ -96,7 +96,7 @@ nav_order: 10
 
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
-* Correct daily synchrnonisation in UserInDB mode.
+* Correct daily synchronization in UserInDB mode.
 
 ## V3.7.4.1 (Patch - 2023-07-12)
 ### DotNet
@@ -112,7 +112,7 @@ nav_order: 10
 ### DotNet
 * Check identity on Login only
 * User In DB
-* Separe role UserManager
+* Separate role UserManager from Admin
 
 ## V3.7.2 (2022-12-05)
 ### Angular
@@ -130,7 +130,7 @@ nav_order: 10
 
 ## V3.7.0 (2022-09-14)
 * ```npm start``` is now for IIS Express (use ```npm run start4iis``` to launch the angular for IIS)
-* Add KeyCloack compatibility
+* Add KeyCloak compatibility
 * Correct Matomo tracking (bug introduce in V3.6.0)
 ### DotNet
 * .Net6.0
@@ -156,7 +156,7 @@ nav_order: 10
 * More compliant with IISExpress
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
-* Correct daily synchrnonisation in UserInDB mode.
+* Correct daily synchronization in UserInDB mode.
 
   
 ## V3.6.4.1 (Patch - 2023-07-12)
@@ -173,12 +173,12 @@ nav_order: 10
 ### DotNet
 * Check identity on Login only
 * User In DB
-* Separe role UserManager
+* Separate role UserManager from Admin
 
 ## V3.6.2 (2022-06-17)
 ### DotNet
 * Correct right for admin at start uo (add permission for role Admin: User_Options, Roles_Option, "Notification_List_Access", "Notification_Delete", "Notification_Read" + Get the current Teams when Admin)
-* Correct deployement (BiaNetConfig.json bad formated)
+* Correct deployment (BiaNetConfig.json bad formated)
 * Correct the Bulk Update and Delete when pool user not db_owner of the dataBase
 ### Front
 * Offline bug : Endpoint missing in post, multiple call to back, token that does not refresh, add an observable triggered at the end of the syncho.
@@ -231,7 +231,7 @@ nav_order: 10
 ### DotNet
 * Check identity on Login only
 * User In DB
-* Separe role UserManager
+* Separate role UserManager from Admin
 
 ## V3.5.1 (2022-02-08)
 * Possibility to inject ExternalJS in front depending on back environement. 
@@ -283,7 +283,7 @@ nav_order: 10
 ### DotNet
 * Check identity on Login only
 * User In DB
-* Separe role UserManager
+* Separate role UserManager from Admin
 
 ## V3.4.2 (2021-10-08)
 * notification system (translation of title and description can be temporally done in i18n or not, but it will change in next version)
@@ -332,7 +332,7 @@ nav_order: 10
 ### DotNet
 * Check identity on Login only
 * User In DB
-* Separe role UserManager
+* Separate role UserManager from Admin
 
 ## V3.3.3 (2021-06-25)
 ### DotNet
@@ -367,16 +367,16 @@ nav_order: 10
 ### Angular
 *  Date bug fix
 *  Matomo integration
-*  Crud generation support complexe name (like plane-type)
+*  Crud generation support complex name (like plane-type)
 *  Add choice of the site for Admin
   
 ## V3.2.2 (2020-10-16)
 ### DotNet
 * Solve bug with Zodiac user
-* Desactivate swagger in no dev environment
+* Deactivate swagger in no dev environment
 * Add color by environment
 * Remove the popup when token expire
-* Generate a new secretkey at deployement
+* Generate a new secret key at deployment
 ### Angular
 *  Color by env.
   
@@ -386,15 +386,15 @@ nav_order: 10
   
 ## V3.2.0 (2020-10-16)
 ### DotNet
-* Use of BIA.core nugetpackage (1 by layer)
-* Compatibility with multi ad environmemt (usage of user sid) => change the database model
+* Use of BIA.core nuget package (1 by layer)
+* Compatibility with multi ad environment (usage of user sid) => change the database model
 ### Angular
 *  angular 9.1.12
 
 ## V3.2.0 (2020-10-16)
 ### DotNet
-* Use of BIA.core nugetpackage (1 by layer)
-* Compatibility with multi ad environmemt
+* Use of BIA.core nuget package (1 by layer)
+* Compatibility with multi ad environment
   
 ## V3.1.1 (2020-06-26)
 ### Angular

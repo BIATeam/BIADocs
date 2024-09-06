@@ -5,7 +5,7 @@ nav_order: 60
 has_children: true
 ---
 
-# Migrate the framewok version of an existing project
+# Migrate the framework version of an existing project
 
 ## Check the framework version of you project:
 * Open your project file ..\DotNet\\[YourCompanyName].[YourProjectName].Crosscutting.Common\Constants.cs
@@ -13,15 +13,15 @@ has_children: true
 
 ## Apply successively the migration:
 1. Use the BIAToolKit to apply the migration.
-2. Manage the confict (2 solutions)
+2. Manage the conflict (2 solutions)
    1. In BIAToolKit click on "4 - merge Rejected"
       * Search "<<<<<" in all files.
-      * Resolve the conflit manually.
-   2. Analyse the .rej file (search "diff a/" in VS code) that have been created in your project folder
+      * Resolve the conflict manually.
+   2. Analyze the .rej file (search "diff a/" in VS code) that have been created in your project folder
       * Apply manually the change.
-3. Refresh the nuget package version with the command (to launch in visual sudion > Package Manager Console):
+3. Refresh the nuget package version with the command (to launch in visual studio > Package Manager Console):
    ```dotnet restore --no-cache```
-4. Follow the detailled steps describe in all files corresponding to your migration.
-   * If several steps are passed durring the migration apply them succesively.
+4. Follow the detailed steps describe in all files corresponding to your migration.
+   * If several steps are passed during the migration apply them successively.
     
 {: .fs-6 .fw-300 }

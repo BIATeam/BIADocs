@@ -4,15 +4,19 @@
         "anonymization",
         "appsetting",
         "appsettings",
+        "artifactstagingdirectory",
         "biaapp",
         "bianetconfig",
+        "correctif",
         "cref",
         "customizer",
         "dtos",
+        "flexbox",
         "Gantt",
         "gitflow",
         "Highcharts",
         "inheritdoc",
+        "Initializable",
         "Keycloak",
         "Linq",
         "Matomo",
@@ -23,7 +27,9 @@
         "primeface",
         "primeng",
         "rulesets",
+        "Stringification",
         "struct",
-        "typeof"
+        "typeof",
+        "uncorrelate"
     ]
 }
