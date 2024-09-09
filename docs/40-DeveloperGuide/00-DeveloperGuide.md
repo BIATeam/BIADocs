@@ -1,11 +1,8 @@
 ---
-layout: default
-title: Developer guide
-nav_order: 40
-has_children: true
+sidebar_position: 0
 ---
 
-# Developer guide
+# Developer guide overview
 
 ## Main features:
     * Right management
