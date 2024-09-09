@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup Database
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 4
+sidebar_position: 1
 ---
 
 # Setup Database 

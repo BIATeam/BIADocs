@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Plan development
-parent: Work with BIA
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Plan the application development

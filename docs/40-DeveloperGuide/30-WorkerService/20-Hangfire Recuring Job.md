@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Hangfire Recurring Job
-parent: Worker Service
-grand_parent: Developer guide
-nav_order: 20
+sidebar_position: 1
 ---
 
 # Hangfire Recurring Job

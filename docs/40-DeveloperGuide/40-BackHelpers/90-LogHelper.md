@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Log Helper
-parent: Back Helpers
-grand_parent: Developer guide
-nav_order: 90
+sidebar_position: 1
 ---
 
 # Log Helper
@@ -17,7 +13,7 @@ Two methods are available :
 
 ## Example
 
-LogHelper functions take the logger of your application as first parameter. You can get it by injecting ILogger in your constructor or if you have access to serviceProvider by calling serviceProvider.GetService<ILogger<MyService>>();
+LogHelper functions take the logger of your application as first parameter. You can get it by injecting ILogger in your constructor or if you have access to serviceProvider by calling `serviceProvider.GetService<ILogger<MyService>>();`
 
 ```csharp
 using BIA.Net.Core.Common.Helpers;

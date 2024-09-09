@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Database Handler
-parent: Worker Service
-grand_parent: Developer guide
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Database Handler (Worker Feature)

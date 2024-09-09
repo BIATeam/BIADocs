@@ -1,9 +1,5 @@
 ---
-layout: default
-title: CRUD
-parent: Developer guide
-nav_order: 20
-has_children: true
+sidebar_position: 1
 ---
 
 # CRUD
@@ -17,8 +13,7 @@ This feature give you the possibility to create quickly CRUD. Back-End and Front
         * Export data in different format….
 
 You can find the process to generate (and customize) back-end and front-end code by following these links : 
--  [Back-End](./10-CreateACRUD.md) 
--  [Front-End](./20-CreateACRUD.md) 
+-  [Back-End](./10-CreateACRUDBack.md) 
+-  [Front-End](./20-CreateACRUDFront.md) 
 
 
-{: .fs-6 .fw-300 }

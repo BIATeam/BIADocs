@@ -45,4 +45,3 @@ has_children: true
     * Azure DevOps CI \ deployment
     * GitLab CI \ deployment
   
-{: .fs-6 .fw-300 }

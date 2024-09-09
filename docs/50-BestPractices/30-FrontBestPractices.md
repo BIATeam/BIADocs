@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Run front
-parent: Best Practices
-nav_order: 30
+sidebar_position: 1
 ---
 
 # Beginning

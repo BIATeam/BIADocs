@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Hub for Clients
-parent: Hub Client/Server
-grand_parent: Features
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Hub for Clients (Api and Worker Feature)

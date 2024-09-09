@@ -1,8 +1,5 @@
 ---
-layout: default
-title: ChangeLog
-parent: Migrate an existing project
-nav_order: 10
+sidebar_position: 1
 ---
 
 # ChangeLog 
@@ -137,7 +134,7 @@ nav_order: 10
 * Add Linux Container compatibility
 * The worker service run in a service (no more in a web application)
 * WebApiRepository.PostAsync parameter for body doesn't expect a json string anymore but the object or list of objects. Stringification is handled by the PostAsync method.
-  >WebApiRepository.PostAsync<T, U>(string url, U body, bool useBearerToken = false, bool isFormUrlEncoded = false)
+  >```WebApiRepository.PostAsync<T, U>(string url, U body, bool useBearerToken = false, bool isFormUrlEncoded = false)```
 ### Angular
 * Angular 13, PrimeNg 13, PrimeIcon V5
 * Keep state of the BiaTable View when live and come back to a screen (only when view is activated)

@@ -1,9 +1,5 @@
 ---
-layout: default
-title: User management
-parent: Right management
-grand_parent: Developer guide
-nav_order: 10
+sidebar_position: 1
 ---
 
 # User management

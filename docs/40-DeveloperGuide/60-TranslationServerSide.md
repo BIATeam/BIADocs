@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Translation server side
-parent: Developer guide
-nav_order: 60
+sidebar_position: 1
 ---
 
 # Translation server side
@@ -164,7 +161,7 @@ In this approach Instead of putting all translation under the same table, we wil
         Display = entity.RoleTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Label).FirstOrDefault() ?? entity.Label,
     ```
   *  for an entity display in CRUD
-    *  translate for sort and filter in ExpressionCollection<Notification>
+    *  translate for sort and filter in `ExpressionCollection<Notification>`
     *  for display in EntityToDto() add :
     ``` csharp
         TitleTranslated = entity.NotificationTranslations.Where(rt => rt.Language.Code == this.UserContext.Language).Select(rt => rt.Title).FirstOrDefault() ?? entity.Title,

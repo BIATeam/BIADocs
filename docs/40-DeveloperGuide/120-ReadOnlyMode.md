@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Read Only Mode
-parent: Developer guide
-nav_order: 120
+sidebar_position: 1
 ---
 
 # Read Only Mode

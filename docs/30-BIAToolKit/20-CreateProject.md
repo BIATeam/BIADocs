@@ -1,22 +1,18 @@
 ---
-layout: default
-title: Create project
-parent: BIAToolKit
-grand_parent: Developer guide
-nav_order: 20
+sidebar_position: 1
 ---
 
 # Create project with the BIA tool kit
 This document explains how to create a project with the BIAToolKit.
 
-![BIAToolKitConfig](../../Images/BIAToolKit/Create.PNG)
+![BIAToolKitConfig](../Images/BIAToolKit/Create.PNG)
 
 ## Prerequisite
 You need to have configure your tool kit. [Describe here](./10-ConfigureTheBIAToolKit.md).
 
 
 ## Set the project parent path
-It is recommanded to develop all your BIA projects in a folder. In the Project parent field select this folder. 
+It is recommended to develop all your BIA projects in a folder. In the Project parent field select this folder. 
 It is recommended to have the BIADemo project cloned in this folder (to be available to debug packages)
 The Organization will be:
 ```

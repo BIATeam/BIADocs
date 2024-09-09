@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Create a CRUD (front)
-parent: CRUD
-grand_parent: Developer guide
-nav_order: 20
+sidebar_position: 1
 ---
 
 # Create a CRUD (front)
@@ -14,15 +10,17 @@ It means that you can switch this functionalities:
 - Modification in the table / in dedicated form 
 - Refresh with SignalR / not use signalR
   
-<u>For this example, we imagine that we want to create a new feature with the name: <span style="background-color:#327f00">aircraft-type</span>.   </u>
+_For this example, we imagine that we want to create a new feature with the name: `aircraft-type`._
 
 ## Prerequisite
-It is strongly recommended to generate front-end CRUD in same time of [back-end](../20-CRUD/10-CreateACRUD.md) CRUD.
+It is strongly recommended to generate front-end CRUD in same time of [back-end](../20-CRUD/10-CreateACRUDBack.md) CRUD.
 The back-end is ready, i.e. steps before paragraph 3 are already done.
 
 ## Generate new feature
-Use the BIAToolKit on [CRUD Generation](../../30-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'Front'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked (and Generation _'WebApi'_ recommended).<br>
-Don't forget to fill new **crud name on singular** (i.e. <span style="background-color:#327f00">aircraft-type</span>) and **plural form** (i.e. <span style="background-color:#327f00">aircrafts-types</span>).<br>
+Use the BIAToolKit on [CRUD Generation](../../30-BIAToolKit/50-CreateCRUD.md) tab with (at least) _'Front'_ (for generation) and _'CRUD'_ (for Generation Type) checkboxes checked (and Generation _'WebApi'_ recommended).
+
+Don't forget to fill new **crud name on singular** (i.e. `aircraft-type`) and **plural form** (i.e. `aircrafts-types`).
+
 It is also necessary to choose **'Display item name'**.
 
 If you want to **link existing options** to the crud, choose option (1 or more) in combobox 'Option item'.
@@ -41,7 +39,8 @@ Open the file **src\app\shared\navigation.ts** and in the array **NAVIGATION**, 
 ```
 
 - ### Update translations
-1. Open the file **src\assets\i18n\app\en.json** and:<br> 
+1. Open the file **src\assets\i18n\app\en.json** and:
+ 
 
 add in `"app"`
 ``` json
@@ -60,7 +59,8 @@ add
 ```
 and add translations of interface properties.
 
-2. Open the file **src\assets\i18n\app\fr.json** and:<br>
+2. Open the file **src\assets\i18n\app\fr.json** and:
+
 
 add in `"app"`
 ``` json
@@ -79,7 +79,8 @@ add
 ```
 and add translations of interface properties.
 
-3. Open the file **src\assets\i18n\app\es.json** and:<br>
+3. Open the file **src\assets\i18n\app\es.json** and:
+
 
 add in `"app"`
 ``` json

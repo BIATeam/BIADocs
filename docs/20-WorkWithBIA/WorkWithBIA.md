@@ -7,4 +7,3 @@ has_children: true
 
 # Work BIA Framework
  
-{: .fs-6 .fw-300 }

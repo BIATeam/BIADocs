@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Call Web Api
-parent: Developer guide
-nav_order: 100
+sidebar_position: 1
 ---
 
 # Call Web Api

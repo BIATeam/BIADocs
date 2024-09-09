@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Customize PrimeNG Theme
-parent: Front Style Guide
-grand_parent: Best Practices
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Customize PrimeNG Theme

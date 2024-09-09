@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Presentation Worker service project
-parent: Start
-grand_parent: Developer guide
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Presentation Worker service project
@@ -13,7 +9,7 @@ nav_order: 40
 - Set Worker service as startup project
 - Launch it
 
-## Prepare the Worker service Site (<V3.7.0):
+## Prepare the Worker service Site (\<V3.7.0):
 1. Compile the solution 
 - Set Worker service as startup project
 - Launch it a first time with IIS

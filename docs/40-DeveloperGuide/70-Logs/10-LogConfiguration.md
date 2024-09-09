@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Log Configuration
-parent: Logs
-grand_parent: Developer guide
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Log Configuration
@@ -12,8 +8,8 @@ This document explains how to change the configuration of the logs for your proj
 ## Config File
 .Net Bia Framework uses NLog for the management of the logs.
 By default, when you create your projects, logs are configured to be written in specific folders. You can find theses configurations in the different appsettings.*.json of your .net Presentation.Api project.
-If not set in appsettings.{YOUR_ENV}.json, the configuration is taken from appsettings.json.
-You can change the management of the logs either for all environments by editing appsettings.json or for specific environments with the appsettings.{YOUR_ENV}.json.
+If not set in appsettings.YOUR_ENV.json, the configuration is taken from appsettings.json.
+You can change the management of the logs either for all environments by editing appsettings.json or for specific environments with the appsettings.YOUR_ENV.json.
 
 Example : If you decide to send error logs by mail, you can define a different mail address for each environments.
 

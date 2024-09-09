@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Prerequisite
-parent: Try it
-grand_parent: Introduction
-nav_order: 10
+sidebar_position: 1
 ---
 # Prerequisite
 

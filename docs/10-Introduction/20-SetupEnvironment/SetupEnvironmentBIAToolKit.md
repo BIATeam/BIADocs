@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup BIA Tool Kit
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 5
+sidebar_position: 1
 ---
 
 # Setup BIA Tool Kit 

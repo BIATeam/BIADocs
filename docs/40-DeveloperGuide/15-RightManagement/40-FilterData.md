@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Filter data
-parent: Right management
-grand_parent: Developer guide
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Filter data

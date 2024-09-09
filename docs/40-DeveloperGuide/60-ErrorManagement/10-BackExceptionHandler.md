@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Back Exception Handler
-parent: Error Management
-grand_parent: Developer guide
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Back Exception Handler

@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Add advanced filter in CRUD
-parent: CRUD
-grand_parent: Developer guide
-nav_order: 21
+sidebar_position: 1
 ---
 
 To add an advanced filter in an existing CRUD:

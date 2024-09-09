@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Impersonation
-parent: Developer guide
-nav_order: 110
+sidebar_position: 1
 ---
 
 # Impersonation

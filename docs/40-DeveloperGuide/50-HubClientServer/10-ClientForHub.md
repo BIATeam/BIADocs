@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Client for hub
-parent: Hub Client/Server
-grand_parent: Features
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Client for hub (Worker Feature)

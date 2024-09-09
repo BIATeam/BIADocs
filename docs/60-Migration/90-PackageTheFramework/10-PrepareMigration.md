@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Prepare Migration
-parent: Package the Framework
-grand_parent: Migrate an existing project
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Prepare Migration

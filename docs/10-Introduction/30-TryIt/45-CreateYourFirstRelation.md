@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Create your first Relation
-parent: Try it
-grand_parent: Introduction
-nav_order: 45
+sidebar_position: 1
 ---
 
 # Create your first Relation

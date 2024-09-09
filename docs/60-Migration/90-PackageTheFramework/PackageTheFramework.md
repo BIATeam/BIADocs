@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Package the Framework
-parent: Migrate an existing project
-nav_order: 90
-has_children: true
+sidebar_position: 1
 ---
 # Package a new version of the Framework (Only for BIATeam):
 

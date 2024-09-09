@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup Git environment
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 3
+sidebar_position: 1
 ---
 
 # Setup Git environment 

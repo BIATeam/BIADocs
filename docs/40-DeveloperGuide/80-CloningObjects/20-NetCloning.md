@@ -1,9 +1,5 @@
 ---
-layout: default
-title: .Net cloning
-parent: Cloning objects
-grand_parent: Developer guide
-nav_order: 20
+sidebar_position: 1
 ---
 
 # Cloning objects in .Net

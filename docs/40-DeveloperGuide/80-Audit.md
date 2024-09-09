@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Audit
-parent: Developer guide
-nav_order: 80
+sidebar_position: 1
 ---
 
 # Audit
@@ -11,7 +8,7 @@ This file explains how to activate/deactivate the audit feature (users' modifica
 ## Prerequisite
 
 ### Knowledge to have:
-The audit feature is actively using the **Audit<area>.NET** library
+The audit feature is actively using the **Audit.NET** library
 * [Audit.NET github site](https://github.com/thepirat000/Audit.NET)
 * [Audit.NET documentation](https://github.com/thepirat000/Audit.NET/blob/master/README.md)
 * [Audit.EntityFramework documentation](https://github.com/thepirat000/Audit.NET/blob/master/src/Audit.EntityFramework/README.md)

@@ -1,11 +1,6 @@
 ---
-layout: default
-title: Start
-parent: Developer guide
-nav_order: 10
-has_children: true
+sidebar_position: 1
 ---
 
 # Start
  
-{: .fs-6 .fw-300 }

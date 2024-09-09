@@ -1,13 +1,10 @@
 ---
-layout: default
-title: Compute stats
-parent: Best Practices
-nav_order: 60
+sidebar_position: 1
 ---
 
 # Analyze the size of the application
 This document explains how to create a stats report that give an overview of the size of the js generated with the Angular application.   
-![Stats](../../Images/Stats.PNG)
+![Stats](../Images/Stats.PNG)
 
 ## Prerequisite
 You should install webpack-bundle-analyzer : 

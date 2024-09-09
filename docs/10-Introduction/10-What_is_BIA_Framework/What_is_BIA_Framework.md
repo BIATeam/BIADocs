@@ -1,20 +1,7 @@
 ---
-layout: default
-title: What is BIA Framework
-parent: Introduction
-nav_order: 10
+sidebar_position: 1
 ---
 # What is BIA Framework
-{: .no_toc }
-
-<details open markdown="block">
-  <summary>
-    Table of contents
-  </summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
 
 ## Goal of the BIA Framework:
 The goal of BIA Framework is to develop on **faster and secure way** professional applications.
