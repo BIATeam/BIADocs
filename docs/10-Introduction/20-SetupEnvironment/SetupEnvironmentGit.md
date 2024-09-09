@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup Git environment
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 3
+sidebar_position: 1
 ---
 
 # Setup Git environment 
@@ -15,7 +11,7 @@ In order to avoid to do unnecessary merges it is also advised to configure the d
 When working only on Windows, in order to avoid issues with line feeds, choose the "Checkout as is, commit as" option
 
 The git plugin for Visual Studio is automatically installed by default with Visual Studio but you can also install a dedicated GUI client (for instance [Git extensions](https://gitextensions.github.io/))
-if behind a company proxy, in order to be able to fech a github repo, run the following command :
+if behind a company proxy, in order to be able to fetch a github repo, run the following command :
 ```cmd
 git config --global http.https://<area>github.com.proxy [**add_here_your_proxy_url**]
 ```

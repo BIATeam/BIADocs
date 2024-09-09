@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup dotnet environment
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 2
+sidebar_position: 1
 ---
 
 # Setup dotnet development environment:
@@ -15,7 +11,7 @@ nav_order: 2
 
 Install [Visual Studio](https://visualstudio.microsoft.com/fr/vs/) 
 
-- Install/update Visual studio with Admin account without internet acces.
+- Install/update Visual studio with Admin account without internet access.
   * Ask to your teammate if an the Visual Studio install package is store on the local network.
   * If not create a share folder bia and prepare yourself the package with the command:
   ```
@@ -30,9 +26,9 @@ Install [Visual Studio](https://visualstudio.microsoft.com/fr/vs/)
   => If a new version is available in \\share.bia.[MyCompany]\VSPro2022\VS Pro 2022 Setup\ a popup will warn you in Visual Studio. 
 
 - Add the latest SDK of .NET Core from the components list:
-- Add [Development Time IIS Support](https://devblogs.microsoft.com/aspnet/development-time-iis-support-for-asp-net-core-applications/) follow the blog instruction with this additionnal tips: 
+- Add [Development Time IIS Support](https://devblogs.microsoft.com/aspnet/development-time-iis-support-for-asp-net-core-applications/) follow the blog instruction with this additional tips: 
   When installing IIS, make sur that 
-  * "WWW Services -> Security -> Windows Authentication" is ckecked 
+  * "WWW Services -> Security -> Windows Authentication" is checked 
   ![IIS Windows Authentication](../../Images/IISWindowsAuthent.jpg)
   * "WWW  -> App Dev Features -> ASP.Net 4.x" is h
   ![IIS ASP Net](../../Images/IISASPNET.JPG)

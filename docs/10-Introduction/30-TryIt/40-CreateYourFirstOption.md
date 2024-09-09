@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Create your first Option
-parent: Try it
-grand_parent: Introduction
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Create your first Option
@@ -253,12 +249,12 @@ We will use the BIAToolkit to finalize 'PlaneType' feature generation back-end +
 ```ps
 npm start
 ```
-* Errors can occured like *'OptionDto' is declared but its value is never read.*, 
+* Errors can occurred like *'OptionDto' is declared but its value is never read.*, 
   * go to the file 'src/app/features/planes-types/model/plane-type.ts' 
   * delete *imports* in errors
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planesTypes'* for block with "labelKey" value is *'app.planesTypes'*   
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
-* Open web navigator on adress: *http://localhost:4200/* to display front page
+* Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANESTYPES"* tab to display 'PlaneType' page.
 
 11.   Add traduction

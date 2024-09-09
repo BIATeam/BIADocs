@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup Keycloak
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 6
+sidebar_position: 1
 ---
 
 # Initialize Keycloak
