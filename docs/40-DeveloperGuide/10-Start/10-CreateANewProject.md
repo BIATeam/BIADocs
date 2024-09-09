@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Create a new project
-parent: Start
-grand_parent: Developer guide
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Create a new project

@@ -1,12 +1,7 @@
 ---
-layout: default
-title: Front Style Guide
-parent: Best Practices
-nav_order: 30
-has_children: true
+sidebar_position: 1
 ---
 
 # Front
 
 The front style docs in BIA framework.
-{: .fs-6 .fw-300 }

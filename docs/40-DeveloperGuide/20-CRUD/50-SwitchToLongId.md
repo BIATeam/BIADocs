@@ -1,42 +1,40 @@
 ---
-layout: default
-title: Switch to long Id
-parent: CRUD
-grand_parent: Developer guide
-nav_order: 50
+sidebar_position: 1
 ---
 
 # Switch to long Id
 This document explains how to switch an entity id from int to long. It can be use similar to switch to GUID.   
-<u>For this example, we have switch the id of the entity: <span style="background-color:#327f00">plane</span>.</u>
+_For this example, we have switch the id of the entity: `Plane`._
 
 
 ## Transform the entity
 Use long in the inheritance IEntity and in the Id type
-  ``` csharp
+  ```csharp
       public class Plane : VersionedTable, IEntity<long>
       {
           /// <summary>
           /// Gets or sets the id.
           /// </summary>
           public long Id { get; set; }
+          ....
+      }
   ```
 
 ## Transform the dto 
 Use long in the inheritance BaseDto
-  ``` csharp
+  ```csharp
       public class PlaneDto : BaseDto<long>
   ```
 
 ## Transform the mapper 
 Use long in the inheritance BaseMapper
-  ``` csharp
+  ```csharp
       public class PlaneMapper : BaseMapper<PlaneDto, Plane, long>
   ```
 
 ## Transform the related entities
 If the entity id is reference by other table change the type in related entities. 
-  ``` csharp
+  ```csharp
     public class PlaneAirport : VersionedTable
     {
         /// <summary>
@@ -62,28 +60,28 @@ If the entity id is reference by other table change the type in related entities
   ```
 ## Transform the service 
 Use long as TKey type in the inheritance CrudAppServiceBase
-  ``` csharp
+  ```csharp
     public class PlaneAppService : CrudAppServiceBase<PlaneDto, Plane, long, PagingFilterFormatDto, PlaneMapper>, IPlaneAppService
   ```
 
 ## Transform the service interface
 Use long as TKey type in the inheritance ICrudAppServiceBase
-  ``` csharp
+  ```csharp
     public interface IPlaneAppService : ICrudAppServiceBase<PlaneDto, Plane, long, PagingFilterFormatDto>
   ```
 
 ## Transform the controller
 Use long in the list of ids in Remove function
-  ``` csharp
+  ```csharp
         public async Task<IActionResult> Remove([FromQuery] List<long> ids)
   ```
 
 ## Generate the migration
-Add-Migration "<span style="background-color:#327f00">Plane</span>LongId" -Context "DataContext"
+Add-Migration "`Plane`LongId" -Context "DataContext"
 
 ## Adapt the migration
 Due to a known bug in ef5.0 you have to add manually the remove of the PrimaryKey and ForeignKey on each element modified, and recreate them after change in Up and Down function.
-  ``` csharp
+  ```csharp
     public partial class PlaneLongId : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

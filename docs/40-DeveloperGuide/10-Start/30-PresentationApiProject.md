@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Presentation API project
-parent: Start
-grand_parent: Developer guide
-nav_order: 30
+sidebar_position: 1
 ---
 
 You have 2 alternatives to run this project: 

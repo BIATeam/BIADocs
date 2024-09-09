@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Create your first project
-parent: Try it
-grand_parent: Introduction
-nav_order: 20
+sidebar_position: 1
 ---
 
 # Build your first project

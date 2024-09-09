@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Angular cloning
-parent: Cloning objects
-grand_parent: Developer guide
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Cloning objects in Angular

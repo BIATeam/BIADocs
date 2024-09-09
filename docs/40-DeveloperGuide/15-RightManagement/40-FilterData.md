@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Filter data
-parent: Right management
-grand_parent: Developer guide
-nav_order: 40
+sidebar_position: 1
 ---
 
 # Filter data
@@ -11,7 +7,7 @@ This file explains how to filter data by the team.
 
 ## Data model
 Check that the data model is compliant with the recommendation in :
- [Develop application](../../20-WorkWithBIA/20-DevelopApplication/DevelopTheApplication.md)
+ [Develop application](../../20-WorkWithBIA/20-DevelopTheApplication.md)
 
 ## Filter in service
 If the data model is correct for every item table you have an link on an unique team.

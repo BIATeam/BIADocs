@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Role
-parent: Right management
-grand_parent: Developer guide
-nav_order: 30
+sidebar_position: 1
 ---
 
 # Role

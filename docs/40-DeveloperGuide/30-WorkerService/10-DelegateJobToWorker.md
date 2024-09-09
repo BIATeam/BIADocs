@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Delegate job to worker
-parent: Worker Service
-grand_parent: Developer guide
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Delegate job to worker (api Feature)

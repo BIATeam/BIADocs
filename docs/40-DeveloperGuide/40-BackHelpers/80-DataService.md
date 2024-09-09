@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Data Service
-parent: Back Helpers
-grand_parent: Developer guide
-nav_order: 80
+sidebar_position: 1
 ---
 
 # Data Service

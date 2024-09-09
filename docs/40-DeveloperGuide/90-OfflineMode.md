@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Offline Mode
-parent: Developer guide
-nav_order: 90
+sidebar_position: 90
 ---
 
 # Offline mode

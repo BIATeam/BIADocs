@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Run front
-parent: Start
-grand_parent: Developer guide
-nav_order: 60
+sidebar_position: 1
 ---
 
 # Beginning

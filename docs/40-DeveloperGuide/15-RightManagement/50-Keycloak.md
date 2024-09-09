@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Keycloak
-parent: Right management
-grand_parent: Developer guide
-nav_order: 50
+sidebar_position: 1
 ---
 
 # Keycloak authentication

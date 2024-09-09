@@ -7,4 +7,3 @@ has_children: true
 
 # BestPractices
 
-{: .fs-6 .fw-300 }

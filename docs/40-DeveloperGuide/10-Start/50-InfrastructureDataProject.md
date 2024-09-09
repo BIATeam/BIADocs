@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Infrastructure data project
-parent: Start
-grand_parent: Developer guide
-nav_order: 50
+sidebar_position: 1
 ---
 # Infrastructure data project
 

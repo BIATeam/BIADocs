@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Publish BIAToolKit in click once 
-parent: BIAToolKit
-grand_parent: Developer guide
-nav_order: 90
+sidebar_position: 1
 ---
 
 # Publish BIAToolKit in click once

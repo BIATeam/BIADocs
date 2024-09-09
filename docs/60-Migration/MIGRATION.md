@@ -15,7 +15,7 @@ has_children: true
 1. Use the BIAToolKit to apply the migration.
 2. Manage the conflict (2 solutions)
    1. In BIAToolKit click on "4 - merge Rejected"
-      * Search "<<<<<" in all files.
+      * Search `<<<<<` in all files.
       * Resolve the conflict manually.
    2. Analyze the .rej file (search "diff a/" in VS code) that have been created in your project folder
       * Apply manually the change.
@@ -24,4 +24,3 @@ has_children: true
 4. Follow the detailed steps describe in all files corresponding to your migration.
    * If several steps are passed during the migration apply them successively.
     
-{: .fs-6 .fw-300 }

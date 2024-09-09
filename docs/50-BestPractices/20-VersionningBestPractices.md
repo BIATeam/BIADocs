@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Versionning best practices
-parent: Best Practices
-nav_order: 20
+sidebar_position: 1
 ---
 
 # Version best practices

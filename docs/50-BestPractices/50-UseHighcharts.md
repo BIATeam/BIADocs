@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Use Highcharts
-parent: Best Practices
-nav_order: 50
+sidebar_position: 1
 ---
 
 # Use Highcharts

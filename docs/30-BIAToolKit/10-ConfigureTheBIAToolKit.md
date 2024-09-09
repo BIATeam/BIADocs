@@ -1,15 +1,11 @@
 ---
-layout: default
-title: Configure the BIA tool kit 
-parent: BIAToolKit
-grand_parent: Developer guide
-nav_order: 1
+sidebar_position: 1
 ---
 
 # Configure the BIA tool kit
 This document explains how to configure the BIA tool kit, to be ready to apply the other operation (creation, migration...)
 
-![BIAToolKitConfig](../../Images/BIAToolKit/Config.PNG)
+![BIAToolKitConfig](../Images/BIAToolKit/Config.PNG)
 
 ## Get the BIAToolKit
 Take the last version of the BIAToolKit from [release](https://github.com/BIATeam/BIAToolKit/releases) or from your company ClickOnce folder if you have one. 

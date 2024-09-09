@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Update combobox display size
-parent: Front Style Guide
-grand_parent: Best Practices
-nav_order: 22
+sidebar_position: 1
 ---
 
 By default, combobox (as dropdown and multiselect ) height is defined at 50% of viewport vertical size. If list exceeds this value, a scrollbar appear. Of course it is a maximum size.

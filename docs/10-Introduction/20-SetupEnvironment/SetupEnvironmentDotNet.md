@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup dotnet environment
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 2
+sidebar_position: 1
 ---
 
 # Setup dotnet development environment:

@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Update front
-parent: Update the dependencies
-grand_parent: Migrate an existing project
-nav_order: 10
+sidebar_position: 1
 ---
 
 This upgrade in to apply only on **BIADemo project**.

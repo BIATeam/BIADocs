@@ -1,8 +1,5 @@
 ---
-layout: default
-title: Git Branching best practices
-parent: Best Practices
-nav_order: 10
+sidebar_position: 1
 ---
 
 # Git Branching best practices

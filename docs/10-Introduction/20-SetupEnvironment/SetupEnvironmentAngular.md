@@ -1,9 +1,5 @@
 ---
-layout: default
-title: Setup angular environment
-parent: Setup environment
-grand_parent: Introduction
-nav_order: 1
+sidebar_position: 1
 ---
 
 # Setup angular development environment:

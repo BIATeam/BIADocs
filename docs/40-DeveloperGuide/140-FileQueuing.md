@@ -1,8 +1,5 @@
 ---
-layout: default
-title: File Queuing
-parent: Developer guide
-nav_order: 140
+sidebar_position: 140
 ---
 
 # File Queuing

@@ -1,12 +1,7 @@
 ---
-layout: default
-title: Back Helpers
-parent: Developer guide
-nav_order: 40
-has_children: true
+sidebar_position: 1
 ---
 
 # Back
 
 The angular back docs in BIA framework.
-{: .fs-6 .fw-300 }
