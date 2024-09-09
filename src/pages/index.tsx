@@ -32,8 +32,8 @@ export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title}`}
+      description="The BIA Framework is a set of components. It give the possibility to build quickly a modern application at the state of art in 2024 (Green IT, Cyber Security, Structured, RWD, Ergonomic, Fast, Powerful, Open to web component integration)">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
