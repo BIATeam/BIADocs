@@ -35,6 +35,22 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          lastVersion: '3.9.0',
+          onlyIncludeVersions: ['3.9.0','older'], // line to comment to see last version
+          versions: {
+            current: {
+              label: '3.10.0',
+              path: '3.10.0',
+            },
+            "3.9.0": {
+              label: '3.9.0',
+              path: '/', // reset to '3.9.0' when 3.10.0 will be publish
+            },
+            older: {
+              label: 'Older',
+              path: 'older',
+            },
+          },
         },
         blog: {
           showReadingTime: true,
@@ -71,6 +87,11 @@ const config: Config = {
           label: 'Documentation',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownActiveClassDisabled: true,
+        },
         {
           href: 'https://github.com/BIATeam',
           label: 'GitHub',
