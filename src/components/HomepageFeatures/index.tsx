@@ -29,7 +29,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: 'Powered by Angular an .Net',
+    title: 'Powered by Angular and .Net',
     Svg: require('@site/static/img/Logo.svg').default,
     description: (
       <>
