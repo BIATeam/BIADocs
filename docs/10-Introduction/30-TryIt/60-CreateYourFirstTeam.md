@@ -33,9 +33,38 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Company
     }
 }
 ```
-Make sure to inherit from `TeamDto` or parent `TeamDto`.
-Complete with all necessary properties.
+4. In case of children team, ensure to set the first `AncestorTeam` parent's type into `BiaDtoClass` class annotation, and set `IsParent` to true in `BiaDtoField` field annotation for parent's id property : 
+```csharp title="CompanyMaintenanceDto.cs"
+// <copyright file="CompanyMaintenanceDto.cs" company="MyCompany">
+// Copyright (c) MyCompany. All rights reserved.
+// </copyright>
 
+namespace MyCompany.MyFirstProject.Domain.Dto.Company
+{
+    using BIA.Net.Core.Domain.Dto.CustomAttribute;
+    using BIA.Net.Core.Domain.Dto.User;
+
+    /// <summary>
+    /// The DTO used to represent a company maintenance.
+    /// </summary>
+    [BiaDtoClass(AncestorTeam = "Company")]
+    public class CompanyMaintenanceDto : TeamDto
+    {
+        /// <summary>
+        /// Gets or sets the parent's company id.
+        /// </summary>
+        [BiaDtoField(IsParent = true, Required = true)]
+        public int CompanyId { get; set; }
+
+        /// <summary>
+        /// Get or sets the company maintenance code.
+        /// </summary>
+        public string Code { get; set; }
+    }
+}
+```
+Make sure to inherit from `TeamDto`.
+Complete with all necessary properties.
 ### Create the Model
 1. In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain'** create **'CompanyModule'** folder, then create a folder **'Aggregate'** into it. Use the parent's domain existing module folder if exists.
 2. Create empty class **'Company.cs'** and add following:
@@ -57,10 +86,19 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
         /// Gets or sets the company name.
         /// </summary>
         public string CompanyName { get; set; }
+
+        /// <summary>
+        /// Add row version timestamp in table Company.
+        /// </summary>
+        [Timestamp]
+        [Column("RowVersion")]
+        public byte[] RowVersionCompany { get; set; }
     }
 }
 ```
-Make sure to inherit from `Team` or parent `Team`.
+3. In case of children team, ensure to have logical links between the parent and child entities.
+
+Make sure to inherit from `Team` and expose a `byte[]` row version property mapped to column `RowVersion`.
 Complete with all necessary properties.
 
 ### Create the Mapper
@@ -127,6 +165,8 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
     }
 }
 ```
+3. In case of children team, ensure to specify logical links between the parent and child entities.
+
 Make sure to inherit from `TTeamMapper<TTeamDto, TTeam>` and override mentionned methods.
 Complete the mapping methods with the necessary properties according to your model.
 
@@ -192,6 +232,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
         }
     }
 ```
+6. In case of children team, ensure to specify logical links between the parent and child entities.
 
 ## Generate Team 
 
@@ -218,6 +259,7 @@ Open your DotNet project solution in **'...\MyFirstProject\DotNet'** and complet
 ##### RoleId.cs
 1. Go in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **RoleId.cs** file.
 2. Adapt the enum value of the generated value `CompanyAdmin`.
+3. In case of children team, review the `TeamLeader` created value. Delete new generated value if already exists and in use by other teams.
 ##### TeamTypeId.cs
 1. Stay in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **TeamTypeId.cs** file.
 2. Adapt the enum value of the generated value `Company`.
@@ -234,7 +276,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
     }
 }
 ```
-3. Complete the overrided method `EntityToDto` to complete the TeamTypeId :
+1. Complete the overrided method `EntityToDto` to complete the TeamTypeId :
 ```csharp title="CompanyMapper.cs"
 namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 {
@@ -274,6 +316,24 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
         /// TODO after creation of CRUD Team Company : adapt the path
         path: ['/companies'],
       },
+```
+3. In case of children team, move the generated content into the children's array of parent `BiaNavigation` :
+```typescript title="navigation.ts"
+  {
+    labelKey: 'app.companies',
+    permissions: [Permission.Company_List_Access],
+    path: ['/companies'],
+    children: [
+      /// BIAToolKit - Begin Partial Navigation CompanyMaintenance
+      {
+        labelKey: 'app.company-maintenances',
+        permissions: [Permission.CompanyMaintenance_List_Access],
+        /// TODO after creation of CRUD Team Company : adapt the path
+        path: ['/company-maintenances'],
+      },
+      /// BIAToolKit - End Partial Navigation CompanyMaintenance
+    ],
+  },
 ```
 ##### model.ts
 1. Go in **'src\app\features\companies\model'** or the children parent's path of the generated feature `companies` and open the **company.ts** file.
