@@ -14,8 +14,14 @@ You can start the application and go in Site menu to understand the usage.
 
 In the following code sample replace [YourTeamType] by the name of your type type.
 
-## Back
+## Create a team
+You can use BIAToolKit to create a team. 
 
+Follow instructions [here](../../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md).
+
+Otherwise, see next chapters.
+
+## Back
 ### Add the team type
 
 Add the TeamType :
@@ -44,20 +50,6 @@ Add the TeamType :
   - (Optionally) in function CreateTeamTypeRoleModel add the mapping between the role and your teamType. (one line per role)
   ```csharp
     rt.HasData(new { TeamTypesId = (int)TeamTypeId.[YourTeamType], RolesId = (int)RoleId.[YourRoleName] });
-  ```
-
-- In Application\User\AuthAppService.cs
-  - (Optionally) add computed role
-  ```csharp
-    if (currentTeam.TeamTypeId == (int)TeamTypeId.[YourRoleName])
-    {
-        allRoles.Add(Constants.Role.[YourRoleName]Member);
-    }
-  ```
-- In AuthController > function Login() > variable loginParam
-  - add following line adapt roleMode and inHeader
-  ```csharp
-    new TeamConfigDto { TeamTypeId = (int)TeamTypeId.[YourTeamType], RoleMode = RoleMode.AllRoles, InHeader = true },
   ```
 
 ### Add the team CRUD
@@ -97,9 +89,8 @@ In addition, to finish update the database.
     { teamTypeId: TeamTypeId.[YourTeamType], roleMode: RoleMode.AllRoles, inHeader: true },
   ```
 
-
 ### Add the team CRUD
-The procedure is similar to the [CRUD_Front](../20-CRUD/20-CreateACRUDFront.md) but you will use the zip **aircraft-maintenance-companies.zip** instead of **feature-planes.zip**
+The procedure is similar to the [CRUD_Front](../20-CRUD/20-CreateACRUDFront.md).
 
 ### Filter Sub teams in header
 In case of a team type child of team type you have to filer the children teams by their parent.
