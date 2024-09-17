@@ -1,7 +1,7 @@
 $Source = "C:\Sources\Github.com\BIATeam\BIADemo";
 # $Source = "D:\Source\GitHub\BIATeam\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
-$SourceFrontEnd = $Source + "\Angular"
+# $SourceFrontEnd = $Source + "\Angular"
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular')
 
@@ -161,10 +161,33 @@ function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   return $positionFermeture
 }
 
+function CleanIoc {
+  param (
+    [string]$Source
+  )
+
+  $path = Get-ChildItem -Path $Source -Include IocContainer.cs -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+
+  if (Test-Path $path) {
+
+    Write-Output $path
+    $pattern = "collection\.AddTransient<(I([A-Za-z]+)), \2>\(\);"
+    $exception = "BackgroundJobClient"
+  
+  (Get-Content $path) | Foreach-Object {
+      if ($_ -notmatch $pattern -or $_ -match $exception) {
+        $_
+      }
+    } | Set-Content $path
+  }
+}
+
+
 ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?<!IDomainEvent : )\bINotification\b' -NewRegexp 'IMailRepository' -Include 
 ReplaceInProject -Source $SourceBackEnd -OldRegexp 'using BIA.Net.Core.Domain.Service' -NewRegexp 'using BIA.Net.Core.Application.Service'
+CleanIoc -Source $SourceBackEnd
 
-cd $Source/DotNet
+Set-Location $Source/DotNet
 dotnet restore --no-cache
 
 Write-Host "Finish"
