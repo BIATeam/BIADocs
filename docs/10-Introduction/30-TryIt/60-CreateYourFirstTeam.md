@@ -75,6 +75,8 @@ Complete with all necessary properties.
 
 namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using MyCompany.MyFirstProject.Domain.UserModule.Aggregate;
 
     /// <summary>
@@ -211,8 +213,9 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
         /// </summary>
         /// <param name="modelBuilder">The model builder.</param>
         private static void CreateCompanyModel(ModelBuilder modelBuilder)
-        {update-data
-            modelBuilder.Entity<Company>().Property(p => p.CompanyName);
+        {
+            // Use ToTable() to create the inherited relation with Team in database
+            modelBuilder.Entity<Company>().ToTable("Companies");
         }
     }
 }
@@ -276,7 +279,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
     }
 }
 ```
-1. Complete the overrided method `EntityToDto` to complete the TeamTypeId :
+3. Complete the overrided method `EntityToDto` to map the TeamTypeId :
 ```csharp title="CompanyMapper.cs"
 namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 {
