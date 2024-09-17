@@ -184,7 +184,6 @@ function CleanIoc {
 
 
 ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?<!IDomainEvent : )\bINotification\b' -NewRegexp 'IMailRepository' -Include 
-ReplaceInProject -Source $SourceBackEnd -OldRegexp 'using BIA.Net.Core.Domain.Service' -NewRegexp 'using BIA.Net.Core.Application.Service'
 CleanIoc -Source $SourceBackEnd
 
 Set-Location $Source/DotNet
