@@ -320,7 +320,7 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
         path: ['/companies'],
       },
 ```
-3. In case of children team, move the generated content into the children's array of parent `BiaNavigation` :
+3. In case of children team, you can move if needed the generated content into the children's array of parent `BiaNavigation` :
 ```typescript title="navigation.ts"
   {
     labelKey: 'app.companies',
