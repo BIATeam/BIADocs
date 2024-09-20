@@ -191,13 +191,19 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"totalCount\$ \| async"' -N
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"crudItems\$ \| async"' -NewRegexp '"(crudItems$ | async) ?? []"' -Include *.html 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"loading\$ \| async"' -NewRegexp '"(loading$ | async) ?? false"' -Include *.html 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp '("[\r\n ]*)([A-z.$]+\.dictOptionDtos\$[\r\n ]*\| async)([\r\n ]*")' -NewRegexp '$1($2) ?? []$3' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[elements]="([A-z.]+)\$ \| async"' -NewRegexp '[elements]="($1$ | async) ?? []"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[([A-z]+Options)]="([A-z.]+)\$ \| async"' -NewRegexp '[$1]="($2$ | async) ?? []"' -Include *.html 
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import { LazyLoadEvent } from 'primeng/api';" -NewRegexp "import { TableLazyLoadEvent } from 'primeng/table';" -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(?-i)\bLazyLoadEvent\b" -NewRegexp 'TableLazyLoadEvent' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'frozeSelectColumn="(true)"' -NewRegexp '[frozeSelectColumn]="$1"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'frozeSelectColumn="(true|false)"' -NewRegexp '[frozeSelectColumn]="$1"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'showTime="(true|false)"' -NewRegexp '[showTime]="$1"' -Include *.html
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\.getPrimeNgTable\(\)([\r\n ]*)\.' -NewRegexp '.getPrimeNgTable()$1?.' -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "selectedCrudItems\?" -NewRegexp 'selectedCrudItems' -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "selectedCrudItems\?" -NewRegexp 'selectedCrudItems' -Include *.html
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\.fieldsConfig\?\.advancedFilter" -NewRegexp '.fieldsConfig.advancedFilter' -Include *.html
+# This one is a bit risky, could put ngIf on things that should be effectively nullable, thus hiding the component wrongfully
+#ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[(?!\bngIf\b)(?!\bappSettings\b)([A-z]+)]="(([A-z]*\.)*([A-z]+)\$ \| async)"' -NewRegexp '*ngIf="$2; let $4" [$1]="$4"' -Include *.html
+
 # END - strict template activation
 
 Set-Location $Source/DotNet
