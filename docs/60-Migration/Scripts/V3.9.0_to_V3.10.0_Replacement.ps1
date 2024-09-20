@@ -1,7 +1,7 @@
-$Source = "C:\Sources\Github.com\BIATeam\BIADemo";
+$Source = "C:\Sources\github\BIADemo";
 # $Source = "D:\Source\GitHub\BIATeam\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
-# $SourceFrontEnd = $Source + "\Angular"
+$SourceFrontEnd = $Source + "\Angular"
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular')
 
@@ -182,9 +182,23 @@ function CleanIoc {
   }
 }
 
-
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?<!IDomainEvent : )\bINotification\b' -NewRegexp 'IMailRepository' -Include 
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?<!IDomainEvent : )\bINotification\b' -NewRegexp 'IMailRepository' -Include *.cs
 CleanIoc -Source $SourceBackEnd
+
+# BEGIN - strict template activation
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[crudItem]="([A-z.$]+ \| async)"' -NewRegexp '*ngIf="$1; let crudItem" [crudItem]="crudItem"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"totalCount\$ \| async"' -NewRegexp '"(totalCount$ | async) ?? 0"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"crudItems\$ \| async"' -NewRegexp '"(crudItems$ | async) ?? []"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"loading\$ \| async"' -NewRegexp '"(loading$ | async) ?? false"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '("[\r\n ]*)([A-z.$]+\.dictOptionDtos\$[\r\n ]*\| async)([\r\n ]*")' -NewRegexp '$1($2) ?? []$3' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import { LazyLoadEvent } from 'primeng/api';" -NewRegexp "import { TableLazyLoadEvent } from 'primeng/table';" -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(?-i)\bLazyLoadEvent\b" -NewRegexp 'TableLazyLoadEvent' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'frozeSelectColumn="(true)"' -NewRegexp '[frozeSelectColumn]="$1"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\.getPrimeNgTable\(\)([\r\n ]*)\.' -NewRegexp '.getPrimeNgTable()$1?.' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "selectedCrudItems\?" -NewRegexp 'selectedCrudItems' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "selectedCrudItems\?" -NewRegexp 'selectedCrudItems' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\.fieldsConfig\?\.advancedFilter" -NewRegexp '.fieldsConfig.advancedFilter' -Include *.html
+# END - strict template activation
 
 Set-Location $Source/DotNet
 dotnet restore --no-cache
