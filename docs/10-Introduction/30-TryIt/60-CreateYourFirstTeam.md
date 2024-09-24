@@ -134,14 +134,12 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
         public CompanyMapper(IPrincipal principal)
             : base(principal)
         {
-            this.UserRoleIds = (principal as BiaClaimsPrincipal).GetRoleIds();
-            this.UserId = (principal as BiaClaimsPrincipal).GetUserId();
         }
 
         /// <inheritdoc cref="TTeamMapper{TTeamDto, TTeam}"/>
         public override Expression<Func<Company, CompanyDto>> EntityToDto()
         {
-            return entity => new CompanyDto
+            return base.EntityToDto().CombineMapping(entity => new CompanyDto
             {
                 Id = entity.Id,
                 Title = entity.Title,
@@ -155,7 +153,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
                 CanMemberListAccess =
                     this.UserRoleIds.Contains((int)RoleId.Admin) ||
                     entity.Members.Any(m => m.UserId == this.UserId),
-            };
+            });
         }
 
         /// <inheritdoc cref="TTeamMapper{TTeamDto, TTeam}"/>
@@ -169,7 +167,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 ```
 3. In case of children team, ensure to specify logical links between the parent and child entities.
 
-Make sure to inherit from `TTeamMapper<TTeamDto, TTeam>` and override mentionned methods.
+Make sure to inherit from `TTeamMapper<TTeamDto, TTeam>` and override mentionned methods. Ensure to combine the base mapping method `EntityToDto`.
 Complete the mapping methods with the necessary properties according to your model.
 
 ### Complete DataContext
