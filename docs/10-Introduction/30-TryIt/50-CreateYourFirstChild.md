@@ -173,7 +173,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
         /// <summary>
         /// Gets or sets the Engine DBSet.
         /// </summary>
-        public DbSet<Engine> Companies { get; set; }
+        public DbSet<Engine> Engines { get; set; }
     }
 ```
 3. In folder **ModelBuilders**, create class **EngineModelBuilder.cs** or use parent's model builder, and add :
