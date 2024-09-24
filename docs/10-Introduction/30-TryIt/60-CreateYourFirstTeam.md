@@ -171,7 +171,7 @@ Make sure to inherit from `TTeamMapper<TTeamDto, TTeam>` and override mentionned
 Complete the mapping methods with the necessary properties according to your model.
 
 ### Complete DataContext
-1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\CompanyModule\Aggregate'** folder.
+1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.
 2. Open **DataContext.cs** and add your new `DbSet<Company>` :
 
 ```csharp title="DataContext.cs"
