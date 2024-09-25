@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Documentation on "Policies" Configuration
 
 "Policies" allows you to control access to your application based on the "Claims" held in each user's authentication token.
