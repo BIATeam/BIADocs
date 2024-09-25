@@ -1,4 +1,4 @@
-$Source = "C:\Sources\Github.com\BIATeam\BIADemo";
+$Source = "C:\Sources\github\BIADemo";
 # $Source = "D:\Source\GitHub\BIATeam\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
@@ -161,10 +161,52 @@ function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   return $positionFermeture
 }
 
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?<!IDomainEvent : )\bINotification\b' -NewRegexp 'IMailRepository' -Include 
-ReplaceInProject -Source $SourceBackEnd -OldRegexp 'using BIA.Net.Core.Domain.Service' -NewRegexp 'using BIA.Net.Core.Application.Service'
+function CleanIoc {
+  param (
+    [string]$Source
+  )
 
-cd $Source/DotNet
+  $path = Get-ChildItem -Path $Source -Include IocContainer.cs -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+
+  if (Test-Path $path) {
+
+    Write-Output $path
+    $pattern = "collection\.AddTransient<(I([A-Za-z]+)), \2>\(\);"
+    $exception = "BackgroundJobClient"
+  
+  (Get-Content $path) | Foreach-Object {
+      if ($_ -notmatch $pattern -or $_ -match $exception) {
+        $_
+      }
+    } | Set-Content $path
+  }
+}
+
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?<!IDomainEvent : )\bINotification\b' -NewRegexp 'IMailRepository' -Include *.cs
+CleanIoc -Source $SourceBackEnd
+
+# BEGIN - strict template activation
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[crudItem]="([A-z.$]+ \| async)"' -NewRegexp '*ngIf="$1; let crudItem" [crudItem]="crudItem"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"totalCount\$ \| async"' -NewRegexp '"(totalCount$ | async) ?? 0"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"crudItems\$ \| async"' -NewRegexp '"(crudItems$ | async) ?? []"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '"loading\$ \| async"' -NewRegexp '"(loading$ | async) ?? false"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '("[\r\n ]*)([A-z.$]+\.dictOptionDtos\$[\r\n ]*\| async)([\r\n ]*")' -NewRegexp '$1($2) ?? []$3' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[elements]="([A-z.]+)\$ \| async"' -NewRegexp '[elements]="($1$ | async) ?? []"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[([A-z]+Options)]="([A-z.]+)\$ \| async"' -NewRegexp '[$1]="($2$ | async) ?? []"' -Include *.html 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import { LazyLoadEvent } from 'primeng/api';" -NewRegexp "import { TableLazyLoadEvent } from 'primeng/table';" -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(?-i)\bLazyLoadEvent\b" -NewRegexp 'TableLazyLoadEvent' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'frozeSelectColumn="(true|false)"' -NewRegexp '[frozeSelectColumn]="$1"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'showTime="(true|false)"' -NewRegexp '[showTime]="$1"' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\.getPrimeNgTable\(\)([\r\n ]*)\.' -NewRegexp '.getPrimeNgTable()$1?.' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "selectedCrudItems\?" -NewRegexp 'selectedCrudItems' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "selectedCrudItems\?" -NewRegexp 'selectedCrudItems' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\.fieldsConfig\?\.advancedFilter" -NewRegexp '.fieldsConfig.advancedFilter' -Include *.html
+# This one is a bit risky, could put ngIf on things that should be effectively nullable, thus hiding the component wrongfully
+#ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\[(?!\bngIf\b)(?!\bappSettings\b)([A-z]+)]="(([A-z]*\.)*([A-z]+)\$ \| async)"' -NewRegexp '*ngIf="$2; let $4" [$1]="$4"' -Include *.html
+
+# END - strict template activation
+
+Set-Location $Source/DotNet
 dotnet restore --no-cache
 
 Write-Host "Finish"

@@ -51,6 +51,32 @@ Add the TeamType :
   ```csharp
     rt.HasData(new { TeamTypesId = (int)TeamTypeId.[YourTeamType], RolesId = (int)RoleId.[YourRoleName] });
   ```
+- In AuthController > function Login() > variable loginParam
+  - add following line adapt roleMode and inHeader
+  ```csharp
+    new TeamConfigDto { TeamTypeId = (int)TeamTypeId.[YourTeamType], RoleMode = RoleMode.AllRoles, InHeader = true },
+  ```
+- In Domain > UserModule > Aggregate > TeamMapper
+  - (Optionally) Complete the methods `GetParentTeamId` and `GetParentTeamTitle` if your team is a child team of another one. You must have the model CRUD created at first (see [next chapter](#add-the-team-crud)).
+  ```csharp
+  private static int GetParentTeamId(Team team)
+  {
+      return team switch
+      {
+          [YourTeam] yourTeam => team.TeamTypeId == (int)TeamTypeId.[YourTeamType] ? yourTeam.ParentTeamId : 0,
+          _ => 0
+      };
+  }
+
+  private static string GetParentTeamTitle(Team team)
+  {
+      return team switch
+      {
+          [YourTeam] yourTeam => team.TeamTypeId == (int)TeamTypeId.[YourTeamType] ? yourTeam.Parent.Title : string.Empty,
+          _ => string.Empty
+      };
+  }
+  ```
 
 ### Add the team CRUD
 

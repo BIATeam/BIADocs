@@ -75,6 +75,8 @@ Complete with all necessary properties.
 
 namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 {
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using MyCompany.MyFirstProject.Domain.UserModule.Aggregate;
 
     /// <summary>
@@ -132,14 +134,12 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
         public CompanyMapper(IPrincipal principal)
             : base(principal)
         {
-            this.UserRoleIds = (principal as BiaClaimsPrincipal).GetRoleIds();
-            this.UserId = (principal as BiaClaimsPrincipal).GetUserId();
         }
 
         /// <inheritdoc cref="TTeamMapper{TTeamDto, TTeam}"/>
         public override Expression<Func<Company, CompanyDto>> EntityToDto()
         {
-            return entity => new CompanyDto
+            return base.EntityToDto().CombineMapping(entity => new CompanyDto
             {
                 Id = entity.Id,
                 Title = entity.Title,
@@ -153,7 +153,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
                 CanMemberListAccess =
                     this.UserRoleIds.Contains((int)RoleId.Admin) ||
                     entity.Members.Any(m => m.UserId == this.UserId),
-            };
+            });
         }
 
         /// <inheritdoc cref="TTeamMapper{TTeamDto, TTeam}"/>
@@ -167,11 +167,11 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 ```
 3. In case of children team, ensure to specify logical links between the parent and child entities.
 
-Make sure to inherit from `TTeamMapper<TTeamDto, TTeam>` and override mentionned methods.
+Make sure to inherit from `TTeamMapper<TTeamDto, TTeam>` and override mentionned methods. Ensure to combine the base mapping method `EntityToDto`.
 Complete the mapping methods with the necessary properties according to your model.
 
 ### Complete DataContext
-1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\CompanyModule\Aggregate'** folder.
+1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.
 2. Open **DataContext.cs** and add your new `DbSet<Company>` :
 
 ```csharp title="DataContext.cs"
@@ -211,8 +211,9 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
         /// </summary>
         /// <param name="modelBuilder">The model builder.</param>
         private static void CreateCompanyModel(ModelBuilder modelBuilder)
-        {update-data
-            modelBuilder.Entity<Company>().Property(p => p.CompanyName);
+        {
+            // Use ToTable() to create the inherited relation with Team in database
+            modelBuilder.Entity<Company>().ToTable("Companies");
         }
     }
 }
@@ -276,7 +277,7 @@ namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
     }
 }
 ```
-1. Complete the overrided method `EntityToDto` to complete the TeamTypeId :
+3. Complete the overrided method `EntityToDto` to map the TeamTypeId :
 ```csharp title="CompanyMapper.cs"
 namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
 {
@@ -317,7 +318,7 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
         path: ['/companies'],
       },
 ```
-3. In case of children team, move the generated content into the children's array of parent `BiaNavigation` :
+3. In case of children team, you can move if needed the generated content into the children's array of parent `BiaNavigation` :
 ```typescript title="navigation.ts"
   {
     labelKey: 'app.companies',
