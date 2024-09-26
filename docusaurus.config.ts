@@ -33,18 +33,23 @@ const config: Config = {
     [
       'classic',
       {
+        // Config to hide current
         docs: {
           sidebarPath: './sidebars.ts',
-          lastVersion: '3.9.0',
-          onlyIncludeVersions: ['3.9.0','older'], // line to comment to see last version
+          lastVersion: '3.10.0', // '3.9.0' to hide last version // 'current' to display last version
+          onlyIncludeVersions: ['3.10.0', '3.9.0','older'], // comment to display the current version
           versions: {
             current: {
               label: '3.10.0',
-              path: '3.10.0',
+              path: '3.10.0', // '3.10.0' to hide 3.10.0 // '/' to display 3.10.0
+            },
+            "3.10.0": {
+              label: '3.10.0',
+              path: '/', // '/' to hide 3.10.0  // '3.9.0' to display 3.10.0
             },
             "3.9.0": {
               label: '3.9.0',
-              path: '/', // reset to '3.9.0' when 3.10.0 will be publish
+              path: '3.9.0', // '/' to hide 3.10.0  // '3.9.0' to display 3.10.0
             },
             older: {
               label: 'Older',
@@ -52,6 +57,26 @@ const config: Config = {
             },
           },
         },
+        // Config to display 3.10.0
+        // docs: {
+        //   sidebarPath: './sidebars.ts',
+        //   lastVersion: 'current', // '3.9.0' to hide last version // 'current' to display last version
+        //   //onlyIncludeVersions: ['3.9.0','older'], // comment to display the current version
+        //   versions: {
+        //     current: {
+        //       label: '3.10.0',
+        //       path: '/', // '3.10.0' to hide 3.10.0 // '/' to display 3.10.0
+        //     },
+        //     "3.9.0": {
+        //       label: '3.9.0',
+        //       path: '3.9.0', // '/' to hide 3.10.0  // '3.9.0' to display 3.10.0
+        //     },
+        //     older: {
+        //       label: 'Older',
+        //       path: 'older',
+        //     },
+        //   },
+        // },
         blog: {
           showReadingTime: true,
           feedOptions: {
@@ -125,6 +150,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['csharp']
     },
   } satisfies Preset.ThemeConfig,
   plugins: [require.resolve('docusaurus-lunr-search')],
