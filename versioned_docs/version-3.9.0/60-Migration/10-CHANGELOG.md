@@ -3,6 +3,43 @@ sidebar_position: 1
 ---
 
 # ChangeLog 
+## V3.10.0 (2024-09-27)
+* Add FirstName and LastName in Token.
+* Fix vulnerabilities.
+* Allow embedded items CRUD + example in plane-specific.
+* Fix deprecated warnings.
+* Clean UserProfile unused code.
+* Move BIAToolkit config CRUD file.
+* Fix Site deleting error.
+* Fix user null when adding member.
+* Fix on plane similarTypes empty.
+* Fix CSV export not taking advanced filter into account.
+
+### Angular
+* Upgrade to Angular 17.
+* Upgrade to Primeng 17.
+* Change private to protected for front bia classes.
+* Avoid service worker loading error when it is not enabled.
+* Activate state immutability in NgRx stores.
+* Activating strict templates option.
+* Fix (un)selectAll not updating view in tables.
+* Allow easier exit of line creation or line edit in CalcMode.
+* Fix filter empty notempty for string.
+* Fix authorization on page loading after refresh or initial page.
+* Fix space key not registered in CalcMode edit.
+
+### DotNet
+* Add Nullable and not nullable field for each type in plane CRUD.
+* Database handler parameter to use custom mode without Databroker.
+* Add LogHelper to time the execution of instructions.
+* Add methods comments in swagger.
+* Improve front user exception.
+* New RoleType ClaimsToRole. 
+* Automatic dependency injection with RegisterServicesFromAssembly method.
+* Move notificationDomainService to notificationAppService.
+* Remove dependency to ASPNetCore in DeployDb.
+* Add deepcopy method.
+
 ## V3.9.0 (2024-07-09)
 * Mapper are injectable, and can be customize with injectable parameters (userId, permission...)
 * Right on team are review to be more flexible with children teams.

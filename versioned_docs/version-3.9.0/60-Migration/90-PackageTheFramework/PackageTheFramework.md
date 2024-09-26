@@ -22,7 +22,7 @@ sidebar_position: 1
 - Verify the project version should be 0.0.0 in
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\src\environments\all-environment.ts**
-- If it is a major version modify it in 
+- If it is a major or minor version (first or second digit modification) modify it in 
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - If the year change update footer :
   - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\classic-footer\classic-footer.component.html**
@@ -44,7 +44,7 @@ sidebar_position: 1
     ```
     dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.5.*
     ```
-- In Visual Studio select the local Package source (on your folder ...\BIADemo\DotNet\BIAPackage\NuGetPackage)
+- In Visual Studio select the local Package source (on your folder ...\BIADemo\DotNet\BIAPackage\NuGetPackage) by going to Nuget Package manager, then click on the config wheel on the top right and adding a new Package Source
 - Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
 - test the BIADemo project.
@@ -64,18 +64,20 @@ sidebar_position: 1
   
 ## Prepare BIACompany Files and release BIATemplate:
 - Synchronize your BIACompanyFiles local folder with github.
+- Move your BIACompanyFiles folder beside BIADemo and BIATemplate if not already here
+- If an up to date folder of your version is already created in BIACompany files, stop this chapter here
 - Copy the last version folder in   **..\BIACompanyFiles** to **..\BIACompanyFiles\VX.Y.Z**
 - Launch **...\BIADemo\Tools\3-DeliverBIATemplateAndCompanyFileVersion.ps1**
 - Verify that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
 
-
 ## Test the project creation using the VX.Y.Z
-- With the BIAToolKit create a project of the VX.Y.Z.
+- With the BIAToolKit create a project of the VX.Y.Z whith your version of CompanyFiles or VX.Y.Z of companyFiles.
 - Test it.
-- If is is ok rename **...\BIACompanyFiles\VX.Y.Z** with the good version name
+- If it is ok and you have a VX.Y.Z folder, rename **...\BIACompanyFiles\VX.Y.Z** with the good version name
 
 ## Publish BIAPackage
-- If everything is ok Publish the packages on nuget.org
+- Redact the change log of the new version
+- If everything is ok Publish the packages by connectiong on nuget.org and use the change log in the comments of each package. You will need an account with authorization on the packages repository.
 - Wait the confirmation by mail of all packages
 - COMMIT BIADemo, BIACompanyFiles and BIATemplate
 
@@ -87,7 +89,7 @@ npm run deploy
 
 ## Deliver the version
 - Create a release of the version in the 3 repository BIADocs, BIADemo and BIATemplate
-- Post message for developers, to inform than a new version is available.
+- Post message for developers, to inform that a new version is available.
 
 ## Prepare Migration
 - Follow those steps: [PREPARE MIGRATION](./10-PrepareMigration.md)
