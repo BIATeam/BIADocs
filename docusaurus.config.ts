@@ -33,19 +33,23 @@ const config: Config = {
     [
       'classic',
       {
-        // Config to hide 3.10.0
+        // Config to hide current
         docs: {
           sidebarPath: './sidebars.ts',
-          lastVersion: '3.9.0', // '3.9.0' to hide last version // 'current' to display last version
-          onlyIncludeVersions: ['3.9.0','older'], // comment to display the current version
+          lastVersion: '3.10.0', // '3.9.0' to hide last version // 'current' to display last version
+          onlyIncludeVersions: ['3.10.0', '3.9.0','older'], // comment to display the current version
           versions: {
             current: {
               label: '3.10.0',
               path: '3.10.0', // '3.10.0' to hide 3.10.0 // '/' to display 3.10.0
             },
+            "3.10.0": {
+              label: '3.10.0',
+              path: '/', // '/' to hide 3.10.0  // '3.9.0' to display 3.10.0
+            },
             "3.9.0": {
               label: '3.9.0',
-              path: '/', // '/' to hide 3.10.0  // '3.9.0' to display 3.10.0
+              path: '3.9.0', // '/' to hide 3.10.0  // '3.9.0' to display 3.10.0
             },
             older: {
               label: 'Older',
