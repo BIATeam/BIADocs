@@ -17,6 +17,7 @@ A word is a group of letters with the same orientation where the proximity betwe
 
 Basically, PdfPig will parse all the available letters, getting for each their positions and orientations. Next, the library will be able to group these letters into words by using various parameters, such as maximum distance between them.
 ## BIADemo example
+### Implementation
 The project **BIADemo** implements an example solution in order to use **PdfPig** to analyze PDF document. The implementation schema respects the layer's segregation and abstraction to show you how to properly use the package throught a dedicated repository, giving you the opportunity to implements other document analyzers for different types (Word, Excel, raw...).
 
 Architecture scheme is following : 
@@ -81,144 +82,122 @@ public class DocumentAnalysisController : BiaControllerBase
 ```
 
 ```csharp title="DocumentAnalysisService"
-namespace TheBIADevCompany.BIADemo.Application.Utilities
+/// <summary>
+/// Service for document analysis.
+/// </summary>
+public class DocumentAnalysisService : IDocumentAnalysisService
 {
-    using System;
-    using System.IO;
-    using TheBIADevCompany.BIADemo.Crosscutting.Common.Enum.DocumentAnalysis;
-    using TheBIADevCompany.BIADemo.Domain.RepoContract.DocumentAnalysis;
-    using TheBIADevCompany.BIADemo.Domain.Utilities.DocumentAnalysis;
+    private readonly IDocumentAnalysisRepositoryFactory documentAnalysisRepositoryFactory;
 
     /// <summary>
-    /// Service for document analysis.
+    /// Initializes a new instance of the <see cref="DocumentAnalysisService"/> class.
     /// </summary>
-    public class DocumentAnalysisService : IDocumentAnalysisService
+    /// <param name="documentAnalysisRepositoryFactory">The document analysys repositories factory <see cref="IDocumentAnalysisRepositoryFactory"/>.</param>
+    public DocumentAnalysisService(IDocumentAnalysisRepositoryFactory documentAnalysisRepositoryFactory)
     {
-        private readonly IDocumentAnalysisRepositoryFactory documentAnalysisRepositoryFactory;
+        this.documentAnalysisRepositoryFactory = documentAnalysisRepositoryFactory;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentAnalysisService"/> class.
-        /// </summary>
-        /// <param name="documentAnalysisRepositoryFactory">The document analysys repositories factory <see cref="IDocumentAnalysisRepositoryFactory"/>.</param>
-        public DocumentAnalysisService(IDocumentAnalysisRepositoryFactory documentAnalysisRepositoryFactory)
+    /// <summary>
+    /// Analyse and retrieve document content.
+    /// </summary>
+    /// <param name="fileName">The document name.</param>
+    /// <param name="fileContentType">The document content type.</param>
+    /// <param name="fileStream">The document conntat as <see cref="Stream"/>.</param>
+    /// <returns>The document content as <see cref="DocumentContent"/>.</returns>
+    public DocumentContent GetContent(string fileName, string fileContentType, Stream fileStream)
+    {
+        // Retrieve the document type from his content type
+        var documentType = GetDocumentType(fileContentType);
+
+        // Get the corresponding implementation of IDocumentAnalysisRepository for the document type
+        var documentAnalysisRepository = this.documentAnalysisRepositoryFactory.GetDocumentAnalysisRepository(documentType);
+
+        // Get document pages from repository
+        var documentPages = documentAnalysisRepository.GetPagesContent(fileStream);
+
+        return new DocumentContent
         {
-            this.documentAnalysisRepositoryFactory = documentAnalysisRepositoryFactory;
-        }
+            Name = fileName,
+            Type = documentType,
+            Pages = documentPages,
+        };
+    }
 
-        /// <summary>
-        /// Analyse and retrieve document content.
-        /// </summary>
-        /// <param name="fileName">The document name.</param>
-        /// <param name="fileContentType">The document content type.</param>
-        /// <param name="fileStream">The document conntat as <see cref="Stream"/>.</param>
-        /// <returns>The document content as <see cref="DocumentContent"/>.</returns>
-        public DocumentContent GetContent(string fileName, string fileContentType, Stream fileStream)
+    private static DocumentType GetDocumentType(string fileContentType)
+    {
+        return fileContentType switch
         {
-            // Retrieve the document type from his content type
-            var documentType = GetDocumentType(fileContentType);
-
-            // Get the corresponding implementation of IDocumentAnalysisRepository for the document type
-            var documentAnalysisRepository = this.documentAnalysisRepositoryFactory.GetDocumentAnalysisRepository(documentType);
-
-            // Get document pages from repository
-            var documentPages = documentAnalysisRepository.GetPagesContent(fileStream);
-
-            return new DocumentContent
-            {
-                Name = fileName,
-                Type = documentType,
-                Pages = documentPages,
-            };
-        }
-
-        private static DocumentType GetDocumentType(string fileContentType)
-        {
-            return fileContentType switch
-            {
-                "application/pdf" => DocumentType.Pdf,
-                _ => throw new NotImplementedException($"Document analysis for content type {fileContentType} is not implemented yet.")
-            };
-        }
+            "application/pdf" => DocumentType.Pdf,
+            _ => throw new NotImplementedException($"Document analysis for content type {fileContentType} is not implemented yet.")
+        };
     }
 }
 ```
 
 The PDF implementation for the interface `IDocumentAnalysisRepository` using **PdfPig** is following :
 ```csharp title="PdfAnalysisRepository"
-namespace TheBIADevCompany.BIADemo.Infrastructure.Service.Repositories.DocumentAnalysis
+/// <summary>
+/// Document analysis repository for PDF files.
+/// </summary>
+public class PdfAnalysisRepository : IDocumentAnalysisRepository
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using TheBIADevCompany.BIADemo.Crosscutting.Common.Enum.DocumentAnalysis;
-    using TheBIADevCompany.BIADemo.Domain.RepoContract.DocumentAnalysis;
-    using TheBIADevCompany.BIADemo.Domain.Utilities.DocumentAnalysis;
-    using UglyToad.PdfPig;
-    using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
+    /// <summary>
+    /// Document type handled by the repository.
+    /// </summary>
+    public DocumentType DocumentType => DocumentType.Pdf;
 
     /// <summary>
-    /// Document analysis repository for PDF files.
+    /// Analyze the document's pages content.
     /// </summary>
-    public class PdfAnalysisRepository : IDocumentAnalysisRepository
+    /// <param name="stream">Document content.</param>
+    /// <returns>Collection of <see cref="DocumentPage"/>.</returns>
+    public List<DocumentPage> GetPagesContent(Stream stream)
     {
-        /// <summary>
-        /// Document type handled by the repository.
-        /// </summary>
-        public DocumentType DocumentType => DocumentType.Pdf;
+        var documentPages = new List<DocumentPage>();
 
-        /// <summary>
-        /// Analyze the document's pages content.
-        /// </summary>
-        /// <param name="stream">Document content.</param>
-        /// <returns>Collection of <see cref="DocumentPage"/>.</returns>
-        public List<DocumentPage> GetPagesContent(Stream stream)
+        // Open the PDF document using PdfPig
+        using var document = PdfDocument.Open(stream);
+
+        // Iterate trought document's pages
+        foreach (var page in document.GetPages())
         {
-            var documentPages = new List<DocumentPage>();
+            // Getting all letters of current page
+            // Optional: letters can be filtered by some criterias
+            var letters = page.Letters;
 
-            // Open the PDF document using PdfPig
-            using var document = PdfDocument.Open(stream);
+            // Set word extractor based on current instance of PdfPig NearestNeighbourWordExtractor class
+            // Optional: custom word extractor can be set
+            var wordExtractor = NearestNeighbourWordExtractor.Instance;
 
-            // Iterate trought document's pages
-            foreach (var page in document.GetPages())
-            {
-                // Getting all letters of current page
-                // Optional: letters can be filtered by some criterias
-                var letters = page.Letters;
+            // Getting words using word extractor page's letters and map them into DocumentWord
+            var documentWords = wordExtractor.GetWords(letters)
+                .Select(word => new DocumentWord
+                {
+                    Text = word.Text,
+                    PositionX = word.BoundingBox.BottomLeft.X,
+                    PositionY = word.BoundingBox.BottomLeft.Y,
+                    Rotation = word.BoundingBox.Rotation,
+                    Height = word.BoundingBox.Height,
+                    Orientation = GetTextOrientation(word.TextOrientation),
+                });
 
-                // Set word extractor based on current instance of PdfPig NearestNeighbourWordExtractor class
-                // Optional: custom word extractor can be set
-                var wordExtractor = NearestNeighbourWordExtractor.Instance;
-
-                // Getting words using word extractor page's letters and map them into DocumentWord
-                var documentWords = wordExtractor.GetWords(letters)
-                    .Select(word => new DocumentWord
-                    {
-                        Text = word.Text,
-                        PositionX = word.BoundingBox.BottomLeft.X,
-                        PositionY = word.BoundingBox.BottomLeft.Y,
-                        Rotation = word.BoundingBox.Rotation,
-                        Height = word.BoundingBox.Height,
-                        Orientation = GetTextOrientation(word.TextOrientation),
-                    });
-
-                documentPages.Add(new DocumentPage(page.Number, documentWords));
-            }
-
-            return documentPages;
+            documentPages.Add(new DocumentPage(page.Number, documentWords));
         }
 
-        private static TextOrientation GetTextOrientation(UglyToad.PdfPig.Content.TextOrientation orientation)
+        return documentPages;
+    }
+
+    private static TextOrientation GetTextOrientation(UglyToad.PdfPig.Content.TextOrientation orientation)
+    {
+        return orientation switch
         {
-            return orientation switch
-            {
-                UglyToad.PdfPig.Content.TextOrientation.Horizontal => TextOrientation.Horizontal,
-                UglyToad.PdfPig.Content.TextOrientation.Rotate180 => TextOrientation.Rotated180,
-                UglyToad.PdfPig.Content.TextOrientation.Rotate90 => TextOrientation.Rotated90,
-                UglyToad.PdfPig.Content.TextOrientation.Rotate270 => TextOrientation.Rotated270,
-                _ => TextOrientation.Other
-            };
-        }
+            UglyToad.PdfPig.Content.TextOrientation.Horizontal => TextOrientation.Horizontal,
+            UglyToad.PdfPig.Content.TextOrientation.Rotate180 => TextOrientation.Rotated180,
+            UglyToad.PdfPig.Content.TextOrientation.Rotate90 => TextOrientation.Rotated90,
+            UglyToad.PdfPig.Content.TextOrientation.Rotate270 => TextOrientation.Rotated270,
+            _ => TextOrientation.Other
+        };
     }
 }
 ```
@@ -406,6 +385,95 @@ The endpoint will return this kind of response :
       ]
     }
   ]
+}
+```
+
+### Going further
+In the class `DocumentPage`, some public static methods are available and used to retrieve collection of `DocumentLine` from a bunch of `DocumentWord`. These methods can only handle the horizontal and vertical text orientation to recompose the document lines :
+```csharp title="DocumentPage"
+public class DocumentPage
+{
+    /// <summary>
+    /// Extract lines from words.
+    /// </summary>
+    /// <param name="words">Collection of <see cref="DocumentWord"/>.</param>
+    /// <returns>Collection of <see cref="DocumentLine"/>.</returns>
+    public static List<DocumentLine> ExtractLines(IEnumerable<DocumentWord> words)
+    {
+        var lines = new List<DocumentLine>();
+
+        lines.AddRange(ExtractHorizontalLines(words));
+        lines.AddRange(ExtractRotated90Lines(words));
+        lines.AddRange(ExtractRotated180Lines(words));
+        lines.AddRange(ExtractRotated270Lines(words));
+
+        return lines;
+    }
+
+    /// <summary>
+    /// Extract lines from horizontal words.
+    /// </summary>
+    /// <param name="words">Collection of <see cref="DocumentWord"/>.</param>
+    /// <returns>Collection of <see cref="DocumentLine"/>.</returns>
+    public static IEnumerable<DocumentLine> ExtractHorizontalLines(IEnumerable<DocumentWord> words)
+    {
+        return words
+            .Where(w => w.Orientation == TextOrientation.Horizontal)
+            .GroupBy(w => GroupByPosition(w.PositionY, words.Max(x => x.Height) + 1))
+            .OrderByDescending(g => g.Key)
+            .Select(g => g.OrderBy(w => w.PositionX))
+            .Select(g => new DocumentLine(TextOrientation.Horizontal, g));
+    }
+
+    /// <summary>
+    /// Extract lines from horizontal upside down words.
+    /// </summary>
+    /// <param name="words">Collection of <see cref="DocumentWord"/>.</param>
+    /// <returns>Collection of <see cref="DocumentLine"/>.</returns>
+    public static IEnumerable<DocumentLine> ExtractRotated180Lines(IEnumerable<DocumentWord> words)
+    {
+        return words
+            .Where(w => w.Orientation == TextOrientation.Rotated180)
+            .GroupBy(w => GroupByPosition(w.PositionY, words.Max(x => x.Height) + 1))
+            .OrderByDescending(g => g.Key)
+            .Select(g => g.OrderByDescending(w => w.PositionX))
+            .Select(g => new DocumentLine(TextOrientation.Rotated180, g));
+    }
+
+    /// <summary>
+    /// Extract lines from vertical going down words.
+    /// </summary>
+    /// <param name="words">Collection of <see cref="DocumentWord"/>.</param>
+    /// <returns>Collection of <see cref="DocumentLine"/>.</returns>
+    public static IEnumerable<DocumentLine> ExtractRotated90Lines(IEnumerable<DocumentWord> words)
+    {
+        return words
+            .Where(w => w.Orientation == TextOrientation.Rotated90)
+            .GroupBy(w => GroupByPosition(w.PositionX, words.Max(x => x.Height) + 1))
+            .OrderBy(g => g.Key)
+            .Select(g => g.OrderByDescending(w => w.PositionY))
+            .Select(g => new DocumentLine(TextOrientation.Rotated90, g));
+    }
+
+    /// <summary>
+    /// Extract lines from vertical going up words.
+    /// </summary>
+    /// <param name="words">Collection of <see cref="DocumentWord"/>.</param>
+    /// <returns>Collection of <see cref="DocumentLine"/>.</returns>
+    public static IEnumerable<DocumentLine> ExtractRotated270Lines(IEnumerable<DocumentWord> words)
+    {
+        return words
+            .Where(w => w.Orientation == TextOrientation.Rotated270)
+            .GroupBy(w => GroupByPosition(w.PositionX, words.Max(x => x.Height) + 1))
+            .OrderBy(g => g.Key)
+            .Select(g => g.OrderBy(w => w.PositionY))
+            .Select(g => new DocumentLine(TextOrientation.Rotated270, g));
+    }
+
+    private static double GroupByPosition(double position, double tolerance)
+    {
+        return Math.Round(position / tolerance) * tolerance;
+    }
 }
 ```
 
