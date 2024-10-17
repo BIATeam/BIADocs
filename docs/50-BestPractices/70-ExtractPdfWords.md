@@ -17,7 +17,6 @@ A word is a group of letters with the same orientation where the proximity betwe
 
 Basically, PdfPig will parse all the available letters, getting for each their positions and orientations. Next, the library will be able to group these letters into words by using various parameters, such as maximum distance between them.
 ## BIADemo example
-### Implementation
 The project **BIADemo** implements an example solution in order to use **PdfPig** to analyze PDF document. The implementation schema respects the layer's segregation and abstraction to show you how to properly use the package throught a dedicated repository, giving you the opportunity to implements other document analyzers for different types (Word, Excel, raw...).
 
 Architecture scheme is following : 
@@ -388,7 +387,8 @@ The endpoint will return this kind of response :
 }
 ```
 
-### Going further
+## Going further
+### Group words per line
 In the class `DocumentPage`, some public static methods are available and used to retrieve collection of `DocumentLine` from a bunch of `DocumentWord`. These methods can only handle the horizontal and vertical text orientation to recompose the document lines :
 ```csharp title="DocumentPage"
 public class DocumentPage
@@ -476,5 +476,51 @@ public class DocumentPage
     }
 }
 ```
+
+### Getting words from pages and area
+Sometime you may have needs to extract words from a range of pages and/or specific location in the document.
+
+Following code example show you how to keep words from specific pages and area using the words positions : 
+```csharp
+public List<DocumentWord> GetWords(
+    Stream stream,
+    int fromPage,
+    int toPage,
+    Point topLeftPosition,
+    Point topRightPosition,
+    Point bottomRightPosition,
+    Point bottomLeftPosition)
+{
+    var documentWords = new List<DocumentWord>();
+
+    using var document = PdfDocument.Open(stream);
+    foreach (var page in document.GetPages())
+    {
+        if (page.Number < fromPage || page.Number > toPage)
+        {
+            continue;
+        }
+
+        var words = NearestNeighbourWordExtractor.Instance.GetWords(page.Letters).Where(w =>
+            w.BoundingBox.TopLeft.X >= topLeftPosition.X && w.BoundingBox.TopLeft.Y <= topLeftPosition.Y
+            && w.BoundingBox.TopRight.X <= topRightPosition.X && w.BoundingBox.TopRight.Y <= topRightPosition.Y
+            && w.BoundingBox.BottomRight.X <= bottomRightPosition.X && w.BoundingBox.BottomRight.Y >= bottomRightPosition.Y
+            && w.BoundingBox.BottomLeft.X >= bottomLeftPosition.X && w.BoundingBox.BottomLeft.Y >= bottomLeftPosition.Y);
+
+        documentWords.AddRange(words.Select(word => new DocumentWord
+        {
+            Text = word.Text,
+            PositionX = word.BoundingBox.BottomLeft.X,
+            PositionY = word.BoundingBox.BottomLeft.Y,
+            Rotation = word.BoundingBox.Rotation,
+            Height = word.BoundingBox.Height,
+            Orientation = GetTextOrientation(word.TextOrientation),
+        }));
+    }
+
+    return documentWords;
+}
+```
+
 
 
