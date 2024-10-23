@@ -3,7 +3,8 @@ sidebar_position: 140
 ---
 
 # Model State Validation
-BIA Framework offers to you various way to validate your models. 
+BIA Framework offers to you various way to validate your models :
+![ModelValidation](../Images/ModelValidation.png)
 ## DTO model validation
 ### Front-end
 In your DTO model class declaration, you can use `Validators` in order to constraint user to provide valid data for each fields in a form using your model. Complete the `BiaFieldsConfig` configuration used to display your model fields into BIA tables with validators :
