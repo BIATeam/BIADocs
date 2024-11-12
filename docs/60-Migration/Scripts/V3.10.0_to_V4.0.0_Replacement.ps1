@@ -188,6 +188,38 @@ function CleanIoc {
   }
 }
 
+function RemoveIFilteredServiceBase {
+  $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
+
+  foreach ($file in $csFiles) {
+    $content = Get-Content -Path $file.FullName -Raw
+    $content = [regex]::Replace($content, "
+      (\s*:\s*IFilteredServiceBase<[^>]+>\s*(,)?)\n |   # Case where it's the only or first interface
+      (\s*,\s*IFilteredServiceBase<[^>]+>)                 # Case where it's not the first interface
+    ", {
+      if ($args[0]) {
+        if ($args[0].Value.Trim().StartsWith(":") -and $args[0].Value.Trim().EndsWith(",")) {
+          return " : "
+        } else {
+          return "`n" 
+        }
+      }
+    }, 'IgnorePatternWhitespace')
+    Set-Content -Path $file.FullName -Value $content
+  }
+}
+
+function ReplaceIClientForHubRepository {
+  $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
+  foreach ($file in $csFiles) {
+    if ($file.FullName -match "\.Presentation\.|\.Application\.") {
+      $content = Get-Content -Path $file.FullName -Raw
+      $content = [regex]::Replace($content, "\bIClientForHubRepository\b", "IClientForHubService")
+      Set-Content -Path $file.FullName -Value $content
+    }
+  }
+}
+
 # BEGIN - typing components and config
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "class ([A-z]+)TableComponent([\r\n ]+)extends BiaCalcTableComponent([\r\n ]+)" -NewRegexp 'class $1TableComponent$2extends BiaCalcTableComponent<$1>$3' -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import { ([A-z]+)FieldsConfiguration } from '([\./]+)\/model\/([A-z\-]+)';([\s\S]+)export const \1CRUDConfiguration: CrudConfig =" -NewRegexp 'import { #capitalize#$1, $1FieldsConfiguration } from ''$2/model/$3'';$4export const $1CRUDConfiguration: CrudConfig<#capitalize#$1> =' -Include *.ts
@@ -200,6 +232,14 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexC
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexComponent([\s\S]+): Observable<((?!OptionDto)[A-z]+)\[]>;([\s\S]+): BiaFieldConfig(?!<)' -NewRegexp 'export class $1IndexComponent$2: Observable<$3[]>;$4: BiaFieldConfig<$3>' -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'class ([A-z]+)TableFilterComponent extends BiaTableFilterComponent(?!<)' -NewRegexp 'class $1TableFilterComponent<TDto extends BaseDto> extends BiaTableFilterComponent<TDto>' -Include *.ts
 # END - typing components and config
+
+# BEGIN - Replacements after reorganize layers DotNet
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bFilteredServiceBase\b' -NewRegexp 'OperationalDomainServiceBase' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bAppServiceBase\b"' -NewRegexp 'DomainServiceBase' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?ms)#if\s+UseHubForClientInContact\s+using\s+BIA\.Net\.Core\.Domain\.RepoContract;\s+#endif' -NewRegexp '' -Include *.cs
+RemoveIFilteredServiceBase
+ReplaceIClientForHubRepository
+# END - Replacements after reorganize layers DotNet
 
 # Set-Location $Source/DotNet
 dotnet restore --no-cache
