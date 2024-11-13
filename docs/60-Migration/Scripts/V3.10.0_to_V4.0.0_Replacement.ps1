@@ -189,11 +189,12 @@ function CleanIoc {
 }
 
 function RemoveIFilteredServiceBase {
+  Write-Host "Remove IFilteredServiceBase";
   $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
 
   foreach ($file in $csFiles) {
     $content = Get-Content -Path $file.FullName -Raw
-    $content = [regex]::Replace($content, "
+    $newContent = [regex]::Replace($content, "
       (\s*:\s*IFilteredServiceBase<[^>]+>\s*(,)?)\n |   # Case where it's the only or first interface
       (\s*,\s*IFilteredServiceBase<[^>]+>)                 # Case where it's not the first interface
     ", {
@@ -205,17 +206,25 @@ function RemoveIFilteredServiceBase {
         }
       }
     }, 'IgnorePatternWhitespace')
-    Set-Content -Path $file.FullName -Value $content
+
+    if ($content -ne $newContent) {
+      Write-Host "     => " $file.FullName
+      Set-Content -Path $file.FullName -Value $newContent
+    }
   }
 }
 
 function ReplaceIClientForHubRepository {
+  Write-Host "Replace IClientForHubRepository by IClientForHubService";
   $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
   foreach ($file in $csFiles) {
     if ($file.FullName -match "\.Presentation\.|\.Application\.") {
       $content = Get-Content -Path $file.FullName -Raw
-      $content = [regex]::Replace($content, "\bIClientForHubRepository\b", "IClientForHubService")
-      Set-Content -Path $file.FullName -Value $content
+      $newContent = [regex]::Replace($content, "\bIClientForHubRepository\b", "IClientForHubService")
+      if ($content -ne $newContent) {
+        Write-Host "     => " $file.FullName
+        Set-Content -Path $file.FullName -Value $newContent
+      }
     }
   }
 }
@@ -242,7 +251,7 @@ ReplaceIClientForHubRepository
 # END - Replacements after reorganize layers DotNet
 
 # Set-Location $Source/DotNet
-dotnet restore --no-cache
+# dotnet restore --no-cache
 
 Write-Host "Finish"
 pause
