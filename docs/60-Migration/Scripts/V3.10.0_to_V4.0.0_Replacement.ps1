@@ -242,6 +242,10 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexC
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'class ([A-z]+)TableFilterComponent extends BiaTableFilterComponent(?!<)' -NewRegexp 'class $1TableFilterComponent<TDto extends BaseDto> extends BiaTableFilterComponent<TDto>' -Include *.ts
 # END - typing components and config
 
+# BEGIN - Changing layout of framework
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bBiaClassicLayoutService\b' -NewRegexp 'BiaLayoutService' -Include *.ts
+# END - Changing layout of framework 
+
 # BEGIN - Replacements after reorganize layers DotNet
 ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bFilteredServiceBase\b' -NewRegexp 'OperationalDomainServiceBase' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bAppServiceBase\b"' -NewRegexp 'DomainServiceBase' -Include *.cs
@@ -249,6 +253,21 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?ms)#if\s+UseHubForClientIn
 RemoveIFilteredServiceBase
 ReplaceIClientForHubRepository
 # END - Replacements after reorganize layers DotNet
+
+# BEGIN - Fix layout with advanced filter
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<div([\s\S]+) flex-wrap([\s\S]+)""([\s\S]*)>([\r\n ]+)<bia-team-advanced-filter" -NewRegexp '<div$1$2 bia-responsive-flex-row"$3>$4<bia-team-advanced-filter' -Include *.html
+# END - Fix layout with advanced filter
+
+# BEGIN - Add clear filter to table-controller
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)\(toggleSearch\)=""onToggleSearch\(\)""([\s]+)" -NewRegexp '<bia-table-controller$1(clearFilters)="onClearFilters()"$2(toggleSearch)="onToggleSearch()"$2' -Include *.html
+# END - Add clear filter to table-controller
+
+# BEGIN - Move page size to bia-table footer
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\[length\]=""\(totalCount\$ \| async\) \?\? 0""[\s]+)" -NewRegexp '<bia-table-controller$1' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\(pageSizeChange\)=""onPageSizeChange\(\$event\)""[\s]+)" -NewRegexp '<bia-table-controller$1' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/bia-table>" -NewRegexp '<bia-table$1$2$3(pageSizeChange)="onPageSizeChange($event)"$3$4</bia-table>' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<app-([A-z-]+)-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/app-([A-z\-]+)-table>" -NewRegexp '<app-$1-table$2$3$4(pageSizeChange)="onPageSizeChange($event)"$4$5</app-$6-table>' -Include *.html
+# END - Move page size to bia-table footer
 
 # Set-Location $Source/DotNet
 # dotnet restore --no-cache
