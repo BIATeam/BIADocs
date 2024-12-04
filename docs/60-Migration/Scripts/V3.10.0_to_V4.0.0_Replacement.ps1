@@ -263,8 +263,8 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S
 # END - Add clear filter to table-controller
 
 # BEGIN - Move page size to bia-table footer
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\[length\]=""\(totalCount\$ \| async\) \?\? 0""[\s]+)" -NewRegexp '<bia-table-controller$1' -Include *.html
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\(pageSizeChange\)=""onPageSizeChange\(\$event\)""[\s]+)" -NewRegexp '<bia-table-controller$1' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\[length\]=""\(totalCount\$ \| async\) \?\? 0""[\s]+)([\s\S]*)<\/bia-table-controller>" -NewRegexp '<bia-table-controller$1$3</bia-table-controller>' -Include *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\(pageSizeChange\)=""onPageSizeChange\(\$\event\)""[\s]+)([\s\S]*)<\/bia-table-controller>" -NewRegexp '<bia-table-controller$1$3</bia-table-controller>' -Include *.html
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/bia-table>" -NewRegexp '<bia-table$1$2$3(pageSizeChange)="onPageSizeChange($event)"$3$4</bia-table>' -Include *.html
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<app-([A-z-]+)-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/app-([A-z\-]+)-table>" -NewRegexp '<app-$1-table$2$3$4(pageSizeChange)="onPageSizeChange($event)"$4$5</app-$6-table>' -Include *.html
 # END - Move page size to bia-table footer
