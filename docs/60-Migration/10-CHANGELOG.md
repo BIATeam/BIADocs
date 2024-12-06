@@ -3,6 +3,35 @@ sidebar_position: 1
 ---
 
 # ChangeLog 
+## V4.0.0 (2024-12-??)
+* New framework UI design
+* Improve UI table's controls behaviors
+* Improve backend layer organization
+
+### Angular
+* New UI design from PrimeNG Ultima template
+* Add clear filters button on tables
+* New compact mode on tables
+* Add resize controls for columns on tables
+* Fix clear filter behavior to reset only tables filters
+* Fix display time of advanced filters 
+* Fix close pop-up button position for views managing on tables
+
+### DotNet
+* Projects layer re-organization according to CLEAN architecture
+  * Domain layer not accessible from Presentation layer
+  * Data layer not accessible from Presentation Layer
+  * Domain content's folders use Entities, Mappers, Specifications (etc...) folders instead of single Aggregate folder
+* Introducing BIA Analyzers 
+  * Compilation diagnostics (BIAXXXX) and code fixes in order to apply CLEAN architecture principles
+  * Code fix for CS0118 diagnostic proposing to use compatible namespaces for target type
+* Change Worker Service SignalR communication with Redis directly
+* Multiple repositories handling
+* Exposing standard object model validation properties into BiaDtoField attribute
+* Entity Framework model validation given optionnal
+* Automatic Keyclock token validation
+* Fix bug when team title contains special characters
+
 ## V3.10.0 (2024-09-27)
 * Add FirstName and LastName in Token.
 * Fix vulnerabilities.
