@@ -8,8 +8,8 @@ We will create in first the feature 'Plane'.
 1. Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 
 2. Create the entity 'Plane':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain' create 'PlaneModule' folder.
-* Create 'Aggregate' subfolder.
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain' create 'Plane' folder.
+* Create 'Entities' subfolder.
 * Create empty class 'Plane.cs' and add: 
 
 ```csharp
@@ -17,12 +17,12 @@ We will create in first the feature 'Plane'.
 //     Copyright (c) MyCompany. All rights reserved.
 // </copyright>
 
-namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
+namespace MyCompany.MyFirstProject.Domain.Plane.Entities
 {
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
     using BIA.Net.Core.Domain;
-    using MyCompany.MyFirstProject.Domain.SiteModule.Aggregate;
+    using MyCompany.MyFirstProject.Domain.Site.Entities;
 
     /// <summary>
     /// The plane entity.
@@ -80,9 +80,28 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 ```
 
 3. Create the DTO 'PlaneDto':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto' create 'Plane' folder.
-* Create empty class 'PlaneDto.cs' and add:  
+* Open the BIAToolkit
+* Go to "Modify existing project" tab
+* Set the projects parent path and choose your project
+* Go to tab "2 - DTO Generator"
+* Select your entity Plane on the list
 
+![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.PNG)
+
+* Uncheck for now the property "Site"
+* Click on "Map to" button
+* All the selected properties will be added to the mapping table that represents that properties that will be generated in your corresponding DTO
+* Check the required checkbox for the Id mapping property
+
+![FirstCRUD_DTOGenerator_Mapping](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Mapping.PNG)
+
+* Then click the "Generate" button
+* The DTO and the mapper will be generated
+* Check in the project solution if the DTO and mapper are present
+
+![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.PNG)
+
+* Add the attribute `[BiaDtoClass(AncestorTeam = "Site")]` before class declaration :
 ```csharp
 // <copyright file="PlaneDto.cs" company="MyCompany">
 //     Copyright (c) MyCompany. All rights reserved.
@@ -95,76 +114,35 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
     using BIA.Net.Core.Domain.Dto.CustomAttribute;
 
     /// <summary>
-    /// The DTO used to represent a plane.
+    /// The DTO used to represent a Plane.
     /// </summary>
     [BiaDtoClass(AncestorTeam = "Site")]
     public class PlaneDto : BaseDto<int>
     {
-        /// <summary>
-        /// Gets or sets the Manufacturer's Serial Number.
-        /// </summary>
-        [BiaDtoField(Required = true)]
-        public string Msn { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the plane is active.
-        /// </summary>
-        [BiaDtoField(Required = true)]
-        public bool IsActive { get; set; }
-
-        /// <summary>
-        /// Gets or sets the last flight date and time.
-        /// </summary>
-        [BiaDtoField(Type = "datetime", Required = false)]
-        public DateTime? LastFlightDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the delivery date.
-        /// </summary>
-        [BiaDtoField(Type = "date", Required = false)]
-        public DateTime? DeliveryDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the daily synchronization hour.
-        /// </summary>
-        [BiaDtoField(Type = "time", Required = false)]
-        public string SyncTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the capacity.
-        /// </summary>
-        [BiaDtoField(Required = true)]
-        public int Capacity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the site.
-        /// </summary>
-        [BiaDtoField(IsParent = true, Required = true)]
-        public int SiteId { get; set; }
+        [...]
     }
 }
 ```
 
-4. Create the Mapper 'PlaneMapper':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneMapper' and add:    
+4. Complete the Mapper 'PlaneMapper':
+* Open the created mapper 'PlaneMapper' 
+* Add the override for ExpressionCollection and HeaderName structure :    
 
 ```csharp
 // <copyright file="PlaneMapper.cs" company="MyCompany">
 //     Copyright (c) MyCompany. All rights reserved.
 // </copyright>
 
-namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
+namespace MyCompany.MyFirstProject.Domain.Plane.Mappers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
     using System.Linq.Expressions;
     using BIA.Net.Core.Domain;
     using MyCompany.MyFirstProject.Domain.Dto.Plane;
+    using MyCompany.MyFirstProject.Domain.Plane.Entities;
 
     /// <summary>
-    /// The mapper used for plane.
+    /// The mapper used for Plane.
     /// </summary>
     public class PlaneMapper : BaseMapper<PlaneDto, Plane, int>
     {
@@ -187,100 +165,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
             }
         }
 
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.DtoToEntity"/>
-        public override void DtoToEntity(PlaneDto dto, Plane entity)
-        {
-            if (entity == null)
-            {
-                entity = new Plane();
-            }
-
-            entity.Id = dto.Id;
-            entity.Msn = dto.Msn;
-            entity.IsActive = dto.IsActive;
-            entity.LastFlightDate = dto.LastFlightDate;
-            entity.DeliveryDate = dto.DeliveryDate;
-            entity.SyncTime = string.IsNullOrEmpty(dto.SyncTime) ? null : TimeSpan.Parse(dto.SyncTime, new CultureInfo("en-US"));
-            entity.Capacity = dto.Capacity;
-
-            // Mapping relationship 1-* : Site
-            if (dto.SiteId != 0)
-            {
-                entity.SiteId = dto.SiteId;
-            }
-        }
-
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.EntityToDto"/>
-        public override Expression<Func<Plane, PlaneDto>> EntityToDto()
-        {
-            return entity => new PlaneDto
-            {
-                Id = entity.Id,
-                Msn = entity.Msn,
-                IsActive = entity.IsActive,
-                LastFlightDate = entity.LastFlightDate,
-                DeliveryDate = entity.DeliveryDate,
-                SyncTime = entity.SyncTime.Value.ToString(@"hh\:mm\:ss"),
-                Capacity = entity.Capacity,
-
-                // Mapping relationship 1-* : Site
-                SiteId = entity.SiteId,
-            };
-        }
-
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.DtoToRecord"/>
-        public override Func<PlaneDto, object[]> DtoToRecord(List<string> headerNames = null)
-        {
-            return x =>
-            {
-                List<object> records = new List<object>();
-
-                if (headerNames?.Any() == true)
-                {
-                    foreach (string headerName in headerNames)
-                    {
-                        if (string.Equals(headerName, HeaderName.Msn, StringComparison.OrdinalIgnoreCase))
-                        {
-                            records.Add(CSVString(x.Msn));
-                        }
-
-                        if (string.Equals(headerName, HeaderName.IsActive, StringComparison.OrdinalIgnoreCase))
-                        {
-                            records.Add(CSVBool(x.IsActive));
-                        }
-
-                        if (string.Equals(headerName, HeaderName.LastFlightDate, StringComparison.OrdinalIgnoreCase))
-                        {
-                            records.Add(CSVDateTime(x.LastFlightDate));
-                        }
-
-                        if (string.Equals(headerName, HeaderName.DeliveryDate, StringComparison.OrdinalIgnoreCase))
-                        {
-                            records.Add(CSVDate(x.DeliveryDate));
-                        }
-
-                        if (string.Equals(headerName, HeaderName.SyncTime, StringComparison.OrdinalIgnoreCase))
-                        {
-                            records.Add(CSVTime(x.SyncTime));
-                        }
-
-                        if (string.Equals(headerName, HeaderName.Capacity, StringComparison.OrdinalIgnoreCase))
-                        {
-                            records.Add(CSVNumber(x.Capacity));
-                        }
-                    }
-                }
-
-                return records.ToArray();
-            };
-        }
-
-        /// <inheritdoc/>
-        public override void MapEntityKeysInDto(Plane entity, PlaneDto dto)
-        {
-            dto.Id = entity.Id;
-            dto.SiteId = entity.SiteId;
-        }
+        [...]
 
         /// <summary>
         /// Header Name.
