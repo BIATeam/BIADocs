@@ -65,21 +65,14 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Entities
         /// Gets or sets the capacity.
         /// </summary>
         public int Capacity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the site.
-        /// </summary>
-        public virtual Site Site { get; set; }
-
-        /// <summary>
-        /// Gets or sets the site id.
-        /// </summary>
-        public int SiteId { get; set; }
     }
 }
 ```
 
 3. Create the DTO 'PlaneDto':
+
+For more informations about creating a DTO, see [Create a DTO with BIAToolkit documentation](../../30-BIAToolKit/30-CreateDTO.md)
+
 * Open the BIAToolkit
 * Go to "Modify existing project" tab
 * Set the projects parent path and choose your project
@@ -88,7 +81,6 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Entities
 
 ![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.PNG)
 
-* Uncheck for now the property "Site"
 * Click on "Map to" button
 * All the selected properties will be added to the mapping table that represents that properties that will be generated in your corresponding DTO
 * Check the required checkbox for the Id mapping property
@@ -100,29 +92,6 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Entities
 * Check in the project solution if the DTO and mapper are present
 
 ![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.PNG)
-
-* Add the attribute `[BiaDtoClass(AncestorTeam = "Site")]` before class declaration :
-```csharp
-// <copyright file="PlaneDto.cs" company="MyCompany">
-//     Copyright (c) MyCompany. All rights reserved.
-// </copyright>
-
-namespace MyCompany.MyFirstProject.Domain.Dto.Plane
-{
-    using System;
-    using BIA.Net.Core.Domain.Dto.Base;
-    using BIA.Net.Core.Domain.Dto.CustomAttribute;
-
-    /// <summary>
-    /// The DTO used to represent a Plane.
-    /// </summary>
-    [BiaDtoClass(AncestorTeam = "Site")]
-    public class PlaneDto : BaseDto<int>
-    {
-        [...]
-    }
-}
-```
 
 4. Complete the Mapper 'PlaneMapper':
 * Open the created mapper 'PlaneMapper' 
@@ -218,7 +187,7 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Mappers
 namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 {
   using Microsoft.EntityFrameworkCore;
-  using MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate;
+  using MyCompany.MyFirstProject.Domain.Plane.Entities;
 
   /// <summary>
   /// Class used to update the model builder for plane domain.
@@ -241,7 +210,6 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
     private static void CreatePlaneModel(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Plane>().HasKey(p => p.Id);
-        modelBuilder.Entity<Plane>().Property(p => p.SiteId).IsRequired(); // relationship 1-*
         modelBuilder.Entity<Plane>().Property(p => p.Msn).IsRequired().HasMaxLength(64);
         modelBuilder.Entity<Plane>().Property(p => p.IsActive).IsRequired();
         modelBuilder.Entity<Plane>().Property(p => p.LastFlightDate).IsRequired(false);
@@ -285,25 +253,25 @@ Update-DataBase -Context DataContext
 8. Automatically CRUD generation   
 We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front-end).  
 * Start the BIAToolKit and go on "Modify existing project" tab*
-* Choose:
-  * Projects parent path to "C:\Sources\Test"
-  * Project folder to *MyFirstProject*
-* Open "Add CRUD" tab
-* Generation:
-  * Choose Dto file: *PlaneDto.cs*
-  * Check "WebApi" and "Front" for Generation
-  * Check "CRUD" for Generation Type
-  * Verify "Entity name (singular)" value: *Plane*
-  * Set "Entity name (plural)" value: *Planes*
-  * Choose "Display item": *Msn*
-  * Click on "Generate" button
+* Set the projects parent path and choose your project
+* Go to tab "3 - CRUD Generator"
+* Choose Dto file: *PlaneDto.cs*
+* Check "WebApi" and "Front" for Generation
+* Check "CRUD" for Generation Type
+* Verify "Entity name (singular)" value: *Plane*
+* Set "Entity name (plural)" value: *Planes*
+* Choose "Display item": *Msn*
+
+![FirstCRUD_CRUDGenerator_Set](../../Images/GettingStarted/FirstCRUD_CRUDGenerator_Set.PNG)
+
+* Click on generate button
 
 9. Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-10.   Finalize Angular generation
+10.    Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -317,7 +285,7 @@ npm start
 * Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANES"* tab to display 'Planes' page.
 
-11.   Add traduction
+11.    Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {
