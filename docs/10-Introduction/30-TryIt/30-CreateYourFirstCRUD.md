@@ -251,13 +251,16 @@ Update-DataBase -Context DataContext
 * Verify 'Planes' table is created in the database.
 
 8. Automatically CRUD generation   
-We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front-end).  
+    
+For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit documentation](../../30-BIAToolKit/50-CreateCRUD.md)
+
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Set the projects parent path and choose your project
 * Go to tab "3 - CRUD Generator"
 * Choose Dto file: *PlaneDto.cs*
 * Check "WebApi" and "Front" for Generation
 * Check "CRUD" for Generation Type
+* Verify and adapt Domain name
 * Verify "Entity name (singular)" value: *Plane*
 * Set "Entity name (plural)" value: *Planes*
 * Choose "Display item": *Msn*
@@ -271,7 +274,7 @@ We will use the BIAToolkit to finalize 'Plane' CRUD generation (back-end + front
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-10.    Finalize Angular generation
+10.     Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -285,7 +288,7 @@ npm start
 * Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANES"* tab to display 'Planes' page.
 
-11.    Add traduction
+11.     Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {

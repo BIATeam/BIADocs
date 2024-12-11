@@ -33,23 +33,35 @@ Choose items you want to generate for the CRUD:
    * Front: Front (selected by default)
 * Generation Type: (minimum a choice is mandatory)
    *  CRUD
-   *  Option
-   *  (and Team in the future)
+   *  CRUD (with parent)
+   *  Team
 
 ![CRUDGeneration](../Images/BIAToolKit/CRUDGeneration.PNG)
 
-## 3. CRUD name
+## 3. Parent (not mandatory)
+By selecting CRUD (with parent) the checkbox "Has Parent" will be automatically checked. 
+When selecting Team generation type, you can choose to activate or not the Has Parent checkbox.
+
+This checkbox enable mechanisms that will automatically link your CRUD to generate to the parent. 
+You will need to fill the fields Parent Name singular and plural at the bottom of the form.
+
+## 4. Domain
+The domain associated to your CRUD.
+
+When Has Parent is checked, the domain should be the parent domain.
+
+## 5. CRUD name
 Singular entity name is fill up by default but you can change it.
 You need to complete the plural name before generation.
 
 ![CRUDName](../Images/BIAToolKit/CRUDName.PNG)
 
-## 4. Display item
+## 6. Display item
 On associated combobox, choose the field you want to display on front page.
 
 ![DisplayItem](../Images/BIAToolKit/SelectDisplayItem.PNG)
 
-## 5. Option (not mandatory)
+## 7. Option (not mandatory)
 __*Option Generation Type must not be checked.*__
 
 It is possible to generate link Option with the CRUD. On associated combobox, choose 1 or more option previously generated.
@@ -58,7 +70,9 @@ It is possible to generate link Option with the CRUD. On associated combobox, ch
 
 *This field is not mandatory to generate a CRUD.*
 
-## 6. Generation
+##
+
+## 8. Generation
 By clicking on the button 'Generate', CRUD files are generated automatically on project.
 
 > At first CRUD generation on the project, an historic file is made on project folder (*CrudGeneration.bia*).
