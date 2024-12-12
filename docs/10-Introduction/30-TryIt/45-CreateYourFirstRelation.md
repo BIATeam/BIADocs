@@ -5,11 +5,35 @@ sidebar_position: 1
 # Create your first Relation
 We will create a relation between CRUD 'Plane' and option 'PlaneType' (previously created).
 
-## Create the Entity
+## Create the relation Entity
 * Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Open the entity 'Plane':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Entities' open class 'Plane.cs' and add 'PlaneType' declaration: 
   
+```csharp
+/// <summary>
+/// The plane entity.
+/// </summary>
+public class PlaneType : VersionedTable, IEntity<int>
+{
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Manufacturer's Serial Number.
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the first flight date.
+    /// </summary>
+    public DateTime? CertificationDate { get; set; }
+}
+```
+## Update the Entity
+* Open the entity 'Plane' and add following relation to your relation Entity : 
 ```csharp
 /// <summary>
 /// Gets or sets the  plane type.
@@ -21,6 +45,7 @@ public virtual PlaneType PlaneType { get; set; }
 /// </summary>
 public int? PlaneTypeId { get; set; }
 ```
+
 ## Update Data
 ### Update the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add 'PlaneType' relationship: 
