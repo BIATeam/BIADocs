@@ -5,9 +5,9 @@ sidebar_position: 1
 # Create your first Option
 We will create the feature 'PlaneType'.
 
-1. Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-
-2. Create the entity 'PlaneType':
+## Create the Entity
+* Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
+* Create the entity 'PlaneType':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneType.cs' and add: 
 
 ```csharp
@@ -38,8 +38,8 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Entities
     }
 }
 ```
-
-3. Create the ModelBuilder
+## Update Data
+### Create the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add:  
 
 ```csharp
@@ -61,7 +61,7 @@ private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
 }
 ```
 
-4. Update DataContext file
+### Update DataContext file
 * Open '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs' file and declare the DbSet associated to PlaneType:
 
 ```csharp
@@ -71,7 +71,7 @@ private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
 public DbSet<PlaneType> PlanesTypes { get; set; }
 ```
 
-5. Update the DataBase
+### Update the DataBase
 * Launch the Package Manager Console (Tools > Nuget Package Manager > Package Manager Console).
 * Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution
 * Run first command:    
@@ -85,7 +85,8 @@ Update-DataBase -Context DataContext
 ```
 * Verify 'PlanesTypes' table is created in the database.
 
-6. Create the Option with BIAToolKit :
+## Create the Option
+### Using BIAToolKit
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Set the projects parent path and choose your project
 * Go to tab "1 - Option Generator"
@@ -97,13 +98,12 @@ Update-DataBase -Context DataContext
 ![FirstOPTION_Set](../../Images/GettingStarted/FirstOPTION_Set.png)
 
 * Click on generate button
-
-7. Finalize DotNet generation
+### Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
   
-8. Finalize Angular generation
+### Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps

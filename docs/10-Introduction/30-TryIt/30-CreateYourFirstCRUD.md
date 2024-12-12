@@ -5,9 +5,9 @@ sidebar_position: 1
 # Create your first CRUD
 We will create in first the feature 'Plane'.
 
-1. Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-
-2. Create the entity 'Plane':
+## Create the Entity
+* Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
+* Create the entity 'Plane':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain' create 'Plane' folder.
 * Create 'Entities' subfolder.
 * Create empty class 'Plane.cs' and add: 
@@ -69,8 +69,8 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Entities
 }
 ```
 
-3. Create the DTO 'PlaneDto':
-
+## Create the DTO
+### Using BIAToolKit
 For more informations about creating a DTO, see [Create a DTO with BIAToolkit documentation](../../30-BIAToolKit/30-CreateDTO.md)
 
 * Open the BIAToolkit
@@ -93,7 +93,8 @@ For more informations about creating a DTO, see [Create a DTO with BIAToolkit do
 
 ![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.PNG)
 
-4. Complete the Mapper 'PlaneMapper':
+### Complete generated files
+* Complete the Mapper 'PlaneMapper':
 * Open the created mapper 'PlaneMapper' 
 * Add the override for ExpressionCollection and HeaderName structure :    
 
@@ -180,7 +181,8 @@ namespace MyCompany.MyFirstProject.Domain.Plane.Mappers
 }
 ```
 
-5. Create the ModelBuilder
+## Update Data
+### Create the Modelbuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', create empty class 'PlaneModelBuilder.cs' and add:  
 
 ```csharp
@@ -221,7 +223,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 }  
 ```
 
-6. Update DataContext file
+### Update DataContext file
 * Open '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs' file and declare the DbSet associated to Plane:
 
 ```csharp
@@ -236,7 +238,7 @@ public DbSet<Plane> Planes { get; set; }
 PlaneModelBuilder.CreateModel(modelBuilder);
 ```
 
-7. Update the DataBase
+### Update the DataBase
 * Launch the Package Manager Console (Tools > Nuget Package Manager > Package Manager Console).
 * Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution
 * Run first command:    
@@ -250,8 +252,8 @@ Update-DataBase -Context DataContext
 ```
 * Verify 'Planes' table is created in the database.
 
-8. Automatically CRUD generation   
-    
+## Create the CRUD 
+### Using BIAToolKit  
 For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit documentation](../../30-BIAToolKit/50-CreateCRUD.md)
 
 * Start the BIAToolKit and go on "Modify existing project" tab*
@@ -269,12 +271,12 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 
 * Click on generate button
 
-9. Finalize DotNet generation
+### Finalize DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-10.     Finalize Angular generation
+### Finalize Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
@@ -288,7 +290,7 @@ npm start
 * Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"APP.PLANES"* tab to display 'Planes' page.
 
-11.     Add traduction
+## Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "app": {
@@ -352,6 +354,7 @@ npm start
     "syncTime": "Tiempo de sincronización"
   },
 ```  
+## Test
 * Open web navigator on adress: *http://localhost:4200/* to display front page
 * Verify 'Plane' page have the good name (name put on previous file).
 * Open 'Plane' page and verify labels have been replaced too.

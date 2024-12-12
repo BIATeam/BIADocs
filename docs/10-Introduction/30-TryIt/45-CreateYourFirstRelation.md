@@ -5,9 +5,9 @@ sidebar_position: 1
 # Create your first Relation
 We will create a relation between CRUD 'Plane' and option 'PlaneType' (previously created).
 
-1. Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-
-2. Open the entity 'Plane':
+## Create the Entity
+* Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
+* Open the entity 'Plane':
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Entities' open class 'Plane.cs' and add 'PlaneType' declaration: 
   
 ```csharp
@@ -21,8 +21,8 @@ public virtual PlaneType PlaneType { get; set; }
 /// </summary>
 public int? PlaneTypeId { get; set; }
 ```
-
-3. Update the ModelBuilder
+## Update Data
+### Update the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add 'PlaneType' relationship: 
  
 ```csharp
@@ -38,7 +38,7 @@ private static void CreatePlaneModel(ModelBuilder modelBuilder)
 }
 ```
 
-4. Update the DataBase
+### Update the DataBase
 * Launch the Package Manager Console (Tools > Nuget Package Manager > Package Manager Console).
 * Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution
 * Run first command:    
@@ -52,7 +52,8 @@ Update-DataBase -Context DataContext
 ```
 * Verify 'Planes' table is updated in the database (column *'PlaneTypeId'* was added).
   
-5. Automatically update DTO
+## Create the DTO
+### Using BIAToolKit
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Set the projects parent path and choose your project
 * Open "DTO Generator" tab
@@ -69,7 +70,8 @@ Update-DataBase -Context DataContext
 * ***WARNING :* Make sure to have a backup of your previous Mapper before generating**
 * Click on generate button
 
-6. Automatically Update CRUD  
+## Generate CRUD
+### Using BIAToolKit
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Set the projects parent path and choose your project
 * Open "CRUD Generator" tab
@@ -87,10 +89,11 @@ Update-DataBase -Context DataContext
 
   * Click on "Generate" button
 
-7. Update the Mapper 'PlaneMapper':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Mappers' folder, open class 'PlaneMapper'
-* Re-add the ExpressionCollection override and HeaderName struct into your file using your backup
-* Complete the class with these data :
+### Complete generated files
+* Update the Mapper 'PlaneMapper':
+  * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Mappers' folder, open class 'PlaneMapper'
+  * Re-add the ExpressionCollection override and HeaderName struct into your file using your backup
+  * Complete the class with these data :
  
 ```csharp
 public override ExpressionCollection<Plane> ExpressionCollection
@@ -120,23 +123,25 @@ public struct HeaderName
 }
 ```
 
-8. Check DotNet generation
+## Check DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-9. Check Angular generation
+## Check Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
 npm start
 ```
+
+## Test
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planes'* for block with "labelKey" value is *'app.planes'*   
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"PLANES"* tab to display 'Planes' page.
 
-10.   Add traduction
+1.    Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "plane": {
