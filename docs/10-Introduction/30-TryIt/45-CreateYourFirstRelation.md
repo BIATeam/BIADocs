@@ -96,14 +96,6 @@ Update-DataBase -Context DataContext
   * Complete the class with these data :
  
 ```csharp
-public override ExpressionCollection<Plane> ExpressionCollection
-{
-    ...
-    { HeaderName.PlaneType, plane => plane.PlaneType != null ? plane.PlaneType.Title : null },
-}
-
-[...]
-
 public override Func<PlaneDto, object[]> DtoToRecord(List<string> headerNames = null)
 {
     return x => (new object[]
@@ -111,15 +103,6 @@ public override Func<PlaneDto, object[]> DtoToRecord(List<string> headerNames = 
         ...
         CSVString(x.PlaneType.Display),
     });
-}
-
-public struct HeaderName
-{
-    ...
-    /// <summary>
-    /// Header Name PlaneType.
-    /// </summary>
-    public const string PlaneType = "planeType";
 }
 ```
 

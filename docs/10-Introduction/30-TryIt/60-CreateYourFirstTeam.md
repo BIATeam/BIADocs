@@ -28,11 +28,6 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
     public class Company : Team
     {
         /// <summary>
-        /// Gets or sets the ID.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
         /// Gets or sets the company name.
         /// </summary>
         public string CompanyName { get; set; }
@@ -46,7 +41,6 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
     }
 }
 ```
-***NOTE :* known issue that `Id` is duplicated from `Team` inheritance.**  
 3. In case of children team, ensure to have logical links between the parent and child entities.
 
 Make sure to inherit from `Team` and expose a `byte[]` row version property mapped to column `RowVersion`.
