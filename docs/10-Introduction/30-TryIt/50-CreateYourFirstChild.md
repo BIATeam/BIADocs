@@ -145,7 +145,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 ### Using BIAToolKit
 1. Launch the **BIAToolKit**, go to the tab **"Modify existing project"**.
 2. Set your parent project path, then select your project folder.
-3. Go to **"CRUD Generator"** tab.
+3. Go to **"DTO Generator"** tab.
 4. Fill the form as following : 
 ![Child_Add](../../Images/BIAToolKit/DTO-Child_Add.png)
 5. Then, click on **Generate** button !
