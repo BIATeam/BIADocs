@@ -5,11 +5,35 @@ sidebar_position: 1
 # Create your first Relation
 We will create a relation between CRUD 'Plane' and option 'PlaneType' (previously created).
 
-1. Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-
-2. Open the entity 'Plane':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' open class 'Plane.cs' and add 'PlaneType' declaration: 
+## Create the relation Entity
+* Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
+* Open the entity 'Plane':
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Entities' open class 'Plane.cs' and add 'PlaneType' declaration: 
   
+```csharp
+/// <summary>
+/// The plane entity.
+/// </summary>
+public class PlaneType : VersionedTable, IEntity<int>
+{
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Manufacturer's Serial Number.
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the first flight date.
+    /// </summary>
+    public DateTime? CertificationDate { get; set; }
+}
+```
+## Update the Entity
+* Open the entity 'Plane' and add following relation to your relation Entity : 
 ```csharp
 /// <summary>
 /// Gets or sets the  plane type.
@@ -22,66 +46,8 @@ public virtual PlaneType PlaneType { get; set; }
 public int? PlaneTypeId { get; set; }
 ```
 
-3. Update the DTO 'PlaneDto':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto\Pane' open class 'PlaneDto.cs' and add 'PlaneType' declaration:  
-  
-```csharp
-/// <summary>
-/// Gets or sets the  plane type title.
-/// </summary>
-[BiaDtoField(ItemType = "PlaneType")]
-public OptionDto PlaneType { get; set; }
-```
-
-4. Update the Mapper 'PlaneMapper':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, open class 'PlaneMapper' and add:   
- 
-```csharp
-public override ExpressionCollection<Plane> ExpressionCollection
-{
-    ...
-    { HeaderName.PlaneType, plane => plane.PlaneType != null ? plane.PlaneType.Title : null },
-}
-
-public override void DtoToEntity(PlaneDto dto, Plane entity)
-{
-    ...
-    // Mapping relationship 0..1-* : PlaneType
-    entity.PlaneTypeId = dto.PlaneType?.Id;
-}
-
-public override Expression<Func<Plane, PlaneDto>> EntityToDto()
-{
-    ...
-    // Mapping relationship 0..1-* : PlaneType
-    PlaneType = entity.PlaneType != null ? new OptionDto
-    {
-        Id = entity.PlaneType.Id,
-        Display = entity.PlaneType.Title,
-    }
-    : null,
-}
-
-public override Func<PlaneDto, object[]> DtoToRecord(List<string> headerNames = null)
-{
-    ...
-    if (string.Equals(headerName, HeaderName.PlaneType, StringComparison.OrdinalIgnoreCase))
-    {
-        records.Add(CSVString(x.PlaneType?.Display));
-    }
-}
-
-public struct HeaderName
-{
-    ...
-    /// <summary>
-    /// Header Name PlaneType.
-    /// </summary>
-    public const string PlaneType = "planeType";
-}
-```
-
-5. Update the ModelBuilder
+## Update Data
+### Update the ModelBuilder
 * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'PlaneModelBuilder.cs' and add 'PlaneType' relationship: 
  
 ```csharp
@@ -97,7 +63,7 @@ private static void CreatePlaneModel(ModelBuilder modelBuilder)
 }
 ```
 
-6. Update the DataBase
+### Update the DataBase
 * Launch the Package Manager Console (Tools > Nuget Package Manager > Package Manager Console).
 * Be sure to have the project **MyCompany.MyFirstProject.Infrastructure.Data** selected as the Default Project in the console and the project **MyCompany.MyFirstProject.Presentation.Api** as the Startup Project of your solution
 * Run first command:    
@@ -111,40 +77,79 @@ Update-DataBase -Context DataContext
 ```
 * Verify 'Planes' table is updated in the database (column *'PlaneTypeId'* was added).
   
-7. Automatically Update CRUD  
+## Create the DTO
+### Using BIAToolKit
 * Start the BIAToolKit and go on "Modify existing project" tab*
-* Choose:
-  * Projects parent path to "C:\Sources\Test"
-  * Project folder to *MyFirstProject*
-* Open "Add CRUD" tab
+* Set the projects parent path and choose your project
+* Open "DTO Generator" tab
+* Generation:
+  * Choose entity: *Plane*
+  * Information message appear: "Generation was already done for this Entity"
+  * Verify "Domain" value is *Plane*
+  * Verify all properties are correctly selected and mapped
+  * Check the property *PlaneType* and click on "Map To" button
+  * New mapping PlaneType with mapping Type "Option" should be added on the list 
+
+![FirstRelation_DTOGenerator](../../Images/GettingStarted/FirstRelation_DTOGenerator.png)
+
+* ***WARNING :* Make sure to have a backup of your previous Mapper before generating**
+* Click on generate button
+
+## Generate CRUD
+### Using BIAToolKit
+* Start the BIAToolKit and go on "Modify existing project" tab*
+* Set the projects parent path and choose your project
+* Open "CRUD Generator" tab
 * Generation:
   * Choose Dto file: *PlaneDto.cs*
   * Information message appear: "Generation was already done for this Dto file"
   * Verify "WebApi" and "Front" Generation are checked
-  * Verify only "CRUD" Generation Type is checked
+  * Verify "CRUD" Generation Type is choosen
   * Verify "Entity name (singular)" value is *Plane*
   * Verify "Entity name (plural)" value is *Planes*
   * Verify "Display item"  value is *Msn*
   * On option item list, check "PlaneType" value
+
+![FirstRelation_CRUDGenerator](../../Images/GettingStarted/FirstRelation_CRUDGenerator.png)
+
   * Click on "Generate" button
 
-8. Check DotNet generation
+### Complete generated files
+* Update the Mapper 'PlaneMapper':
+  * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Mappers' folder, open class 'PlaneMapper'
+  * Re-add the ExpressionCollection override and HeaderName struct into your file using your backup
+  * Complete the class with these data :
+ 
+```csharp
+public override Func<PlaneDto, object[]> DtoToRecord(List<string> headerNames = null)
+{
+    return x => (new object[]
+    {
+        ...
+        CSVString(x.PlaneType.Display),
+    });
+}
+```
+
+## Check DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Rebuild solution
 * Project will be run, launch IISExpress to verify it. 
 
-9. Check Angular generation
+## Check Angular generation
 * Run VS code and open the folder 'C:\Sources\Test\MyFirstProject\Angular'
 * Launch command on terminal 
 ```ps
 npm start
 ```
+
+## Test
 * Open 'src/app/shared/navigation.ts' file and update path value to *'/planes'* for block with "labelKey" value is *'app.planes'*   
 (see 'src/app/app-routing.module.ts' file to get the corresponding path)
 * Open web navigator on address: *http://localhost:4200/* to display front page
 * Click on *"PLANES"* tab to display 'Planes' page.
 
-10. Add traduction
+1.    Add traduction
 * Open 'src/assets/i18n/app/en.json' and add:
 ```json
   "plane": {
@@ -175,4 +180,4 @@ npm start
   },
 ```  
 * Open web navigator on address: *http://localhost:4200/* to display front page
-* Open 'Plane' page and verify label has been replaced.
+* Open 'Plane' page and verify label has been replaced and PlaneType option is available on the list

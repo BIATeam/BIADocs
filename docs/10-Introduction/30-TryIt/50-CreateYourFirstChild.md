@@ -11,38 +11,6 @@ Follow steps from the section [Create your first CRUD](./30-CreateYourFirstCRUD.
 
 We will assume that the parent is a Plane for this documentation.
 
-### Create the DTO
-1. Open with Visual Studio 2022 the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
-2. In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain.Dto\Plane'**.
-3. Create empty class **'EngineDto.cs'** and add following:
-```csharp title="EngineDto.cs"
-// <copyright file="EngineDto.cs" company="MyCompany">
-// Copyright (c) MyCompany. All rights reserved.
-// </copyright>
-
-namespace MyCompany.MyFirstProject.Domain.Dto.Plane
-{
-    using BIA.Net.Core.Domain.Dto.CustomAttribute;
-
-    /// <summary>
-    /// The DTO used to represent an engine.
-    /// </summary>
-    public class EngineDto
-    {
-        /// <summary>
-        /// Gets or sets the parent's plane id.
-        /// </summary>
-        [BiaDtoField(IsParent = true, Required = true)]
-        public int PlaneId { get; set; }
-
-        /// <summary>
-        /// Get or sets the engine serial number.
-        /// </summary>
-        public string SN { get; set; }
-    }
-}
-```
-
 ### Create the Model
 1. In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate'**
 2. Create empty class **'Engine.cs'** and add following:
@@ -51,8 +19,10 @@ namespace MyCompany.MyFirstProject.Domain.Dto.Plane
 // Copyright (c) MyCompany. All rights reserved.
 // </copyright>
 
-namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
+namespace MyCompany.MyFirstProject.Domain.Plane.Entities
 {
+    using BIA.Net.Core.Domain;
+
     /// <summary>
     /// The engine entity.
     /// </summary>
@@ -79,6 +49,7 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
         public virtual Plane Plane { get; set; }
     }
 }
+
 ```
 3. In **Plane.cs**, add a new `ICollection<Engine>` to the model:
 ```csharp title="Plane.cs"
@@ -90,73 +61,12 @@ namespace MyCompany.MyFirstProject.Domain.PlaneModule.Aggregate
 {
     public class Plane : VersionedTable, IEntity<int>
     {
-        /// [...]
+        [...]
 
         /// <summary>
         /// Gets or sets the list of engines.
         /// </summary>
         public ICollection<Engine> Engines { get; set; }
-    }
-}
-```
-
-### Create the Mapper
-1. Stay in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate'** folder.
-2. Create empty class **'EngineMapper.cs'** and add following:
-```csharp title="EngineMapper.cs"
-// <copyright file="EngineMapper.cs" company="MyCompany">
-// Copyright (c) MyCompany. All rights reserved.
-// </copyright>
-
-namespace MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate
-{
-    using System;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Security.Principal;
-    using BIA.Net.Core.Domain.Authentication;
-    using MyCompany.MyFirstProject.Crosscutting.Common.Enum;
-    using MyCompany.MyFirstProject.Domain.Dto.Company;
-    using MyCompany.MyFirstProject.Domain.UserModule.Aggregate;
-
-    /// <summary>
-    /// The mapper used for engine.
-    /// </summary>
-    public class EngineMapper : BaseMapper<EngineDto, Engine, int>
-    {
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.ExpressionCollection"/>
-        public override ExpressionCollection<Engine> ExpressionCollection
-        {
-            get
-            {
-                return new ExpressionCollection<Engine>
-                {
-                    { "id", engine => engine.Id },
-                    { "sn", engine => engine.SN },
-                };
-            }
-        }
-
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.DtoToEntity"/>
-        public override void DtoToEntity(EngineDto dto, Engine entity)
-        {
-            entity ??= new Engine();
-
-            entity.Id = dto.Id;
-            entity.SN = dto.SN;
-            entity.PlaneId = dto.PlaneId;
-        }
-
-        /// <inheritdoc cref="BaseMapper{TDto,TEntity}.EntityToDto"/>
-        public override Expression<Func<Engine, EngineDto>> EntityToDto()
-        {
-            return entity => new EngineDto
-            {
-                Id = entity.Id,
-                SN = entity.SN,
-                PlaneId = entity.PlaneId,
-            };
-        }
     }
 }
 ```
@@ -231,19 +141,32 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 5. Run command `update-database -context "DataContext"`
 6. Verify your database.
 
-## Generate CRUD Child
+## Generate DTO
 ### Using BIAToolKit
 1. Launch the **BIAToolKit**, go to the tab **"Modify existing project"**.
 2. Set your parent project path, then select your project folder.
-3. Go to **"Add CRUD"** tab.
+3. Go to **"DTO Generator"** tab.
+4. Fill the form as following : 
+![Child_Add](../../Images/BIAToolKit/DTO-Child_Add.png)
+5. Then, click on **Generate** button !
+6. Complete **MyCompany.MyFirstProject.Domain.Dto.Plane.EngineDto.cs** by adding property's attribute `IsParent = true` for the `PlaneId` property :
+```csharp title="EngineDto.cs"
+/// <summary>
+/// Gets or sets the PlaneId.
+/// </summary>
+[BiaDtoField(IsParent = true, Required = true)]
+public int PlaneId { get; set; }
+```
+
+## Generate CRUD
+### Using BIAToolKit
+1. Launch the **BIAToolKit**, go to the tab **"Modify existing project"**.
+2. Set your parent project path, then select your project folder.
+3. Go to **"CRUD Generator"** tab.
 4. Fill the form as following : 
 ![BIAToolKitConfig](../../Images/BIAToolKit/CRUD-Child_Add.png)
-    <ins>Explanations</ins> :
-   - **Parent name (singular or plural)** : corresponding in the back-end to the class names and in the front-end to the feature name of the parent.
-   - **Parent domain** : corresponding in the back-end only to the domain name where the parent is currently created.
-
     Based on this informations, the BIAToolKit will detect automatically the parent's folders to generate the new CRUD child. Make sure to fill the correct informations without misspelling.
-1. Then, click on **Generate** button !
+5. Then, click on **Generate** button !
 
 ### Customize generated files
 #### Front
@@ -251,7 +174,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 1. Go in **'src\app\features\planes\children\engines\model'** and open the **engine.ts** file.
 2. Adapt the field configuration if needed.
 3. Remove all unused imports from the generated file.
-4. 
+   
 ##### engine-item.component.ts
 1. Go in **'src\app\features\planes\children\engines\views'** and open the **engine-item.component.ts** file.
 2. Adapt the field of the item to display in the breadcrump.

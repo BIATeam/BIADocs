@@ -77,6 +77,60 @@ Add the TeamType :
       };
   }
   ```
+- Add the TeamConfig to manage the permission on the team controller and service
+  - in Domain/User/TeamConfig.cs add an element like that:
+    - if the team have no parent and no child:
+    ```csharp
+            new BiaTeamConfig<Team>()
+            {
+                TeamTypeId = (int)TeamTypeId.Site,
+                RightPrefix = "Site",
+                AdminRoleIds = new int[] { (int)RoleId.SiteAdmin },
+            },
+    ```
+    - if the team have a chid and no parent:
+    ```csharp
+            new BiaTeamConfig<Team>()
+            {
+                TeamTypeId = (int)TeamTypeId.AircraftMaintenanceCompany,
+                RightPrefix = "AircraftMaintenanceCompany",
+                AdminRoleIds = new int[] { (int)RoleId.Supervisor },
+                Children = new ImmutableListBuilder<BiaTeamChildrenConfig<Team>>
+                {
+                    new BiaTeamChildrenConfig<Team>
+                    {
+                        TeamTypeId = (int)TeamTypeId.MaintenanceTeam,
+                        GetChilds = team => (team as AircraftMaintenanceCompany).MaintenanceTeams,
+                    },
+                }.ToImmutable(),
+            },
+    ```
+    - if the team have a parent and no child:
+    ```csharp
+            new BiaTeamConfig<Team>()
+            {
+                TeamTypeId = (int)TeamTypeId.MaintenanceTeam,
+                RightPrefix = "MaintenanceTeam",
+                AdminRoleIds = new int[] { (int)RoleId.MaintenanceTeamAdmin },
+
+                // BIAToolKit - Begin Nested Parent AircraftMaintenanceCompany
+                Parents = new ImmutableListBuilder<BiaTeamParentConfig<Team>>
+                {
+                    new BiaTeamParentConfig<Team>
+                    {
+                        TeamTypeId = (int)TeamTypeId.AircraftMaintenanceCompany,
+                        GetParent = team => (team as MaintenanceTeam).AircraftMaintenanceCompany,
+                    },
+                }
+                .ToImmutable(),
+            },
+    ```
+  - TeamTypeId : is the team type id define in Crosscutting.Common\Enum\TeamTypeId.cs 
+  - RightPrefix : is use to prefix all the permission right.
+  - AdminRoleIds : is the list of the ids of the roles that can administrate the teams. It is necessary to display correctly the list of administrators in the CRUD.
+  - Children : it list the children teams. To be able to see the parent teams when you are member of one child team.
+  - Parent : it list the parent teams. To be able to see the children teams when you are member of one parents team. To be able to retrieve the parent teams and ensure that the right of the child team is compute in a correct context.
+
 
 ### Add the team CRUD
 
