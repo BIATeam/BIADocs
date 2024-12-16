@@ -142,11 +142,11 @@ You have:
 - Application\Site\ ...
 - Presentation.Api\Controllers\Site\SitesController.cs
 
-And similar to [CRUD_Back](../20-CRUD/10-CreateACRUDBack.md) the basic right just be added in
+The basic right just be added in
 - CrossCutting.Common\Right.cs
 - Presentation.Api\bianetconfig.json
   
-For injection similar to [CRUD_Back](../20-CRUD/10-CreateACRUDBack.md) update:
+For injection :
 - Crosscutting.Ioc\IocContainer.cs:
     => Into the “ConfigureApplicationContainer” function add a Transient on the service.
 
@@ -170,7 +170,7 @@ In addition, to finish update the database.
   ```
 
 ### Add the team CRUD
-The procedure is similar to the [CRUD_Front](../20-CRUD/20-CreateACRUDFront.md).
+The procedure is similar to the [CRUD Team](../../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md).
 
 ### Filter Sub teams in header
 In case of a team type child of team type you have to filer the children teams by their parent.
