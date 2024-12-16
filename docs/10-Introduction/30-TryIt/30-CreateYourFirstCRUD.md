@@ -79,19 +79,19 @@ For more informations about creating a DTO, see [Create a DTO with BIAToolkit do
 * Go to tab "2 - DTO Generator"
 * Select your entity Plane on the list
 
-![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.PNG)
+![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.png)
 
 * Click on "Map to" button
 * All the selected properties will be added to the mapping table that represents that properties that will be generated in your corresponding DTO
 * Check the required checkbox for the Id mapping property
 
-![FirstCRUD_DTOGenerator_Mapping](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Mapping.PNG)
+![FirstCRUD_DTOGenerator_Mapping](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Mapping.png)
 
 * Then click the "Generate" button
 * The DTO and the mapper will be generated
 * Check in the project solution if the DTO and mapper are present
 
-![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.PNG)
+![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.png)
 
 ## Update Data
 ### Create the Modelbuilder
@@ -179,7 +179,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 * Set "Entity name (plural)" value: *Planes*
 * Choose "Display item": *Msn*
 
-![FirstCRUD_CRUDGenerator_Set](../../Images/GettingStarted/FirstCRUD_CRUDGenerator_Set.PNG)
+![FirstCRUD_CRUDGenerator_Set](../../Images/GettingStarted/FirstOPTION_Set.png)
 
 * Click on generate button
 
