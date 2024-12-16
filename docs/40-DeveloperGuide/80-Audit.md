@@ -107,3 +107,91 @@ The usage of a dedicated table simplify the history of change in a user interfac
             }
         }
 ```
+
+# Switch Id to longInt (Optional)
+If required you can switch the Id from int to longInt:
+## Transform the AuditLog entity
+Update AuditLog.cs : use long in the inheritance IEntity and in the Id type
+```csharp
+    /// <summary>
+    /// The airport entity.
+    /// </summary>
+    public class AuditLog : AuditEntity, IEntity<long>
+    {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public long Id { get; set; }
+```
+
+## Generate the migration
+Add-Migration "AuditLongId" -Context "DataContext"
+
+## Adapt the migration
+Due to a known bug in ef5.0 you have to add manually the remove of the PrimaryKey and ForeignKey on each element modified, and recreate them after change in Up and Down function.
+```csharp
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace TheBIADevCompany.BIADemo.Infrastructure.Data.Migrations
+{
+    /// <inheritdoc />
+    public partial class AuditLongId : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            // Begin Manually Added
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AuditLogs",
+                table: "AuditLogs");
+            // End Manually Added
+
+            migrationBuilder.AlterColumn<long>(
+                name: "Id",
+                table: "AuditLogs",
+                type: "bigint",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int")
+                .Annotation("SqlServer:Identity", "1, 1")
+                .OldAnnotation("SqlServer:Identity", "1, 1");
+
+            // Begin Manually Added
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AuditLogs",
+                table: "AuditLogs",
+                column: "Id");
+            // End Manually Added
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            // Begin Manually Added
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_AuditLogs",
+                table: "AuditLogs");
+            // End Manually Added
+
+            migrationBuilder.AlterColumn<int>(
+                name: "Id",
+                table: "AuditLogs",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(long),
+                oldType: "bigint")
+                .Annotation("SqlServer:Identity", "1, 1")
+                .OldAnnotation("SqlServer:Identity", "1, 1");
+
+            // Begin Manually Added
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AuditLogs",
+                table: "AuditLogs",
+                column: "Id");
+            // End Manually Added
+        }
+    }
+}
+```
