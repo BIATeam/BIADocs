@@ -52,5 +52,12 @@ Name: ASPNETCORE_ENVIRONMENT
 Value: Development  
 The IIS server must be restarted in order that this variable is taken into account
 
+### Build and Debug for VSCode
+If you want to build and deploy the Dotnet part from vscode you need to install the following extension in VSCode:
+-	C#
+-	C# Dev kit
+-	.Net install tool
 
+To be able to manage the database migration with dotnet ef run in a terminal:  
+```dotnet tool install --global dotnet-ef```
 
