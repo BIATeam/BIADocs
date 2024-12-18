@@ -58,6 +58,7 @@ sidebar_position: 1
 ## Prepare BIATemplate:
 - Synchronize your BIATemplate local folder with github.
 - Stop the BIATemplate IIS process.
+- Launch **...\BIADemo\Tools\0-Common-BIADemo-BIATemplate.ps1** (if some additional files are to include modify the script)
 - Launch **...\BIADemo\Tools\1-Angular-BIADemo-BIATemplate.ps1** (if some files are to exclude modify the script)
 - Launch **...\BIADemo\Tools\2-DotNet-BIADemo-BIATemplate.ps1**
 - Disable the serviceWorker in the angular.json file : ```"serviceWorker": false```
