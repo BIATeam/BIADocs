@@ -3,7 +3,7 @@ sidebar_position: 1
 ---
 
 # ChangeLog 
-## V4.0.0 (2024-12-??)
+## V4.0.0 (2025-01-01)
 * New framework UI design
 * Improve UI table's controls behaviors
 * Improve backend layer organization
