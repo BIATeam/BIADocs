@@ -8,7 +8,7 @@ We will create the feature 'PlaneType'.
 ## Create the Entity
 * Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
 * Create the entity 'PlaneType':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\PlaneModule\Aggregate' folder, create empty class 'PlaneType.cs' and add: 
+* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Entities' folder, create empty class 'PlaneType.cs' and add: 
 
 ```csharp
 namespace MyCompany.MyFirstProject.Domain.Plane.Entities
