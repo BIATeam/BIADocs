@@ -16,6 +16,7 @@ sidebar_position: 1
 * Fix clear filter behavior to reset only tables filters
 * Fix display time of advanced filters 
 * Fix close pop-up button position for views managing on tables
+* Possibility to add Form validators in field configuration 
 
 ### DotNet
 * Projects layer re-organization according to CLEAN architecture
