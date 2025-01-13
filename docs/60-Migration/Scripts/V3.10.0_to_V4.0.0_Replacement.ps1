@@ -269,6 +269,15 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table([\s\S]+)(\[pageS
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<app-([A-z-]+)-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/app-([A-z\-]+)-table>" -NewRegexp '<app-$1-table$2$3$4(pageSizeChange)="onPageSizeChange($event)"$4$5</app-$6-table>' -Include *.html
 # END - Move page size to bia-table footer
 
+# BEGIN - Replace bulk by import
+Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter '*bulk*' | Rename-Item -NewName { $_.Name -replace "bulk","import" }
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "-bulk" -NewRegexp "-import"
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "'bulk'" -NewRegexp "'import'"
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\(bulk\)" -NewRegexp "(import)"
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bulkMode" -NewRegexp "importMode"
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "Bulk" -NewRegexp 'Import'
+# END - Replace bulk by import
+
 # Set-Location $Source/DotNet
 # dotnet restore --no-cache
 
