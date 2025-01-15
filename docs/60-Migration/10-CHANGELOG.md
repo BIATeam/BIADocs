@@ -30,7 +30,7 @@ sidebar_position: 1
 * Multiple repositories handling
 * Exposing standard object model validation properties into BiaDtoField attribute
 * Entity Framework model validation given optionnal
-* Automatic Keyclock token validation
+* Autonomous validation of the keycloak token
 * Fix bug when team title contains special characters
 
 ## V3.10.0 (2024-09-27)
