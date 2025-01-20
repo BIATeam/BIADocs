@@ -28,6 +28,11 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
     public class Company : Team
     {
         /// <summary>
+        /// Gets or sets the Id.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the company name.
         /// </summary>
         public string CompanyName { get; set; }
@@ -43,8 +48,9 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
 ```
 3. In case of children team, ensure to have logical links between the parent and child entities.
 
-Make sure to inherit from `Team` and expose a `byte[]` row version property mapped to column `RowVersion`.
-Complete with all necessary properties.
+Make sure to inherit from `Team` and expose a `byte[]` row version property mapped to column `RowVersion`.  
+Complete with all necessary properties.  
+***NOTE :*** you should expose the `Id` property even if it's hide the inherited property of `Team`
 
 ### Complete DataContext
 1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.
@@ -66,7 +72,7 @@ Complete with all necessary properties.
 namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
-    using MyCompany.MyFirstProject.Domain.CompanyModule.Aggregate;
+    using MyCompany.MyFirstProject.Domain.Company.Entities;
 
     /// <summary>
     /// Class used to update the model builder for Company domain.
@@ -119,7 +125,11 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 4. Fill the form as following : 
 ![DTO-Team_Add](../../Images/BIAToolKit/DTO-Team_Add.png)
 5. Then, click on **Generate** button !
-6. Complete the generated DTO in case of children team. Ensure to set the first `AncestorTeam` parent's type into `BiaDtoClass` class annotation, and set `IsParent` to true in `BiaDtoField` field annotation for parent's id property : 
+
+#### Children Team case
+Complete the generated DTO : 
+* ensure to set the first `AncestorTeam` parent's type into `BiaDtoClass` class annotation
+* set `IsParent` to true in `BiaDtoField` field annotation for parent's id property
 ```csharp title="CompanyChildDto.cs"
 /// <summary>
 /// The DTO used to represent a company child.
@@ -142,7 +152,7 @@ public class CompanyChildDto : TeamDto
 
 1. Launch the **BIAToolKit**, go to the tab **"Modify existing project"**.
 2. Set your parent project path, then select your project folder.
-3. Go to **"Add CRUD"** tab.
+3. Go to **"CRUD Generator"** tab.
 4. Fill the form as following : 
 ![BIAToolKitConfig](../../Images/BIAToolKit/Team_Add.png)
 1. If your Team inherits from parent, click on the **"Has Parent"** checkbox and complete the parent's name singular and plural 

@@ -12,30 +12,6 @@ We will create a relation between CRUD 'Plane' and option 'PlaneType' (previousl
   
 ```csharp
 /// <summary>
-/// The plane entity.
-/// </summary>
-public class PlaneType : VersionedTable, IEntity<int>
-{
-    /// <summary>
-    /// Gets or sets the id.
-    /// </summary>
-    public int Id { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Manufacturer's Serial Number.
-    /// </summary>
-    public string Title { get; set; }
-
-    /// <summary>
-    /// Gets or sets the first flight date.
-    /// </summary>
-    public DateTime? CertificationDate { get; set; }
-}
-```
-## Update the Entity
-* Open the entity 'Plane' and add following relation to your relation Entity : 
-```csharp
-/// <summary>
 /// Gets or sets the  plane type.
 /// </summary>
 public virtual PlaneType PlaneType { get; set; }
@@ -116,20 +92,7 @@ Update-DataBase -Context DataContext
 
 ### Complete generated files
 * Update the Mapper 'PlaneMapper':
-  * In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Mappers' folder, open class 'PlaneMapper'
-  * Re-add the ExpressionCollection override and HeaderName struct into your file using your backup
-  * Complete the class with these data :
- 
-```csharp
-public override Func<PlaneDto, object[]> DtoToRecord(List<string> headerNames = null)
-{
-    return x => (new object[]
-    {
-        ...
-        CSVString(x.PlaneType.Display),
-    });
-}
-```
+  * Re-add custom code from your previous backup if any
 
 ## Check DotNet generation
 * Return to Visual Studio 2022 on the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.

@@ -53,7 +53,7 @@ Click on "BIA login" at bottom right.
 The button will be green.  
     ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-5-Swagger.PNG)
     
-1.  If the button is red it is probably an error in bianetconfig.Example_Development.json? You can debug the function LoginOnTeamsAsync in 02 - Application\MyCompany.MyFirstProject.Application\User\AuthAppService.cs to understand the problem.
+1.  If the button is red it is probably an error in bianetconfig.Example_Development.json. Ensure to have valid LDAP domain specified.
 
 2.  Run VS code and open the folder "C:\Sources\Test\MyFirstProject"
     
