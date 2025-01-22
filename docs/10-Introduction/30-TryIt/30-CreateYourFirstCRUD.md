@@ -179,7 +179,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 * Set "Entity name (plural)" value: *Planes*
 * Choose "Display item": *Msn*
 
-![FirstCRUD_CRUDGenerator_Set](../../Images/GettingStarted/FirstOPTION_Set.png)
+![FirstCRUD_CRUDGenerator_Set](../../Images/GettingStarted/FirstCRUD_CRUDGenerator_Set.png)
 
 * Click on generate button
 

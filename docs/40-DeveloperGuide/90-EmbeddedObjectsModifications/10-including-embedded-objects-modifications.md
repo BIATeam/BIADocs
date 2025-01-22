@@ -96,7 +96,7 @@ export const myEmbeddedItemCRUDConfiguration: CrudConfig = new CrudConfig({
         [selectedElements]="selectedMyEmbeddedItems"></bia-table-header>
       <span class="p-float-label">
         <app-my-embedded-item-table
-          [elements]="displayedMyEmbeddedItems"
+          [elements]="displayedMyEmbeddedItems()"
           [configuration]="myEmbeddedItemCrudConfig"
           [dictOptionDtos]="[]"
           [totalRecord]="crudItem?.myEmbeddedItems?.length ?? 0"
@@ -118,12 +118,20 @@ export const myEmbeddedItemCRUDConfiguration: CrudConfig = new CrudConfig({
 export class MyItemFormComponent extends CrudItemFormComponent<MyItem> {
   myEmbeddedItemCrudConfig: BiaFieldsConfig = myEmbeddedItemCRUDConfiguration.fieldsConfig;
   newId: number = CrudHelperService.NewIdStartingValue;
-  selectedMyEmbeddedItems: MyEmbeddedItem[] = [];
+  displayedEngines: WritableSignal<MyEmbeddedItem[]> = signal([]);
 
-  get displayedMyEmbeddedItems(): MyEmbeddedItem[] {
-    return this.crudItem.myEmbeddedItems
-      ? this.crudItem.myEmbeddedItems.filter(e => e.dtoState !== DtoState.Deleted)
-      : [];
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.crudItem) {
+      this.setDisplayedEngines();
+    }
+  }
+
+  setDisplayedEngines() {
+    this.displayedEngines.update(() =>
+      this.crudItem?.engines
+        ? this.crudItem.engines.filter(e => e.dtoState !== DtoState.Deleted)
+        : []
+    );
   }
 
   onSelectedMyEmbeddedItemsChanged(selectedMyEmbeddedItems: MyEmbeddedItem[]) {
@@ -137,10 +145,12 @@ export class MyItemFormComponent extends CrudItemFormComponent<MyItem> {
       this.crudItem.myEmbeddedItems,
       this.newId
     );
+    this.setDisplayedEngines();
   }
 
   onDeleteMyEmbeddedItems() {
     this.selectedMyEmbeddedItems.forEach(e => (e.dtoState = DtoState.Deleted));
+    this.setDisplayedEngines();
   }
 }
 ```

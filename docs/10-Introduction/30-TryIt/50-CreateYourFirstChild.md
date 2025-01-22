@@ -169,6 +169,12 @@ public int PlaneId { get; set; }
 5. Then, click on **Generate** button !
 
 ### Customize generated files
+#### Back
+##### AppService
+1. Open the generated application service **MyCompany.MyFirstProject.Application\Plane\EngineAppService.cs** 
+2. Delete the field declaration and assignement of `IEngineRepository repository`
+3. Replace `IEngineRepository` type of constructor parameter `repository` by `ITGenericRepository<Engine, int>`
+
 #### Front
 ##### model.ts
 1. Go in **'src\app\features\planes\children\engines\model'** and open the **engine.ts** file.
