@@ -280,7 +280,7 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "Bulk" -NewRegexp 'Import'
 # END - Replace bulk by import
 
 # Set-Location $Source/DotNet
-# dotnet restore --no-cache
+dotnet restore --no-cache
 
 Write-Host "Finish"
 pause
