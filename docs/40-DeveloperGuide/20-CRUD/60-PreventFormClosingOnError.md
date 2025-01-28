@@ -26,8 +26,8 @@ export class MyFeatureService extends CrudItemService<MyFeature> {
     _createSuccessActionType = FeatureMyFeaturesActions.loadAllByPost.type;
 
     /**
-     * Type of store action called after create effect is successful.
-     * See create effect in store effects of CRUD item.
+     * Type of store action called after update effect has failed.
+     * See update effect in store effects of CRUD item.
     */
     _updateFailureActionType = FeatureEnginesActions.failure.type;
 }
