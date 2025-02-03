@@ -3,10 +3,11 @@ sidebar_position: 1
 ---
 
 # Prevent form closing on error
-When opening a form on popup or calc mode, we want sometimes prevent the closing of the form even in error case. This page explains how to handle this.
+When opening a form on popup or calc mode, we want sometimes prevent the closing of the form even in error case. This page explains how to handle this.  
 
 ## Block form
 ### Front
+**NOTE :** these configuration instructions are already included into features generated from the version **4.0.0** of BIA Framework.  
 1. Ensure that your feature has store action called after success or fail to create or edit an item using the matching effect into the `my-feature-effects.ts` file.  
 Example with the `update$` effect, the store action on success is on **line 127** and on fail on **line 134** :  
 ![PopupConflict](../../Images/BlockForm_EffectsStore.png)
@@ -36,6 +37,7 @@ export class MyFeatureService extends CrudItemService<MyFeature> {
 ## Inform user of conflict
 Sometimes, the data opened for edit in the form can be changed by another user at the same time. You can handle these changes directly in your form to inform your user of this conflict.
 ### Back
+**NOTE :** these configuration instructions are already included into features generated from the version **4.0.0** of BIA Framework.
 1. Your entity must derived of `VersionedTable` type
 2. Your mapper should include in the `EntityToDto()` method a mapping for the `RowVersion` property of the DTO based on the same property from the entity : 
 ``` csharp title="MyEntityMapper.cs"
