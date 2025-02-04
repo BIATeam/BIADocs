@@ -266,9 +266,9 @@ export const mySingleItemFieldsConfiguration: BiaFieldsConfig = {
 ```
 3) Modify the type in these class from MyListItem to MySingleItem
 - in MyItemFormComponent : now extends CrudItemFormComponent&lt;MySingleItem>
-- in MyItemDas : now extends AbstractDasWithListAndItem&lt;MySingleItem, MyListItem>
+- in MyItemDas : now extends AbstractDas&lt;MyListItem, MySingleItem>
 - in MyItemService : 
-  - now extends CrudListAndItemService&lt;MySingleItem, MyListItem>
+  - now extends CrudItemService&lt;MyListItem, MySingleItem>
   - crudItem$ return value -> Observable&lt;MySingleItem>
   - create function parameter -> crudItem: MySingleItem
   - update function parameter -> crudItem: MySingleItem

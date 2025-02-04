@@ -1,5 +1,4 @@
-$Source = "C:\Sources\Azure.DevOps.Safran\eFollow";
-# $Source = "D:\Source\GitHub\BIATeam\BIADemo";
+$Source = "D:\Source\GitHub\BIATeam\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 
@@ -229,57 +228,9 @@ function ReplaceIClientForHubRepository {
   }
 }
 
-# BEGIN - typing components and config
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "class ([A-z]+)TableComponent([\r\n ]+)extends BiaCalcTableComponent([\r\n ]+)" -NewRegexp 'class $1TableComponent$2extends BiaCalcTableComponent<$1>$3' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import { ([A-z]+)FieldsConfiguration } from '([\./]+)\/model\/([A-z\-]+)';([\s\S]+)export const \1CRUDConfiguration: CrudConfig =" -NewRegexp 'import { #capitalize#$1, $1FieldsConfiguration } from ''$2/model/$3'';$4export const $1CRUDConfiguration: CrudConfig<#capitalize#$1> =' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import { ([A-z]+)FieldsConfiguration } from '([\./]+)\/model\/([A-z\-]+)';([\s\S]+)export const \1CRUDConfiguration: CrudConfig =" -NewRegexp 'import { #capitalize#$1, $1FieldsConfiguration } from ''$2/model/$3'';$4export const $1CRUDConfiguration: CrudConfig<#capitalize#$1> =' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "export const ([A-z]+)FieldsConfiguration: BiaFieldsConfig =" -NewRegexp 'export const $1FieldsConfiguration: BiaFieldsConfig<#capitalize#$1> =' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexComponent([\s\S]+): BiaTableComponent;([\s\S]+): Observable<((?!OptionDto)[A-z]+)\[]>;' -NewRegexp 'export class $1IndexComponent$2: BiaTableComponent<$4>;$3: Observable<$4[]>;' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexComponent([\s\S]+): Observable<((?!OptionDto)[A-z]+)\[]>;([\s\S]+): BiaTableComponent;' -NewRegexp 'export class $1IndexComponent$2: Observable<$3[]>;$4: BiaTableComponent<$3>;' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexComponent([\s\S]+): Observable<((?!OptionDto)[A-z]+)\[]>;([\s\S]+): BiaFieldsConfig(?!<)' -NewRegexp 'export class $1IndexComponent$2: Observable<$3[]>;$4: BiaFieldsConfig<$3>' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexComponent([\s\S]+): BiaFieldsConfig(?!<)([\s\S]+): Observable<((?!OptionDto)[A-z]+)\[]>;' -NewRegexp 'export class $1IndexComponent$2: BiaFieldsConfig<$4>$3: Observable<$4[]>;' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'export class ([A-z]+)IndexComponent([\s\S]+): Observable<((?!OptionDto)[A-z]+)\[]>;([\s\S]+): BiaFieldConfig(?!<)' -NewRegexp 'export class $1IndexComponent$2: Observable<$3[]>;$4: BiaFieldConfig<$3>' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'class ([A-z]+)TableFilterComponent extends BiaTableFilterComponent(?!<)' -NewRegexp 'class $1TableFilterComponent<TDto extends BaseDto> extends BiaTableFilterComponent<TDto>' -Include *.ts
-# END - typing components and config
-
-# BEGIN - Changing layout of framework
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bBiaClassicLayoutService\b' -NewRegexp 'BiaLayoutService' -Include *.ts
-# END - Changing layout of framework 
-
-# BEGIN - Replacements after reorganize layers DotNet
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bFilteredServiceBase\b' -NewRegexp 'OperationalDomainServiceBase' -Include *.cs
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bAppServiceBase\b"' -NewRegexp 'DomainServiceBase' -Include *.cs
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?ms)#if\s+UseHubForClientInContact\s+using\s+BIA\.Net\.Core\.Domain\.RepoContract;\s+#endif' -NewRegexp '' -Include *.cs
-RemoveIFilteredServiceBase
-ReplaceIClientForHubRepository
-# END - Replacements after reorganize layers DotNet
-
-# BEGIN - Fix layout with advanced filter
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<div([\s\S]+) flex-wrap([\s\S]+)""([\s\S]*)>([\r\n ]+)<bia-team-advanced-filter" -NewRegexp '<div$1$2 bia-responsive-flex-row"$3>$4<bia-team-advanced-filter' -Include *.html
-# END - Fix layout with advanced filter
-
-# BEGIN - Add clear filter to table-controller
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)\(toggleSearch\)=""onToggleSearch\(\)""([\s]+)" -NewRegexp '<bia-table-controller$1(clearFilters)="onClearFilters()"$2(toggleSearch)="onToggleSearch()"$2' -Include *.html
-# END - Add clear filter to table-controller
-
-# BEGIN - Move page size to bia-table footer
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\[length\]=""\(totalCount\$ \| async\) \?\? 0""[\s]+)([\s\S]*)<\/bia-table-controller>" -NewRegexp '<bia-table-controller$1$3</bia-table-controller>' -Include *.html
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table-controller([\s\S]+)(\(pageSizeChange\)=""onPageSizeChange\(\$\event\)""[\s]+)([\s\S]*)<\/bia-table-controller>" -NewRegexp '<bia-table-controller$1$3</bia-table-controller>' -Include *.html
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<bia-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/bia-table>" -NewRegexp '<bia-table$1$2$3(pageSizeChange)="onPageSizeChange($event)"$3$4</bia-table>' -Include *.html
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "<app-([A-z-]+)-table([\s\S]+)(\[pageSize\]=""pageSize"")([\s]+)([\s\S]+)<\/app-([A-z\-]+)-table>" -NewRegexp '<app-$1-table$2$3$4(pageSizeChange)="onPageSizeChange($event)"$4$5</app-$6-table>' -Include *.html
-# END - Move page size to bia-table footer
-
-# BEGIN - Replace bulk by import
-Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter '*bulk*' | Rename-Item -NewName { $_.Name -replace "bulk","import" }
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "-bulk" -NewRegexp "-import"
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "'bulk'" -NewRegexp "'import'"
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "\(bulk\)" -NewRegexp "(import)"
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bulkMode" -NewRegexp "importMode"
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "Bulk" -NewRegexp 'Import'
-# END - Replace bulk by import
 
 # Set-Location $Source/DotNet
-# dotnet restore --no-cache
+dotnet restore --no-cache
 
 Write-Host "Finish"
 pause
