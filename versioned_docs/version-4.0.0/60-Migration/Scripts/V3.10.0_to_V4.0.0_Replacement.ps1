@@ -279,6 +279,11 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bulkMode" -NewRegexp "impor
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "Bulk" -NewRegexp 'Import'
 # END - Replace bulk by import
 
+# BEGIN - Change table header title font and size
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "h1 {([\s\S]+)font-family: 'raleway-thin', serif;([\s]+)" -NewRegexp 'h1 {$1' -Include *header.component.scss
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "h1 {([\s\S]+)font-size: 36px;([\s]+)" -NewRegexp 'h1 {$1font-size: 1.75rem;$2' -Include *header.component.scss
+# END - Change table header title font and size
+
 # Set-Location $Source/DotNet
 dotnet restore --no-cache
 
