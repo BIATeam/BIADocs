@@ -16,7 +16,7 @@ The archive job is a recurred task created to archive entities from database int
 
 ## Configuration
 ### CRON settings
-In the **DeployDB** project, the CRON settings of the archive job are set into the `appsettings.json` :
+1. In the **DeployDB** project, the CRON settings of the archive job are set into the `appsettings.json` :
 ``` json title="appsettings.json"
 {
   "Tasks": {
@@ -26,7 +26,32 @@ In the **DeployDB** project, the CRON settings of the archive job are set into t
   }
 }
 ```
-Run the **DeployDB** to update your Hangfire settings with this configuration and enable archive job.
+2. In `Program.cs` add the task to the Hangfire service : 
+``` csharp title="Program.cs"
+namespace TheBIADevCompany.BIADemo.DeployDB
+{
+    public static class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            await new HostBuilder()
+                // [...]
+                .ConfigureServices((hostingContext, services) =>
+                {
+                    // [...]
+
+                    services.AddHangfire(config =>
+                    {
+                        // [...]
+                        RecurringJob.AddOrUpdate<ArchiveTask>($"{projectName}.{typeof(ArchiveTask).Name}", t => t.Run(), configuration["Tasks:Archive:CRON"]);
+                    });
+                })
+                // [...]
+        }
+    }
+}
+```
+3. Run the **DeployDB** to update your Hangfire settings with this configuration and enable archive job.
 
 ### Archive job
 In the **WorkerService** project, the settings for the archive job are set into the `bianetconfig.json` :
