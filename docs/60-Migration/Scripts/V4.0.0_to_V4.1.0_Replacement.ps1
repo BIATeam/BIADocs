@@ -166,67 +166,60 @@ function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   return $positionFermeture
 }
 
-function CleanIoc {
-  param (
-    [string]$Source
-  )
+function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchBegin) {
+  # Define the name of the base class
+  $baseClassName = "WebApiRepository"
 
-  $path = Get-ChildItem -Path $Source -Include IocContainer.cs -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+  # Define the regular expression patterns to match the function invocations
+  $getAsyncPattern = 'this.GetAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $deleteAsyncPattern = 'this.DeleteAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $putAsyncPattern = 'this.PutAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $putAsyncWithBodyPattern = 'this.PutAsync<([^,]+),([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $postAsyncPattern = 'this.PostAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $postAsyncWithBodyPattern = 'this.PostAsync<([^,]+),([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $constructorPattern = 'public\s+(\w+)\s*\(([^)]*)\)\s*:\s*base\s*\(([^)]*)\)'
+  $modifiedConstructorPattern = 'public\s+(\w+)\s*\(([^)]*)\)\s*:\s*base\s*\(([^)]*), new AuthenticationConfiguration\(\) { Mode = AuthenticationMode\.Token }\)'
 
-  if (Test-Path $path) {
+  # Get all .cs files in the source directory
+  $files = Get-ChildItem -Path $sourceDirectory -Recurse -Include *.cs
 
-    Write-Output $path
-    $pattern = "collection\.AddTransient<(I([A-Za-z]+)), \2>\(\);"
-    $exception = "BackgroundJobClient"
-  
-  (Get-Content $path) | Foreach-Object {
-      if ($_ -notmatch $pattern -or $_ -match $exception) {
-        $_
-      }
-    } | Set-Content $path
-  }
-}
-
-function RemoveIFilteredServiceBase {
-  Write-Host "Remove IFilteredServiceBase";
-  $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
-
-  foreach ($file in $csFiles) {
+  foreach ($file in $files) {
     $content = Get-Content -Path $file.FullName -Raw
-    $newContent = [regex]::Replace($content, "
-      (\s*:\s*IFilteredServiceBase<[^>]+>\s*(,)?)\n |   # Case where it's the only or first interface
-      (\s*,\s*IFilteredServiceBase<[^>]+>)                 # Case where it's not the first interface
-    ", {
-      if ($args[0]) {
-        if ($args[0].Value.Trim().StartsWith(":") -and $args[0].Value.Trim().EndsWith(",")) {
-          return " : "
-        } else {
-          return "`n" 
-        }
-      }
-    }, 'IgnorePatternWhitespace')
 
-    if ($content -ne $newContent) {
-      Write-Host "     => " $file.FullName
-      Set-Content -Path $file.FullName -Value $newContent
+    # Check if the file contains the base class
+    if ($content -match "class\s+\w+\s*:\s*$baseClassName") {
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $getAsyncPattern, 'this.GetAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $deleteAsyncPattern, 'this.DeleteAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $putAsyncPattern, 'this.PutAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult, TBody> function invocation
+      $content = [regex]::Replace($content, $putAsyncWithBodyPattern, 'this.PutAsync<$1,$2>($3, $4$6)')
+
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $postAsyncPattern, 'this.PostAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult, TBody> function invocation
+      $content = [regex]::Replace($content, $postAsyncWithBodyPattern, 'this.PostAsync<$1,$2>($3, $4$6)')
+
+      # Check if the class overrides the GetBearerTokenAsync method
+      if ($content -match "override\s+async\s+Task<string>\s+GetBearerTokenAsync\s*\(" -and $content -notmatch $modifiedConstructorPattern) {
+        # Replace the constructor to add the new parameter to the base() call
+        $content = [regex]::Replace($content, $constructorPattern, 'public $1($2) : base($3, new AuthenticationConfiguration() { Mode = AuthenticationMode.Token })')
+      }
+
+      # Write the modified content back to the file
+      Set-Content -Path $file.FullName -Value $content
+      Write-Host "Modified file: $($file.FullName)"
     }
   }
 }
 
-function ReplaceIClientForHubRepository {
-  Write-Host "Replace IClientForHubRepository by IClientForHubService";
-  $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
-  foreach ($file in $csFiles) {
-    if ($file.FullName -match "\.Presentation\.|\.Application\.") {
-      $content = Get-Content -Path $file.FullName -Raw
-      $newContent = [regex]::Replace($content, "\bIClientForHubRepository\b", "IClientForHubService")
-      if ($content -ne $newContent) {
-        Write-Host "     => " $file.FullName
-        Set-Content -Path $file.FullName -Value $newContent
-      }
-    }
-  }
-}
+
 
 
 # Set-Location $Source/DotNet
