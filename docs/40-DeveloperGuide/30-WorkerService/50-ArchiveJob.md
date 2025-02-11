@@ -10,13 +10,13 @@ The archive job is a recurred task created to archive entities from database int
 2. Each injected implementation of `IArchiveService` related to a specific archivable entity (`IEntityArchivable`) of the dabatase will be runned one per one
 3. The items to archive will be selected according to following rules from the related `ITGenericArchiveRepository` of the archive service :
    - Entity is fixed
-   - Entity has not been already archived **OR** entity has already been archived and last fixed date has been updated since the last 24 hours
+   - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 4. The selected items are saved into compressed archive file to the target directory one per one : unique file per item, overwritten. Each copy to the target directory is verified by an integrity comparison of checksum.
 5. If enable, the items to delete from database will be only those archived more than last past year
 
 ## Configuration
 ### CRON settings
-In the **DeployDB** project, the CRON settings of the archive job are set into the `appsettings.json` :
+1. In the **DeployDB** project, the CRON settings of the archive job are set into the `appsettings.json` :
 ``` json title="appsettings.json"
 {
   "Tasks": {
@@ -26,7 +26,32 @@ In the **DeployDB** project, the CRON settings of the archive job are set into t
   }
 }
 ```
-Run the **DeployDB** to update your Hangfire settings with this configuration and enable archive job.
+2. In `Program.cs` add the task to the Hangfire service : 
+``` csharp title="Program.cs"
+namespace TheBIADevCompany.BIADemo.DeployDB
+{
+    public static class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            await new HostBuilder()
+                // [...]
+                .ConfigureServices((hostingContext, services) =>
+                {
+                    // [...]
+
+                    services.AddHangfire(config =>
+                    {
+                        // [...]
+                        RecurringJob.AddOrUpdate<ArchiveTask>($"{projectName}.{typeof(ArchiveTask).Name}", t => t.Run(), configuration["Tasks:Archive:CRON"]);
+                    });
+                })
+                // [...]
+        }
+    }
+}
+```
+3. Run the **DeployDB** to update your Hangfire settings with this configuration and enable archive job.
 
 ### Archive job
 In the **WorkerService** project, the settings for the archive job are set into the `bianetconfig.json` :
