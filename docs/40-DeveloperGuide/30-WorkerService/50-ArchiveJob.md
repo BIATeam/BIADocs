@@ -12,7 +12,6 @@ The archive job is a recurred task created to archive entities from database int
    - Entity is fixed
    - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 4. The selected items are saved into compressed archive file to the target directory one per one : unique file per item, overwritten. Each copy to the target directory is verified by an integrity comparison of checksum.
-5. If enable, the items to delete from database will be only those archived more than last past year
 
 ## Configuration
 ### CRON settings
@@ -64,9 +63,7 @@ In the **WorkerService** project, the settings for the archive job are set into 
         "ArchiveEntityConfigurations": [
           {
             "EntityName": "MyEntity",
-            "TargetDirectoryPath": "C:\\temp\\archives\\myproject\\myentities",
-            "EnableDeleteStep": true,
-            "ArchiveMaxDaysBeforeDelete": 365
+            "TargetDirectoryPath": "C:\\temp\\archives\\myproject\\myentities"
           }
         ]
       }
@@ -128,25 +125,11 @@ namespace BIA.Net.Core.Domain.RepoContract
         Task<IReadOnlyList<TEntity>> GetItemsToArchiveAsync();
 
         /// <summary>
-        /// Return the items to delete.
-        /// </summary>
-        /// <param name="archiveDateMaxDays">The maximum days of archive date of item to delete.</param>
-        /// <returns><see cref="IReadOnlyList{TEntity}"/>.</returns>
-        Task<IReadOnlyList<TEntity>> GetItemsToDeleteAsync(double? archiveDateMaxDays = 365);
-
-        /// <summary>
         /// Update archive state of an entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns><see cref="Task"/>.</returns>
         Task SetAsArchivedAsync(TEntity entity);
-
-        /// <summary>
-        /// Remove an entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns><see cref="Task"/>.</returns>
-        Task RemoveAsync(TEntity entity);
     }
 }
 ```
@@ -177,26 +160,13 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
         public virtual async Task<IReadOnlyList<TEntity>> GetItemsToArchiveAsync();
 
         /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<TEntity>> GetItemsToDeleteAsync(double? archiveDateMaxDays = 365);
-
-        /// <inheritdoc/>
         public async Task SetAsArchivedAsync(TEntity entity);
-
-        /// <inheritdoc/>
-        public async Task RemoveAsync(TEntity entity);
 
         /// <summary>
         /// Selector of items to archive.
         /// </summary>
         /// <returns>Selector expression.</returns>
         protected virtual Expression<Func<TEntity, bool>> ArchiveStepItemsSelector();
-
-        /// <summary>
-        /// Selector of items to delete.
-        /// </summary>
-        /// <param name="archiveDateMaxDays">The maximum days of archive date of item to select.</param>
-        /// <returns>Selector expression.</returns>
-        protected virtual Expression<Func<TEntity, bool>> DeleteStepItemsSelector(double? archiveDateMaxDays = 365);
 
         /// <summary>
         /// Return all the entities with automatic includes.
@@ -208,13 +178,11 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
 ```
 **NOTES :** 
 - the method `GetItemsToArchiveAsync()` use the combination of `GetAllQuery()` with where clause using `ArchiveStepItemsSelector()` expression
-- the method `GetItemsToDeleteAsync()` use the combination of `GetAllQuery()` with where clause using `DeleteStepItemsSelector()` expression
 - the method `GetAllQuery()` returns all the entities with automatic includes :
   - includes all navigation properties at root level of the entity
   - includes recursively all the navigation properties with cascade delete relationship to the entity
   - use `AsSplitQuery()` ([documentation](https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries))
 - the method `SetAsArchivedAsync()` will set the `IsArchived` property of the entity to `true` and set the `ArchivedDate` to current date time UTC and commit immediatly
-- the method `RemoveAsync()` will delete the entity in database and commit immediatly
   
 #### Custom
 If you need to customize the default repository : 
@@ -336,19 +304,6 @@ namespace BIA.Net.Core.Application.Archive
         /// <param name="targetDirectoryPath">Target directory path.</param>
         /// <returns><see cref="Task{bool}"/> that indicates success.</returns>
         protected async Task<bool> SaveItemAsFlatTextCompressedAsync(TEntity item, string targetDirectoryPath);
-
-        /// <summary>
-        /// Run delete step.
-        /// </summary>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task RunDeleteStepAsync();
-
-        /// <summary>
-        /// Delete an entity.
-        /// </summary>
-        /// <param name="item">The entity to delete.</param>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task DeleteItemAsync(TEntity item);
     }
 }
 ```
@@ -357,8 +312,6 @@ Workflow of archive service is following :
    1. `RunArchiveStepAsync()`
       1. `ArchiveItemAsync()` for each items to archive
       2. `SaveItemAsFlatTextCompressedAsync()` for each items to archive
-   2. `RunDeleteStepAsync()` if enabled
-      1. `DeleteItemAsync()` for each items to delete
 
 #### Implementation
 1. Create your implementation of `IArchiveService` for your entity in **MyCompany.MyProject.Application.MyEntity** namespace :
