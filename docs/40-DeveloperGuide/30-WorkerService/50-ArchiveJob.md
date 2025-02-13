@@ -104,8 +104,8 @@ Then, create a new migration to update your table in database :
 
 ### Archive repository
 #### Default
-You don't have to implement anything if you comply with the archive and delete rules from the [How it works](#how-it-works) section.  
-The BIA Frawmeork will automatically associate the corresponding implementation `TGenericArchiveRepository<TEntity, TKey>` of all interfaces `ITGenericArchiveRepository<TEntity, TKey>` when requested by injection in the archive service (see [next chapter](#archive-service)).
+The BIA Frawmeork will automatically associate the corresponding implementation `TGenericArchiveRepository<TEntity, TKey>` of all interfaces `ITGenericArchiveRepository<TEntity, TKey>` when requested by injection in the archive service (see [next chapter](#archive-service)).  
+So, you don't have to implement your own archive repository for your entity.
 
 ``` csharp title="ITGenericArchiveRepository.cs"
 namespace BIA.Net.Core.Domain.RepoContract
@@ -119,10 +119,11 @@ namespace BIA.Net.Core.Domain.RepoContract
         where TEntity : class, IEntityArchivable<TKey>
     {
         /// <summary>
-        /// Return the items to archive.
+        /// Return the items to archive according to the filter rule.
         /// </summary>
+        /// <param name="rule">Filter rule.</param>
         /// <returns><see cref="Task{IReadOnlyList{TEntity}}"/>.</returns>
-        Task<IReadOnlyList<TEntity>> GetItemsToArchiveAsync();
+        Task<IReadOnlyList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> rule);
 
         /// <summary>
         /// Update archive state of an entity.
@@ -146,27 +147,21 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
         where TEntity : class, IEntityArchivable<TKey>
     {
         /// <summary>
-        /// Datacontext.
-        /// </summary>
-        protected readonly IQueryableUnitOfWork dataContext;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TGenericArchiveRepository{TEntity, TKey}"/> class.
         /// </summary>
-        /// <param name="dataContext">The <see cref="IQueryableUnitOfWork"/> context.</param>
-        public TGenericArchiveRepository(IQueryableUnitOfWork dataContext);
-
-        /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<TEntity>> GetItemsToArchiveAsync();
-
-        /// <inheritdoc/>
-        public async Task SetAsArchivedAsync(TEntity entity);
+        /// <param name="context">The <see cref="IQueryableUnitOfWork"/> context.</param>
+        public TGenericArchiveRepository(IQueryableUnitOfWork context);
 
         /// <summary>
-        /// Selector of items to archive.
+        /// The context.
         /// </summary>
-        /// <returns>Selector expression.</returns>
-        protected virtual Expression<Func<TEntity, bool>> ArchiveStepItemsSelector();
+        protected IQueryableUnitOfWork Context { get; }
+
+        /// <inheritdoc/>
+        public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> rule);
+
+        /// <inheritdoc/>
+        public virtual async Task SetAsArchivedAsync(TEntity entity);
 
         /// <summary>
         /// Return all the entities with automatic includes.
@@ -177,15 +172,15 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
 }
 ```
 **NOTES :** 
-- the method `GetItemsToArchiveAsync()` use the combination of `GetAllQuery()` with where clause using `ArchiveStepItemsSelector()` expression
-- the method `GetAllQuery()` returns all the entities with automatic includes :
+- the `GetAllAsync()` method will filter with the given clean rule on the entities requested by the `GetAllQuery()` method 
+- the `GetAllQuery()` method returns all the entities with automatic includes :
   - includes all navigation properties at root level of the entity
   - includes recursively all the navigation properties with cascade delete relationship to the entity
   - use `AsSplitQuery()` ([documentation](https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries))
 - the method `SetAsArchivedAsync()` will set the `IsArchived` property of the entity to `true` and set the `ArchivedDate` to current date time UTC and commit immediatly
   
 #### Custom
-If you need to customize the default repository : 
+If you need to customize the default repository (to customize the includes of `GetAllQuery()` method for example) :
 1. Create your interface that will inherit from `ITGenericArchiveRepository<TEntity, TKey>` in **MyCompany.MyProject.Domain.RepoContract** namespace :
 ``` csharp title="IMyEntityArchiveRepository.cs"
 namespace MyCompany.MyProject.Domain.RepoContract
@@ -219,24 +214,6 @@ namespace MyCompany.MyProject.Infrastructure.Data.Repositories.ArchiveRepositori
 }
 ```
 
-You can now override existing methods and/or add custom methods to your custom repository.
-
-**NOTE :** if you want to combine base items selector with your custom implementation, use the `CombineSelector(Expression<Func<T, bool>> secondSelector)` extension : 
-``` csharp title="MyEntityArchiveRepository.cs"
-namespace MyCompany.MyProject.Infrastructure.Data.Repositories.ArchiveRepositories
-{
-    public class MyEntityArchiveRepository : TGenericArchiveRepository<MyEntity, int>, IMyEntityArchiveRepository
-    {
-        /// <inheritdoc/>
-        protected override Expression<Func<MyEntity, bool>> ArchiveStepItemsSelector()
-        {
-            return base.ArchiveStepItemsSelector()
-              .Include(x => ...) // Add your custom includes
-              .CombineSelector(x => ...); // Combine with your custom selector
-        }
-    }
-}
-```
 ### Archive service
 #### Principles
 The archive service associated to an entity to archive must inherits from `ArchiveServiceBase` :
@@ -252,21 +229,6 @@ namespace BIA.Net.Core.Application.Archive
         where TEntity : class, IEntityArchivable<TKey>
     {
         /// <summary>
-        /// The entity archive configuration.
-        /// </summary>
-        protected readonly ArchiveEntityConfiguration archiveEntityConfiguration;
-
-        /// <summary>
-        /// The entity archive repository.
-        /// </summary>
-        protected readonly ITGenericArchiveRepository<TEntity, TKey> archiveRepository;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        protected readonly ILogger logger;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ArchiveServiceBase{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
@@ -274,8 +236,26 @@ namespace BIA.Net.Core.Application.Archive
         /// <param name="logger">The logger.</param>
         protected ArchiveServiceBase(IConfiguration configuration, ITGenericArchiveRepository<TEntity, TKey> archiveRepository, ILogger logger);
 
-        /// <inheritdoc/>
-        public async Task RunAsync();
+        /// <summary>
+        /// The entity archive configuration.
+        /// </summary>
+        protected ArchiveEntityConfiguration ArchiveEntityConfiguration { get; }
+
+        /// <summary>
+        /// The entity archive repository.
+        /// </summary>
+        protected ITGenericArchiveRepository<TEntity, TKey> ArchiveRepository { get; }
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        protected ILogger Logger { get; }
+
+        /// <summary>
+        /// Run the service.
+        /// </summary>
+        /// <returns><see cref="Task"/>.</returns>
+        public virtual async Task RunAsync();
 
         /// <summary>
         /// Retrive the archive file name template for an entity.
@@ -285,10 +265,10 @@ namespace BIA.Net.Core.Application.Archive
         protected abstract string GetArchiveNameTemplate(TEntity entity);
 
         /// <summary>
-        /// Run archive step.
+        /// The rule to filter the entities to archive.
         /// </summary>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task RunArchiveStepAsync();
+        /// <returns><see cref="Expression"/>.</returns>
+        protected virtual Expression<Func<TEntity, bool>> ArchiveRuleFilter();
 
         /// <summary>
         /// Archive an entity.
@@ -309,9 +289,12 @@ namespace BIA.Net.Core.Application.Archive
 ```
 Workflow of archive service is following : 
 1. `RunAsync()`
-   1. `RunArchiveStepAsync()`
-      1. `ArchiveItemAsync()` for each items to archive
-      2. `SaveItemAsFlatTextCompressedAsync()` for each items to archive
+   1. `ArchiveItemAsync()` for each items to archive
+   2. `SaveItemAsFlatTextCompressedAsync()` for each items to archive
+
+The default archive filter rule is the following : 
+   - Entity is fixed
+   - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 
 #### Implementation
 1. Create your implementation of `IArchiveService` for your entity in **MyCompany.MyProject.Application.MyEntity** namespace :
@@ -347,6 +330,30 @@ public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
     public MyEntityArchiveService(IConfiguration configuration, IMyEntityArchiveRepository archiveRepository, ILogger<MyEntityArchiveService> logger)
         : base(configuration, archiveRepository, logger)
     {
+    }
+}
+```
+If you want to write your own archive filter rule, simply override the method `ArchiveRuleFilter()` :
+``` csharp title="MyEntityArchiveService.cs"
+public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
+{
+    /// <inheritdoc/>
+    protected override Expression<Func<MyEntity, bool>> ArchiveRuleFilter()
+    {
+        return x => ... // implement your filter rule
+    }
+}
+```
+
+Instead, if you want to combine base filter rule with your custom implementation, use the `CombineSelector(Expression<Func<T, bool>> secondSelector)` extension : 
+``` csharp title="MyEntityArchiveService.cs"
+public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
+{
+    /// <inheritdoc/>
+    protected override Expression<Func<MyEntity, bool>> ArchiveRuleFilter()
+    {
+        return base.ArchiveRuleFilter()
+            .CombineSelector(x => ...); // Combine with your custom selector
     }
 }
 ```
