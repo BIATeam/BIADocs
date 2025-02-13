@@ -7,8 +7,8 @@ The archive job is a recurred task created to archive entities from database int
 
 ## How it works 
 1. Archive job is launched from Hangfire Server throught the Worker Service each day at 04:00 AM (GMT+1).
-2. Each injected implementation of `IArchiveService` related to a specific archivable entity (`IEntityArchivable`) of the dabatase will be runned one per one
-3. The items to archive will be selected according to following rules from the related `ITGenericArchiveRepository` of the archive service :
+2. Each injected implementation of `IArchiveService` related to a specific archivable entity `IEntityArchivable` throught an `ITGenericArchiveRepository` will be runned one per one
+3. The items to archive will be selected according to following rules from the related the archive service :
    - Entity is fixed
    - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 4. The selected items are saved into compressed archive file to the target directory one per one : unique file per item, overwritten. Each copy to the target directory is verified by an integrity comparison of checksum.
@@ -71,7 +71,7 @@ In the **WorkerService** project, the settings for the archive job are set into 
   }
 }
 ```
-You must set an `ArchiveEntityConfigurations` for each entity to archive.
+You must set an `ArchiveEntityConfiguration` for each entity to archive.
 
 ## Implementation
 ### Archivable entity
@@ -104,9 +104,11 @@ Then, create a new migration to update your table in database :
 
 ### Archive repository
 #### Default
-The BIA Frawmeork will automatically associate the corresponding implementation `TGenericArchiveRepository<TEntity, TKey>` of all interfaces `ITGenericArchiveRepository<TEntity, TKey>` when requested by injection in the archive service (see [next chapter](#archive-service)).  
-So, you don't have to implement your own archive repository for your entity.
+The BIA Frawmeork will automatically associate the corresponding implementation `TGenericArchiveRepository<TEntity, TKey>` of all interfaces `ITGenericArchiveRepository<TEntity, TKey>` when requested by injection in the archive service (see [next chapter](#archive-service)).
 
+So, you don't have to implement your own archive repository for your entity !  
+
+Here are the description of the interface and the implementation of the default archive repositories : 
 ``` csharp title="ITGenericArchiveRepository.cs"
 namespace BIA.Net.Core.Domain.RepoContract
 {
@@ -172,7 +174,7 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
 }
 ```
 **NOTES :** 
-- the `GetAllAsync()` method will filter with the given clean rule on the entities requested by the `GetAllQuery()` method 
+- the `GetAllAsync()` method will filter with the given rule on the query returned by the `GetAllQuery()` method 
 - the `GetAllQuery()` method returns all the entities with automatic includes :
   - includes all navigation properties at root level of the entity
   - includes recursively all the navigation properties with cascade delete relationship to the entity
@@ -180,7 +182,7 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
 - the method `SetAsArchivedAsync()` will set the `IsArchived` property of the entity to `true` and set the `ArchivedDate` to current date time UTC and commit immediatly
   
 #### Custom
-If you need to customize the default repository (to customize the includes of `GetAllQuery()` method for example) :
+If you need to customize the default repository (to change the includes of `GetAllQuery()` method for example) :
 1. Create your interface that will inherit from `ITGenericArchiveRepository<TEntity, TKey>` in **MyCompany.MyProject.Domain.RepoContract** namespace :
 ``` csharp title="IMyEntityArchiveRepository.cs"
 namespace MyCompany.MyProject.Domain.RepoContract
