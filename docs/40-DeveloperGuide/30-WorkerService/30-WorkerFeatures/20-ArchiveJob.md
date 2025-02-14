@@ -2,13 +2,13 @@
 sidebar_position: 1
 ---
 
-# Archive Job (Worker Feature)
-The archive job is a recurred task created to archive entities from database into flat text on a target directory and then delete them from database.
+# Archive Job
+The archive job is a recurred task created to archive entities from database into flat text on a target directory.
 
 ## How it works 
-1. Archive job is launched from Hangfire Server throught the Worker Service each day at 04:00 AM (GMT+1).
+1. Archive job is launched from Hangfire Server throught the Worker Service according to the CRON settings.
 2. Each injected implementation of `IArchiveService` related to a specific archivable entity `IEntityArchivable` throught an `ITGenericArchiveRepository` will be runned one per one
-3. The items to archive will be selected according to following rules from the related the archive service :
+3. The items to archive will be selected according to following rules from the related archive service :
    - Entity is fixed
    - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 4. The selected items are saved into compressed archive file to the target directory one per one : unique file per item, overwritten. Each copy to the target directory is verified by an integrity comparison of checksum.
@@ -108,7 +108,7 @@ The BIA Frawmeork will automatically associate the corresponding implementation 
 
 So, you don't have to implement your own archive repository for your entity !  
 
-Here are the description of the interface and the implementation of the default archive repositories : 
+Here are the description of the interface and the implementation of the default archive repository : 
 ``` csharp title="ITGenericArchiveRepository.cs"
 namespace BIA.Net.Core.Domain.RepoContract
 {
