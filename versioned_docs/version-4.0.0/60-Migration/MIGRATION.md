@@ -23,4 +23,5 @@ has_children: true
    ```dotnet restore --no-cache```
 4. Follow the detailed steps describe in all files corresponding to your migration.
    * If several steps are passed during the migration apply them successively.
+5. Resolve missing and obsolete usings with BIAToolKit
     
