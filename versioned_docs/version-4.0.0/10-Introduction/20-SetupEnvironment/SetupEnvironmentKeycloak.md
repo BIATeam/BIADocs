@@ -30,7 +30,7 @@ Among the fields requested in the **User** table in database, look at what the *
 
 configure groupldap as follows:
 
-**LDAP Filter**: (&(objectCategory=CN=Group,CN=Schema,CN=Configuration,DC=one,DC=ad)(|(cn=GP_S007_Digital_Perm_ServiceApi_*)(cn=GP_S007_Digital_Role_App_Admin)))
+**LDAP Filter**: (&(objectCategory=CN=Group,CN=Schema,CN=Configuration,DC=your,DC=ad)(|(cn=GROUP_AD_PREFIX_TO_FILTER_*)(cn=GROUP_AD_TO_FILTER)))
 
 ![user-federation-mapper-groupldap](../../Images/Keycloak/user-federation-mapper-groupldap.jpg)
 

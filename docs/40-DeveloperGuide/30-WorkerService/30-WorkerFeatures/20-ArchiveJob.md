@@ -2,21 +2,20 @@
 sidebar_position: 1
 ---
 
-# Archive Job (Worker Feature)
-The archive job is a recurred task created to archive entities from database into flat text on a target directory and then delete them from database.
+# Archive Job
+The archive job is a recurred task created to archive entities from database into flat text on a target directory.
 
 ## How it works 
-1. Archive job is launched from Hangfire Server throught the Worker Service each day at 04:00 AM (GMT+1).
-2. Each injected implementation of `IArchiveService` related to a specific archivable entity (`IEntityArchivable`) of the dabatase will be runned one per one
-3. The items to archive will be selected according to following rules from the related `ITGenericArchiveRepository` of the archive service :
+1. Archive job is launched from Hangfire Server throught the Worker Service according to the CRON settings.
+2. Each injected implementation of `IArchiveService` related to a specific archivable entity `IEntityArchivable` throught an `ITGenericArchiveRepository` will be runned one per one
+3. The items to archive will be selected according to following rules from the related archive service :
    - Entity is fixed
-   - Entity has not been already archived **OR** entity has already been archived and last fixed date has been updated since the last 24 hours
+   - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 4. The selected items are saved into compressed archive file to the target directory one per one : unique file per item, overwritten. Each copy to the target directory is verified by an integrity comparison of checksum.
-5. If enable, the items to delete from database will be only those archived more than last past year
 
 ## Configuration
 ### CRON settings
-In the **DeployDB** project, the CRON settings of the archive job are set into the `appsettings.json` :
+1. In the **DeployDB** project, the CRON settings of the archive job are set into the `appsettings.json` :
 ``` json title="appsettings.json"
 {
   "Tasks": {
@@ -26,7 +25,32 @@ In the **DeployDB** project, the CRON settings of the archive job are set into t
   }
 }
 ```
-Run the **DeployDB** to update your Hangfire settings with this configuration and enable archive job.
+2. In `Program.cs` add the task to the Hangfire service : 
+``` csharp title="Program.cs"
+namespace TheBIADevCompany.BIADemo.DeployDB
+{
+    public static class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            await new HostBuilder()
+                // [...]
+                .ConfigureServices((hostingContext, services) =>
+                {
+                    // [...]
+
+                    services.AddHangfire(config =>
+                    {
+                        // [...]
+                        RecurringJob.AddOrUpdate<ArchiveTask>($"{projectName}.{typeof(ArchiveTask).Name}", t => t.Run(), configuration["Tasks:Archive:CRON"]);
+                    });
+                })
+                // [...]
+        }
+    }
+}
+```
+3. Run the **DeployDB** to update your Hangfire settings with this configuration and enable archive job.
 
 ### Archive job
 In the **WorkerService** project, the settings for the archive job are set into the `bianetconfig.json` :
@@ -39,9 +63,7 @@ In the **WorkerService** project, the settings for the archive job are set into 
         "ArchiveEntityConfigurations": [
           {
             "EntityName": "MyEntity",
-            "TargetDirectoryPath": "C:\\temp\\archives\\myproject\\myentities",
-            "EnableDeleteStep": true,
-            "ArchiveMaxDaysBeforeDelete": 365
+            "TargetDirectoryPath": "C:\\temp\\archives\\myproject\\myentities"
           }
         ]
       }
@@ -49,7 +71,7 @@ In the **WorkerService** project, the settings for the archive job are set into 
   }
 }
 ```
-You must set an `ArchiveEntityConfigurations` for each entity to archive.
+You must set an `ArchiveEntityConfiguration` for each entity to archive.
 
 ## Implementation
 ### Archivable entity
@@ -82,9 +104,11 @@ Then, create a new migration to update your table in database :
 
 ### Archive repository
 #### Default
-You don't have to implement anything if you comply with the archive and delete rules from the [How it works](#how-it-works) section.  
 The BIA Frawmeork will automatically associate the corresponding implementation `TGenericArchiveRepository<TEntity, TKey>` of all interfaces `ITGenericArchiveRepository<TEntity, TKey>` when requested by injection in the archive service (see [next chapter](#archive-service)).
 
+So, you don't have to implement your own archive repository for your entity !  
+
+Here are the description of the interface and the implementation of the default archive repository : 
 ``` csharp title="ITGenericArchiveRepository.cs"
 namespace BIA.Net.Core.Domain.RepoContract
 {
@@ -97,17 +121,11 @@ namespace BIA.Net.Core.Domain.RepoContract
         where TEntity : class, IEntityArchivable<TKey>
     {
         /// <summary>
-        /// Return the items to archive.
+        /// Return the items to archive according to the filter rule.
         /// </summary>
+        /// <param name="rule">Filter rule.</param>
         /// <returns><see cref="Task{IReadOnlyList{TEntity}}"/>.</returns>
-        Task<IReadOnlyList<TEntity>> GetItemsToArchiveAsync();
-
-        /// <summary>
-        /// Return the items to delete.
-        /// </summary>
-        /// <param name="archiveDateMaxDays">The maximum days of archive date of item to delete.</param>
-        /// <returns><see cref="IReadOnlyList{TEntity}"/>.</returns>
-        Task<IReadOnlyList<TEntity>> GetItemsToDeleteAsync(double? archiveDateMaxDays = 365);
+        Task<IReadOnlyList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> rule);
 
         /// <summary>
         /// Update archive state of an entity.
@@ -115,13 +133,6 @@ namespace BIA.Net.Core.Domain.RepoContract
         /// <param name="entity">The entity.</param>
         /// <returns><see cref="Task"/>.</returns>
         Task SetAsArchivedAsync(TEntity entity);
-
-        /// <summary>
-        /// Remove an entity.
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns><see cref="Task"/>.</returns>
-        Task RemoveAsync(TEntity entity);
     }
 }
 ```
@@ -138,40 +149,21 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
         where TEntity : class, IEntityArchivable<TKey>
     {
         /// <summary>
-        /// Datacontext.
-        /// </summary>
-        protected readonly IQueryableUnitOfWork dataContext;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TGenericArchiveRepository{TEntity, TKey}"/> class.
         /// </summary>
-        /// <param name="dataContext">The <see cref="IQueryableUnitOfWork"/> context.</param>
-        public TGenericArchiveRepository(IQueryableUnitOfWork dataContext);
-
-        /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<TEntity>> GetItemsToArchiveAsync();
-
-        /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<TEntity>> GetItemsToDeleteAsync(double? archiveDateMaxDays = 365);
-
-        /// <inheritdoc/>
-        public async Task SetAsArchivedAsync(TEntity entity);
-
-        /// <inheritdoc/>
-        public async Task RemoveAsync(TEntity entity);
+        /// <param name="context">The <see cref="IQueryableUnitOfWork"/> context.</param>
+        public TGenericArchiveRepository(IQueryableUnitOfWork context);
 
         /// <summary>
-        /// Selector of items to archive.
+        /// The context.
         /// </summary>
-        /// <returns>Selector expression.</returns>
-        protected virtual Expression<Func<TEntity, bool>> ArchiveStepItemsSelector();
+        protected IQueryableUnitOfWork Context { get; }
 
-        /// <summary>
-        /// Selector of items to delete.
-        /// </summary>
-        /// <param name="archiveDateMaxDays">The maximum days of archive date of item to select.</param>
-        /// <returns>Selector expression.</returns>
-        protected virtual Expression<Func<TEntity, bool>> DeleteStepItemsSelector(double? archiveDateMaxDays = 365);
+        /// <inheritdoc/>
+        public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> rule);
+
+        /// <inheritdoc/>
+        public virtual async Task SetAsArchivedAsync(TEntity entity);
 
         /// <summary>
         /// Return all the entities with automatic includes.
@@ -182,17 +174,15 @@ namespace BIA.Net.Core.Infrastructure.Data.Repositories
 }
 ```
 **NOTES :** 
-- the method `GetItemsToArchiveAsync()` use the combination of `GetAllQuery()` with where clause using `ArchiveStepItemsSelector()` expression
-- the method `GetItemsToDeleteAsync()` use the combination of `GetAllQuery()` with where clause using `DeleteStepItemsSelector()` expression
-- the method `GetAllQuery()` returns all the entities with automatic includes :
+- the `GetAllAsync()` method will filter with the given rule on the query returned by the `GetAllQuery()` method 
+- the `GetAllQuery()` method returns all the entities with automatic includes :
   - includes all navigation properties at root level of the entity
   - includes recursively all the navigation properties with cascade delete relationship to the entity
   - use `AsSplitQuery()` ([documentation](https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries))
 - the method `SetAsArchivedAsync()` will set the `IsArchived` property of the entity to `true` and set the `ArchivedDate` to current date time UTC and commit immediatly
-- the method `RemoveAsync()` will delete the entity in database and commit immediatly
   
 #### Custom
-If you need to customize the default repository : 
+If you need to customize the default repository (to change the includes of `GetAllQuery()` method for example) :
 1. Create your interface that will inherit from `ITGenericArchiveRepository<TEntity, TKey>` in **MyCompany.MyProject.Domain.RepoContract** namespace :
 ``` csharp title="IMyEntityArchiveRepository.cs"
 namespace MyCompany.MyProject.Domain.RepoContract
@@ -226,24 +216,6 @@ namespace MyCompany.MyProject.Infrastructure.Data.Repositories.ArchiveRepositori
 }
 ```
 
-You can now override existing methods and/or add custom methods to your custom repository.
-
-**NOTE :** if you want to combine base items selector with your custom implementation, use the `CombineSelector(Expression<Func<T, bool>> secondSelector)` extension : 
-``` csharp title="MyEntityArchiveRepository.cs"
-namespace MyCompany.MyProject.Infrastructure.Data.Repositories.ArchiveRepositories
-{
-    public class MyEntityArchiveRepository : TGenericArchiveRepository<MyEntity, int>, IMyEntityArchiveRepository
-    {
-        /// <inheritdoc/>
-        protected override Expression<Func<MyEntity, bool>> ArchiveStepItemsSelector()
-        {
-            return base.ArchiveStepItemsSelector()
-              .Include(x => ...) // Add your custom includes
-              .CombineSelector(x => ...); // Combine with your custom selector
-        }
-    }
-}
-```
 ### Archive service
 #### Principles
 The archive service associated to an entity to archive must inherits from `ArchiveServiceBase` :
@@ -259,21 +231,6 @@ namespace BIA.Net.Core.Application.Archive
         where TEntity : class, IEntityArchivable<TKey>
     {
         /// <summary>
-        /// The entity archive configuration.
-        /// </summary>
-        protected readonly ArchiveEntityConfiguration archiveEntityConfiguration;
-
-        /// <summary>
-        /// The entity archive repository.
-        /// </summary>
-        protected readonly ITGenericArchiveRepository<TEntity, TKey> archiveRepository;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        protected readonly ILogger logger;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ArchiveServiceBase{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="configuration">The configuration.</param>
@@ -281,8 +238,26 @@ namespace BIA.Net.Core.Application.Archive
         /// <param name="logger">The logger.</param>
         protected ArchiveServiceBase(IConfiguration configuration, ITGenericArchiveRepository<TEntity, TKey> archiveRepository, ILogger logger);
 
-        /// <inheritdoc/>
-        public async Task RunAsync();
+        /// <summary>
+        /// The entity archive configuration.
+        /// </summary>
+        protected ArchiveEntityConfiguration ArchiveEntityConfiguration { get; }
+
+        /// <summary>
+        /// The entity archive repository.
+        /// </summary>
+        protected ITGenericArchiveRepository<TEntity, TKey> ArchiveRepository { get; }
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        protected ILogger Logger { get; }
+
+        /// <summary>
+        /// Run the service.
+        /// </summary>
+        /// <returns><see cref="Task"/>.</returns>
+        public virtual async Task RunAsync();
 
         /// <summary>
         /// Retrive the archive file name template for an entity.
@@ -292,10 +267,10 @@ namespace BIA.Net.Core.Application.Archive
         protected abstract string GetArchiveNameTemplate(TEntity entity);
 
         /// <summary>
-        /// Run archive step.
+        /// The rule to filter the entities to archive.
         /// </summary>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task RunArchiveStepAsync();
+        /// <returns><see cref="Expression"/>.</returns>
+        protected virtual Expression<Func<TEntity, bool>> ArchiveRuleFilter();
 
         /// <summary>
         /// Archive an entity.
@@ -311,29 +286,17 @@ namespace BIA.Net.Core.Application.Archive
         /// <param name="targetDirectoryPath">Target directory path.</param>
         /// <returns><see cref="Task{bool}"/> that indicates success.</returns>
         protected async Task<bool> SaveItemAsFlatTextCompressedAsync(TEntity item, string targetDirectoryPath);
-
-        /// <summary>
-        /// Run delete step.
-        /// </summary>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task RunDeleteStepAsync();
-
-        /// <summary>
-        /// Delete an entity.
-        /// </summary>
-        /// <param name="item">The entity to delete.</param>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task DeleteItemAsync(TEntity item);
     }
 }
 ```
 Workflow of archive service is following : 
 1. `RunAsync()`
-   1. `RunArchiveStepAsync()`
-      1. `ArchiveItemAsync()` for each items to archive
-      2. `SaveItemAsFlatTextCompressedAsync()` for each items to archive
-   2. `RunDeleteStepAsync()` if enabled
-      1. `DeleteItemAsync()` for each items to delete
+   1. `ArchiveItemAsync()` for each items to archive
+   2. `SaveItemAsFlatTextCompressedAsync()` for each items to archive
+
+The default archive filter rule is the following : 
+   - Entity is fixed
+   - Entity has not been already archived **OR** entity has already been archived and last fixed date is superior than archived date
 
 #### Implementation
 1. Create your implementation of `IArchiveService` for your entity in **MyCompany.MyProject.Application.MyEntity** namespace :
@@ -369,6 +332,30 @@ public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
     public MyEntityArchiveService(IConfiguration configuration, IMyEntityArchiveRepository archiveRepository, ILogger<MyEntityArchiveService> logger)
         : base(configuration, archiveRepository, logger)
     {
+    }
+}
+```
+If you want to write your own archive filter rule, simply override the method `ArchiveRuleFilter()` :
+``` csharp title="MyEntityArchiveService.cs"
+public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
+{
+    /// <inheritdoc/>
+    protected override Expression<Func<MyEntity, bool>> ArchiveRuleFilter()
+    {
+        return x => ... // implement your filter rule
+    }
+}
+```
+
+Instead, if you want to combine base filter rule with your custom implementation, use the `CombineSelector(Expression<Func<T, bool>> secondSelector)` extension : 
+``` csharp title="MyEntityArchiveService.cs"
+public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
+{
+    /// <inheritdoc/>
+    protected override Expression<Func<MyEntity, bool>> ArchiveRuleFilter()
+    {
+        return base.ArchiveRuleFilter()
+            .CombineSelector(x => ...); // Combine with your custom selector
     }
 }
 ```

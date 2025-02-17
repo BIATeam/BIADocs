@@ -249,7 +249,7 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp '\bBiaClassicLayoutService\b
 
 # BEGIN - Replacements after reorganize layers DotNet
 ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bFilteredServiceBase\b' -NewRegexp 'OperationalDomainServiceBase' -Include *.cs
-ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bAppServiceBase\b"' -NewRegexp 'DomainServiceBase' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bAppServiceBase\b' -NewRegexp 'DomainServiceBase' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp '(?ms)#if\s+UseHubForClientInContact\s+using\s+BIA\.Net\.Core\.Domain\.RepoContract;\s+#endif' -NewRegexp '' -Include *.cs
 RemoveIFilteredServiceBase
 ReplaceIClientForHubRepository

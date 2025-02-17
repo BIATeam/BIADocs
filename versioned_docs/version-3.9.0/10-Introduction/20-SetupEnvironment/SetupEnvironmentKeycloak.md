@@ -14,7 +14,13 @@ Never modify the **Master** realm.
 Create a new **Realm**, for example **BIA-Realm**
 
 ## User federation
-Create a new **User federation**, configure it and check that everything is ok with the buttons **Test connection** and **Test authentication**
+Create a new **User federation**, configure it, example:
+
+![LDAP-Connection-authentication-settings](../../Images/Keycloak/LDAP-Connection-authentication-settings.jpg)
+
+![LDAP-searching-updating](../../Images/Keycloak/LDAP-searching-updating.jpg)
+
+And check that everything is ok with the buttons **Test connection** and **Test authentication**
 
 ![check-ldap-success](../../Images/Keycloak/check-ldap-success.jpg)
 
@@ -22,11 +28,16 @@ Among the fields requested in the **User** table in database, look at what the *
 
 ![user-federation-mapper](../../Images/Keycloak/user-federation-mapper.jpg)
 
-For **Groups**, don't forget to fill the field **LDAP Groups DN**. For example: ***OU=Roles,OU=Groups,OU=DM,OU=Service,OU=XXXXXX,DC=eu,DC=xxxxxx,DC=xxxxxx***
+configure groupldap as follows:
+
+**LDAP Filter**: (&(objectCategory=CN=Group,CN=Schema,CN=Configuration,DC=your,DC=ad)(|(cn=GROUP_AD_PREFIX_TO_FILTER_*)(cn=GROUP_AD_TO_FILTER)))
+
+![user-federation-mapper-groupldap](../../Images/Keycloak/user-federation-mapper-groupldap.jpg)
+
 
 At the top right, select from the list, **Sync all users**
 
-![user-federation-mapper](../../Images/Keycloak/sync-all-user.jpg)
+![sync-all-user](../../Images/Keycloak/sync-all-user.jpg)
 
 ## Client
 Create a new client, for example, biaapp and fill **Root URL** and **Admin URL** with the root of your applications' URLs (example: https://myapp-int.mydomain/)
@@ -39,35 +50,11 @@ Go to the tab **Client scopes** and click on the link **biaapp-dedicated** conta
 
  ![dedicated-mappers-userName](../../Images/Keycloak/dedicated-mappers-userName.jpg)
 
- ![dedicated-mappers-lastName](../../Images/Keycloak/dedicated-mappers-lastName.jpg)
-
- ![dedicated-mappers-emailName](../../Images/Keycloak/dedicated-mappers-email.jpg)
-
- ![dedicated-mappers-countryName](../../Images/Keycloak/dedicated-mappers-country.jpg)
-
- ![dedicated-mappers-firstName](../../Images/Keycloak/dedicated-mappers-firstName.jpg)
-
- ![dedicated-mappers-distinguishedName](../../Images/Keycloak/dedicated-mappers-distinguishedName.jpg)
-
  ![dedicated-mappers-groups](../../Images/Keycloak/dedicated-mappers-groups.jpg)
 
- ![dedicated-mappers-realm-roles](../../Images/Keycloak/dedicated-mappers-realm-roles.jpg)
+ ![dedicated-mappers-audience](../../Images/Keycloak/dedicated-mappers-audience.jpg)
 
- ## Role client
-  
- Go to **Realm Roles**, create the role **bia-app-admin** and **bia-app-user-manager**.
-  
- ## Group
- 
-Go to **Groups**, create the group **APP_Admin** and the group **APP_BIADemo_UserManager**
-
-Click on the group **APP_Admin** and map the role **bia-app-admin**
-
-Click on the group **APP_BIADemo_UserManager** and map the role **bia-app-user-manager**
-
-For group **APP_Admin** and **APP_BIADemo_UserManager**, click on **Members** tab and add users.
-
-## Service Account
+ ## Service Account
 
 You must create a user in Keycloak which will be used to query the list of users in your realm.
 

@@ -30,7 +30,7 @@ Among the fields requested in the **User** table in database, look at what the *
 
 configure groupldap as follows:
 
-**LDAP Filter**: (&(objectCategory=CN=Group,CN=Schema,CN=Configuration,DC=one,DC=ad)(|(cn=GP_S007_Digital_Perm_ServiceApi_*)(cn=GP_S007_Digital_Role_App_Admin)))
+**LDAP Filter**: (&(objectCategory=CN=Group,CN=Schema,CN=Configuration,DC=your,DC=ad)(|(cn=GROUP_AD_PREFIX_TO_FILTER_*)(cn=GROUP_AD_TO_FILTER)))
 
 ![user-federation-mapper-groupldap](../../Images/Keycloak/user-federation-mapper-groupldap.jpg)
 
@@ -67,3 +67,24 @@ Select **Filter by clients** and select the following roles:
 - **realm-management** query-users
 - **realm-management** view-users
 
+# Simplify Authentication flow
+
+## Remove “Update Account Information” form after first login
+To remove “Update Account Information” form after first login
+ ![update account information](../../Images/Keycloak/UpdateAccountInformation.png)
+
+In Keycloak interface > menu "Realm settings" > tab "User profile" > edit the 3 field (email, firstName, lastName)
+and switch Required field to off. 
+
+ ![email setting](../../Images/Keycloak/emailSettings.JPG)
+
+
+
+## Remove the step "Review Profile"
+To remove the step that propose to review the profile when account already exist
+ ![step Review Profile](../../Images/Keycloak/ReviewProfile.jpg)
+
+In Keycloak interface > menu "Authentication" > tab "Flow" > click on "first broker login"
+
+Change the requirement of "Confirm link existing account" to "Disabled"
+ ![authentication flow](../../Images/Keycloak/AuthFlow.jpg)
