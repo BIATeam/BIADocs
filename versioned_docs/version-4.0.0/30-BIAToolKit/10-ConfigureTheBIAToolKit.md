@@ -8,7 +8,7 @@ This document explains how to configure the BIA tool kit, to be ready to apply t
 ![BIAToolKitConfig](../Images/BIAToolKit/Config.PNG)
 
 ## Get the BIAToolKit
-Take the last version of the BIAToolKit from [release](https://github.com/BIATeam/BIAToolKit/releases) or from your company ClickOnce folder if you have one. 
+Take the last version of the BIAToolKit from [release](https://github.com/BIATeam/BIAToolKit/releases) or from your company folder if you have one. 
 
 ## Configure your BIA Template repository
 In the first tab, in the upper left corner, chose if you want to use a local folder to synchronize it.

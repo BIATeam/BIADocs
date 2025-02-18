@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Database Handler (Worker Feature)
+# Database Handler
 This file explains what to use the the database handler feature in your V3 project.
 
 ## Introduction
