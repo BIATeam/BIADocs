@@ -98,6 +98,7 @@ export const myEmbeddedItemCRUDConfiguration: CrudConfig = new CrudConfig({
         <app-my-embedded-item-table
           [elements]="displayedMyEmbeddedItems()"
           [configuration]="myEmbeddedItemCrudConfig"
+          [columnToDisplays]="myEmbeddedItemColumnsToDisplay"
           [dictOptionDtos]="[]"
           [totalRecord]="crudItem?.myEmbeddedItems?.length ?? 0"
           [paginator]="false"
@@ -116,20 +117,30 @@ export const myEmbeddedItemCRUDConfiguration: CrudConfig = new CrudConfig({
 7) Create the properties and functions to manage your embedded items in MyItemFormComponent :
 ```typescript
 export class MyItemFormComponent extends CrudItemFormComponent<MyItem> {
+  @ViewChild(MyEmbeddedItemTableComponent) myEmbeddedItemTableComponent: MyEmbeddedItemTableComponent;
+
   myEmbeddedItemCrudConfig: BiaFieldsConfig = myEmbeddedItemCRUDConfiguration.fieldsConfig;
+  myEmbeddedItemColumnsToDisplay: KeyValuePair[];
   newId: number = CrudHelperService.NewIdStartingValue;
-  displayedEngines: WritableSignal<MyEmbeddedItem[]> = signal([]);
+  displayedMyEmbeddedItems: WritableSignal<MyEmbeddedItem[]> = signal([]);
+
+  constructor() {
+    super();
+    this.myEmbeddedItemColumnsToDisplay = this.myEmbeddedItemCrudConfig.columns
+      .filter(col => !col.isHideByDefault)
+      .map(col => <KeyValuePair>{ key: col.field, value: col.header });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.crudItem) {
-      this.setDisplayedEngines();
+      this.setDisplayedMyEmbeddedItems();
     }
   }
 
-  setDisplayedEngines() {
-    this.displayedEngines.update(() =>
-      this.crudItem?.engines
-        ? this.crudItem.engines.filter(e => e.dtoState !== DtoState.Deleted)
+  setDisplayedMyEmbeddedItems() {
+    this.displayedMyEmbeddedItems.update(() =>
+      this.crudItem?.myEmbeddedItems
+        ? this.crudItem.myEmbeddedItems.filter(e => e.dtoState !== DtoState.Deleted)
         : []
     );
   }
@@ -145,12 +156,24 @@ export class MyItemFormComponent extends CrudItemFormComponent<MyItem> {
       this.crudItem.myEmbeddedItems,
       this.newId
     );
-    this.setDisplayedEngines();
+    this.setDisplayedMyEmbeddedItems();
+    this.myEmbeddedItemTableComponent.resetEditableRow();
   }
 
   onDeleteMyEmbeddedItems() {
     this.selectedMyEmbeddedItems.forEach(e => (e.dtoState = DtoState.Deleted));
-    this.setDisplayedEngines();
+    this.setDisplayedMyEmbeddedItems();
+  }
+
+   onSave(crudItem: MyItem) {
+    if (this.myEmbeddedItemTableComponent.isInEditing) {
+      setTimeout(() => {
+        this.onSave(crudItem);
+      }, 100);
+    } else {
+      crudItem.myEmbeddedItems = this.crudItem?.myEmbeddedItems ?? [];
+      this.save.emit(crudItem);
+    }
   }
 }
 ```
