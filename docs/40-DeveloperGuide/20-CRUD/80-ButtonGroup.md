@@ -61,7 +61,9 @@ Inside your HTML component, use the `BiaButtonGroupComponent` :
 - `compact` : force the group to be displayed under a burger button. Default value is `false`
 - `autoCompact` : display by default all the buttons on the same line, will automatically group the buttons under a burger button depending of the available space between the group container and the next or previous sibling element. Default value is `true`
 
-**NOTE :** when `compact` is `true`, `autoCompact` will be always `false`
+**NOTE :** 
+- when `compact` is `true`, `autoCompact` will be always `false`
+- event with `autoCompact` at `false`, the buttons will be grouped under the burger button if the screen size is smaller enought to trigger the passage to mobile mode
 
 **Example** :  
 ![ButtonGoupNotGroup](../../Images/ButtonGroup_NotGroup.png)
@@ -69,10 +71,10 @@ Inside your HTML component, use the `BiaButtonGroupComponent` :
 - ![](https://img.shields.io/static/v1?label=&message=red%20container&color=red) : container that contains the button group component
 - ![](https://img.shields.io/static/v1?label=&message=green%20container&color=green) : next sibling container of the button group container
 
-If the ![](https://img.shields.io/static/v1?label=&message=green%20container&color=green) crops on the ![](https://img.shields.io/static/v1?label=&message=red%20container&color=red), the `BiaButtonGroupComponent` will automatically group the button under the burger button :  
+If the ![](https://img.shields.io/static/v1?label=&message=green%20container&color=green) crops on the ![](https://img.shields.io/static/v1?label=&message=red%20container&color=red), or the screen width triggers the mobile mode, the `BiaButtonGroupComponent` will automatically group the button under the burger button :  
 ![ButtonGroup](../../Images/ButtonGroup_Group.png)
 
-The buttons will return to their intial display format on the same line if the space between the ![](https://img.shields.io/static/v1?label=&message=green%20container&color=green) and ![](https://img.shields.io/static/v1?label=&message=red%20container&color=red), including the total width of the buttons, is enough.
+The buttons will return to their intial display format on the same line if mobile mode is not triggered and the space between the ![](https://img.shields.io/static/v1?label=&message=green%20container&color=green) and ![](https://img.shields.io/static/v1?label=&message=red%20container&color=red), including the total width of the buttons, is enough.
 
 
 
