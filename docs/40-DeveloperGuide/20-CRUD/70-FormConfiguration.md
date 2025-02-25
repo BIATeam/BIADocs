@@ -23,29 +23,29 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
 
 ### Configuration
 You must add all your fields to display into the `columns` property of the `BiaFieldsConfig<TDto>`.  
-Each column item must be a `BiaFieldConfig<TDto>`, where you will configure for each field : 
-- The feature's property to bind with
-- The header name of your feature's property when displayed into a table
-- The type of the input (**Date | DateTime | Time | TimeOnly | TimeSecOnly | Number | Boolean | String | OneToMany | ManyToMany**)
-- The filter mode when displayed into a table
-- The searchable mode (**true | false**)
-- The sortable mode (**true | false**) 
-- The icon displayed beside the header name when displayed into a table
-- The editable mode (**true | false**)
-- The only initializable mode (**true | false**)
-- The only updatable mode (**true | false**)
-- The editable choice mode (**true | false**)
-- The visibility mode (**true | false**)
-- The hide by default mode (**true | false**)
-- The maximum lenght setting when input is a string
-- The required mode (**true | false**)
-- The specific output mode (**true | false**)
-- The specific input mode (**true | false**)
-- The set of validators to apply to the input
-- The minimum width when displayed into a table
-- The frozen mode (**true | false**)
-- The frozen alignement
-- The display format
+Each column item must be a `BiaFieldConfig<TDto>`, where you will configure for each field :
+- **`field`** : feature's property name to bind with *(mandatory in constructor)*
+- **`header`** : header name of your feature's property when displayed into a table *(mandatory in constructor)*
+- `type` : type of the input (`Date` | `DateTime` | `Time` | `TimeOnly` | `TimeSecOnly` | `Number` | `Boolean` | `String` | `OneToMany` | `ManyToMany`)
+- `filterMode` : filter mode when displayed into a table
+- `isSearchable` : searchable mode (`true` | `false`)
+- `isSortable` : sortable mode (`true` | `false`) 
+- `icon` : icon displayed beside the header name when displayed into a table
+- `isEditable` : editable mode (`true` | `false`)
+- `isOnlyInitializable` : only initializable mode (`true` | `false`)
+- `isOnlyUpdatable` : only updatable mode (`true` | `false`)
+- `isEditableChoice` : editable choice mode (`true` | `false`)
+- `isVisible` : visibility mode (`true` | `false`)
+- `isHideByDefault` : hide by default mode (`true` | `false`)
+- `maxlength` : maximum lenght setting when input is a string
+- `isRequired` : required mode (`true` | `false`)
+- `specificOutput` : specific output mode (`true` | `false`)
+- `specificInput` : specific input mode (`true` | `false`)
+- `validators` : set of validators to apply to the input
+- `minWidth` : minimum width when displayed into a table
+- `isFrozen` : frozen mode (`true` | `false`)
+- `alignFrozen` : frozen alignement
+- `displayFormat` : display format
 
 Example : 
 ``` typescript title="feature.ts"
@@ -77,6 +77,9 @@ The class `BiaFormLayoutConfig<TDto>` is the container of your form layout confi
 These items can be :
 1. `BiaFormLayoutConfigRow<TDto>` : a row that will contains a set of `BiaFormLayoutConfigColumns<TDto>` which represents each a field of one of your feature's property
 2. `BiaFormLayoutConfigGroup<TDto>` : a group of `BiaFormLayoutConfigRow<TDto>` under a title  
+
+When declaring a `BiaFormLayoutConfigColumns<TDto>`, you can set a column size according to the principle of columns contained into a grid. This column size must be set **between 1 and 12 to be valid**.  
+The column without specified column size are managed by the `BiaFormLayoutConfigRow<TDto>` that calculate the ideal column size depending both on the remaining column size and the columns count into the row.
 
 **NOTE :** all the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
 
@@ -115,9 +118,12 @@ export const featureFormConfiguration: BiaFormLayoutConfig<Feature> = new BiaFor
   new BiaFormLayoutConfigRow([
     // Define the columns of the row
     new BiaFormLayoutConfigColumn('syncTime'),
-    new BiaFormLayoutConfigColumn('syncFlightDataTime'),
+    // Define a column with a sepcific size
+    new BiaFormLayoutConfigColumn('syncFlightDataTime', 6),
     new BiaFormLayoutConfigColumn('capacity'),
   ]),
+  // Define a row with a single column with a specific size
+  new BiaFormLayoutConfigRow([new BiaFormLayoutConfigColumn('syncTime', 3)]),
 ]);
 ```
 
