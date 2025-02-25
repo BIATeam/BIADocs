@@ -34,6 +34,8 @@ export class MyFeatureService extends CrudItemService<MyFeature> {
 }
 ```
 
+**Now, each time a user will have an error when validating a form inside a popup or an editable row with calc mode, the form will stay opened.**
+
 ## Inform user of conflict
 Sometimes, the data opened for edit in the form can be changed by another user at the same time. You can handle these changes directly in your form to inform your user of this conflict.
 ### Back
