@@ -13,6 +13,27 @@ Never modify the **Master** realm.
 
 Create a new **Realm**, for example **BIA-Realm**
 
+ ## Service Account
+
+You must create a user in Keycloak which will be used to query the list of users in your realm.
+
+In your realm, go to the **User** tab and create a user. Once created, create a non-temporary password.
+
+Go to the **Role Mapping** tab and click on **Assign Role**
+
+Select **Filter by clients** and select the following roles:
+
+- **realm-management** query-users
+- **realm-management** view-users
+
+If you want to keep eMail, first name and last name as mandatory field for all user, complete them with dummy data for this user.
+Else you can disable the mandatory on this fields : see chapter in this page "Simplify Authentication flow" > "Remove “Update Account Information” form after first login"
+
+
+If you use the sample configuration file (bianetconfig.Example_Development.json) :
+- This user should be parameter in your vault with the key BIA:KeycloakSearchUserAccount 
+- Or in the environment variables : KC_SA_USERNAME and KC_SA_PASSWORD (it need to comment the line "VaultCredentialsKey": "BIA:KeycloakSearchUserAccount",)
+
 ## Client
 Create a new client, for example, biaapp and fill **Root URL** and **Admin URL** with the root of your applications' URLs (example: https://myapp-int.mydomain/ or for development: http://localhost:4200/)
  ![createClient1](../../Images/Keycloak/createClient1.png)
@@ -64,19 +85,6 @@ configure groupldap as follows:
 At the top right, select from the list, **Sync all users**
 
 ![sync-all-user](../../Images/Keycloak/sync-all-user.jpg)
-
- ## Service Account
-
-You must create a user in Keycloak which will be used to query the list of users in your realm.
-
-In your realm, go to the **User** tab and create a user. Once created, create a non-temporary password.
-
-Go to the **Role Mapping** tab and click on **Assign Role**
-
-Select **Filter by clients** and select the following roles:
-
-- **realm-management** query-users
-- **realm-management** view-users
 
 # Simplify Authentication flow
 
