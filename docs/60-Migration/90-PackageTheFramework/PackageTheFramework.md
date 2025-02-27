@@ -80,9 +80,16 @@ sidebar_position: 1
 
 ## Publish BIAPackage
 - Redact the change log of the new version
-- If everything is ok Publish the packages by connectiong on nuget.org and use the change log in the comments of each package. You will need an account with authorization on the packages repository.
+- If everything is ok Publish the packages by connection on nuget.org and use the change log in the comments of each package. You will need an account with authorization on the packages repository.
 - Wait the confirmation by mail of all packages
-- COMMIT BIADemo, BIACompanyFiles and BIATemplate
+- Use GitFlow extension in VSCode to release the project BIADemo, BIACompanyFiles and BIATemplate use the version name like (V4.0.0)
+
+## Publish the documentation: 
+- On project BIADoc run the command:
+```
+npm run docusaurus docs:version 4.0.0
+```
+- Use GitFlow extension in VSCode to release the project BIADoc.
 
 ## ONLY FOR LATEST VERSION (ie : not for patch) - Publish the demo site:
 - Launch in the terminal of VSCode in **...BIADemo\Angular** folder:
@@ -91,7 +98,7 @@ npm run deploy
 ```
 
 ## Deliver the version
-- Create a release of the version in the 3 repository BIADocs, BIADemo and BIATemplate
+- On the GitHub webSite. Create a release of the version in the 3 repository BIADocs, BIADemo and BIATemplate
 - Post message for developers, to inform that a new version is available.
 
 ## Prepare Migration
