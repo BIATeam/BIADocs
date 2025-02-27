@@ -72,62 +72,150 @@ export const featureFieldsConfiguration: BiaFieldsConfig<Feature> = {
 
 ## Form layout
 ### Principles 
-The class `BiaFormLayoutConfig<TDto>` is the container of your form layout configuration. Each items of this class will represent a configuration to customize the disposition of your inputs into the form. 
+#### Hierarchy
+The class `BiaFormLayoutConfig<TDto>` is the container of your form layout configuration. Each items of this class will represent a configuration to customize the disposition of your inputs into the form, where `TDto` represents your feature model.
 
 These items can be :
-1. `BiaFormLayoutConfigRow<TDto>` : a row that will contains a set of `BiaFormLayoutConfigColumns<TDto>` which represents each a field of one of your feature's property
-2. `BiaFormLayoutConfigGroup<TDto>` : a group of `BiaFormLayoutConfigRow<TDto>` under a title  
+- `BiaFormLayoutConfigRow<TDto>` : a row that will contains a set of `BiaFormLayoutConfigColumn<TDto>` 
+- `BiaFormLayoutConfigGroup<TDto>` : a group of `BiaFormLayoutConfigRow<TDto>` under a title (title must refer to a traductible resource) 
 
-When declaring a `BiaFormLayoutConfigColumns<TDto>`, you can set a column size according to the principle of columns contained into a grid. This column size must be set **between 1 and 12 to be valid**.  
-The column without specified column size are managed by the `BiaFormLayoutConfigRow<TDto>` that calculate the ideal column size depending both on the remaining column size and the columns count into the row.
+``` typescript
+// Config
+new BiaFormLayoutConfig<Feature>([
+  // First row
+  new BiaFormLayoutConfigRow([]),
+  // Second row, wich is a group
+  new BiaFormLayoutConfigGroup('feature.groupTitle', [
+    // First row of the group
+    new BiaFormLayoutConfigRow([]),
+    // Second row of the group
+    new BiaFormLayoutConfigRow([]),
+  ]),
+])
+```
 
+A `BiaFormLayoutConfigColumn<TDto>` element can be both : 
+- `BiaFormLayoutConfigField<TDto>` which represents a field of one of your feature's property
+- `BiaFormLayoutConfigGroup<TDto>` so you can set in a column a new group of fields
+
+``` typescript
+// Config
+new BiaFormLayoutConfig<Feature>([
+  // First row
+  new BiaFormLayoutConfigRow([
+    // First column, which is a field
+    new BiaFormLayoutConfigField('field1'),
+    // Second column, which is a group
+    new BiaFormLayoutConfigGroup('feature.groupTitle', [
+      // First row of the group
+      new BiaFormLayoutConfigRow([
+        // First column, which is a field
+        new BiaFormLayoutConfigField('field2')
+        // Second column, which is a field
+        new BiaFormLayoutConfigField('field3')
+      ]),
+    ]),
+  ]),
+])
+```
 **NOTE :** all the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
+
+#### Responsive design
+When declaring a `BiaFormLayoutConfigField<TDto>` or a `BiaFormLayoutConfigGroup<TDto>`, you can set the column size of these elements by :
+- setting only the `lgSize` which represents the column size for large screen (>= 992px) :
+  ``` typescript
+  new BiaFormLayoutConfigGroup<Feature>('Group', groupRows, 2)
+  new BiaFormLayoutConfigField<Feature>('field', 2)
+  ```
+  The `lgSize` must be set **between 1 and 12** to be valid.  
+  The mobile first column size (< 576px) will be always **12**.  
+
+  The `md` and `sm` sizes will be automatically calculate according to the following ratio table :  
+
+  | lg (>= 992px) | md (>= 768px) | sm (>= 576px)  |
+  |------------|------------------|---------------|
+  | 1          | 1                | 2             |
+  | 2          | 3                | 4             |
+  | 3          | 4                | 6             |
+  | 4          | 6                | 8             |
+  | 5          | 7                | 10            |
+  | 6          | 9                | 12            |
+  | 7          | 10               | 12            |
+  | 8          | 12               | 12            |
+  | 9          | 12               | 12            |
+  | 10         | 12               | 12            |
+  | 11         | 12               | 12            |
+  | 12         | 12               | 12            |
+- setting all the size breakpoints (`lg`, `md`, `sm` and `mobileFirst`) inside a `BiaFormLayoutConfigColumnSize` class :
+  ``` typescript
+  new BiaFormLayoutConfigGroup<Feature>('Group', groupRows, new BiaFormLayoutConfigColumnSize(6, 6, 6, 6))
+  new BiaFormLayoutConfigField<Feature>('field', new BiaFormLayoutConfigColumnSize(6, 6, 6, 6))
+  ```
+
+**NOTE :** if you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column sizeleft by the columns with a custom size, and the total columns count into the row.
 
 ### Configuration
 1. In front-end, open the model of your feature
 2. Complete or add the `BiaFormLayoutConfig<TDto>` definition with your form configuration
 3. Add the groups, rows and columns by required order of display
 
-Example : 
+Full example : 
 ``` typescript title="feature.ts"
 export const featureFormConfiguration: BiaFormLayoutConfig<Feature> = new BiaFormLayoutConfig([
-  // Define a group
-  new BiaFormLayoutConfigGroup('Identification', [
-    // Define a row inside the group
-    new BiaFormLayoutConfigRow([
-      // Define the columns of the row
-      new BiaFormLayoutConfigColumn('msn'),
-      new BiaFormLayoutConfigColumn('manufacturer'),
-    ]),
-  ]),
-  new BiaFormLayoutConfigGroup('Status', [
-    new BiaFormLayoutConfigRow([
-      new BiaFormLayoutConfigColumn('isActive'),
-      new BiaFormLayoutConfigColumn('isMaintenance'),
-    ]),
-  ]),
-  new BiaFormLayoutConfigGroup('Tracking', [
-    new BiaFormLayoutConfigRow([
-      new BiaFormLayoutConfigColumn('deliveryDate'),
-      new BiaFormLayoutConfigColumn('firstFlightDate'),
-      new BiaFormLayoutConfigColumn('lastFlightDate'),
-      new BiaFormLayoutConfigColumn('nextMaintenanceDate'),
-    ]),
-  ]),
-  // Define a row
+  // First row with two groups
   new BiaFormLayoutConfigRow([
-    // Define the columns of the row
-    new BiaFormLayoutConfigColumn('syncTime'),
-    // Define a column with a sepcific size
-    new BiaFormLayoutConfigColumn('syncFlightDataTime', 6),
-    new BiaFormLayoutConfigColumn('capacity'),
+    // First group with single row
+    new BiaFormLayoutConfigGroup('feature.groupIdentification', [
+      // Row with two fields
+      new BiaFormLayoutConfigRow([
+        new BiaFormLayoutConfigField('msn'),
+        new BiaFormLayoutConfigField('manufacturer'),
+      ]),
+    ]),
+
+    // Second group with single row
+    new BiaFormLayoutConfigGroup('feature.groupStatus', [
+      // Row with two fields with custom column lg size
+      new BiaFormLayoutConfigRow([
+        new BiaFormLayoutConfigField('isActive', 2),
+        new BiaFormLayoutConfigField('isMaintenance', 2),
+      ]),
+    ]),
   ]),
-  // Define a row with a single column with a specific size
-  new BiaFormLayoutConfigRow([new BiaFormLayoutConfigColumn('syncTime', 3)]),
+
+  // Second row with single group with two rows
+  new BiaFormLayoutConfigGroup('feature.groupTracking', [
+    // First row with four fields
+    new BiaFormLayoutConfigRow([
+      new BiaFormLayoutConfigField('deliveryDate'),
+      new BiaFormLayoutConfigField('firstFlightDate'),
+      new BiaFormLayoutConfigField('lastFlightDate'),
+      new BiaFormLayoutConfigField('nextMaintenanceDate'),
+    ]),
+    //Second row with single field
+    new BiaFormLayoutConfigRow([
+      new BiaFormLayoutConfigField('syncFlightDataTime'),
+      new BiaFormLayoutConfigField('syncTime'),
+    ]),
+  ]),
+
+  // Third row with single field with full custom column sizes
+  new BiaFormLayoutConfigRow([
+    new BiaFormLayoutConfigField(
+      'motorsCount',
+      new BiaFormLayoutConfigColumnSize(6, 6, 6, 6)
+    ),
+  ]),
+
+  // Fourth row with two fields
+  new BiaFormLayoutConfigRow([
+    new BiaFormLayoutConfigField('probability'),
+    new BiaFormLayoutConfigField('capacity'),
+  ]),
 ]);
 ```
 
-The framework will automatically generate the form according to the `BiaFormLayoutConfig` :
+The framework will automatically generate the form like this :
 ![FormConfiguration](../../Images/FormConfiguration.png)
 
 **NOTE :** all the remaining fields declared into the `BiaFieldsConfig` will be displayed after the fields handled into the `BiaFormLayoutConfig`.
@@ -138,6 +226,7 @@ Into your feature constants declaration, add the definition of the `formLayoutCo
 export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
   featureName: 'features',
   fieldsConfig: featureFieldsConfiguration
+  // Add here your form layout config const reference
   formLayoutConfig: featureFormLayoutConfiguration,
   [...]
 });
