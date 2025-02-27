@@ -105,45 +105,5 @@ To remove the step that propose to review the profile when account already exist
 
 In Keycloak interface > menu "Authentication" > tab "Flow" > click on "first broker login"
 
-<<<<<<< HEAD
-=======
-# Simplify Authentication flow
-
-## Remove “Update Account Information” form after first login
-To remove “Update Account Information” form after first login
- ![update account information](../../Images/Keycloak/UpdateAccountInformation.png)
-
-In Keycloak interface > menu "Realm settings" > tab "User profile" > edit the 3 field (email, firstName, lastName)
-and switch Required field to off. 
-
- ![email setting](../../Images/Keycloak/emailSettings.JPG)
-
-
-<<<<<<< HEAD
-=======
-# Simplify Authentication flow
-
-## Remove “Update Account Information” form after first login
-To remove “Update Account Information” form after first login
- ![update account information](../../Images/Keycloak/UpdateAccountInformation.png)
-
-In Keycloak interface > menu "Realm settings" > tab "User profile" > edit the 3 field (email, firstName, lastName)
-and switch Required field to off. 
-
- ![email setting](../../Images/Keycloak/emailSettings.JPG)
-
-
->>>>>>> 654da63ffb2d1509efeaa04521212f4aef9c92d5
-
-## Remove the step "Review Profile"
-To remove the step that propose to review the profile when account already exist
- ![step Review Profile](../../Images/Keycloak/ReviewProfile.jpg)
-
-In Keycloak interface > menu "Authentication" > tab "Flow" > click on "first broker login"
-
-<<<<<<< HEAD
->>>>>>> 654da63ffb2d1509efeaa04521212f4aef9c92d5
-=======
->>>>>>> 654da63ffb2d1509efeaa04521212f4aef9c92d5
 Change the requirement of "Confirm link existing account" to "Disabled"
  ![authentication flow](../../Images/Keycloak/AuthFlow.jpg)
