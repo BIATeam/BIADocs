@@ -12,7 +12,17 @@ This mode will provide the best performance when retrieving data from the databa
 
 ## Usage
 
-Here is an example of a parallel call. This example doesn't make any functional sense, it's just an example.
+To use the readOnly (also called NoTracking in the framework) you just have to pass true to your getAsync function for the parameter isReadOnlyMode.
+
+``` csharp
+        this.GetAsync(id: 50247, isReadOnlyMode: true);
+```
+
+The consequences of using readonly mode are that the objects you get from the SQL requests aren't tracked by the database context and can't be updated.
+
+With this mode, you can make multiple requests to the same database in parallel (which would not be possible without the no tracking activated).
+
+Here is an example of how to make parallel calls. This example doesn't make any functional sense, it's just an example.
 The **GetAsync** method shows a classic call.
 The **GetInParallelAsync** method shows a parallel call.
 
