@@ -303,7 +303,7 @@ Add your read component into your feature module :
 #### Edit Form Read Only Mode
 Into your feature's constants file, add the read only mode for your edit form into the `CrudConfig.formEditReadOnlyMode` property:
 ``` typescript title="feature.constants.ts"
-export const planeCRUDConfiguration: CrudConfig<Plane> = new CrudConfig({
+export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
   // [...]
   formEditReadOnlyMode: FormReadOnlyMode.clickToEdit,
 });
