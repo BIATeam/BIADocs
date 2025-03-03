@@ -405,7 +405,7 @@ About the `BiaFormComponent` inputs :
 - `formReadOnlyMode` : the read only mode
 - `disableSubmitButton` : disable or not the submit button if shown
 
-When choosing the `clickToEdit` read only mode, you can handle when the read only mode is changing by binding a method to the `readOnlyChanged` output : 
+You can handle when the read only mode is changing into the `BiaFormComponent` at init or in the life cycle by binding a method to the `readOnlyChanged` output : 
 ``` html title="feature-form.component.html"
 <bia-form
   [...]
@@ -416,8 +416,8 @@ Then override the `onReadOnlyChanged` method into your feature form component :
 ``` typescript title="feature-form.component.ts"
 export class FeatureFormComponent extends CrudItemFormComponent<Feature> {
   onReadOnlyChanged(readOnly: boolean): void {
-    super.onReadOnlyChanged(readOnly);
     // Do something
+    super.onReadOnlyChanged(readOnly);
   }
 }
 ```
