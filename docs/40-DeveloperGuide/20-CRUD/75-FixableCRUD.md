@@ -130,7 +130,7 @@ Into `bianetconfig.json`, add the fix permission and associate roles :
     "Permissions": [
       {
         "Names": [ "Feature_Fix" ],
-        "Roles:" [ "Role" ] 
+        "Roles": [ "Role" ] 
       }
     ]
   }
