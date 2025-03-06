@@ -155,20 +155,20 @@ Into your feature application service, add to `FiltersContext` the filter specif
 ``` csharp title="FeatureAppService.cs"
 public class FeatureAppService : CrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
 {
-public FeatureAppService(ITGenericRepository<Feature, int> repository, IPrincipal principal)
-    : base(repository)
-{
-    // [...]
+  public FeatureAppService(ITGenericRepository<Feature, int> repository, IPrincipal principal)
+      : base(repository)
+  {
+      // [...]
 
-    if (!(principal as BiaClaimsPrincipal).IsInRole(Rights.Features.Fix))
-    {
-        // Specification to filter on only not fixed items
-        var specification = new DirectSpecification<Feature>(p => !p.IsFixed);
-        // Apply specification when updating or deleting to block user actions on fixed items if not authorized
-        this.FiltersContext.Add(AccessMode.Update, specification);
-        this.FiltersContext.Add(AccessMode.Delete, specification);
-    }
-}
+      if (!(principal as BiaClaimsPrincipal).IsInRole(Rights.Features.Fix))
+      {
+          // Specification to filter on only not fixed items
+          var specification = new DirectSpecification<Feature>(p => !p.IsFixed);
+          // Apply specification when updating or deleting to block user actions on fixed items if not authorized
+          this.FiltersContext.Add(AccessMode.Update, specification);
+          this.FiltersContext.Add(AccessMode.Delete, specification);
+      }
+  }
 }
 ```
 
