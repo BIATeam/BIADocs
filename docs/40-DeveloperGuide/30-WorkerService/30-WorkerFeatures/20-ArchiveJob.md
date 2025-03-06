@@ -75,7 +75,7 @@ You must set an `ArchiveEntityConfiguration` for each entity to archive.
 
 ## Implementation
 ### Archivable entity
-Your entity type to archive must implements the `IEntityArchivable<TKey>` that inherits from `IEntityFixable<TKey>` :
+Your entity type to archive must implements the `IEntityArchivable<TKey>` that inherits from `IEntityFixable<TKey>` (see [Fixable CRUD documentation](../../20-CRUD/75-FixableCRUD.md)) :
 ``` csharp title="MyEntity.cs"
 public class MyEntity : IEntityArchivable<int>
 {
