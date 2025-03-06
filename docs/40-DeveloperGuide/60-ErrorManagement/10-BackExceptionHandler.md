@@ -11,9 +11,9 @@ In the **Startup** class, within the **Configure** method, ensure there is a cal
 ```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IJwtFactory jwtFactory)
 {
-	// ...
-	app.ConfigureApiExceptionHandler(env.IsDevelopment());
-	// ...
+    // ...
+    app.ConfigureApiExceptionHandler(env.IsDevelopment());
+    // ...
 }
 ```
 
@@ -27,15 +27,15 @@ This is a custom exception used to display specific details to the end user of t
 ```csharp
 public class FrontUserException : Exception
 {
-	/// <summary>
-	/// The error message key.
-	/// </summary>
-	public FrontUserExceptionErrorMessageKey ErrorMessageKey { get; } = FrontUserExceptionErrorMessageKey.Unknown;
+    /// <summary>
+    /// The error message key.
+    /// </summary>
+    public FrontUserExceptionErrorMessageKey ErrorMessageKey { get; } = FrontUserExceptionErrorMessageKey.Unknown;
 
-	/// <summary>
-	/// The parameters to format into the current <see cref="Exception.Message"/>.
-	/// </summary>
-	public string[] ErrorMessageParameters { get; } = [];
+    /// <summary>
+    /// The parameters to format into the current <see cref="Exception.Message"/>.
+    /// </summary>
+    public string[] ErrorMessageParameters { get; } = [];
 }
 ```
 
@@ -63,10 +63,10 @@ public class CustomFrontUserException : FrontUserException
         ErrorMessageKey = errorMessageKey;
     }
 
-	// Mind the new instruction
+    // Mind the new instruction
     public new CustomErrorMessageKey ErrorMessageKey { get; }
 
-	// Write your own method to get user friendly error message by key
+    // Write your own method to get user friendly error message by key
     private static string GetErrorMessage(CustomErrorMessageKey errorMessageKey)
     {
         return errorMessageKey switch
@@ -100,12 +100,12 @@ throw new FrontUserException("This is an {0} {1}", innerException: null, "error"
 
 try
 {
-	// Do something
+    // Do something
 }
 catch (Exception ex)
 {
-	// FrontUserException with only inner exception
-	throw new FrontUserException(ex);
+    // FrontUserException with only inner exception
+    throw new FrontUserException(ex);
 }
 ```
 
@@ -123,26 +123,26 @@ This method can be overridden by all inherited objects from **FilteredServiceBas
 ```csharp
 protected override Exception HandleFrontUserException(FrontUserException frontUserException)
 {
-	// Return a new FrontUserException with custom message, ignore previous exception
-	return new FrontUserException("Custom message");
-	
-	// Do some actions based on the ErrorMessageKey
-	if (frontUserException.ErrorMessageKey == FrontUserExceptionErrorMessageKey.DatabaseDuplicateKey)
-	{
-		// Do something...
-	}
-	// Return the FrontUserException handling by base service
-	return base.HandleFrontUserException(frontUserException);
-	
-	// Return a new FrontUserException by specific ErrorMessageKey
-	return frontUserException switch
-	{
-		FrontUserExceptionErrorMessageKey.DatabaseDuplicateKey => new FrontUserException("A similar {0} exists with the same value", frontUserException, nameof(MyEntity))
-		_ => new FrontUserException("Application error, please contact support", frontUserException)
-	};
-	
-	// Returning a null Exception will stop the catch instruction handling the original FrontUserException
-	return null;
+    // Return a new FrontUserException with custom message, ignore previous exception
+    return new FrontUserException("Custom message");
+
+    // Do some actions based on the ErrorMessageKey
+    if (frontUserException.ErrorMessageKey == FrontUserExceptionErrorMessageKey.DatabaseDuplicateKey)
+    {
+        // Do something...
+    }
+    // Return the FrontUserException handling by base service
+    return base.HandleFrontUserException(frontUserException);
+
+    // Return a new FrontUserException by specific ErrorMessageKey
+    return frontUserException switch
+    {
+        FrontUserExceptionErrorMessageKey.DatabaseDuplicateKey => new FrontUserException("A similar {0} exists with the same value", frontUserException, nameof(MyEntity))
+        _ => new FrontUserException("Application error, please contact support", frontUserException)
+    };
+
+    // Returning a null Exception will stop the catch instruction handling the original FrontUserException
+    return null;
 }
 ```
 
@@ -187,10 +187,10 @@ public class Layer
         }
         catch (CustomFrontUserException ex)
         {
-			// Catch the kind of CustomFrontUserException to complete
+            // Catch the kind of CustomFrontUserException to complete
             if (ex.ErrorMessageKey == CustomErrorMessageKey.TemplateBusinessError)
             {
-				// Throw new CustomFrontUserException using previous one data and complete with more error message parameters
+                // Throw new CustomFrontUserException using previous one data and complete with more error message parameters
                 throw new CustomFrontUserException(ex.ErrorMessageKey, ex.InnerException, [.. ex.ErrorMessageParameters, this.LayerInformation]);
             }
 
@@ -201,7 +201,9 @@ public class Layer
 ```
 When the final **CustomFrontUserException** thrown is caught by the [API Exception Handler](#configure-api-exception-handler), the formatted message will be "*This is a template business error - Deep - Layer*".
 
-**Note**: *When configuring templated error messages, ensure to provide the correct number of **errorMessageParameters** before the catch in the API exception handler to avoid format exceptions.*
+:::tip
+When configuring templated error messages, ensure to provide the correct number of **errorMessageParameters** before the catch in the API exception handler to avoid format exceptions.
+:::
 
 
 

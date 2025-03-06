@@ -46,7 +46,9 @@ Edit the .csproj of the **BIA.ToolKit** application to update the version number
 	</PropertyGroup>
 </Project>
 ```
-**NOTE :** do the same for the **BIA.ToolKit.Updater** project if needed.
+:::tip
+Do the same for the **BIA.ToolKit.Updater** project if needed.
+:::
 ### Launch package
 In **90 - Package** folder, execute the `package.ps1` powershell script :  
 ![UpdateAvailableConfirm](../Images/BIAToolKit/PackageScript.png)

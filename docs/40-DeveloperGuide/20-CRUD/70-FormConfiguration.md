@@ -18,8 +18,9 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
   [...]
 });
 ```
-
-**NOTE :** the declaration into the model and association into the constants are already set when using CRUD generation from BIAToolkit.
+:::info
+The declaration into the model and association into the constants are already set when using CRUD generation from BIAToolkit.
+:::
 
 ### Configuration
 You must add all your fields to display into the `columns` property of the `BiaFieldsConfig<TDto>`.  
@@ -118,7 +119,9 @@ new BiaFormLayoutConfig<Feature>([
   ]),
 ])
 ```
-**NOTE :** all the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
+:::warning
+All the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
+:::
 
 #### Responsive design
 When declaring a `BiaFormLayoutConfigField<TDto>` or a `BiaFormLayoutConfigGroup<TDto>`, you can set the column size of these elements by :
@@ -152,7 +155,9 @@ When declaring a `BiaFormLayoutConfigField<TDto>` or a `BiaFormLayoutConfigGroup
   new BiaFormLayoutConfigField<Feature>('field', new BiaFormLayoutConfigColumnSize(6, 6, 6, 6))
   ```
 
-**NOTE :** if you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column sizeleft by the columns with a custom size, and the total columns count into the row.
+:::info
+If you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column sizeleft by the columns with a custom size, and the total columns count into the row.
+:::
 
 ### Configuration
 1. In front-end, open the model of your feature
@@ -218,7 +223,9 @@ export const featureFormConfiguration: BiaFormLayoutConfig<Feature> = new BiaFor
 The framework will automatically generate the form like this :
 ![FormConfiguration](../../Images/FormConfiguration.png)
 
-**NOTE :** all the remaining fields declared into the `BiaFieldsConfig` will be displayed after the fields handled into the `BiaFormLayoutConfig`.
+:::info
+All the remaining fields declared into the `BiaFieldsConfig` will be displayed after the fields handled into the `BiaFormLayoutConfig`.
+:::
 
 ### Usage
 Into your feature constants declaration, add the definition of the `formLayoutConfig` under the definition of `fieldsConfig` when declaring the `CrudConfig` :
@@ -241,7 +248,9 @@ Into all the components that use a form component inherited from `CrudItemFormCo
   [...]></app-feature-form>
 ```
 
-**NOTE :** all the CRUD features generated from **4.1.0** with BIAToolkit are already ready to use
+:::info
+All the CRUD features generated from **4.1.0** with BIAToolkit are already ready to use
+:::
 
 ## Form Read Only
 ### Principles
@@ -421,4 +430,6 @@ export class FeatureFormComponent extends CrudItemFormComponent<Feature> {
   }
 }
 ```
-**NOTE :** super method handle the redirect to the `edit` route if the read only mode is set to `clickToEdit`.
+:::info
+Super method handle the redirect to the `edit` route if the read only mode is set to `clickToEdit`.
+:::

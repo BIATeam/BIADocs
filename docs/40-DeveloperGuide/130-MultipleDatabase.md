@@ -127,7 +127,9 @@ private DataContextNoTracking CreateDataContextNoTracking(DatabaseConfiguration 
 
 The `DataContextFactory` is injected as scoped into the IOC container.
 
-**NOTE :** You can create your own factory with your own contexts and configurations. The `DataContextFactory` is only applicable for the `DataContext` instances.
+:::tip
+You can create your own factory with your own contexts and configurations. The `DataContextFactory` is only applicable for the `DataContext` instances.
+:::
 
 ## Database Repository
 Once the `DataContextFactory` created, you will now use it to build the repository of an entity that will need one of your multiple database. 

@@ -122,4 +122,6 @@ To turn it on, you must set the corresponding application setting `EntityModelSt
 ```
 The validation will be enable for all the entities **with at least one `ValidationAttribute` on one of their fields**. The validation state model will be performed before saving changed entities into database.
 
-**NOTE:** the entity state model validation will not check the database schema constraints configured by the entity model builder. It will only handle the validation constraints sets by the `ValidationAttribute` on each entity's fields.
+:::info
+The entity state model validation will not check the database schema constraints configured by the entity model builder. It will only handle the validation constraints sets by the `ValidationAttribute` on each entity's fields.
+:::
