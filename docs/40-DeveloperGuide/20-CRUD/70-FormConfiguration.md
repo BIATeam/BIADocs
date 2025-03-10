@@ -18,8 +18,9 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
   [...]
 });
 ```
-
-**NOTE :** the declaration into the model and association into the constants are already set when using CRUD generation from BIAToolkit.
+:::info
+The declaration into the model and association into the constants are already set when using CRUD generation from BIAToolkit.
+:::
 
 ### Configuration
 You must add all your fields to display into the `columns` property of the `BiaFieldsConfig<TDto>`.  
@@ -118,7 +119,9 @@ new BiaFormLayoutConfig<Feature>([
   ]),
 ])
 ```
-**NOTE :** all the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
+:::warning
+All the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
+:::
 
 #### Responsive design
 When declaring a `BiaFormLayoutConfigField<TDto>` or a `BiaFormLayoutConfigGroup<TDto>`, you can set the column size of these elements by :
@@ -152,7 +155,9 @@ When declaring a `BiaFormLayoutConfigField<TDto>` or a `BiaFormLayoutConfigGroup
   new BiaFormLayoutConfigField<Feature>('field', new BiaFormLayoutConfigColumnSize(6, 6, 6, 6))
   ```
 
-**NOTE :** if you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column sizeleft by the columns with a custom size, and the total columns count into the row.
+:::info
+If you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column sizeleft by the columns with a custom size, and the total columns count into the row.
+:::
 
 ### Configuration
 1. In front-end, open the model of your feature
@@ -218,7 +223,9 @@ export const featureFormConfiguration: BiaFormLayoutConfig<Feature> = new BiaFor
 The framework will automatically generate the form like this :
 ![FormConfiguration](../../Images/FormConfiguration.png)
 
-**NOTE :** all the remaining fields declared into the `BiaFieldsConfig` will be displayed after the fields handled into the `BiaFormLayoutConfig`.
+:::info
+All the remaining fields declared into the `BiaFieldsConfig` will be displayed after the fields handled into the `BiaFormLayoutConfig`.
+:::
 
 ### Usage
 Into your feature constants declaration, add the definition of the `formLayoutConfig` under the definition of `fieldsConfig` when declaring the `CrudConfig` :
@@ -241,4 +248,188 @@ Into all the components that use a form component inherited from `CrudItemFormCo
   [...]></app-feature-form>
 ```
 
-**NOTE :** all the CRUD features generated from **4.1.0** with BIAToolkit are already ready to use
+:::info
+All the CRUD features generated from **4.1.0** with BIAToolkit are already ready to use
+:::
+
+## Form Read Only
+### Principles
+You can choose if a CRUD feature form must be read only or not when displayed. 
+
+You have two available modes : 
+- **ON** : the form is read-only, all the fields are disabled
+- **CLICK TO EDIT** : the form is opened as read only, the user must click on the submit button to change to edit mode
+
+### Configuration
+#### Read View
+First of all, you must have a **read** view for your feature that extends the `CrudItemReadComponent` :
+``` typescript title="feature-read.component.ts"
+@Component({
+  selector: 'app-feature-read',
+  templateUrl: './feature-read.component.ts',
+})
+export class FeatureReadComponent extends CrudItemReadComponent<Feature> {
+  constructor(
+    protected injector: Injector,
+    public featureService: FeatureService,
+    protected authService: AuthService
+  ) {
+    super(injector, featureService, authService);
+    this.crudConfiguration = featureCRUDConfiguration;
+  }
+
+  setPermissions(): void {
+    // Set the permission to switch to edit mode
+    this.canEdit = this.authService.hasPermission(Permission.Feature_Update);
+  }
+}
+```
+``` html title="feature-read.component.html"
+<app-feature-form
+  *ngIf="crudItemService.crudItem$ | async; let crudItem"
+  [crudItem]="crudItem"
+  [fields]="crudConfiguration.fieldsConfig.columns"
+  [formLayoutConfig]="crudConfiguration.formLayoutConfig"
+  [formReadOnlyMode]="formReadOnlyMode"
+  [dictOptionDtos]="(featureService.optionsService.dictOptionDtos$ | async) ?? []"
+  [showSubmitButton]="canEdit"
+  (cancelled)="onCancelled()"
+  (save)="onSubmitted($event)"></app-feature-form>
+<bia-spinner
+  *ngIf="featureService.loadingGet$ | async"
+  [overlay]="true"></bia-spinner>
+```
+
+Add your read component into your feature module : 
+``` typescript title="feature.module.ts"
+@NgModule({
+  declarations: [
+    // [...]
+    FeatureReadComponent,
+  ],
+```
+
+#### Edit Form Read Only Mode
+Into your feature's constants file, add the read only mode for your edit form into the `CrudConfig.formEditReadOnlyMode` property:
+``` typescript title="feature.constants.ts"
+export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
+  // [...]
+  formEditReadOnlyMode: FormReadOnlyMode.clickToEdit,
+});
+```
+You can choose :
+- `off` : default value. You don't have to set the value of `formEditReadOnlyMode` for this case
+- `clickToEdit` : must click to edit button to enter edit mode
+- `on` : strict read only
+
+#### Read Route and Read Only Mode
+Into your feature's module file :
+1. before the route declaration of your **edit** component, declare the route for the **read** component
+2. change the redirect path value for `read` instead of `edit`
+``` typescript title="feature.module.ts"
+@NgModule({
+export const ROUTES: Routes = [
+  {
+    // [...]
+    children: [
+      {
+        path: ':crudItemId',
+        // [...]
+        children: [
+          // Add here your read component
+          {
+            path: 'read',
+            data: {
+              breadcrumb: 'bia.read',
+              canNavigate: true,
+              permission: Permission.Feature_Read,
+              // Map here the formEditReadOnlyMode of the CrudConfig or set it manually
+              readOnlyMode: featureCRUDConfiguration.formEditReadOnlyMode,
+              title: 'feature.read',
+            },
+            component: FeatureReadComponent,
+            canActivate: [PermissionGuard],
+          },
+          // Existing edit component
+          {
+            path: 'edit',
+            // [...]
+          },
+          {
+            path: '',
+            pathMatch: 'full',
+            // Change redirect to read
+            redirectTo: 'read',
+          },
+        ],
+      },
+    ],
+  },
+];
+```
+- By selecting `on` or `clickToEdit` read only mode, your `FeatureIndexComponent` will automatically open the selected item details from the index table using the `read` route 
+- Then, with `clickToEdit` mode enabled, by clicking to the edit mode button, the user will be redirected to `edit` route
+
+#### Feature Form
+Your feature form must inherits from `CrudItemFormComponent` : 
+``` typescript title="feature-form.component.ts"
+@Component({
+  selector: 'app-feature-form',
+  templateUrl:
+    '../../../../shared/bia-shared/feature-templates/crud-items/components/crud-item-form/crud-item-form.component.html',
+  styleUrls: [
+    '../../../../shared/bia-shared/feature-templates/crud-items/components/crud-item-form/crud-item-form.component.scss',
+  ],
+})
+export class FeatureFormComponent extends CrudItemFormComponent<Feature> {
+  constructor(
+    protected router: Router,
+    protected activatedRoute: ActivatedRoute
+  ) {
+    super(router, activatedRoute);
+  }
+}
+```
+
+If your feature form use a custom HTML template, you must use `BiaFormComponent` inside your html file :
+``` html title="feature-form.component.html"
+<bia-form
+  [element]="crudItem"
+  [fields]="fields"
+  [formValidators]="formValidators"
+  [showSubmitButton]="showSubmitButton"
+  [formReadOnlyMode]="formReadOnlyMode"
+  [disableSubmitButton]="disableSubmitButton"
+  (save)="onSave($event)"
+  (cancelled)="onCancel()">
+
+  <ng-template pTemplate="specificInput" let-field="field" let-form="form">
+    [...]
+  <ng-template>
+</bia-form>
+```
+
+About the `BiaFormComponent` inputs : 
+- `showSubmitButton` : show or not the submit button of the form (can be the switch to edit mode, or save button)
+- `formReadOnlyMode` : the read only mode
+- `disableSubmitButton` : disable or not the submit button if shown
+
+You can handle when the read only mode is changing into the `BiaFormComponent` at init or in the life cycle by binding a method to the `readOnlyChanged` output : 
+``` html title="feature-form.component.html"
+<bia-form
+  [...]
+  (readOnlyChanged)="onReadOnlyChanged($event)">
+</bia-form>
+```
+Then override the `onReadOnlyChanged` method into your feature form component :
+``` typescript title="feature-form.component.ts"
+export class FeatureFormComponent extends CrudItemFormComponent<Feature> {
+  onReadOnlyChanged(readOnly: boolean): void {
+    // Do something
+    super.onReadOnlyChanged(readOnly);
+  }
+}
+```
+:::info
+Super method handle the redirect to the `edit` route if the read only mode is set to `clickToEdit`.
+:::

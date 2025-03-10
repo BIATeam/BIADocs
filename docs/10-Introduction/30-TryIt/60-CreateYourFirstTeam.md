@@ -49,8 +49,10 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
 3. In case of children team, ensure to have logical links between the parent and child entities.
 
 Make sure to inherit from `Team` and expose a `byte[]` row version property mapped to column `RowVersion`.  
-Complete with all necessary properties.  
-***NOTE :*** you should expose the `Id` property even if it's hide the inherited property of `Team`
+Complete with all necessary properties.
+:::tip  
+You must expose the `Id` property even if it's hide the inherited property of `Team`
+:::
 
 ### Complete DataContext
 1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.

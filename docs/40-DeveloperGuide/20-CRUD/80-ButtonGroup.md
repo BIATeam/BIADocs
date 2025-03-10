@@ -47,8 +47,9 @@ this.buttonGroup = [
   )
 ];
 ```
-
-**NOTE :** optionnal parameter `visible` will have default value of `true` while the default value of `disabled` will be `false` 
+:::info
+Optionnal parameter `visible` will have default value of `true` while the default value of `disabled` will be `false` 
+:::
 ### Button group component
 Inside your HTML component, use the `BiaButtonGroupComponent` :
 ``` html
@@ -61,9 +62,10 @@ Inside your HTML component, use the `BiaButtonGroupComponent` :
 - `compact` : force the group to be displayed under a burger button. Default value is `false`
 - `autoCompact` : display by default all the buttons on the same line, will automatically group the buttons under a burger button depending of the available space between the group container and the next or previous sibling element. Default value is `true`
 
-**NOTE :** 
-- when `compact` is `true`, `autoCompact` will be always `false`
-- event with `autoCompact` at `false`, the buttons will be grouped under the burger button if the screen size is smaller enought to trigger the passage to mobile mode
+:::info
+- When `compact` is `true`, `autoCompact` will be always `false`
+- Even with `autoCompact` at `false`, the buttons will be grouped under the burger button if the screen size is smaller enought to trigger the passage to mobile mode
+:::
 
 **Example** :  
 ![ButtonGoupNotGroup](../../Images/ButtonGroup_NotGroup.png)
@@ -97,7 +99,10 @@ protected initSelectedButtonGroup() {
 }
 ``` 
 
-**NOTE :** the `CrudItemsIndexComponent` will automatically init the button groups at init of the component, after permissions set and when the list element selection changes. It allows you to bind the `BiaButtonGroupItem` properties to local properties that can change. If you want to refresh all the buttons groups by yourself, you can call the protected method `initButtonGroups()` inside your own index component.
+:::tip
+The `CrudItemsIndexComponent` will automatically init the button groups at init of the component, after permissions set and when the list element selection changes. It allows you to bind the `BiaButtonGroupItem` properties to local properties that can change.  
+If you want to refresh all the buttons groups by yourself, you can call the protected method `initButtonGroups()` inside your own index component.
+:::
 
 You can now use theses arrays with the `BiaButtonGroupComponent` into your index component for each corresponding `pTemplate` when using the `BiaTableHeaderComponent` :
 ``` html title="feature-index.component.html"
