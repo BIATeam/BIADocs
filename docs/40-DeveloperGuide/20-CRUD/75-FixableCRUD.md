@@ -36,14 +36,11 @@ If the opened item is fixed, the form will be displayed as read-only with a fixe
 The user will have access to the fixable buttons on the top left corner of the table header :  
 ![FixableCrudUserRightIndexPage](../../Images/FixableCrud/FixableCrud_UserRights_IndexPage.png)
 
-User must select only one item to use these button :  
+User must select only one item to use these buttons :  
 ![FixableCrudUserRightIndexPage](../../Images/FixableCrud/FixableCrud_UserRights_IndexPage_Buttons.png)
 :::info
 Fix button will be available if selected item is not fixed, and invert for unfix button
 :::
-
-User can edit in calc mode a fixed item :  
-![FixableCrudUserRightIndexPage](../../Images/FixableCrud/FixableCrud_UserRights_IndexPage_Edit.png)
 
 #### Edit page
 The fixable button of the page will be enable on top right corner :  
@@ -54,7 +51,7 @@ Clicking on it will invert the value :
 
 
 ## Configuration
-### Define the fixable entity
+### Fixable entity
 #### Entity Model
 Implements the interface `IEntityFixable<TKey>` in your feature's entity :
 ``` csharp title="Feature.cs"
@@ -128,7 +125,7 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
 });
 ```
 
-### Define the permissions
+### Permissions
 #### Back
 Into `bianetconfig.json`, add the fix permission and associate roles :
 ``` json title="bianetconfig.json"
@@ -168,7 +165,7 @@ export enum Permission {
 }
 ```
 
-### Configure services
+### Services
 #### Back
 Inherits your feature application service from `IFixableCrudAppServiceBase` :
 ``` csharp title="IFeatureAppService"
@@ -195,15 +192,21 @@ In the `FixableCrudAppServiceBase`, the base implementation of this method :
 4. Return the updated entity as DTO
 
 :::tip
-You can bypass the fixed security that avoid the deletion of fixed item by overriding the `RemoveAsync(int id)` method and setting the optionnal parameter `bypassFixed` to `true` :
-``` csharp title="FeatureAppService"
-public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
+You can bypass the fixed security that avoid the deletion of fixed item by calling the `RemoveAsync(int id)` method and setting the optionnal parameter `bypassFixed` to `true` :
+``` csharp title="CustomService.cs"
+public class CustomService
 {
-  // [...]
+  private readonly IFixableFeatureService fixableFeatureService;
 
-  public override Task<FeatureDto> RemoveAsync(int id, string accessMode = "Delete", string queryMode = "Delete", string mapperMode = null, bool bypassFixed = false)
+  public CustomService(IFixableFeatureService fixableFeatureService) 
   {
-      return base.RemoveAsync(id, accessMode, queryMode, mapperMode, bypassFixed: true);
+    this.fixableFeatureService = fixableFeatureService;
+  }
+
+  public async Task RemoveFixableFeatureAsync(int fixableFeatureId)
+  {
+    // Remove fixable entity even if its fixed
+    await this.fixableFeatureService.RemoveAsync(fixableFeatureId, bypassFixed: true);
   }
 }
 ```
@@ -273,7 +276,7 @@ export class FeatureService extends CrudItemService<Feature> {
 }
 ```
 
-### Configure controller
+### Controller
 Into your feature controller, add the endpoint to change fixed status of an entity :
 ``` csharp title="FeaturesController"
 public class FeaturesController : BiaControllerBase
@@ -308,7 +311,7 @@ public class FeaturesController : BiaControllerBase
 :::tip
 Don't forget to add and adapt the `Authorize` attribute based on your permission definition.
 :::
-### Configure index component
+### Index component
 Into your feature index component, add the definition of `canFix` property into the `setPermissions()` method :
 ``` typescript title="feature-index.component.ts"
 export class FeaturesIndexComponent extends CrudItemsIndexComponent<Feature> {
@@ -345,7 +348,7 @@ Add into the HTML template these properties bindings for handling fixable state 
 </div>
 ```
 
-### Configure edit component
+### Edit component
 Into your feature edit component, set the permissions into the `setPermissions()` method like following :
 ``` typescript title="feature-edit.component.ts"
 export class FeaturesEditComponent extends CrudItemsEditComponent<Feature> {
@@ -382,7 +385,7 @@ Add into the HTML template these properties bindings for handling fixable state 
   (fixedChanged)="crudItemService.updateFixedStatus(crudItem.id, $event)">
 </app-feature-form>
 ```
-### Configure read component
+### Read component
 :::info
 Only applicable if you have set read only strategy on your CRUD.  
 See **[Form Read Only](./70-FormConfiguration.md#form-read-only)** page.
@@ -438,7 +441,7 @@ When setting an entity as fixed, you should fixed the direct children too. Becau
 
 You will must configure your feature's children to handle the fixable status of himself and of his parent.
 ### Configure child entity
-Apply the same instructions as seen for the parent [here](#define-the-fixable-entity).
+Apply the same instructions as seen for the parent [here](#fixable-entity).
 ### Adapt the application services
 Apply the same instructions **only for the back** as seen for the parent [here](#back-1).  
 
