@@ -443,15 +443,47 @@ You will must configure your feature's children to handle the fixable status of 
 ### Configure child entity
 Apply the same instructions as seen for the parent [here](#fixable-entity).
 ### Adapt the application services
-Apply the same instructions **only for the back** as seen for the parent [here](#back-1).  
+Apply the same instructions **only for the back** as seen for the parent [here](#back-1).
 
-Then, edit the parent feature application service by overriding the `UpdateFixedAsync()` method and handling the update of the fixed status of the children :
+:::tip
+In order to avoid new feature's child creation while the feature is fixed, you can override into the child service the `AddAsync()` method and raise into an exception if the parent is fixed : 
+``` csharp title="ChildFeatureAppService.cs"
+public class ChildFeatureAppService : CrudAppServiceBase<ChildFeatureDto, ChildFeature, int, PagingFilterFormatDto, ChildFeatureMapper>, IChildFeatureAppService
+{
+  private readonly ITGenericRepository<Feature, int> parentRepository;
+
+  public ChildFeatureAppService(ITGenericRepository<Feature, int> repository, ITGenericRepository<Feature, int> repository parentRepository)
+    : base(repository)
+  {
+    // [...]
+
+    this.parentRepository = parentRepository;
+  }
+
+  // [...]
+
+  /// <inheritdoc/>
+  public override async Task<EngineDto> AddAsync(EngineDto dto, string mapperMode = null)
+  {
+      var featureParent = await this.parentRepository.GetEntityAsync(dto.FeatureParentId, isReadOnlyMode: true);
+      if (featureParent.IsFixed)
+      {
+          throw new FrontUserException("Feature parent is fixed");
+      }
+
+      return await base.AddAsync(dto, mapperMode);
+  }
+}
+```
+:::  
+
+Then, edit the **parent feature application service** by overriding the `UpdateFixedAsync()` method and handling the update of the fixed status of the children :
 ``` csharp title="FeatureAppService.cs"
 public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
 {
-  private readonly ITGenericRepository<ChildrenFeature, int> childrenRepository;
+  private readonly ITGenericRepository<ChildFeature, int> childrenRepository;
 
-  public FeatureAppService(ITGenericRepository<Feature, int> repository, ITGenericRepository<ChildrenFeature, int> repository childrenRepository, IPrincipal principal)
+  public FeatureAppService(ITGenericRepository<Feature, int> repository, ITGenericRepository<ChildFeature, int> repository childrenRepository)
     : base(repository)
   {
     // [...]
