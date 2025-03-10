@@ -11,7 +11,7 @@ This page will explain how to configure a CRUD that can be fixed.
 - When an entity is fixed, only users with the required permission can change the fixable status or edit the entity.  
   For the others, the entities will be only available as read only.
 - When an entity is fixed, his fixed date is automatically updated by the current date time.
-- A fixed entity can not be updated, or deleted (can be bypassed)
+- A fixed entity can not be updated, or deleted (can be bypassed, see [tip](#bypass-fixed-constraint))
 
 ## UI/UX
 :::tip
@@ -77,15 +77,6 @@ public class Feature : IEntityFixable<int>
 Don't forget to create a database migration !
 :::
 
-#### DTO Model
-Inherits from the class `FixableDto<TKey>` your feature's DTO :
-``` csharp title="FeatureDto.cs"
-public class FeatureDto : FixableDto<int>
-```
-:::info
-`FixableDto<TKey>` inherits from `BaseDto<TKey>`.
-:::
-
 #### Mapper
 Add the required mapping of the fixable properties into your feature's mapper : 
 ``` csharp title="FeatureMapper.cs"
@@ -112,7 +103,9 @@ public class FeatureMapper : BaseMapper<FeatureDto, Feature, int>
 }
 ```
 :::tip
-Add the mapping of the `FixedDate` when mapping to DTO only if needed in your application. In case, add the property `fixedDate` into your model DTO.
+`isFixed` property is part of `BaseDto<TKey>`.  
+
+If needed in your application, add the property `fixedDate` into your feature DTO and the mapping.
 :::
 
 #### Front CRUD Configuration
@@ -167,15 +160,15 @@ export enum Permission {
 
 ### Services
 #### Back
-Inherits your feature application service from `IFixableCrudAppServiceBase` :
+Ensure your feature application service inherits from `ICrudAppServiceBase` :
 ``` csharp title="IFeatureAppService"
-public interface IFeatureAppService : IFixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto>
+public interface IFeatureAppService : ICrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto>
 ```
 ``` csharp title="FeatureAppService"
-public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
+public class FeatureAppService : CrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
 ```
 
-Your application service will now exposes the dedicated method `UpdateFixedAsync` :
+Your application service will exposes the dedicated method `UpdateFixedAsync` :
 ``` csharp title="IFixableCrudAppServiceBase"
 /// <summary>
 /// Update the fixed status of an <see cref="IEntityFixable{TKey}"/>.
@@ -185,32 +178,11 @@ Your application service will now exposes the dedicated method `UpdateFixedAsync
 /// <returns>Updated DTO.</returns>
 Task<TDto> UpdateFixedAsync(TKey id, bool isFixed);
 ```
-In the `FixableCrudAppServiceBase`, the base implementation of this method :
+The base implementation of this method do following :
 1. Find the entity to update by the `id` param value
 2. Update the `isFixed` property by the param value
 3. Update the `fixedDate` according to the `isFixed` status (`Date.now` if `true`, `null` if `false`)
 4. Return the updated entity as DTO
-
-:::tip
-You can bypass the fixed security that avoid the deletion of fixed item by calling the `RemoveAsync(int id)` method and setting the optionnal parameter `bypassFixed` to `true` :
-``` csharp title="CustomService.cs"
-public class CustomService
-{
-  private readonly IFixableFeatureService fixableFeatureService;
-
-  public CustomService(IFixableFeatureService fixableFeatureService) 
-  {
-    this.fixableFeatureService = fixableFeatureService;
-  }
-
-  public async Task RemoveFixableFeatureAsync(int fixableFeatureId)
-  {
-    // Remove fixable entity even if its fixed
-    await this.fixableFeatureService.RemoveAsync(fixableFeatureId, bypassFixed: true);
-  }
-}
-```
-:::
 
 #### Front
 Into your feature store actions, add the `updateFixedStatus` action :
@@ -443,43 +415,11 @@ You will must configure your feature's children to handle the fixable status of 
 ### Configure child entity
 Apply the same instructions as seen for the parent [here](#fixable-entity).
 ### Adapt the application services
-Apply the same instructions **only for the back** as seen for the parent [here](#back-1).
-
-:::tip
-In order to avoid new feature's child creation while the feature is fixed, you can override into the child service the `AddAsync()` method and raise into an exception if the parent is fixed : 
-``` csharp title="ChildFeatureAppService.cs"
-public class ChildFeatureAppService : CrudAppServiceBase<ChildFeatureDto, ChildFeature, int, PagingFilterFormatDto, ChildFeatureMapper>, IChildFeatureAppService
-{
-  private readonly ITGenericRepository<Feature, int> parentRepository;
-
-  public ChildFeatureAppService(ITGenericRepository<Feature, int> repository, ITGenericRepository<Feature, int> repository parentRepository)
-    : base(repository)
-  {
-    // [...]
-
-    this.parentRepository = parentRepository;
-  }
-
-  // [...]
-
-  /// <inheritdoc/>
-  public override async Task<EngineDto> AddAsync(EngineDto dto, string mapperMode = null)
-  {
-      var featureParent = await this.parentRepository.GetEntityAsync(dto.FeatureParentId, isReadOnlyMode: true);
-      if (featureParent.IsFixed)
-      {
-          throw new FrontUserException("Feature parent is fixed");
-      }
-
-      return await base.AddAsync(dto, mapperMode);
-  }
-}
-```
-:::  
+Apply the same instructions **only for the back** as seen for the parent [here](#back-1). 
 
 Then, edit the **parent feature application service** by overriding the `UpdateFixedAsync()` method and handling the update of the fixed status of the children :
 ``` csharp title="FeatureAppService.cs"
-public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
+public class FeatureAppService : CrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
 {
   private readonly ITGenericRepository<ChildFeature, int> childrenRepository;
 
@@ -627,4 +567,55 @@ Add into the HTML template these properties bindings for handling fixable state 
   [showFixableState]="crudConfiguration.isFixable"
   [formReadOnlyMode]="formReadOnlyMode">
 </app-children-feature-form>
+```
+## Tips
+### Bypass fixed constraint
+You can bypass the fixed constraint that avoid the deletion of fixed item by calling the `RemoveAsync(int id)` method of your fixable feature application service, and setting the optionnal parameter `bypassFixed` to `true` :
+``` csharp title="CustomService.cs"
+public class CustomService
+{
+  private readonly IFeatureService featureService;
+
+  public CustomService(IFeatureService featureService) 
+  {
+    this.featureService = featureService;
+  }
+
+  public async Task RemoveFeatureAsync(int featureId)
+  {
+    // Remove fixable entity even if its fixed
+    await this.featureService.RemoveAsync(featureId, bypassFixed: true);
+  }
+}
+```
+
+### New child creation with fixed parent
+In order to avoid new feature's child creation while the feature is fixed, you can override into the child service the `AddAsync()` method and raise into an exception if the parent is fixed : 
+``` csharp title="ChildFeatureAppService.cs"
+public class ChildFeatureAppService : CrudAppServiceBase<ChildFeatureDto, ChildFeature, int, PagingFilterFormatDto, ChildFeatureMapper>, IChildFeatureAppService
+{
+  private readonly ITGenericRepository<Feature, int> parentRepository;
+
+  public ChildFeatureAppService(ITGenericRepository<Feature, int> repository, ITGenericRepository<Feature, int> repository parentRepository)
+    : base(repository)
+  {
+    // [...]
+
+    this.parentRepository = parentRepository;
+  }
+
+  // [...]
+
+  /// <inheritdoc/>
+  public override async Task<EngineDto> AddAsync(EngineDto dto, string mapperMode = null)
+  {
+      var featureParent = await this.parentRepository.GetEntityAsync(dto.FeatureParentId, isReadOnlyMode: true);
+      if (featureParent.IsFixed)
+      {
+          throw new FrontUserException("Feature parent is fixed");
+      }
+
+      return await base.AddAsync(dto, mapperMode);
+  }
+}
 ```
