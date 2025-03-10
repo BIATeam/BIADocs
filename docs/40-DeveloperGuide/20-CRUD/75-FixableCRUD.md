@@ -377,6 +377,7 @@ export class FeaturesEditComponent extends CrudItemsEditComponent<Feature> {
 Add into the HTML template these properties bindings for handling fixable state into `bia-form`, `crud-item-form` inherited or used components : 
 ``` html title="feature-edit.component.html"
 <app-feature-form
+  [showFixableState]="crudConfiguration.isFixable"
   [canFix]="canFix"
   (fixedChanged)="crudItemService.updateFixedStatus(crudItem.id, $event)">
 </app-feature-form>
@@ -426,7 +427,169 @@ export class FeaturesReadComponent extends CrudItemsReadComponent<Feature> {
 Add into the HTML template these properties bindings for handling fixable state into `bia-form`, `crud-item-form` inherited or used components : 
 ``` html title="feature-read.component.html"
 <app-feature-form
+  [showFixableState]="crudConfiguration.isFixable"
   [canFix]="canFix"
   (fixedChanged)="crudItemService.updateFixedStatus(crudItem.id, $event)">
 </app-feature-form>
+```
+
+## Handle children
+When setting an entity as fixed, you should fixed the direct children too. Because the direct children are only linked to the principal entity, no update or delete to the children should exists.  
+
+You will must configure your feature's children to handle the fixable status of himself and of his parent.
+### Configure child entity
+Apply the same instructions as seen for the parent [here](#define-the-fixable-entity).
+### Adapt the application services
+Apply the same instructions **only for the back** as seen for the parent [here](#back-1).  
+
+Then, edit the parent feature application service by overriding the `UpdateFixedAsync()` method and handling the update of the fixed status of the children :
+``` csharp title="FeatureAppService.cs"
+public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
+{
+  private readonly ITGenericRepository<ChildrenFeature, int> childrenRepository;
+
+  public FeatureAppService(ITGenericRepository<Feature, int> repository, ITGenericRepository<ChildrenFeature, int> repository childrenRepository, IPrincipal principal)
+    : base(repository)
+  {
+    // [...]
+
+    this.childrenRepository = childrenRepository;
+  }
+
+  // [...]
+
+  /// <inheritdoc/>
+  public override async Task<PlaneDto> UpdateFixedAsync(int id, bool isFixed)
+  {
+      return await this.ExecuteWithFrontUserExceptionHandlingAsync(async () =>
+      {
+          // Update feature fixed status
+          var entity = await this.Repository.GetEntityAsync(id) ?? throw new ElementNotFoundException();
+          this.Repository.UpdateFixedAsync(entity, isFixed);
+
+          // Update feature's children fixed status
+          var children = await this.childrenRepository.GetAllEntityAsync(filter: x => x.FeatureParentId == id);
+          foreach (var child in children)
+          {
+              this.childrenRepository.UpdateFixedAsync(child, isFixed);
+          }
+
+          // Commit all the changes
+          await this.Repository.UnitOfWork.CommitAsync();
+          // Return the updated feature DTO
+          return await this.GetAsync(id);
+      });
+  }
+}
+``` 
+:::tip
+Don't forget to retrieve the injected instance of the children repository interface from the constructor.
+:::
+
+### Adapt the child components
+#### Index component
+Into your child feature read component, set the permissions into the `setPermissions()` method like following :
+``` typescript title="child-feature-index.component.ts"
+export class ChildFeaturesIndexComponent extends CrudItemsIndexComponent<ChildFeature> {
+  // [...]
+
+  // Add a boolean that indicates if the child is fixed or not by its parent
+  isFixed = false;
+
+  protected setPermissions(): void {
+    // Always call this to unsubscribe existing permission subscription
+    super.setPermissions();
+
+    this.permissionSub.add(
+      // Retrieve the parent current crud item
+      this.childFeatureService.featureService.crudItem$
+        .pipe(filter(feature => !!feature && Object.keys(feature).length > 0))
+        .subscribe(feature => {
+          // Assign the isFixed by the parent fixed status
+          this.isFixed = feature.isFixed === true;
+
+          // Adapt the standard permissions
+          this.canEdit =
+            feature.isFixed === false &&
+            this.authService.hasPermission(Permission.ChildFeature_Update);
+          this.canDelete =
+            feature.isFixed === false &&
+            this.authService.hasPermission(Permission.ChildFeature_Delete);
+          this.canAdd =
+            feature.isFixed === false &&
+            this.authService.hasPermission(Permission.ChildFeature_Create);
+          this.canSave =
+            feature.isFixed === false &&
+            this.authService.hasPermission(Permission.ChildFeature_Save);
+        })
+    );
+  }
+}
+```
+
+Add into the HTML template these adaptations for handling fixable state into `bia-table-header`, `bia-table`, `bia-calc-table` inherited or used components : 
+``` html title="child-feature-index.component.html"
+<div>
+  <div>
+    <!-- BiaTableHeaderComponent --->
+    <bia-table-header>
+      <!-- This will display disabled locked button with fixed label status at right of the table title --->
+      <ng-template pTemplate="customControl">
+        <button
+          *ngIf="isFixed"
+          pButton
+          icon="pi pi-lock"
+          label="{{ 'bia.fixed' | translate }}"
+          type="button"
+          [disabled]="true"></button> 
+      </ng-template>
+    </bia-table-header>
+
+    <!-- BiaTableComponent --->
+    <bia-table
+      [readOnly]="isFixed">
+    </bia-table>
+
+    <!-- BiaCalcTableComponent --->
+    <bia-calc-table
+      [readOnly]="isFixed">
+    </bia-calc-table>
+  </div>
+</div>
+```
+#### Edit/Read component
+Into your child feature edit or read component, set the permissions into the `setPermissions()` method like following :
+``` typescript title="child-feature-edit.component.ts"
+export class ChildFeaturesEditComponent extends CrudItemsEditComponent<ChildFeature> {
+  // [...]
+
+  protected setPermissions(): void {
+    // Always call this to unsubscribe existing permission subscription
+    super.setPermissions();
+
+    // Add the subscription to dedicated permission subscription
+    this.permissionSub.add(
+      // Retrive current child feature item
+      this.crudItemService.crudItem$
+        .pipe(filter(childFeature => !!childFeature && Object.keys(childFeature).length > 0))
+        .subscribe(childFeature => {
+          // Set current form read only mode to read only if item is fixed
+          if (
+            this.crudConfiguration.isFixable === true &&
+            childFeature.isFixed === true
+          ) {
+            this.formReadOnlyMode = FormReadOnlyMode.on;
+          }
+        })
+    );
+  }
+}
+```
+
+Add into the HTML template these properties bindings for handling fixable state into `bia-form`, `crud-item-form` inherited or used components : 
+``` html title="child-feature-edit.component.html"
+<app-children-feature-form
+  [showFixableState]="crudConfiguration.isFixable"
+  [formReadOnlyMode]="formReadOnlyMode">
+</app-children-feature-form>
 ```
