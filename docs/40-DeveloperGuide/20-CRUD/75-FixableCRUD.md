@@ -497,7 +497,7 @@ export class ChildFeaturesIndexComponent extends CrudItemsIndexComponent<ChildFe
   // [...]
 
   // Add a boolean that indicates if the child is fixed or not by its parent
-  isFixed = false;
+  isParentFixed = false;
 
   protected setPermissions(): void {
     // Always call this to unsubscribe existing permission subscription
@@ -509,7 +509,7 @@ export class ChildFeaturesIndexComponent extends CrudItemsIndexComponent<ChildFe
         .pipe(filter(feature => !!feature && Object.keys(feature).length > 0))
         .subscribe(feature => {
           // Assign the isFixed by the parent fixed status
-          this.isFixed = feature.isFixed === true;
+          this.isParentFixed = feature.isFixed === true;
 
           // Adapt the standard permissions
           this.canEdit =
@@ -539,7 +539,7 @@ Add into the HTML template these adaptations for handling fixable state into `bi
       <!-- This will display disabled locked button with fixed label status at right of the table title --->
       <ng-template pTemplate="customControl">
         <button
-          *ngIf="isFixed"
+          *ngIf="isParentFixed"
           pButton
           icon="pi pi-lock"
           label="{{ 'bia.fixed' | translate }}"
@@ -550,12 +550,12 @@ Add into the HTML template these adaptations for handling fixable state into `bi
 
     <!-- BiaTableComponent --->
     <bia-table
-      [readOnly]="isFixed">
+      [readOnly]="isParentFixed">
     </bia-table>
 
     <!-- BiaCalcTableComponent --->
     <bia-calc-table
-      [readOnly]="isFixed">
+      [readOnly]="isParentFixed">
     </bia-calc-table>
   </div>
 </div>
