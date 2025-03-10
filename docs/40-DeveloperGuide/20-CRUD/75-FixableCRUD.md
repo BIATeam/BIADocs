@@ -6,14 +6,12 @@ sidebar_position: 1
 This page will explain how to configure a CRUD that can be fixed.
 
 ## Principles
-A fixable CRUD represents an entity with a fixed state.  
-This state indicates weither the entity is fixed or not and should not be edited anymore if true.  
-
-When an entity is fixed, only users with a permission to edit fixable entities can change the fixable status or edit the entity.  
-For the others, the entities will be only available as read only.
-
-When an entity is fixed, his fixed date is automatically updated by the current date time.  
-If the entity is updated event already fixed, the fixed date is automatically updated too.
+- A fixable CRUD represents an entity with a fixed state.  
+  This state indicates weither the entity is fixed or not and should not be edited anymore if true.  
+- When an entity is fixed, only users with the required permission can change the fixable status or edit the entity.  
+  For the others, the entities will be only available as read only.
+- When an entity is fixed, his fixed date is automatically updated by the current date time.
+- A fixed entity can not be updated, or deleted (can be bypassed)
 
 ## UI/UX
 :::tip
@@ -62,6 +60,8 @@ Implements the interface `IEntityFixable<TKey>` in your feature's entity :
 ``` csharp title="Feature.cs"
 public class Feature : IEntityFixable<int>
 {
+  // [...]
+
   /// <summary>
   /// Gets or sets the is fixed.
   /// </summary>
@@ -75,6 +75,9 @@ public class Feature : IEntityFixable<int>
 ```
 :::info
 `IEntityFixable<TKey>` inherits from `IEntity<TKey>`.
+:::
+:::tip
+Don't forget to create a database migration !
 :::
 
 #### DTO Model
@@ -91,11 +94,13 @@ Add the required mapping of the fixable properties into your feature's mapper :
 ``` csharp title="FeatureMapper.cs"
 public class FeatureMapper : BaseMapper<FeatureDto, Feature, int>
 {
+  // [...]
+
   public override void DtoToEntity(FeatureDto dto, Feature entity)
   {
     // [...]
+
     entity.IsFixed = dto.IsFixed;
-    entity.FixedDate = dto.FixedDate;
   }
 
   public override Expression<Func<Feature, FeatureDto>> EntityToDto()
@@ -103,13 +108,14 @@ public class FeatureMapper : BaseMapper<FeatureDto, Feature, int>
     return entity => new FeatureDto
     {
       // [...]
+
       IsFixed = entity.IsFixed,
     }
   }
 }
 ```
 :::tip
-Add the mapping of the `FixedDate` when mapping to DTO only if needed in your application.
+Add the mapping of the `FixedDate` when mapping to DTO only if needed in your application. In case, add the property `fixedDate` into your model DTO.
 :::
 
 #### Front CRUD Configuration
@@ -117,6 +123,7 @@ Into your feature's constants file, set the property `isFixable` of the `CrudCon
 ``` typescript title="feature.constants.ts"
 export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
   // [...]
+
   isFixable: true,
 });
 ```
@@ -143,31 +150,12 @@ public static class Rights
 {
   public static class Features 
   {
+    // [...]
+
     /// <summary>
     /// The right to fixe features.
     /// </summary>
     public const string Fix = "Feature_Fix";
-  }
-}
-```
-
-Into your feature application service, add to `FiltersContext` the filter specification to apply to users with no fix permissions :
-``` csharp title="FeatureAppService.cs"
-public class FeatureAppService : CrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
-{
-  public FeatureAppService(ITGenericRepository<Feature, int> repository, IPrincipal principal)
-      : base(repository)
-  {
-      // [...]
-
-      if (!(principal as BiaClaimsPrincipal).IsInRole(Rights.Features.Fix))
-      {
-          // Specification to filter on only not fixed items
-          var specification = new DirectSpecification<Feature>(p => !p.IsFixed);
-          // Apply specification when updating or deleting to block user actions on fixed items if not authorized
-          this.FiltersContext.Add(AccessMode.Update, specification);
-          this.FiltersContext.Add(AccessMode.Delete, specification);
-      }
   }
 }
 ```
@@ -180,10 +168,152 @@ export enum Permission {
 }
 ```
 
+### Configure services
+#### Back
+Inherits your feature application service from `IFixableCrudAppServiceBase` :
+``` csharp title="IFeatureAppService"
+public interface IFeatureAppService : IFixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto>
+```
+``` csharp title="FeatureAppService"
+public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
+```
+
+Your application service will now exposes the dedicated method `UpdateFixedAsync` :
+``` csharp title="IFixableCrudAppServiceBase"
+/// <summary>
+/// Update the fixed status of an <see cref="IEntityFixable{TKey}"/>.
+/// </summary>
+/// <param name="id">ID of the entity.</param>
+/// <param name="isFixed">Fixed status.</param>
+/// <returns>Updated DTO.</returns>
+Task<TDto> UpdateFixedAsync(TKey id, bool isFixed);
+```
+In the `FixableCrudAppServiceBase`, the base implementation of this method :
+1. Find the entity to update by the `id` param value
+2. Update the `isFixed` property by the param value
+3. Update the `fixedDate` according to the `isFixed` status (`Date.now` if `true`, `null` if `false`)
+4. Return the updated entity as DTO
+
+:::tip
+You can bypass the fixed security that avoid the deletion of fixed item by overriding the `RemoveAsync(int id)` method and setting the optionnal parameter `bypassFixed` to `true` :
+``` csharp title="FeatureAppService"
+public class FeatureAppService : FixableCrudAppServiceBase<FeatureDto, Feature, int, PagingFilterFormatDto, FeatureMapper>, IFeatureAppService
+{
+  // [...]
+
+  public override Task<FeatureDto> RemoveAsync(int id, string accessMode = "Delete", string queryMode = "Delete", string mapperMode = null, bool bypassFixed = false)
+  {
+      return base.RemoveAsync(id, accessMode, queryMode, mapperMode, bypassFixed: true);
+  }
+}
+```
+:::
+
+#### Front
+Into your feature store actions, add the `updateFixedStatus` action :
+``` typescript title="features-action.ts"
+export namespace FeatureFeaturesActions {
+  // [...]
+
+  export const updateFixedStatus = createAction(
+    '[' + featureCRUDConfiguration.storeKey + '] Update fixed status',
+    props<{ id: number; isFixed: boolean }>()
+  );
+}
+```
+
+Into your feature store effects, add the `updateFixedStatus$` effect :
+``` typescript title="features-effects.ts"
+export class FeaturesEffects {
+  // [...]
+   
+  updateFixedStatus$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(FeatureFeaturesActions.updateFixedStatus),
+      map(x => x),
+      concatMap(x =>
+        of(x).pipe(
+          withLatestFrom(
+            this.store.select(FeatureFeaturesStore.getLastLazyLoadEvent)
+          )
+        )
+      ),
+      switchMap(([x, event]) => {
+        return this.featureDas
+          .updateFixedStatus({ id: x.id, fixed: x.isFixed })
+          .pipe(
+            map(feature => {
+              this.biaMessageService.showUpdateSuccess();
+              this.store.dispatch(
+                FeatureFeaturesActions.loadAllByPost({ event: event })
+              );
+              return FeatureFeaturesActions.loadSuccess({ feature });
+            }),
+            catchError(err => {
+              this.biaMessageService.showErrorHttpResponse(err);
+              return of(FeatureFeaturesActions.failure({ error: err }));
+            })
+          );
+      })
+    )
+  );
+}
+```
+
+Into your feature service, add the `updateFixedStatus()` method :
+``` typescript title="feature.service.ts"
+export class FeatureService extends CrudItemService<Feature> {
+  // [...]
+
+  public updateFixedStatus(id: any, isFixed: boolean): void {
+    this.store.dispatch(
+      FeatureFeaturesActions.updateFixedStatus({ id: id, isFixed: isFixed })
+    );
+  }
+}
+```
+
+### Configure controller
+Into your feature controller, add the endpoint to change fixed status of an entity :
+``` csharp title="FeaturesController"
+public class FeaturesController : BiaControllerBase
+{
+  // [...]
+
+  /// <summary>
+  /// Update the fixed status of an item by its id.
+  /// </summary>
+  /// <param name="id">ID of the item to update.</param>
+  /// <param name="isFixed">Fixed status.</param>
+  /// <returns>Updated item.</returns>
+  [HttpPut("{id}/[action]")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+  [Authorize(Roles = Rights.Features.Fix)]
+  public virtual async Task<IActionResult> Fix(int id, [FromBody] bool isFixed)
+  {
+      try
+      {
+          var dto = await this.featureService.UpdateFixedAsync(id, isFixed);
+          return this.Ok(dto);
+      }
+      catch (ElementNotFoundException)
+      {
+          return this.NotFound();
+      }
+  }
+}
+```
+:::tip
+Don't forget to add and adapt the `Authorize` attribute based on your permission definition.
+:::
 ### Configure index component
 Into your feature index component, add the definition of `canFix` property into the `setPermissions()` method :
 ``` typescript title="feature-index.component.ts"
 export class FeaturesIndexComponent extends CrudItemsIndexComponent<Feature> {
+  // [...]
+
   protected setPermissions(): void {
     // [...]
     this.canFix = this.authService.hasPermission(Permission.Feature_Fix);
@@ -204,13 +334,11 @@ Add into the HTML template these properties bindings for handling fixable state 
 
     <!-- BiaTableComponent --->
     <bia-table
-      [canFix]="canFix"
       [showFixableState]="crudConfiguration.isFixable">
     </bia-table>
 
     <!-- BiaCalcTableComponent --->
     <bia-calc-table
-      [canFix]="canFix"
       [showFixableState]="crudConfiguration.isFixable">
     </bia-calc-table>
   </div>
@@ -221,22 +349,25 @@ Add into the HTML template these properties bindings for handling fixable state 
 Into your feature edit component, set the permissions into the `setPermissions()` method like following :
 ``` typescript title="feature-edit.component.ts"
 export class FeaturesEditComponent extends CrudItemsEditComponent<Feature> {
+  // [...]
+
   protected setPermissions(): void {
+    // Always call this to unsubscribe existing permission subscription
+    super.setPermissions();
+
     // Define if user can fix
     this.canFix = this.authService.hasPermission(Permission.Feature_Fix);
-    // Define the read only mode
-    this.sub.add(
+
+    // Add the subscription to dedicated permission subscription
+    this.permissionSub.add(
       this.crudItemService.crudItem$
         .pipe(filter(feature => !!feature && Object.keys(feature).length > 0))
         .subscribe(feature => {
-          if (
-            this.crudConfiguration.isFixable === true &&
-            this.canFix !== true &&
-            feature.isFixed === true
-          ) {
-            // Read only enable if current CRUD is fixable, item is fixed and user can't fix
-            this.formReadOnlyMode = FormReadOnlyMode.on;
-          }
+          // Define the read only mode
+          this.formReadOnlyMode =
+            this.crudConfiguration.isFixable === true && feature.isFixed === true
+              ? FormReadOnlyMode.on
+              : FormReadOnlyMode.off;
         })
     );
   }
@@ -247,7 +378,7 @@ Add into the HTML template these properties bindings for handling fixable state 
 ``` html title="feature-edit.component.html"
 <app-feature-form
   [canFix]="canFix"
-  (fixedChanged)="onFixedChanged($event)">
+  (fixedChanged)="crudItemService.updateFixedStatus(crudItem.id, $event)">
 </app-feature-form>
 ```
 ### Configure read component
@@ -259,11 +390,17 @@ See **[Form Read Only](./70-FormConfiguration.md#form-read-only)** page.
 Into your feature read component, set the permissions into the `setPermissions()` method like following :
 ``` typescript title="feature-read.component.ts"
 export class FeaturesReadComponent extends CrudItemsReadComponent<Feature> {
+  // [...]
+
   protected setPermissions(): void {
+    // Always call this to unsubscribe existing permission subscription
+    super.setPermissions();
+
     // Define if user can fix
     this.canFix = this.authService.hasPermission(Permission.Feature_Fix);
-    // Define if user can swith to edit mode and read only mode
-    this.sub.add(
+
+    // Add the subscription to dedicated permission subscription
+    this.permissionSub.add(
       this.crudItemService.crudItem$
         .pipe(filter(feature => !!feature && Object.keys(feature).length > 0))
         .subscribe(feature => {
@@ -275,11 +412,11 @@ export class FeaturesReadComponent extends CrudItemsReadComponent<Feature> {
 
           // Define the read only mode
           this.formReadOnlyMode =
-            this.crudConfiguration.isFixable === true && feature.isFixed === true
-              ? this.canEdit
-                ? this.formReadOnlyMode
-                : FormReadOnlyMode.on
-              : this.formReadOnlyMode;
+            this.canEdit === false &&
+            this.crudConfiguration.isFixable === true &&
+            feature.isFixed === true
+              ? FormReadOnlyMode.on
+              : this.initialFormReadOnlyMode;
         })
     );
   }
@@ -290,6 +427,6 @@ Add into the HTML template these properties bindings for handling fixable state 
 ``` html title="feature-read.component.html"
 <app-feature-form
   [canFix]="canFix"
-  (fixedChanged)="onFixedChanged($event)">
+  (fixedChanged)="crudItemService.updateFixedStatus(crudItem.id, $event)">
 </app-feature-form>
 ```
