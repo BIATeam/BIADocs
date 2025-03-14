@@ -32,7 +32,4 @@ Migration BIADemo Angular version:
 
     ```
 Finalize with the update of the theme if required:
-•	https://biateam.github.io/BIADocs/docs/40-DeveloperGuide/30-Front/40-CustomizePrimeNGTheme.html
-
-
-
+[Customize PrimeNG Theme](../../50-BestPractices/40-Front%20Style%20Guide/40-CustomizePrimeNGTheme.md)
