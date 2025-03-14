@@ -2,8 +2,8 @@
 sidebar_position: 3
 ---
 
-This upgrade in to apply only on **BIADemo project**.
-Other project should be upgrade with the BIAToolKit and following the Migration process describe in the [Migration Page](../MIGRATION.md).
+This upgrade is to apply only on **BIADemo project**.
+Other project should be upgrade with the BIAToolKit and following the Migration process describe in the Migration Page.
 
 
 Migration BIADemo Angular version:

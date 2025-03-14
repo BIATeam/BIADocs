@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-This upgrade in to apply only on **BIADemo project**.
+This upgrade is to apply only on **BIADemo project**.
 Other project should be upgrade with the BIAToolKit and following the Migration process describe in the [Migration Page](../MIGRATION.md).
 
 
