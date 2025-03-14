@@ -95,4 +95,4 @@ npm run deploy
 - Post message for developers, to inform that a new version is available.
 
 ## Prepare Migration
-- Follow those steps: [PREPARE MIGRATION](./10-PrepareMigration.md)
+- Follow those steps: [PREPARE MIGRATION](./20-PrepareMigration.md)
