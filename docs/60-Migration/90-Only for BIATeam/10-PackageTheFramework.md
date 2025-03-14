@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 ---
-# Package a new version of the Framework (Only for BIATeam):
+# Package a new version of the Framework
 
 ## Refine the BIADemo project
 - In the .Net Part: put comments "// BIADemo only" at the beginning of each file which must not appear in the template
