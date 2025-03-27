@@ -8,8 +8,13 @@ This document explains how to configure the BIA tool kit, to be ready to apply t
 ![BIAToolKitConfig](../Images/BIAToolKit/Config.PNG)
 
 ## Get the BIAToolKit
-Take the last version of the BIAToolKit from [release](https://github.com/BIATeam/BIAToolKit/releases) or from your company folder if you have one. 
+Take the last version of the "BIAToolKit.zip" from [last release](https://github.com/BIATeam/BIAToolKit/releases).
+Unzip it and launch the BIA.ToolKit.exe
+![BIAToolKitConfig](../Images/BIAToolKit/Launch.PNG)
 
+If you have the Windows defender smart screen warning click on "More Info" then click "Run anyway"":
+![BIAToolKitConfig](../Images/BIAToolKit/WindowsDefender.png)
+![BIAToolKitConfig](../Images/BIAToolKit/WindowsDefender2.jpg)
 ## Configure your BIA Template repository
 In the first tab, in the upper left corner, chose if you want to use a local folder to synchronize it.
 * It is not required so if you don't have clone the BIATemplate locally select the first radio button "Use the BIAtemplate GitHub repository" the local folder will be : C:\Users\YourLogin\AppData\Local\BIA.ToolKit\BIA.ToolKit\1.0.0\BIATemplate\Repo

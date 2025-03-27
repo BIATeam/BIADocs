@@ -1,9 +1,9 @@
 ---
-sidebar_position: 1
+sidebar_position: 3
 ---
 
-This upgrade in to apply only on **BIADemo project**.
-Other project should be upgrade with the BIAToolKit and following the Migration process describe in the [Migration Page](../MIGRATION.md).
+This upgrade is to apply only on **BIADemo project**.
+Other project should be upgrade with the BIAToolKit and following the Migration process describe in the Migration Page.
 
 
 Migration BIADemo Angular version:
@@ -32,7 +32,4 @@ Migration BIADemo Angular version:
 
     ```
 Finalize with the update of the theme if required:
-•	https://biateam.github.io/BIADocs/docs/40-DeveloperGuide/30-Front/40-CustomizePrimeNGTheme.html
-
-
-
+[Customize PrimeNG Theme](../../50-BestPractices/40-Front%20Style%20Guide/40-CustomizePrimeNGTheme.md)

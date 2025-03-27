@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 ---
-# Package a new version of the Framework (Only for BIATeam):
+# Package a new version of the Framework
 
 ## Refine the BIADemo project
 - In the .Net Part: put comments "// BIADemo only" at the beginning of each file which must not appear in the template
@@ -95,4 +95,4 @@ npm run deploy
 - Post message for developers, to inform that a new version is available.
 
 ## Prepare Migration
-- Follow those steps: [PREPARE MIGRATION](./10-PrepareMigration.md)
+- Follow those steps: [PREPARE MIGRATION](./20-PrepareMigration.md)

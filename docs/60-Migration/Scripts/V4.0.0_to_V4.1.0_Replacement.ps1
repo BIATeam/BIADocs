@@ -298,6 +298,8 @@ function ApplyChangesAngular19 {
   }
 }
 
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
+
 # Related to migration Angular V19
 ApplyChangesAngular19
 
