@@ -21,9 +21,13 @@ The strategy depend on the size of the project:
 - Standard usage : work on Develop Branch
 - For huge feature you can create a dedicated branch.
   
-## Project more the 2 developers:
+## Project with more the 2 developers:
 - Standard usage : Develop all your Features on dedicated Branch
 - For very small change you can work directly on Develop Branch
+
+## Project with support (including feature) on last delivery
+- The notion of "hot feature" is introduce to be able to deliver small feature (less than 1 month) before the delivery of the next version (every 6 month).
+![GitFlow](../Images/GitFlow.jpg)
 
 ## Initialize gitflow extension
 - Just install the gitflow extension for VS Code.

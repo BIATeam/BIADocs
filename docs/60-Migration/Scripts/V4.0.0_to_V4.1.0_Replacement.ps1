@@ -219,8 +219,7 @@ function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchB
   }
 }
 
-
-
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
 
 # Set-Location $Source/DotNet
 dotnet restore --no-cache
