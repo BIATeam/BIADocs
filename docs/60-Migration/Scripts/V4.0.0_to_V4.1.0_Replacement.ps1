@@ -1,8 +1,8 @@
-$Source = "D:\Source\GitHub\BIATeam\BIADemo";
+$Source = "C:\sources\Github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 
-$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular')
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool')
 
 function ReplaceInProject {
   param (
@@ -219,11 +219,90 @@ function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchB
   }
 }
 
+function ApplyChangesAngular19 {
+  Write-Host "[Apply Angular 19 changes]"
 
+  $replacementsTS = @(
+      @{Pattern = "import { PrimeNGConfig } from 'primeng/api'"; Replacement = "import { PrimeNG } from 'primeng/config'"},
+      @{Pattern = "PrimeNGConfig"; Replacement = "PrimeNG"},
+      @{Pattern = "primeng/inputtextarea"; Replacement = "primeng/inputtextarea"},
+      @{Pattern = "InputTextareaModule"; Replacement = "Textarea"},
+      @{Pattern = "primeng/tristatecheckbox"; Replacement = "primeng/checkbox"},
+      @{Pattern = "TriStateCheckboxModule"; Replacement = "Checkbox"},
+      @{Pattern = "import { Message } from 'primeng/api'"; Replacement = "import { ToastModule } from 'primeng/toast'"},
+      @{Pattern = "\bMessage\b"; Replacement = "ToastMessageOptions"},
+      @{Pattern = "primeng/calendar"; Replacement = "primeng/datepicker"},
+      @{Pattern = "\bCalendar\b"; Replacement = "DatePicker"},
+      @{Pattern = "primeng/dropdown"; Replacement = "primeng/select"},
+      @{Pattern = "DropdownModule"; Replacement = "SelectModule"},
+      @{Pattern = "primeng/tabview"; Replacement = "primeng/tabs"},
+      @{Pattern = "TabViewModule"; Replacement = "TabsModule"},
+      @{Pattern = "primeng/inputswitch"; Replacement = "primeng/toggleswitch"},
+      @{Pattern = "InputSwitchModule"; Replacement = "ToggleSwitchModule"},
+      @{Pattern = "primeng/overlaypanel"; Replacement = "primeng/popover"},
+      @{Pattern = "OverlayPanelModule"; Replacement = "PopoverModule"},
+      @{Pattern = "primeng/sidebar"; Replacement = "primeng/drawer"},
+      @{Pattern = "SidebarModule"; Replacement = "DrawerModule"},
+      @{Pattern = "KeycloakEvent"; Replacement = "KeycloakEventLegacy"},
+      @{Pattern = "KeycloakEventType"; Replacement = "KeycloakEventTypeLegacy"}
+  )
 
+  $replacementsHTML = @(
+      @{Pattern = "(p-checkbox[^>]*?)label"; Replacement = "`$1ariaLabel"},
+      @{Pattern = "(p-autoComplete[^>]*?)\[\s*size\s*\]=\s*""[^""]*"""; Replacement = "`$1size=""small"""},
+      @{Pattern = "(button[^>]*?(?:pButton|p-button)[^>]*?)\s+severity=""warning"""; Replacement = "`$1severity=""warn"""},
+      @{Pattern = "<p-triStateCheckbox"; Replacement = "<p-checkbox [indeterminate]=""true"""},
+      @{Pattern = "</p-triStateCheckbox"; Replacement = "</p-checkbox"},
+      @{Pattern = "p-calendar"; Replacement = "p-date-picker"},
+      @{Pattern = "p-dropdown"; Replacement = "p-select"},
+      @{Pattern = "p-tabView"; Replacement = "p-tabs"},
+      @{Pattern = "p-tabPanel"; Replacement = "p-tabpanel"},
+      @{Pattern = "p-accordionTab"; Replacement = "p-accordion-panel"},
+      @{Pattern = "(?s)(<p-accordion-panel[^>]*?>)\s*<ng-template pTemplate=""header"">(.*?)</ng-template>"; Replacement = "`$1<p-accordion-header>`$2</p-accordion-header>"},
+      @{Pattern = "p-toggleswitch"; Replacement = "p-inputSwitch"},
+      @{Pattern = "p-overlayPanel"; Replacement = "p-popover"},
+      @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
+      @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
+      @{Pattern = "(?s)<(\w+)[^>]*class=""p-float-label""[^>]*>(.*?)<\/\1>"; Replacement = "<p-floatlabel variant=""in"">`$2</p-floatlabel>"}
+  )
+
+  $extensions = "*.ts", "*.html", "*.css", "*.scss"
+  Get-ChildItem -Path $SourceFrontEnd -Recurse -Include $extensions| Where-Object {
+    $excluded = $false
+    foreach ($exclude in $ExcludeDir) {
+        if ($_.FullName -match [regex]::Escape("\$exclude\")) {
+            $excluded = $true
+            break
+        }
+    }
+    -not $excluded
+  } | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    $fileModified = $false
+    $fileReplacements = @()
+
+    foreach ($rule in $replacementsTS + $replacementsHTML) {
+      $newContent = $content -creplace $rule.Pattern, $rule.Replacement
+      if ($newContent -cne $content) {
+          $content = $newContent
+          $fileModified = $true
+          $fileReplacements += "  => replaced $($rule.Pattern) by $($rule.Replacement)"
+      }
+    }
+    
+    if ($fileModified) {
+        Write-Host $_.FullName -ForegroundColor Green
+        $fileReplacements | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+        [System.IO.File]::WriteAllText($_.FullName, $content, [System.Text.Encoding]::UTF8)
+    }
+  }
+}
+
+# Related to migration Angular V19
+ApplyChangesAngular19
 
 # Set-Location $Source/DotNet
-dotnet restore --no-cache
+# dotnet restore --no-cache
 
 Write-Host "Finish"
-pause
+#pause
