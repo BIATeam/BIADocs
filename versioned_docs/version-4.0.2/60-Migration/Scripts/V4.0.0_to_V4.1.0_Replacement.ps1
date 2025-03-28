@@ -226,7 +226,6 @@ function ApplyChangesAngular19 {
   $replacementsTS = @(
       @{Pattern = "import { PrimeNGConfig } from 'primeng/api'"; Replacement = "import { PrimeNG } from 'primeng/config'"},
       @{Pattern = "PrimeNGConfig"; Replacement = "PrimeNG"},
-      @{Pattern = "primeng/inputtextarea"; Replacement = "primeng/inputtextarea"},
       @{Pattern = "InputTextareaModule"; Replacement = "Textarea"},
       @{Pattern = "primeng/tristatecheckbox"; Replacement = "primeng/checkbox"},
       @{Pattern = "TriStateCheckboxModule"; Replacement = "Checkbox"},
@@ -248,7 +247,6 @@ function ApplyChangesAngular19 {
   )
 
   $replacementsHTML = @(
-      @{Pattern = "(p-checkbox[^>]*?)label"; Replacement = "`$1ariaLabel"},
       @{Pattern = "(p-autoComplete[^>]*?)\[\s*size\s*\]=\s*""[^""]*"""; Replacement = "`$1size=""small"""},
       @{Pattern = "(button[^>]*?(?:pButton|p-button)[^>]*?)\s+severity=""warning"""; Replacement = "`$1severity=""warn"""},
       @{Pattern = "<p-triStateCheckbox"; Replacement = "<p-checkbox [indeterminate]=""true"""},
@@ -263,11 +261,16 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-overlayPanel"; Replacement = "p-popover"},
       @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
-      @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)</h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
+      @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)<\/h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
       @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-float-label[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-floatlabel$2 variant="in">$3</p-floatlabel'},
-      @{Pattern = "p-float-label"; Replacement = ""},
-      @{Pattern = "class="""""; Replacement = ""},
-      @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"}
+      @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-fluid[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-fluid$2>$3</p-fluid'},
+      @{Pattern = '(?s)<button([^>]*class="[^"]*p-link[^"]*"[^>]*)>(.*?)<\/button'; Replacement = '<p-button [link]=true $1>$2</p-button'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-float-label)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-link)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-fluid)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = 'class=""'; Replacement = ""},
+      @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
+      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'}
   )
 
   $extensions = "*.ts", "*.html", "*.scss"
@@ -302,17 +305,20 @@ function ApplyChangesAngular19 {
   }
 }
 
-# ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
-
-# Related to migration Angular V19
+# FRONT END
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
 ApplyChangesAngular19
-
-# Set-Location $Source/DotNet
-# dotnet restore --no-cache
-
-Write-Host "Apply Prettier"
+## Front end migration conclusion
+$standaloneCatchUpScript = "standalone-catch-up.js"
+Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
 Set-Location $SourceFrontEnd
+node $standaloneCatchUpScript
 npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
+Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
+
+# BACK END
+Set-Location $Source/DotNet
+dotnet restore --no-cache
 
 Write-Host "Finish"
-#pause
+pause
