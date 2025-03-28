@@ -312,6 +312,12 @@ ApplyChangesAngular19
 # Set-Location $Source/DotNet
 # dotnet restore --no-cache
 
+Write-Host "Catch up standalone components"
+$standaloneCatchUpScript = "standalone-catch-up.js"
+Copy-Item $standaloneCatchUpScript "$SourceFrontEnd\$standaloneCatchUpScript"
+Set-Location $SourceFrontEnd
+node $standaloneCatchUpScript
+
 Write-Host "Apply Prettier"
 Set-Location $SourceFrontEnd
 npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
