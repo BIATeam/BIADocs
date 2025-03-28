@@ -270,9 +270,7 @@ function ApplyChangesAngular19 {
       @{Pattern = '(?<=class=")([^"]*)\b(p-fluid)\b([^"]*)'; Replacement = '${1}${3}'},
       @{Pattern = 'class=""'; Replacement = ""},
       @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
-      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'},
-      @{Pattern = '(?s)(<div[^>]*class="[^"]*")([^>]*>)(\s*<p-checkbox)'; Replacement = '${1}${2} flex items-center${3}'},
-      @{Pattern = '(?s)(<div(?![^>]*class=")[^>]*?)(>\s*<p-checkbox.*?)'; Replacement = '${1} class="flex items-center"${2}'}
+      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'}
   )
 
   $extensions = "*.ts", "*.html", "*.scss"
