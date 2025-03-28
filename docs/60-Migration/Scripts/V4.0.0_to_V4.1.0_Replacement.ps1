@@ -305,24 +305,20 @@ function ApplyChangesAngular19 {
   }
 }
 
-# ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
-
-# Related to migration Angular V19
+# FRONT END
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
 ApplyChangesAngular19
-
-# Set-Location $Source/DotNet
-# dotnet restore --no-cache
-
-Write-Host "Catch up standalone components"
+## Front end migration conclusion
 $standaloneCatchUpScript = "standalone-catch-up.js"
 Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
 Set-Location $SourceFrontEnd
 node $standaloneCatchUpScript
+npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
 
-Write-Host "Apply Prettier"
-Set-Location $SourceFrontEnd
-npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
+# BACK END
+Set-Location $Source/DotNet
+dotnet restore --no-cache
 
 Write-Host "Finish"
-#pause
+pause
