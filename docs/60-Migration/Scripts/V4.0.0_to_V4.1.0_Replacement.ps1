@@ -269,7 +269,9 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-link"; Replacement = ""},
       @{Pattern = "class="""""; Replacement = ""},
       @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
-      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'}
+      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'},
+      @{Pattern = '(?s)(<div[^>]*class=")([^"]*)(".*?>\s*<p-checkbox)'; Replacement = '${1}${2} flex items-center${3}'},
+      @{Pattern = '(?s)(<div(?![^>]*class=")[^>]*?)(>\s*<p-checkbox.*?)'; Replacement = '${1} class="flex items-center"${2}'}
   )
 
   $extensions = "*.ts", "*.html", "*.scss"
@@ -314,9 +316,10 @@ ApplyChangesAngular19
 
 Write-Host "Catch up standalone components"
 $standaloneCatchUpScript = "standalone-catch-up.js"
-Copy-Item $standaloneCatchUpScript "$SourceFrontEnd\$standaloneCatchUpScript"
+Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
 Set-Location $SourceFrontEnd
 node $standaloneCatchUpScript
+Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
 
 Write-Host "Apply Prettier"
 Set-Location $SourceFrontEnd

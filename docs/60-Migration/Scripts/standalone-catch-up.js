@@ -52,10 +52,10 @@ componentsData.forEach(componentData => {
   const match = content.match(/templateUrl:\s*['"]([^'"]+)['"]/);
 
   if (match) {
-    const templatePath = path.resolve(
-      path.dirname(componentData.path),
-      match[1]
-    );
+    const urlPath = match[1];
+    const templatePath = urlPath.startsWith('/src') ? 
+      __dirname + urlPath : 
+      path.resolve(path.dirname(componentData.path),urlPath);
     if (fs.existsSync(templatePath)) {
       componentTemplateMap.set(componentData.path, templatePath);
     }
@@ -154,7 +154,7 @@ componentsData.forEach(componentData => {
 
   const usedStandaloneComponents = extractStandaloneComponents(templateContent);
   if (usedStandaloneComponents.length === 0) {
-    console.log(`✅ ${componentData.fileName} : already up to date`);
+    // console.log(`✅ ${componentData.fileName} : already up to date`);
     return;
   }
 
@@ -176,12 +176,12 @@ componentsData.forEach(componentData => {
   );
 
   if (newStandaloneComponents.length === 0) {
-    console.log(`✅ ${componentData.fileName} : already up to date`);
+    // console.log(`✅ ${componentData.fileName} : already up to date`);
     return;
   }
 
-  // Check if the component is already standalone
-  const isStandalone = !componentContent.includes('standalone: false');
+  // Check if the component is already standalone  
+  const isStandalone = componentContent.includes('imports:');
   // Inject standalone flag and imports
   if (isStandalone) {
     // Add missing imports inside the `imports: []` array
