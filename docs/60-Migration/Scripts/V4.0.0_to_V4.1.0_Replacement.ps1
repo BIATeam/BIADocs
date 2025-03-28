@@ -265,12 +265,13 @@ function ApplyChangesAngular19 {
       @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-float-label[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-floatlabel$2 variant="in">$3</p-floatlabel'},
       @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-fluid[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-fluid$2>$3</p-fluid'},
       @{Pattern = '(?s)<button([^>]*class="[^"]*p-link[^"]*"[^>]*)>(.*?)<\/button'; Replacement = '<p-button [link]=true $1>$2</p-button'},
-      @{Pattern = "p-float-label"; Replacement = ""},
-      @{Pattern = "p-link"; Replacement = ""},
-      @{Pattern = "class="""""; Replacement = ""},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-float-label)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-link)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-fluid)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = 'class=""'; Replacement = ""},
       @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
       @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'},
-      @{Pattern = '(?s)(<div[^>]*class=")([^"]*)(".*?>\s*<p-checkbox)'; Replacement = '${1}${2} flex items-center${3}'},
+      @{Pattern = '(?s)(<div[^>]*class="[^"]*")([^>]*>)(\s*<p-checkbox)'; Replacement = '${1}${2} flex items-center${3}'},
       @{Pattern = '(?s)(<div(?![^>]*class=")[^>]*?)(>\s*<p-checkbox.*?)'; Replacement = '${1} class="flex items-center"${2}'}
   )
 
