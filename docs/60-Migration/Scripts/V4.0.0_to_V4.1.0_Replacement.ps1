@@ -1,6 +1,7 @@
 $Source = "C:\sources\Github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
+$currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool')
 
@@ -267,7 +268,8 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-float-label"; Replacement = ""},
       @{Pattern = "p-link"; Replacement = ""},
       @{Pattern = "class="""""; Replacement = ""},
-      @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"}
+      @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
+      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'}
   )
 
   $extensions = "*.ts", "*.html", "*.scss"
