@@ -225,7 +225,6 @@ function ApplyChangesAngular19 {
   $replacementsTS = @(
       @{Pattern = "import { PrimeNGConfig } from 'primeng/api'"; Replacement = "import { PrimeNG } from 'primeng/config'"},
       @{Pattern = "PrimeNGConfig"; Replacement = "PrimeNG"},
-      @{Pattern = "primeng/inputtextarea"; Replacement = "primeng/inputtextarea"},
       @{Pattern = "InputTextareaModule"; Replacement = "Textarea"},
       @{Pattern = "primeng/tristatecheckbox"; Replacement = "primeng/checkbox"},
       @{Pattern = "TriStateCheckboxModule"; Replacement = "Checkbox"},
@@ -247,7 +246,6 @@ function ApplyChangesAngular19 {
   )
 
   $replacementsHTML = @(
-      @{Pattern = "(p-checkbox[^>]*?)label"; Replacement = "`$1ariaLabel"},
       @{Pattern = "(p-autoComplete[^>]*?)\[\s*size\s*\]=\s*""[^""]*"""; Replacement = "`$1size=""small"""},
       @{Pattern = "(button[^>]*?(?:pButton|p-button)[^>]*?)\s+severity=""warning"""; Replacement = "`$1severity=""warn"""},
       @{Pattern = "<p-triStateCheckbox"; Replacement = "<p-checkbox [indeterminate]=""true"""},
