@@ -230,7 +230,6 @@ function ApplyChangesAngular19 {
       @{Pattern = "InputTextareaModule"; Replacement = "Textarea"},
       @{Pattern = "primeng/tristatecheckbox"; Replacement = "primeng/checkbox"},
       @{Pattern = "TriStateCheckboxModule"; Replacement = "Checkbox"},
-      @{Pattern = "import { Message } from 'primeng/api'"; Replacement = "import { ToastModule } from 'primeng/toast'"},
       @{Pattern = "\bMessage\b"; Replacement = "ToastMessageOptions"},
       @{Pattern = "primeng/calendar"; Replacement = "primeng/datepicker"},
       @{Pattern = "\bCalendar\b"; Replacement = "DatePicker"},
@@ -244,8 +243,8 @@ function ApplyChangesAngular19 {
       @{Pattern = "OverlayPanelModule"; Replacement = "PopoverModule"},
       @{Pattern = "primeng/sidebar"; Replacement = "primeng/drawer"},
       @{Pattern = "SidebarModule"; Replacement = "DrawerModule"},
-      @{Pattern = "KeycloakEvent"; Replacement = "KeycloakEventLegacy"},
-      @{Pattern = "KeycloakEventType"; Replacement = "KeycloakEventTypeLegacy"}
+      @{Pattern = "\bKeycloakEvent\b"; Replacement = "KeycloakEventLegacy"},
+      @{Pattern = "\bKeycloakEventType\b"; Replacement = "KeycloakEventTypeLegacy"}
   )
 
   $replacementsHTML = @(
@@ -259,15 +258,18 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-tabView"; Replacement = "p-tabs"},
       @{Pattern = "p-tabPanel"; Replacement = "p-tabpanel"},
       @{Pattern = "p-accordionTab"; Replacement = "p-accordion-panel"},
-      @{Pattern = "(?s)(<p-accordion-panel[^>]*?>)\s*<ng-template pTemplate=""header"">(.*?)</ng-template>"; Replacement = "`$1<p-accordion-header>`$2</p-accordion-header>"},
+      @{Pattern = "(?s)(<p-accordion-panel[^>]*?>)\s*<ng-template pTemplate=""header"">(.*?)</ng-template"; Replacement = "`$1<p-accordion-header>`$2</p-accordion-header"},
       @{Pattern = "p-toggleswitch"; Replacement = "p-inputSwitch"},
       @{Pattern = "p-overlayPanel"; Replacement = "p-popover"},
       @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
-      @{Pattern = "(?s)<(\w+)[^>]*class=""p-float-label""[^>]*>(.*?)<\/\1>"; Replacement = "<p-floatlabel variant=""in"">`$2</p-floatlabel>"}
+      @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)</h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
+      @{Pattern = "(?s)<(\w+)[^>]*class=""p-float-label""[^>]*>(.*?)<\/\1"; Replacement = "<p-floatlabel variant=""in"">`$2</p-floatlabel"},
+      @{Pattern = "p-float-label"; Replacement = ""},
+      @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"}
   )
 
-  $extensions = "*.ts", "*.html", "*.css", "*.scss"
+  $extensions = "*.ts", "*.html", "*.scss"
   Get-ChildItem -Path $SourceFrontEnd -Recurse -Include $extensions| Where-Object {
     $excluded = $false
     foreach ($exclude in $ExcludeDir) {
@@ -299,11 +301,17 @@ function ApplyChangesAngular19 {
   }
 }
 
+# ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
+
 # Related to migration Angular V19
 ApplyChangesAngular19
 
 # Set-Location $Source/DotNet
 # dotnet restore --no-cache
+
+Write-Host "Apply Prettier"
+Set-Location $SourceFrontEnd
+npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 
 Write-Host "Finish"
 #pause
