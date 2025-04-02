@@ -3,6 +3,16 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+
+## Next (WIP)
+### Angular
+* Migration to Angular 19
+* Migration to PrimeNG 19
+* Standalone components strategy
+* New PrimeNG theming
+* Form layout configuration
+* Button group
+
 ## V4.0.2 (2025-03-12)
 
 ### New Feature
