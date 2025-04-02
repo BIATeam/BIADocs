@@ -308,13 +308,14 @@ function ApplyChangesAngular19 {
 # FRONT END
 # ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
 ApplyChangesAngular19
+
 ## Front end migration conclusion
 $standaloneCatchUpScript = "standalone-catch-up.js"
 Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
 Set-Location $SourceFrontEnd
 node $standaloneCatchUpScript
-npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
+npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 
 # BACK END
 Set-Location $Source/DotNet
