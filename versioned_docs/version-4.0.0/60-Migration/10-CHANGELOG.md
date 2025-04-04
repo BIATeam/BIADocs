@@ -3,6 +3,38 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V4.0.4 (2025-04-04)
+
+### BugFix
+* Fix Synchronize User from keycloak
+* Fix mandatory settings files in DeployDB
+* Fix missing ldapRepositoryHelper in AuthAppService for Connector
+* Fix error with import module when field is not editable
+* Fix display of specific output in import feature
+* Fix BIAToolKit option generator replacement issue
+* Fix the suppression of rights when generate a CRUD and an Option on same Feature
+  
+## V4.0.2 (2025-03-12)
+
+### New Feature
+* Generic archiving
+* Rename BiaDemoDatabase to generic ProjectDatabase
+* Local authentication + Local Keycloak
+
+### BugFix
+* Fix on List and Item service when form model doesn't extend view model
+* Fix design button notifications
+* Import/Export - fix Duplicate Id
+* Double scroll on Hangfire board when small screen
+* Fix BiaAuthorizationPolicyProvider
+* Bad translation in team advanced filter
+* Lost row focus when leaving multiselect in calcmode
+* Scrolling issue on the configuration menu in the sidebar
+* Height calculation problem in horizontal mode on small screens
+* Create CleanTask hangfire
+* Read Only Mode in BIA Docs incorrect + Example in BIADemo
+* The BACK_TO_BACK AUTH force GetUserRolesAsync every time
+* The LoginAndTeam is called twice at each startup
 
 ## V4.0.0 (2025-01-01)
 * New framework UI design
