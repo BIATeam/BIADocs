@@ -1,10 +1,11 @@
 ---
 title: Troubleshooting V4.0.2
 ---
-# Troubleshooting on the known issues in the Framework V4.0.2
+# Troubleshooting on the known issues in the Framework V4.
 
 ## Issues to correct manually:
 
+## Issues in V4.0.2 corrected in V4.0.4 :
 ### DTO + CRUD generation : 
 If you generate a DTO and after a CRUD on the same entity the permission Option disappear from
 
