@@ -3,6 +3,17 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V4.0.4 (2025-04-04)
+
+### BugFix
+* Fix Synchronize User from keycloak
+* Fix mandatory settings files in DeployDB
+* Fix missing ldapRepositoryHelper in AuthAppService for Connector
+* Fix error with import module when field is not editable
+* Fix display of specific output in import feature
+* Fix BIAToolKit option generator replacement issue
+* Fix the suppression of rights when generate a CRUD and an Option on same Feature
+  
 ## V4.0.2 (2025-03-12)
 
 ### New Feature
