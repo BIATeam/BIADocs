@@ -1,8 +1,9 @@
-$Source = "D:\Source\GitHub\BIATeam\BIADemo";
+$Source = "C:\sources\Github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
+$currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular')
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool')
 
 function ReplaceInProject {
   param (
@@ -219,9 +220,104 @@ function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchB
   }
 }
 
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
+function ApplyChangesAngular19 {
+  Write-Host "[Apply Angular 19 changes]"
 
-# Set-Location $Source/DotNet
+  $replacementsTS = @(
+      @{Pattern = "import { PrimeNGConfig } from 'primeng/api'"; Replacement = "import { PrimeNG } from 'primeng/config'"},
+      @{Pattern = "PrimeNGConfig"; Replacement = "PrimeNG"},
+      @{Pattern = "InputTextareaModule"; Replacement = "Textarea"},
+      @{Pattern = "primeng/tristatecheckbox"; Replacement = "primeng/checkbox"},
+      @{Pattern = "TriStateCheckboxModule"; Replacement = "Checkbox"},
+      @{Pattern = "\bMessage\b"; Replacement = "ToastMessageOptions"},
+      @{Pattern = "primeng/calendar"; Replacement = "primeng/datepicker"},
+      @{Pattern = "\bCalendar\b"; Replacement = "DatePicker"},
+      @{Pattern = "primeng/dropdown"; Replacement = "primeng/select"},
+      @{Pattern = "DropdownModule"; Replacement = "SelectModule"},
+      @{Pattern = "primeng/tabview"; Replacement = "primeng/tabs"},
+      @{Pattern = "TabViewModule"; Replacement = "TabsModule"},
+      @{Pattern = "primeng/inputswitch"; Replacement = "primeng/toggleswitch"},
+      @{Pattern = "InputSwitchModule"; Replacement = "ToggleSwitchModule"},
+      @{Pattern = "primeng/overlaypanel"; Replacement = "primeng/popover"},
+      @{Pattern = "OverlayPanelModule"; Replacement = "PopoverModule"},
+      @{Pattern = "primeng/sidebar"; Replacement = "primeng/drawer"},
+      @{Pattern = "SidebarModule"; Replacement = "DrawerModule"},
+      @{Pattern = "\bKeycloakEvent\b"; Replacement = "KeycloakEventLegacy"},
+      @{Pattern = "\bKeycloakEventType\b"; Replacement = "KeycloakEventTypeLegacy"}
+  )
+
+  $replacementsHTML = @(
+      @{Pattern = "(p-autoComplete[^>]*?)\[\s*size\s*\]=\s*""[^""]*"""; Replacement = "`$1size=""small"""},
+      @{Pattern = "(button[^>]*?(?:pButton|p-button)[^>]*?)\s+severity=""warning"""; Replacement = "`$1severity=""warn"""},
+      @{Pattern = "<p-triStateCheckbox"; Replacement = "<p-checkbox [indeterminate]=""true"""},
+      @{Pattern = "</p-triStateCheckbox"; Replacement = "</p-checkbox"},
+      @{Pattern = "p-calendar"; Replacement = "p-date-picker"},
+      @{Pattern = "p-dropdown"; Replacement = "p-select"},
+      @{Pattern = "p-tabView"; Replacement = "p-tabs"},
+      @{Pattern = "p-tabPanel"; Replacement = "p-tabpanel"},
+      @{Pattern = "p-accordionTab"; Replacement = "p-accordion-panel"},
+      @{Pattern = "(?s)(<p-accordion-panel[^>]*?>)\s*<ng-template pTemplate=""header"">(.*?)</ng-template"; Replacement = "`$1<p-accordion-header>`$2</p-accordion-header"},
+      @{Pattern = "p-toggleswitch"; Replacement = "p-inputSwitch"},
+      @{Pattern = "p-overlayPanel"; Replacement = "p-popover"},
+      @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
+      @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
+      @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)<\/h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
+      @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-float-label[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-floatlabel$2 variant="in">$3</p-floatlabel'},
+      @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-fluid[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-fluid$2>$3</p-fluid'},
+      @{Pattern = '(?s)<button([^>]*class="[^"]*p-link[^"]*"[^>]*)>(.*?)<\/button'; Replacement = '<p-button [link]=true $1>$2</p-button'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-float-label)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-link)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = '(?<=class=")([^"]*)\b(p-fluid)\b([^"]*)'; Replacement = '${1}${3}'},
+      @{Pattern = 'class=""'; Replacement = ""},
+      @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
+      @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'}
+  )
+
+  $extensions = "*.ts", "*.html", "*.scss"
+  Get-ChildItem -Path $SourceFrontEnd -Recurse -Include $extensions| Where-Object {
+    $excluded = $false
+    foreach ($exclude in $ExcludeDir) {
+        if ($_.FullName -match [regex]::Escape("\$exclude\")) {
+            $excluded = $true
+            break
+        }
+    }
+    -not $excluded
+  } | ForEach-Object {
+    $content = Get-Content $_.FullName -Raw
+    $fileModified = $false
+    $fileReplacements = @()
+
+    foreach ($rule in $replacementsTS + $replacementsHTML) {
+      $newContent = $content -creplace $rule.Pattern, $rule.Replacement
+      if ($newContent -cne $content) {
+          $content = $newContent
+          $fileModified = $true
+          $fileReplacements += "  => replaced $($rule.Pattern) by $($rule.Replacement)"
+      }
+    }
+    
+    if ($fileModified) {
+        Write-Host $_.FullName -ForegroundColor Green
+        $fileReplacements | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+        [System.IO.File]::WriteAllText($_.FullName, $content, [System.Text.Encoding]::UTF8)
+    }
+  }
+}
+
+# FRONT END
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
+ApplyChangesAngular19
+## Front end migration conclusion
+$standaloneCatchUpScript = "standalone-catch-up.js"
+Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
+Set-Location $SourceFrontEnd
+node $standaloneCatchUpScript
+npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
+Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
+
+# BACK END
+Set-Location $Source/DotNet
 dotnet restore --no-cache
 
 Write-Host "Finish"
