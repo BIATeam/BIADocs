@@ -10,7 +10,7 @@ You might want to have a customized icon that is more telling for a menu or a bu
 
 ## How ?
 
-You will first need an icon (preferably square sized). In this example I'll use an svg icon but it works with most image format. That icon will be stored in the assets of the application (In this example in assets/img).
+You will first need an icon (preferably square sized). In this example I'll use an svg icon but it works with most image format. It is recommanded to use SVG for the scalability. You can convert img to svg using external sites like https://png2svg.com/fr/. That icon will be stored in the assets of the application (In this example in assets/img).
 
 You can then either add a css class for each of your icons in the _app-custom-theme.scss or create a new dedicated file for all your custom icons. If you create a new file, include it in your angular.json "styles" section.
 
@@ -18,15 +18,17 @@ The class for each icon will look like that (ci is for Custom Icon but you can u
 
 ```css
 .ci {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.7rem;
+  height: 1.7rem;
   background-size: contain;
   background-repeat: no-repeat;
+  filter: invert(36%) sepia(11%) saturate(574%) hue-rotate(167deg)
+    brightness(90%) contrast(88%);
 }
 
 .ci-my-icon-1 {
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.6rem;
+  height: 1.6rem;
   background-image: url('/assets/img/my-svg-file-1.svg');
 }
 
