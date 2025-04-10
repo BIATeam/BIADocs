@@ -29,11 +29,11 @@ The class for each icon will look like that (ci is for Custom Icon but you can u
 .ci-my-icon-1 {
   width: 1.6rem;
   height: 1.6rem;
-  background-image: url('/assets/img/my-svg-file-1.svg');
+  background-image: url('../assets/img/my-svg-file-1.svg');
 }
 
 .ci-my-icon-2 {
-  background-image: url('/assets/img/my-svg-file-2.svg');
+  background-image: url('../assets/img/my-svg-file-2.svg');
 }
 ```
 
