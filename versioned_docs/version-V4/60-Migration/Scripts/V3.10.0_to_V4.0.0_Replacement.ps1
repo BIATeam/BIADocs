@@ -166,27 +166,6 @@ function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   return $positionFermeture
 }
 
-function CleanIoc {
-  param (
-    [string]$Source
-  )
-
-  $path = Get-ChildItem -Path $Source -Include IocContainer.cs -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
-
-  if (Test-Path $path) {
-
-    Write-Output $path
-    $pattern = "collection\.AddTransient<(I([A-Za-z]+)), \2>\(\);"
-    $exception = "BackgroundJobClient"
-  
-  (Get-Content $path) | Foreach-Object {
-      if ($_ -notmatch $pattern -or $_ -match $exception) {
-        $_
-      }
-    } | Set-Content $path
-  }
-}
-
 function RemoveIFilteredServiceBase {
   Write-Host "Remove IFilteredServiceBase";
   $csFiles = Get-ChildItem -Path $SourceBackEnd -Recurse -Include *.cs
