@@ -29,6 +29,13 @@ const standaloneComponentsMapping = [
     'primeng/fluid',
     'p-fluid'
   ),
+  new ComponentMapping(
+    'PrimeTemplate',
+    'primeng/api',
+    '',
+    '',
+    'pTemplate'
+  )
 ];
 
 class ComponentData {
