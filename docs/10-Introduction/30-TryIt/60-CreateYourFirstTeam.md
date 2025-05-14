@@ -212,6 +212,30 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
 2. Adapt the field configuration if needed.
 3. Remove all unused imports from the generated file.
 
+### Additionnal configuration
+#### Automatic team selection mode
+You can choose the selection mode if not default team has been set by the user : first available team (ordered by ID) or none (leave empty choice).
+In back-end, open the **TeamConfig.cs** from the domain layer, and set the `TeamSelectionMode` for your team :
+``` csharp title="TeamConfig.cs"
+new BiaTeamConfig<Team>()
+{
+    // [...]
+    TeamSelectionMode = BIA.Net.Core.Common.Enum.TeamSelectionMode.None,
+},
+```
+#### Clear and choose no team in selector
+You can set if the users can clear and select empty team in the team selector.
+In front-end, open the **all-environments.ts** and set the `teamSelectionCanBeEmpty` for your team :
+``` typescript title="all-environments.ts"
+teams: [
+    // [...]
+    {
+      // [...]
+      teamSelectionCanBeEmpty: true
+    },
+]
+```
+
 ### Complete traductions
 1. Go in **'...\MyFirstProject\Angular\src\assets\i18n\app'**
 2. Complete each available language traduction JSON file with the correct values : 

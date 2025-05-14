@@ -173,12 +173,37 @@ function CleanIoc {
     Write-Output $path
     $pattern = "collection\.AddTransient<(I([A-Za-z]+)), \2>\(\);"
     $exception = "BackgroundJobClient"
-  
-  (Get-Content $path) | Foreach-Object {
-      if ($_ -notmatch $pattern -or $_ -match $exception) {
-        $_
+    $insideFunction = $false
+    $foundFirstBrace = $false
+    $braceCount = 0
+
+    $lines = Get-Content $path
+    $outputLines = @()
+
+    foreach ($line in $lines) {
+      if ($line -match "void ConfigureInfrastructureServiceContainer") {
+        $insideFunction = $true
       }
-    } | Set-Content $path
+
+      if ($insideFunction) {
+        $braceCount += ($line.Split("{")).Count - 1
+        if ($braceCount -gt 0) {
+          $foundFirstBrace = $true
+        }
+        $braceCount -= ($line.Split("}")).Count - 1
+      }
+
+      if ($insideFunction) {
+        $outputLines += $line
+        if ($braceCount -eq 0 -and $foundFirstBrace -eq $true) {
+          $insideFunction = $false
+        }
+      } elseif ($line -notmatch $pattern -or $line -match $exception) {
+        $outputLines += $line
+      }
+    }
+
+    $outputLines | Set-Content $path
   }
 }
 
