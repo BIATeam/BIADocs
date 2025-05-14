@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 ---
-# v4.0.2 to NEXT
+# V4 to NEXT
 
 ## Standalone Components Migration
 1. Open a terminal into your angular root project
@@ -77,7 +77,7 @@ sidebar_position: 1
    2. Analyze the .rej file (search "diff a/" in VS code) that have been created in your project folder
      * Apply manually the change.
 
-4. Download the [migration script](./Scripts/V4.0.2_to_VNEXT_Replacement.ps1) and the [standalone catch up script](./Scripts/standalone-catch-up.js) into the same directory
+4. Download the [migration script](./Scripts/V4_to_VNEXT_Replacement.ps1) and the [standalone catch up script](./Scripts/standalone-catch-up.js) into the same directory
 5. Change source path of the migration script and run it
 
 6. Apply other manual step (describe below) at the end if all is ok, you can remove the .rej files (during the process they can be useful to resolve build problems)
@@ -191,10 +191,81 @@ button {
 }
 ```
 ### BACK
-1. 
+#### Database migration
+1. Add a new migration **CreateUserDefaultTeamsTable**
+2. Edit the generated migration and update the `Up()` and `Down()` methods with following : 
+   ``` csharp
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "UserDefaultTeams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    TeamId = table.Column<int>(type: "int", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDefaultTeams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserDefaultTeams_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserDefaultTeams_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
-### BUILD
-1. 
+            migrationBuilder.CreateIndex(
+                name: "IX_UserDefaultTeams_TeamId",
+                table: "UserDefaultTeams",
+                column: "TeamId");
 
-### DEPLOY
-1. 
+            migrationBuilder.CreateIndex(
+                name: "IX_UserDefaultTeams_UserId_TeamId",
+                table: "UserDefaultTeams",
+                columns: new[] { "UserId", "TeamId" },
+                unique: true);
+
+            migrationBuilder.Sql(@"
+                INSERT INTO UserDefaultTeams (UserId, TeamId)
+                SELECT UserId, TeamId
+                FROM Members
+                WHERE IsDefault = 1;
+            ");
+
+            migrationBuilder.DropColumn(
+                name: "IsDefault",
+                table: "Members");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDefault",
+                table: "Members",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.Sql(@"
+                INSERT INTO Members (UserId, TeamId, IsDefault)
+                SELECT UserId, TeamId, 1
+                FROM UserDefaultTeams;
+            ");
+
+            migrationBuilder.DropTable(
+                name: "UserDefaultTeams");
+        }
+   ```
+3. Update database

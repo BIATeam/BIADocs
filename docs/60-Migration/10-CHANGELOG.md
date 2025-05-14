@@ -5,13 +5,24 @@ sidebar_position: 1
 # ChangeLog
 
 ## Next (WIP)
+### New features
+* Form layout configuration ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-layout))
+* Component button group ([doc](../40-DeveloperGuide/20-CRUD/80-ButtonGroup.md))
+* Configuration to set the read only mode of a CRUD feature item ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-read-only))
+* Handling of errors when form is submit and not closing it ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#prevent-form-closing-on-error))
+* Handling of outdated item currently edited ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#inform-user-of-conflict))
+* Fixable entity ([doc](../40-DeveloperGuide/20-CRUD/75-FixableCRUD.md))
+* Be able to unset team or role as default
+* Configuration to clear team and have no team selected ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#clear-and-choose-no-team-in-selector))
+* Configuration to choose automatic team selection mode if no default team set ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#automatic-team-selection-mode))
 ### Angular
 * Migration to Angular 19
 * Migration to PrimeNG 19
-* Standalone components strategy
-* New PrimeNG theming
-* Form layout configuration
-* Button group
+* Using standalone components strategy
+* Using new PrimeNG theming
+### .NET
+* Handle user's default teams from dedicated new table `UserDefaultTeams` and remove property `IsDefault` from `Member` entity and database
+
 
 ## V4.0.2 (2025-03-12)
 
