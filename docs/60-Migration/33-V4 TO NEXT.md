@@ -269,3 +269,10 @@ button {
         }
    ```
 3. Update database
+4. Be careful on DtoToEntity function : the initialization of entity is mandatory else you will have crash during the creation of an item:
+   1. Search "public override void DtoToEntity" 
+   2. Verify that there is on on this line in the first row of the function:
+      1. base.DtoToEntity(dto, ref entity);
+      2. entity ??= new ...
+      3. entity = new TEntity ...
+   3. If not add "base.DtoToEntity(dto, ref entity);" at the beginning.
