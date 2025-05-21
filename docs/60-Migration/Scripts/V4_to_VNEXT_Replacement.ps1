@@ -318,15 +318,27 @@ Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
 npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 
 # BEGIN - Base Mapper
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "public override void DtoToEntity\(([\w]*)Dto dto, ([\w]*) entity(, .*)?\)" -NewRegexp 'public override void DtoToEntity($1Dto dto, ref $2 entity$3)' -Include *.ts
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(, .*)?\);" -NewRegexp '.DtoToEntity(dto, ref entity$1);' -Include *.ts
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "public override void DtoToEntity\(([\w]*)Dto dto, ([\w]*) entity(, .*)?\)" -NewRegexp 'public override void DtoToEntity($1Dto dto, ref $2 entity$3)' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(, .*)?\);" -NewRegexp '.DtoToEntity(dto, ref entity$1);' -Include *.cs
 # END - Base Mapper
 
 # BEGIN - CrudItemService Injector
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "(public signalRService: .*,([ ]|\n)*public optionsService: .*OptionsService,([ ]|\n)*)//" -NewRegexp '$1protected injector: Injector,\n//' -Include *.ts
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *.ts
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.ts
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(public signalRService: .*,([ ]|\n)*public optionsService: .*OptionsService,([ ]|\n)*)//" -NewRegexp '$1protected injector: Injector,\n//' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.cs
 # END - CrudItemService Injector
+
+# BEGIN - BaseEntity
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntity<" -NewRegexp ': BaseEntityVersioned<' -Include *.cs
+# TODO verify in a V4 project with archiving:
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntityArchivable<" -NewRegexp ': BaseEntityVersionedArchivable<' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntityFixable<" -NewRegexp ': BaseEntityVersionedFixable<' -Include *.cs
+# END - BaseEntity
+
+# BEGIN - TeamDto in BaseDtoVersionedTeam
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamDto(\W|$)" -NewRegexp '$1BaseDtoVersionedTeam$2' -Include *.cs
+
+# END - TeamDto in BaseDtoVersionedTeam
 
 # BACK END
 Set-Location $SourceFrontEnd 
