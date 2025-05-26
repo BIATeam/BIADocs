@@ -323,9 +323,9 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(,
 # END - Base Mapper
 
 # BEGIN - CrudItemService Injector
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "(public signalRService: .*,([ ]|\n)*public optionsService: .*OptionsService,([ ]|\n)*)//" -NewRegexp '$1protected injector: Injector,\n//' -Include *.cs
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *.cs
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.cs
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public signalRService: .*,([ ]|\n)*public optionsService: .*OptionsService,([ ]|\n)*)//" -NewRegexp '$1protected injector: Injector,\n//' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.ts
 # END - CrudItemService Injector
 
 # BEGIN - BaseEntity
@@ -337,8 +337,11 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntityFix
 
 # BEGIN - TeamDto in BaseDtoVersionedTeam
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamDto(\W|$)" -NewRegexp '$1BaseDtoVersionedTeam$2' -Include *.cs
-
 # END - TeamDto in BaseDtoVersionedTeam
+
+# BEGIN - TeamDto in BaseTeamMapper
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "TTeamMapper<" -NewRegexp 'BaseTeamMapper<' -Include *.cs
+# END - TeamDto in BaseTeamMapper
 
 # BACK END
 Set-Location $SourceFrontEnd 
