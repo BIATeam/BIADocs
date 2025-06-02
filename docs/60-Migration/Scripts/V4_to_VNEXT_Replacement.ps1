@@ -317,6 +317,10 @@ node $standaloneCatchUpScript
 Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
 npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 
+# New DTO location
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-dto';" -NewRegexp "bia-shared/model/dto/base-dto';" -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-team-dto';" -NewRegexp "bia-shared/model/dto/base-team-dto';" -Include *.ts
+
 # BEGIN - Base Mapper
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "public override void DtoToEntity\(([\w]*)Dto dto, ([\w]*) entity(, .*)?\)" -NewRegexp 'public override void DtoToEntity($1Dto dto, ref $2 entity$3)' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(, .*)?\);" -NewRegexp '.DtoToEntity(dto, ref entity$1);' -Include *.cs
