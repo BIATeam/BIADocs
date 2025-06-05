@@ -190,6 +190,7 @@ button {
    color: theme.$button-color
 }
 ```
+12. It is no longer needed to use local assets as backgrounds for **ColorPicker** of PRIMENG
 ### BACK
 #### Database migration
 1. Add a new migration **CreateUserDefaultTeamsTable**
