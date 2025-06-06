@@ -347,10 +347,10 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamDto(\W|$)" -NewReg
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "TTeamMapper<" -NewRegexp 'BaseTeamMapper<' -Include *.cs
 # END - TeamDto in BaseTeamMapper
 
-# BEGIN - TeamTypeId => BiaTeamTypeId in BaseTeamMapper
+# BEGIN - TeamTypeId => BiaTeamTypeId
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.All(\W|$)" -NewRegexp '$1BiaTeamTypeId.All$2' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.Root(\W|$)" -NewRegexp '$1BiaTeamTypeId.Root$2' -Include *.cs
-# END - TeamDto in BaseTeamMapper
+# END - TeamTypeId => BiaTeamTypeId
 
 
 # BACK END
