@@ -306,7 +306,6 @@ function ApplyChangesAngular19 {
 }
 
 # FRONT END
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pFrozenColumn" -NewRegexp 'biaFrozenColumn' -Include *.ts
 ApplyChangesAngular19
 
 ## Front end migration conclusion
@@ -352,6 +351,9 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.All(\W|$)"
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.Root(\W|$)" -NewRegexp '$1BiaTeamTypeId.Root$2' -Include *.cs
 # END - TeamTypeId => BiaTeamTypeId
 
+# BEGIN - pFrozenColumn => biaFrozenColumn
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts, *.html
+# END - pFrozenColumn => biaFrozenColumn
 
 # BACK END
 Set-Location $SourceFrontEnd 
