@@ -306,7 +306,7 @@ function ApplyChangesAngular19 {
 }
 
 # FRONT END
-# ReplaceInProject -Source $SourceFrontEnd -OldRegexp "((templateUrl|styleUrls?):\s*\[*\s*['""])(\.\.\/)+(shared\/.+?)['""]" -NewRegexp '$1/src/app/$4' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "pFrozenColumn" -NewRegexp 'biaFrozenColumn' -Include *.ts
 ApplyChangesAngular19
 
 ## Front end migration conclusion
