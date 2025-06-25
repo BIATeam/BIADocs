@@ -1,9 +1,9 @@
-$Source = "C:\sources\Azure\SCardNG";
+$Source = "C:\Sources\github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool')
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool', 'bia-shared', 'bia-features', 'bia-domains', 'bia-core')
 
 function ReplaceInProject {
   param (
@@ -320,6 +320,11 @@ npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-dto';" -NewRegexp "bia-shared/model/dto/base-dto';" -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-team-dto';" -NewRegexp "bia-shared/model/dto/base-team-dto';" -Include *.ts
 
+# BEGIN - filterWithDisplay for options
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '(type: (?:PropType\.OneToMany|PropType\.ManyToMany))(?!,[\s]*?filterWithDisplay:)' -NewRegexp '$1, filterWithDisplay: true' -Include *.ts
+# END - filterWithDisplay for options
+
+# BACK END
 # BEGIN - Base Mapper
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "public override void DtoToEntity\(([\w]*)Dto dto, ([\w]*) entity(, .*)?\)" -NewRegexp 'public override void DtoToEntity($1Dto dto, ref $2 entity$3)' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(, .*)?\);" -NewRegexp '.DtoToEntity(dto, ref entity$1);' -Include *.cs
@@ -362,10 +367,6 @@ npm run clean
 # BACK END
 # Set-Location $SourceBackEnd
 # dotnet restore --no-cache
-
-
-
-
 
 Write-Host "Finish"
 pause
