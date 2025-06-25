@@ -35,6 +35,13 @@ const standaloneComponentsMapping = [
     '',
     '',
     'pTemplate'
+  ),
+  new ComponentMapping(
+    'BiaFrozenColumnDirective',
+    'src/app/shared/bia-shared/components/table/bia-frozen-column/bia-frozen-column.directive',
+    '',
+    '',
+    'biaFrozenColumn'
   )
 ];
 

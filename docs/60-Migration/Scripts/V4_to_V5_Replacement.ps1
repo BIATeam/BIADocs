@@ -243,7 +243,9 @@ function ApplyChangesAngular19 {
       @{Pattern = "primeng/sidebar"; Replacement = "primeng/drawer"},
       @{Pattern = "SidebarModule"; Replacement = "DrawerModule"},
       @{Pattern = "\bKeycloakEvent\b"; Replacement = "KeycloakEventLegacy"},
-      @{Pattern = "\bKeycloakEventType\b"; Replacement = "KeycloakEventTypeLegacy"}
+      @{Pattern = "\bKeycloakEventType\b"; Replacement = "KeycloakEventTypeLegacy"},
+      @{Pattern = "\bCalendarModule\b"; Replacement = "DatePickerModule"},
+      @{Pattern = "InputSwitchChangeEvent"; Replacement = "ToggleSwitchChangeEvent"}
   )
 
   $replacementsHTML = @(
