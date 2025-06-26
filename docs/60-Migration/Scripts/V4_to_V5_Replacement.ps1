@@ -1,4 +1,4 @@
-$Source = "C:\sources\BIADemo";
+$Source = "C:\sources\Azure\SCardNG";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -259,7 +259,7 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-tabPanel"; Replacement = "p-tabpanel"},
       @{Pattern = "p-accordionTab"; Replacement = "p-accordion-panel"},
       @{Pattern = "(?s)(<p-accordion-panel[^>]*?>)\s*<ng-template pTemplate=""header"">(.*?)</ng-template"; Replacement = "`$1<p-accordion-header>`$2</p-accordion-header"},
-      @{Pattern = "p-toggleswitch"; Replacement = "p-inputSwitch"},
+      @{Pattern = "p-inputSwitch"; Replacement = "p-toggleswitch"; },
       @{Pattern = "p-overlayPanel"; Replacement = "p-popover"},
       @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
@@ -325,15 +325,16 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(,
 # END - Base Mapper
 
 # BEGIN - CrudItemService Injector
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public signalRService: .*,([ ]|\n)*public optionsService: .*OptionsService,([ ]|\n)*)//" -NewRegexp '$1protected injector: Injector,\n//' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public optionsService: .*OptionsService,)" -NewRegexp '$1protected injector: Injector,' -Include *service.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *service.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';' -Include *service.ts
 # END - CrudItemService Injector
 
-# BEGIN - TeamDto in BaseDtoVersionedTeam
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(\W|^)additionalInfos\.userInfo\.lastName(\W|$)" -NewRegexp '$1decryptedToken.userData.lastName$2' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(\W|^)additionalInfos\.userInfo\.lastName(\W|$)" -NewRegexp '$1decryptedToken.userData.lastName$2' -Include *.ts
-# END - TeamDto in BaseDtoVersionedTeam
+# BEGIN - AdditionalInfos modifications
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "additionalInfos\.userInfo\.id" -NewRegexp 'decryptedToken.id' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "additionalInfos\.userInfo\.login" -NewRegexp 'decryptedToken.identityKey' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "additionalInfos\.userInfo" -NewRegexp 'decryptedToken.userData' -Include *.ts
+# END - AdditionalInfos modifications
 
 # BEGIN - BaseEntity
 ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntity<" -NewRegexp ': BaseEntityVersioned<' -Include *.cs
