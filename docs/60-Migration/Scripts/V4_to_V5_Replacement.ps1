@@ -1,4 +1,4 @@
-$Source = "C:\Sources\github\BIADemo";
+$Source = "C:\sources\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -310,14 +310,6 @@ function ApplyChangesAngular19 {
 # FRONT END
 ApplyChangesAngular19
 
-## Front end migration conclusion
-$standaloneCatchUpScript = "standalone-catch-up.js"
-Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
-Set-Location $SourceFrontEnd
-node $standaloneCatchUpScript
-Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
-npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
-
 # New DTO location
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-dto';" -NewRegexp "bia-shared/model/dto/base-dto';" -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-team-dto';" -NewRegexp "bia-shared/model/dto/base-team-dto';" -Include *.ts
@@ -370,8 +362,16 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackReadOnly(\
 # END - RoleId => BiaRoleId
 
 # BEGIN - pFrozenColumn => biaFrozenColumn
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts, *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.html
 # END - pFrozenColumn => biaFrozenColumn
+
+## Front end migration conclusion
+$standaloneCatchUpScript = "standalone-catch-up.js"
+Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
+Set-Location $SourceFrontEnd
+node $standaloneCatchUpScript
+Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
 
 # FRONT END
 # Set-Location $SourceFrontEnd
