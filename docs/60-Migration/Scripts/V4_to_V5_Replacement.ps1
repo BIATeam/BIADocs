@@ -358,6 +358,12 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.All(\W|$)"
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.Root(\W|$)" -NewRegexp '$1BiaTeamTypeId.Root$2' -Include *.cs
 # END - TeamTypeId => BiaTeamTypeId
 
+# BEGIN - RoleId => BiaRoleId
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.Admin(\W|$)" -NewRegexp '$1BiaRoleId.Admin$2' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackAdmin(\W|$)" -NewRegexp '$1BiaRoleId.BackAdmin$2' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackReadOnly(\W|$)" -NewRegexp '$1BiaRoleId.BackReadOnly$2' -Include *.cs
+# END - RoleId => BiaRoleId
+
 # BEGIN - pFrozenColumn => biaFrozenColumn
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts, *.html
 # END - pFrozenColumn => biaFrozenColumn
