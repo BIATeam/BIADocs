@@ -338,6 +338,11 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRS
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.ts
 # END - CrudItemService Injector
 
+# BEGIN - TeamDto in BaseDtoVersionedTeam
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(\W|^)additionalInfos\.userInfo\.lastName(\W|$)" -NewRegexp '$1decryptedToken.userData.lastName$2' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(\W|^)additionalInfos\.userInfo\.lastName(\W|$)" -NewRegexp '$1decryptedToken.userData.lastName$2' -Include *.ts
+# END - TeamDto in BaseDtoVersionedTeam
+
 # BEGIN - BaseEntity
 ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntity<" -NewRegexp ': BaseEntityVersioned<' -Include *.cs
 # TODO verify in a V4 project with archiving:
@@ -368,9 +373,9 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackReadOnly(\
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts, *.html
 # END - pFrozenColumn => biaFrozenColumn
 
-# BACK END
-Set-Location $SourceFrontEnd 
-npm run clean
+# FRONT END
+# Set-Location $SourceFrontEnd
+# npm run clean
 
 # BACK END
 # Set-Location $SourceBackEnd
