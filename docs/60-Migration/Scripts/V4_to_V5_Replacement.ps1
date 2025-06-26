@@ -356,6 +356,15 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.All(\W|$)"
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.Root(\W|$)" -NewRegexp '$1BiaTeamTypeId.Root$2' -Include *.cs
 # END - TeamTypeId => BiaTeamTypeId
 
+# BEGIN - Team in BaseEntityTeam
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": Team\n" -NewRegexp ': BaseEntityTeam\n' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": Team," -NewRegexp ': BaseEntityTeam,' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team>" -NewRegexp ', BaseEntityTeam>' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team," -NewRegexp '<BaseEntityTeam,' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team>" -NewRegexp '<BaseEntityTeam>' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team," -NewRegexp ', BaseEntityTeam,' -Include *.cs
+# END - Team in BaseEntityTeam
+
 # BEGIN - RoleId => BiaRoleId
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.Admin(\W|$)" -NewRegexp '$1BiaRoleId.Admin$2' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackAdmin(\W|$)" -NewRegexp '$1BiaRoleId.BackAdmin$2' -Include *.cs
