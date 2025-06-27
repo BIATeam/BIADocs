@@ -1,4 +1,4 @@
-$Source = "C:\sources\Azure\SCardNG";
+$Source = "C:\sources\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -363,6 +363,11 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team>" -NewRegexp ', BaseE
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team," -NewRegexp '<BaseEntityTeam,' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team>" -NewRegexp '<BaseEntityTeam>' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team," -NewRegexp ', BaseEntityTeam,' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(Team)" -NewRegexp '(BaseEntityTeam)' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "virtual Team " -NewRegexp 'virtual BaseEntityTeam ' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "public Team " -NewRegexp 'public BaseEntityTeam ' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "private Team " -NewRegexp 'private BaseEntityTeam ' -Include *.
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "override Team " -NewRegexp 'override BaseEntityTeam ' -Include *.cs
 # END - Team in BaseEntityTeam
 
 # BEGIN - RoleId => BiaRoleId
