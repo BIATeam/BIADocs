@@ -35,6 +35,13 @@ const standaloneComponentsMapping = [
     '',
     '',
     'pTemplate'
+  ),
+  new ComponentMapping(
+    'BiaFrozenColumnDirective',
+    'src/app/shared/bia-shared/components/table/bia-frozen-column/bia-frozen-column.directive',
+    '',
+    '',
+    'biaFrozenColumn'
   )
 ];
 
@@ -44,6 +51,8 @@ class ComponentData {
     this.fileName = path.basename(componentPath);
   }
 }
+
+console.log(`Starting Standalone Catch Up`);
 
 // Find all component .ts files
 const componentsData = glob
@@ -75,8 +84,8 @@ function extractStandaloneComponents(templateContent) {
 
   // Regex patterns to catch all components usages
   const tagRegex = /<([a-zA-Z0-9-]+)/g;
-  const classRegex = /class=["'][^"']*\b(p-[a-zA-Z0-9-]+)\b[^"']*["']/g;
-  const attrRegex = /\b(p[A-Z][a-zA-Z0-9]*)\b/g;
+  const classRegex = /class\s*=\s*"([^"]*)"/g;
+  const attrRegex = /(?:\s|<)([^\s=>\/]+)(?=\s*=|\s|>)/g;
 
   let match;
 
@@ -98,18 +107,21 @@ function extractStandaloneComponents(templateContent) {
 
   // Class-based components (e.g., `class="p-component"`)
   while ((match = classRegex.exec(templateContent)) !== null) {
-    const className = match[1];
-    const standaloneComponentMapping = standaloneComponentsMapping.find(
-      x => x.className && x.className === className
-    );
-    if (
-      standaloneComponentMapping &&
-      !usedComponents.find(
-        x => x.importName === standaloneComponentMapping.importName
-      )
-    ) {
-      usedComponents.push(standaloneComponentMapping);
-    }
+    const classAttrValue = match[1];
+    const classes = classAttrValue.trim().split(/\s+/);
+    classes.forEach(className => {
+      const standaloneComponentMapping = standaloneComponentsMapping.find(
+        x => x.className && x.className === className
+      );
+      if (
+        standaloneComponentMapping &&
+        !usedComponents.find(
+          x => x.importName === standaloneComponentMapping.importName
+        )
+      ) {
+        usedComponents.push(standaloneComponentMapping);
+      }
+    });
   }
 
   // Attribute-based components (e.g., `pComponent`)

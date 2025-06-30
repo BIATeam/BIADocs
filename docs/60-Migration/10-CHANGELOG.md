@@ -15,6 +15,7 @@ sidebar_position: 1
 * Be able to unset team or role as default.
 * Configuration to clear team and have no team selected ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#clear-and-choose-no-team-in-selector))
 * Configuration to choose automatic team selection mode if no default team set ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#automatic-team-selection-mode))
+* Customization of the application logo ([doc](../50-BestPractices/40-Front%20Style%20Guide/10-CustomizeLogo.md))
 * Easiest configuration for web API repository.
 * Adding new mode for form display : possibility to split the page to show form on the right of the table.
 * Better responsive design for the table component.

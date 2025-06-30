@@ -1,4 +1,4 @@
-$Source = "C:\Sources\github\BIADemo";
+$Source = "C:\sources\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -243,7 +243,9 @@ function ApplyChangesAngular19 {
       @{Pattern = "primeng/sidebar"; Replacement = "primeng/drawer"},
       @{Pattern = "SidebarModule"; Replacement = "DrawerModule"},
       @{Pattern = "\bKeycloakEvent\b"; Replacement = "KeycloakEventLegacy"},
-      @{Pattern = "\bKeycloakEventType\b"; Replacement = "KeycloakEventTypeLegacy"}
+      @{Pattern = "\bKeycloakEventType\b"; Replacement = "KeycloakEventTypeLegacy"},
+      @{Pattern = "\bCalendarModule\b"; Replacement = "DatePickerModule"},
+      @{Pattern = "InputSwitchChangeEvent"; Replacement = "ToggleSwitchChangeEvent"}
   )
 
   $replacementsHTML = @(
@@ -257,7 +259,7 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-tabPanel"; Replacement = "p-tabpanel"},
       @{Pattern = "p-accordionTab"; Replacement = "p-accordion-panel"},
       @{Pattern = "(?s)(<p-accordion-panel[^>]*?>)\s*<ng-template pTemplate=""header"">(.*?)</ng-template"; Replacement = "`$1<p-accordion-header>`$2</p-accordion-header"},
-      @{Pattern = "p-toggleswitch"; Replacement = "p-inputSwitch"},
+      @{Pattern = "p-inputSwitch"; Replacement = "p-toggleswitch"; },
       @{Pattern = "p-overlayPanel"; Replacement = "p-popover"},
       @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
@@ -308,14 +310,6 @@ function ApplyChangesAngular19 {
 # FRONT END
 ApplyChangesAngular19
 
-## Front end migration conclusion
-$standaloneCatchUpScript = "standalone-catch-up.js"
-Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
-Set-Location $SourceFrontEnd
-node $standaloneCatchUpScript
-Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
-npx prettier --write . 2>&1 | Select-String -Pattern "unchanged" -NotMatch
-
 # New DTO location
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-dto';" -NewRegexp "bia-shared/model/dto/base-dto';" -Include *.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "bia-shared/model/base-team-dto';" -NewRegexp "bia-shared/model/dto/base-team-dto';" -Include *.ts
@@ -331,10 +325,16 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(,
 # END - Base Mapper
 
 # BEGIN - CrudItemService Injector
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public signalRService: .*,([ ]|\n)*public optionsService: .*OptionsService,([ ]|\n)*)//" -NewRegexp '$1protected injector: Injector,\n//' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *.ts
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';(((\n)*)import \{ Store \} from '@ngrx/store';((\n)*)import \{ TableLazyLoadEvent \} from 'primeng/table';)" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';$1' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public optionsService: .*OptionsService,)" -NewRegexp '$1protected injector: Injector,' -Include *service.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *service.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';' -Include *service.ts
 # END - CrudItemService Injector
+
+# BEGIN - AdditionalInfos modifications
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "additionalInfos\.userInfo\.id" -NewRegexp 'decryptedToken.id' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "additionalInfos\.userInfo\.login" -NewRegexp 'decryptedToken.identityKey' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "additionalInfos\.userInfo" -NewRegexp 'decryptedToken.userData' -Include *.ts
+# END - AdditionalInfos modifications
 
 # BEGIN - BaseEntity
 ReplaceInProject -Source $SourceBackEnd -OldRegexp ": VersionedTable, IEntity<" -NewRegexp ': BaseEntityVersioned<' -Include *.cs
@@ -356,13 +356,42 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.All(\W|$)"
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)TeamTypeId\.Root(\W|$)" -NewRegexp '$1BiaTeamTypeId.Root$2' -Include *.cs
 # END - TeamTypeId => BiaTeamTypeId
 
+# BEGIN - Team in BaseEntityTeam
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": Team\n" -NewRegexp ': BaseEntityTeam\n' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ": Team," -NewRegexp ': BaseEntityTeam,' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team>" -NewRegexp ', BaseEntityTeam>' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team," -NewRegexp '<BaseEntityTeam,' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team>" -NewRegexp '<BaseEntityTeam>' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team," -NewRegexp ', BaseEntityTeam,' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(Team)" -NewRegexp '(BaseEntityTeam)' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "virtual Team " -NewRegexp 'virtual BaseEntityTeam ' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "public Team " -NewRegexp 'public BaseEntityTeam ' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "protected Team " -NewRegexp 'public BaseEntityTeam ' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "private Team " -NewRegexp 'private BaseEntityTeam ' -Include *.
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "override Team " -NewRegexp 'override BaseEntityTeam ' -Include *.cs
+# END - Team in BaseEntityTeam
+
+# BEGIN - RoleId => BiaRoleId
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.Admin(\W|$)" -NewRegexp '$1BiaRoleId.Admin$2' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackAdmin(\W|$)" -NewRegexp '$1BiaRoleId.BackAdmin$2' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "(\W|^)RoleId\.BackReadOnly(\W|$)" -NewRegexp '$1BiaRoleId.BackReadOnly$2' -Include *.cs
+# END - RoleId => BiaRoleId
+
 # BEGIN - pFrozenColumn => biaFrozenColumn
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts, *.html
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.html
 # END - pFrozenColumn => biaFrozenColumn
 
-# BACK END
-Set-Location $SourceFrontEnd 
-npm run clean
+## Front end migration conclusion
+$standaloneCatchUpScript = "standalone-catch-up.js"
+Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
+Set-Location $SourceFrontEnd
+node $standaloneCatchUpScript
+Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
+
+# FRONT END
+# Set-Location $SourceFrontEnd
+# npm run clean
 
 # BACK END
 # Set-Location $SourceBackEnd
