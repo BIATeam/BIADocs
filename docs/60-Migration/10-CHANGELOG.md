@@ -31,6 +31,7 @@ sidebar_position: 1
 * Filter on list can search on "Id" instead of "Display" to improve search performances.
 * Simplify path of imports of css files in components.
 * Allow authorized users to connect with the same rights as another user.
+* Add noPadding and noMargin options in layout routing parameters. 
 ### Bugfix
 * Global search support for case sensitive SQL columns.
 * Limit popup width to screen width.
