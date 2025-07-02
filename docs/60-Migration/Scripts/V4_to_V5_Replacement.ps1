@@ -382,6 +382,10 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp '
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp 'biaFrozenColumn' -Include *.html
 # END - pFrozenColumn => biaFrozenColumn
 
+# BEGIN - uncryptedToken => decryptedToken
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'uncryptedToken' -NewRegexp 'decryptedToken' -Include *.ts
+# END - uncryptedToken => decryptedToken
+
 ## Front end migration conclusion
 $standaloneCatchUpScript = "standalone-catch-up.js"
 Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
