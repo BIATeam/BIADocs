@@ -115,6 +115,13 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
 });
 ```
 
+Into your feature's model file, inherits your interface of `FixableDto` to use the fixable properties if needed :
+``` typescript title="feature.ts"
+export interface Feature extends BaseDto, FixableDto {
+  // [...]
+}
+```
+
 ### Permissions
 #### Back
 Into `bianetconfig.json`, add the fix permission and associate roles :
