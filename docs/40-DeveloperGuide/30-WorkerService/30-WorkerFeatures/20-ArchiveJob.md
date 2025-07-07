@@ -75,21 +75,19 @@ You must set an `ArchiveEntityConfiguration` for each entity to archive.
 
 ## Implementation
 ### Archivable entity
-Your entity type to archive must implements the `IEntityArchivable<TKey>` that inherits from `IEntityFixable<TKey>` (see [Fixable CRUD documentation](../../20-CRUD/75-FixableCRUD.md)) :
+Your entity type to archive must implements one of the following base class `BaseEntityFixableArchivable<TKey>` or `BaseEntityVersionedFixableArchivable<TKey>` that inherits from `IEntityArchivable`  :
 ``` csharp title="MyEntity.cs"
-public class MyEntity : IEntityArchivable<int>
+public class MyEntity : BaseEntityFixableArchivable<int>
 {
     /// Entity key
     public int Id { get; set; }
 
-    /// [...] Other properties
-
-    /// Indicates weither the entity is fixed or not
-    public bool IsFixed { get; set; }
-
-    /// Fixed date
-    public DateTime? FixedDate { get; set; }
-
+    /// [...]
+}
+```
+``` csharp title="IEntityArchivable.cs"
+public interface IEntityArchivable : IEntityFixable
+{
     /// Indicates weither the entity is archived or not
     public bool IsArchived { get; set; }
 
@@ -97,6 +95,9 @@ public class MyEntity : IEntityArchivable<int>
     public DateTime? ArchivedDate { get; set; }
 }
 ```
+:::info
+Archivable entities are always fixable. See [Fixable CRUD documentation](../../20-CRUD/75-FixableCRUD.md).
+:::
 
 Then, create a new migration to update your table in database :
 1. `add-migration -context "datacontext" AddArchivablePropertiesTableMyEntity`
