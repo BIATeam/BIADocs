@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # ChangeLog
 
-## V5.0.0 (WIP)
+## V5.0.0 (02/07/2025)
 ### Features
 * Form layout configuration ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-layout))
 * Component button group ([doc](../40-DeveloperGuide/20-CRUD/80-ButtonGroup.md))
