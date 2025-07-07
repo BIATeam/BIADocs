@@ -53,12 +53,16 @@ Clicking on it will invert the value :
 ## Configuration
 ### Fixable entity
 #### Entity Model
-Implements the interface `IEntityFixable<TKey>` in your feature's entity :
+Inherits your entity from one of the following base class `BaseEntityFixable<TKey>`, `BaseEntityFixableArchivable<TKey>`, `BaseEntityVersionedFixableArchivable<TKey>` that implements the interface `IEntityFixable` :
 ``` csharp title="Feature.cs"
-public class Feature : IEntityFixable<int>
+public class Feature : BaseEntityFixable<int>
 {
   // [...]
-
+}
+```
+``` csharp title="IEntityFixable.cs"
+public interface IEntityFixable
+{
   /// <summary>
   /// Gets or sets the is fixed.
   /// </summary>
@@ -70,43 +74,36 @@ public class Feature : IEntityFixable<int>
   public DateTime? FixedDate { get; set; }
 }
 ```
-:::info
-`IEntityFixable<TKey>` inherits from `IEntity<TKey>`.
-:::
+
 :::tip
 Don't forget to create a database migration !
 :::
+:::info
+**In case of new entity, you can generate with BIAToolkit the related DTO, then a CRUD based on your fixable entity, and go to the next chapter [Handle Children](#handle-children) !**
+:::
 
-#### Mapper
-Add the required mapping of the fixable properties into your feature's mapper : 
-``` csharp title="FeatureMapper.cs"
-public class FeatureMapper : BaseMapper<FeatureDto, Feature, int>
+#### DTO
+Inherits your DTO from one of the following base class `BaseDtoFixable<TKey>`, `BaseDtoFixableArchivable<TKey>`, `BaseDtoVersionedFixableArchivable<TKey>` that implements the interface `IDtoFixable` :
+``` csharp title="FeatureDto.cs"
+public class FeatureDto : BaseDtoFixable<int>
 {
   // [...]
-
-  public override void DtoToEntity(FeatureDto dto, Feature entity)
-  {
-    // [...]
-
-    entity.IsFixed = dto.IsFixed;
-  }
-
-  public override Expression<Func<Feature, FeatureDto>> EntityToDto()
-  {
-    return entity => new FeatureDto
-    {
-      // [...]
-
-      IsFixed = entity.IsFixed,
-    }
-  }
 }
 ```
-:::tip
-`isFixed` property is part of `BaseDto<TKey>`.  
+``` csharp title="IDtoFixable.cs"
+public interface IDtoFixable
+{
+  /// <summary>
+  /// Gets or sets the is fixed.
+  /// </summary>
+  public bool IsFixed { get; set; }
 
-If needed in your application, add the property `fixedDate` into your feature DTO and the mapping.
-:::
+  /// <summary>
+  /// Gets or sets the fixed date.
+  /// </summary>
+  public DateTime? FixedDate { get; set; }
+}
+```
 
 #### Front CRUD Configuration
 Into your feature's constants file, set the property `isFixable` of the `CrudConfig` to `true` :
@@ -383,7 +380,7 @@ export class FeaturesReadComponent extends CrudItemsReadComponent<Feature> {
           // Define if user can edit
           this.canEdit =
             this.crudConfiguration.isFixable === true && feature.isFixed === true
-              ? this.canFix
+              ? false
               : this.authService.hasPermission(Permission.Feature_Update);
 
           // Define the read only mode
@@ -496,6 +493,7 @@ export class ChildFeaturesIndexComponent extends CrudItemsIndexComponent<ChildFe
           this.canSave =
             feature.isFixed === false &&
             this.authService.hasPermission(Permission.ChildFeature_Save);
+          this.canSelect = this.canDelete;
         })
     );
   }
