@@ -8,7 +8,7 @@ When opening a form on popup or calc mode, we want sometimes prevent the closing
 ## Block form
 ### Front
 :::info
-These configuration instructions are already included into features generated from the version **4.1.0** of BIA Framework. 
+These configuration instructions are already included into features generated from the version **5.0.0** of BIA Framework. 
 :::
 
 1. Ensure that your feature has store action called after success or fail to create or edit an item using the matching effect into the `my-feature-effects.ts` file.  
@@ -43,24 +43,11 @@ export class MyFeatureService extends CrudItemService<MyFeature> {
 Sometimes, the data opened for edit in the form can be changed by another user at the same time. You can handle these changes directly in your form to inform your user of this conflict.
 ### Back
 :::info
-These configuration instructions are already included into features generated from the version **4.1.0** of BIA Framework.
+These configuration instructions are already included into features generated from the version **5.0.0** of BIA Framework.
 :::
 
-1. Your entity must derived of `VersionedTable` type
-2. Your mapper should include in the `EntityToDto()` method a mapping for the `RowVersion` property of the DTO based on the same property from the entity : 
-``` csharp title="MyEntityMapper.cs"
-public override Expression<Func<MyEntity, MyEntityDto>> EntityToDto()
-{
-    return entity => new MyEntityDto
-    {
-        // [...]
-
-        // Add the RowVersion mapping
-        RowVersion = Convert.ToBase64String(entity.RowVersion),
-    }
-}
-```
-3. Add in your `Update()` endpoint of your entity controller the catch of `OutDatedException` and the handle of `409` status code : 
+1. Your entity must derived of one of the following base class `BaseEntityVersioned`, `BaseEntityVersionedFixable`, `BaseEntityVersionedFixableArchivable` that implements the interface `IEntityVersioned`
+2. Add in your `Update()` endpoint of your entity controller the catch of `OutDatedException` and the handle of `409` status code : 
 ``` csharp title="MyEntityController.cs"
 // Add this attribute
 [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -85,12 +72,12 @@ export const myFeatureFieldsConfiguration : BiaFieldsConfig<MyFeature> = {
         // [...]
         Object.assign(new BiaFieldConfig('rowVersion', 'myFeature.rowVersion'), {
             isVisible: false,
-            isHideByDefault: true,
+            isVisibleInTable: false,
         }),
     ]
 }
 ```
-2. In your feature edit component HTML template, add the binding for the `isCrudItemOutdated` property between the feature edit component and the feature form component : 
+1. In your feature edit component HTML template, add the binding for the `isCrudItemOutdated` property between the feature edit component and the feature form component : 
 ``` html title="my-feature-edit.component.html"
 <app-my-feature-form
     [isCrudItemOutdated]="isCrudItemOutdated"></app-my-feature-form>
@@ -106,9 +93,9 @@ Warning displayed as toast on calc mode :
 You can inform your user with SignalR that the data on the opened form has been updated by another user.  
 This feature works only with the **edit component** on **popup mode**.
 #### Back 
-1. On your feature controller, enable the `UseHubForClientInAirport` constant definition and add a sending instruction to the client with the dedicated identifier and hub :
+1. On your feature controller, enable the `UseHubForClientInFeature` constant definition and add a sending instruction to the client with the dedicated identifier and hub :
 ``` csharp title="MyFeatureController"
-#define UseHubForClientInAirport
+#define UseHubForClientInFeature
 
 namespace MyCompany.MyProject.Presentation.Api.Controllers.MyFeature
 {
@@ -121,10 +108,10 @@ namespace MyCompany.MyProject.Presentation.Api.Controllers.MyFeature
             try
             { 
                 // [...]
-                var updatedDto = await this.airportService.UpdateAsync(dto);
+                var updatedDto = await this.featureService.UpdateAsync(dto);
 
                 // Add the signalR notification
-#if UseHubForClientInAirport
+#if UseHubForClientInFeature
                 await this.clientForHubService.SendTargetedMessage(string.Empty, "myfeatures", "update-myfeature", updatedDto);
 #endif
 
@@ -142,17 +129,13 @@ namespace MyCompany.MyProject.Presentation.Api.Controllers.MyFeature
 #### Front
 1. Edit your constant feature file to use signalR :
 ``` typescript title="my-feature.constants.ts"
-export const airportCRUDConfiguration: CrudConfig<Airport> = new CrudConfig({
+export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
     // [...]
     useSignalR: true,
 }); 
 ``` 
 2. Create or complete your feature signalR service with following methods `registerUpdate()` and `unregisterUpdate()` :
 ``` typescript title="my-feature-signalr.service.ts"
-import { Injectable } from '@angular/core';
-import { BiaSignalRService } from 'src/app/core/bia-core/services/bia-signalr.service';
-import { TargetedFeature } from 'src/app/shared/bia-shared/model/signalR';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -164,17 +147,17 @@ export class MyFeatureSignalRService {
   initialize() {
     this.targetedFeature = {
       parentKey: '',
-      featureName: 'myFeatures',
+      featureName: 'myfeatures',
     };
     this.signalRService.joinGroup(this.targetedFeature);
   }
 
   registerUpdate(callback: (args: any) => void) {
     console.log(
-      '%c [MyFeatures] Register SignalR : update-myFeature',
+      '%c [MyFeatures] Register SignalR : update-myfeature',
       'color: purple; font-weight: bold'
     );
-    this.signalRService.addMethod('update-myFeature', args => {
+    this.signalRService.addMethod('update-myfeature', args => {
       callback(args);
     });
   }
@@ -186,27 +169,15 @@ export class MyFeatureSignalRService {
 
   private unregisterUpdate() {
     console.log(
-      '%c [MyFeatures] Unregister SignalR : update-myFeature',
+      '%c [MyFeatures] Unregister SignalR : update-myfeature',
       'color: purple; font-weight: bold'
     );
-    this.signalRService.removeMethod('update-myFeature');
+    this.signalRService.removeMethod('update-myfeature');
   }
 }
 ```
 3. Complete your feature edit component in order to react to signalR notifications : 
 ``` typescript title="my-feature-edit.component.ts"
-import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { CrudItemEditComponent } from 'src/app/shared/bia-shared/feature-templates/crud-items/views/crud-item-edit/crud-item-edit.component';
-import { myFeatureCRUDConfiguration } from '../../my-feature.constants';
-import { MyFeature } from '../../model/my-feature';
-import { MyFeatureSignalRService } from '../../services/my-feature-signalr.service';
-import { MyFeatureService } from '../../services/my-feature.service';
-
-@Component({
-  selector: 'app-my-feature-edit',
-  templateUrl: './my-feature-edit.component.html',
-})
 export class MyFeatureEditComponent
   extends CrudItemEditComponent<MyFeature>
   implements OnInit, OnDestroy
