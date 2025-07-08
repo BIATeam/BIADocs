@@ -3,6 +3,35 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V4.1.1 (2025-06-30)
+
+### Features
+* Add the possibility to include multiple lines of disclaimers at the top and/or bottom of the CSV file
+
+### Bugfix
+* Allow import of CSV files when a disclaimer is present
+
+## V4.1.0 (2025-06-24)
+
+### Features
+* Add the possibility to include a line on top of CSV files export.
+
+## V4.0.7 (2025-06-23)
+
+### BugFix
+* Fix multiple import of new items error
+* Fix dependency injection error of signalR when not activated
+
+## V4.0.6 (2025-06-05)
+
+### BugFix
+* Fix notification data JSON parse
+
+## V4.0.5 (2025-04-14)
+
+### BugFix
+* Fix local storage values being shared between all subsites of same domain for ultima layout and AppSettings value (offline mode)
+
 ## V4.0.4 (2025-04-04)
 
 ### BugFix
