@@ -26,18 +26,21 @@ sidebar_position: 1
 * Exposing primeng MultiSortMeta to allow multiple sorts on table.
 * Allow swagger authentication through keycloak.
 * Accepting empty navigation list in menu.
-* Add a clone data row option in table (activable in feature configuration file).
-* Add detail row to tables (activable in feature configuration file).
+* Add a clone data row option in table (can be activated in feature configuration file).
+* Add detail row to tables (can be activated in feature configuration file).
 * Filter on list can search on "Id" instead of "Display" to improve search performances.
 * Simplify path of imports of css files in components.
 * Allow authorized users to connect with the same rights as another user.
 * Add noPadding and noMargin options in layout routing parameters. 
+* Short date entry with primeNg component (year only and year month)
 ### Bugfix
 * Global search support for case sensitive SQL columns.
 * Limit popup width to screen width.
 * Allow keycloak user search with spaces in names.
 * Fix an error in calc mode when leaving a row by clicking on another row.
 * Disabling name change while updating a member.
+* Import of short date (year only and year month)
+* Compare of date + time (do not take care of second)
 ### Angular
 * Migration to Angular 19
 * Migration to PrimeNG 19
