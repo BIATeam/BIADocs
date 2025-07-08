@@ -48,6 +48,7 @@ sidebar_position: 1
 * Using new PrimeNG theming ([doc](../50-BestPractices/40-Front%20Style%20Guide/40-CustomizeApplicationTheme.md))
 ### .NET
 * Handle user's default teams from dedicated new table `UserDefaultTeams` and remove property `IsDefault` from `Member` entity and database
+* Into `ArchiveServiceBase`, rename `SaveItemAsFlatTextCompressedAsync()` to `CreateArchiveAsync()`, and expose new virtual methods `SerializeItem()` and `AddEntriesToArchiveAsync()` ([doc](../40-DeveloperGuide/30-WorkerService/30-WorkerFeatures/20-ArchiveJob.md#archive-service))
 
 ## V4.1.1 (2025-06-30)
 

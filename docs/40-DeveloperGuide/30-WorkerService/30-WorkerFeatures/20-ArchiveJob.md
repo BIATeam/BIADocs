@@ -284,16 +284,41 @@ namespace BIA.Net.Core.Application.Archive
         /// Save an entity to the target as flat text JSON into a ZIP archive.
         /// </summary>
         /// <param name="item">The entity to save.</param>
-        /// <param name="targetDirectoryPath">Target directory path.</param>
+        /// <param name="targetArchiveDirectoryPath">Target directory path.</param>
         /// <returns><see cref="Task{bool}"/> that indicates success.</returns>
-        protected async Task<bool> SaveItemAsFlatTextCompressedAsync(TEntity item, string targetDirectoryPath);
+        protected virtual async Task<bool> CreateArchiveAsync(TEntity item, string targetArchiveDirectoryPath);
+
+        /// <summary>
+        /// Serialize the <typeparamref name="TEntity"/> item.
+        /// </summary>
+        /// <param name="item">The item to serialize.</param>
+        /// <returns>A <see cref="Task"/> resulting of the serialized item as <see cref="string"/>.</returns>
+        protected virtual Task<string> SerializeItem(TEntity item);
+
+        /// <summary>
+        /// Override this method to allow the add of new <see cref="ArchiveEntry"/> entries to the given <paramref name="archive"/> based on current <typeparamref name="TEntity"/> item when creating the archive into <see cref="CreateArchiveAsync(TEntity, string)"/>.
+        /// </summary>
+        /// <param name="item">Current <typeparamref name="TEntity"/> item to archive.</param>
+        /// <param name="archive">The archive.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        protected virtual Task AddEntriesToArchiveAsync(TEntity item, ZipArchive archive);
+
+        /// <summary>
+        /// Append additional entries to the given <paramref name="archive"/>.
+        /// </summary>
+        /// <param name="archive">The archive.</param>
+        /// <param name="archiveEntries">Optionnal entries to add to the archive.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        protected async Task AppendEntriesToArchiveAsync(ZipArchive archive, IEnumerable<ArchiveEntry> archiveEntries);
     }
 }
 ```
 Workflow of archive service is following : 
 1. `RunAsync()`
    1. `ArchiveItemAsync()` for each items to archive
-   2. `SaveItemAsFlatTextCompressedAsync()` for each items to archive
+   2. `CreateArchiveAsync()` for each items to archive
+      1. `SerializeItem()` for current item
+      2. `AddEntriesToArchiveAsync()` to the current archive
 
 The default archive filter rule is the following : 
    - Entity is fixed
@@ -357,6 +382,40 @@ public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
     {
         return base.ArchiveRuleFilter()
             .CombineSelector(x => ...); // Combine with your custom selector
+    }
+}
+```
+
+If you want to customize the JSON content, override the method `SerializeItem()` :
+``` csharp title="MyEntityArchiveService.cs"
+public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
+{
+    /// <inheritdoc/>
+    protected override Task<string> SerializeItem(MyEntity item)
+    {
+        var toSerialize = new { MyProperty = "Something", MyEntity = item};
+        // You can use the jsonSerializerSettings from the base class or create your own
+        return Task.FromResult(JsonConvert.SerializeObject(toSerialize, this.jsonSerializerSettings));
+    }
+}
+```
+
+To add your own entries into the archive, override the method `AddEntriesToArchiveAsync()`, create your list of `ArchiveEntry`, then call the method `AppendEntriesToArchiveAsync()` : 
+``` csharp title="MyEntityArchiveService.cs"
+public class MyEntityArchiveService : ArchiveServiceBase<MyEntity, int>
+{
+    /// <inheritdoc/>
+    protected override async Task AddEntriesToArchiveAsync(MyEntity item, ZipArchive archive)
+    {
+        var entries = new List<ArchiveEntry>
+        {
+            new ArchiveEntry 
+            { 
+                EntryName = "NewEntry.txt", 
+                ContentStream = File.OpenRead("temp/log.txt")
+            }
+        }
+        await this.AppendEntriesToArchiveAsync(archive, entries);
     }
 }
 ```

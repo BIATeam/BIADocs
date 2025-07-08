@@ -386,6 +386,10 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'pFrozenColumn' -NewRegexp '
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'uncryptedToken' -NewRegexp 'decryptedToken' -Include *.ts
 # END - uncryptedToken => decryptedToken
 
+# BEGIN - SaveItemAsFlatTextCompressedAsync => CreateArchiveAsync
+ReplaceInProject -Source $SourceBackEnd -OldRegexp 'SaveItemAsFlatTextCompressedAsync' -NewRegexp 'CreateArchiveAsync' -Include *.cs
+# END - SaveItemAsFlatTextCompressedAsync => CreateArchiveAsync
+
 ## Front end migration conclusion
 $standaloneCatchUpScript = "standalone-catch-up.js"
 Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
