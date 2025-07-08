@@ -9,7 +9,7 @@ sidebar_position: 1
 * Form layout configuration ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-layout))
 * Component button group ([doc](../40-DeveloperGuide/20-CRUD/80-ButtonGroup.md))
 * Configuration to set the read only mode of a CRUD feature item ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-read-only))
-* Handling of errors when form is submitted and preventing closing it ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#prevent-form-closing-on-error))
+* Handling of errors when form is submitted and preventing closing it ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#block-form))
 * Handling of outdated item currently edited ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#inform-user-of-conflict))
 * Fixable entity ([doc](../40-DeveloperGuide/20-CRUD/75-FixableCRUD.md))
 * Be able to unset team or role as default.
