@@ -363,7 +363,7 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team>" -NewRegexp ', BaseE
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team," -NewRegexp '<BaseEntityTeam,' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "<Team>" -NewRegexp '<BaseEntityTeam>' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp ", Team," -NewRegexp ', BaseEntityTeam,' -Include *.cs
-ReplaceInProject -Source $SourceBackEnd -OldRegexp "(Team)" -NewRegexp '(BaseEntityTeam)' -Include *.cs
+ReplaceInProject -Source $SourceBackEnd -OldRegexp "\(Team\)" -NewRegexp '(BaseEntityTeam)' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "virtual Team " -NewRegexp 'virtual BaseEntityTeam ' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "public Team " -NewRegexp 'public BaseEntityTeam ' -Include *.cs
 ReplaceInProject -Source $SourceBackEnd -OldRegexp "protected Team " -NewRegexp 'public BaseEntityTeam ' -Include *.cs
