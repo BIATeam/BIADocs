@@ -105,13 +105,12 @@ To use them, you must define a template for your `specificInput` or `specificOut
   </ng-template>
 
   <ng-template pTemplate="specificOutput" let-field="field" let-data="data">
-    <div [formGroup]="form">
-      <ng-container [ngSwitch]="field.field">
-        <ng-container *ngSwitchCase="'myField'">
-          <!-- Apply here your template for your field  -->
-          <i class="pi pi-circle-fill" [ngClass]="{ 'red-circle': !data, 'green-circle': !!data }"></i>
-        </ng-container>
+    <ng-container [ngSwitch]="field.field">
+      <ng-container *ngSwitchCase="'myField'">
+        <!-- Apply here your template for your field  -->
+        <i class="pi pi-circle-fill" [ngClass]="{ 'red-circle': !data, 'green-circle': !!data }"></i>
       </ng-container>
+    </ng-container>
   </ng-template>
 </bia-calc-table>
 ```
