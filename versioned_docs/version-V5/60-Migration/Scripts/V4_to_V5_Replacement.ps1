@@ -264,7 +264,7 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
       @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)<\/h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
-      @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-float-label[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-floatlabel$2 variant="in">$3</p-floatlabel'},
+      @{Pattern = '(?s)<span(\s+[^>]*class="[^"]*p-float-label[^"]*"[^>]*)>((?:[^<]+|<(?!\/?span\b)|<span\b[^>]*>(?:[^<]+|<(?!\/?span\b)|<span\b[^>]*>(?:[^<]+|<(?!\/?span\b))*<\/span\s*>)*<\/span\s*>)*)<\/span\s*>'; Replacement = '<p-floatlabel$1 variant="in">$2</p-floatlabel>'},
       @{Pattern = '(?s)<(\w+)([^>]*class="[^"]*p-fluid[^"]*"[^>]*)>(.*?)<\/\1'; Replacement = '<p-fluid$2>$3</p-fluid'},
       @{Pattern = '(?s)<button([^>]*class="[^"]*p-link[^"]*"[^>]*)>(.*?)<\/button'; Replacement = '<p-button [link]=true $1>$2</p-button'},
       @{Pattern = '(?<=class=")([^"]*)\b(p-float-label)\b([^"]*)'; Replacement = '${1}${3}'},
