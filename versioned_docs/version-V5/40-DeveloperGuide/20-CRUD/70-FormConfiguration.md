@@ -36,17 +36,18 @@ Each column item must be a `BiaFieldConfig<TDto>`, where you will configure for 
 - `isOnlyInitializable` : only initializable mode (`true` | `false`)
 - `isOnlyUpdatable` : only updatable mode (`true` | `false`)
 - `isEditableChoice` : editable choice mode (`true` | `false`)
-- `isVisible` : visibility mode (`true` | `false`)
-- `isHideByDefault` : hide by default mode (`true` | `false`)
+- `isVisible` : visibility mode into **form** (`true` | `false`)
+- `isVisibleInTable` : visibility mode into **table** (`true` | `false`)
+- `isHideByDefault` : hide by default mode into the "columns visible by default" dropdown of the table (`true` | `false`)
 - `maxlength` : maximum lenght setting when input is a string
 - `isRequired` : required mode (`true` | `false`)
-- `specificOutput` : specific output mode (`true` | `false`)
-- `specificInput` : specific input mode (`true` | `false`)
 - `validators` : set of validators to apply to the input
 - `minWidth` : minimum width when displayed into a table
-- `isFrozen` : frozen mode (`true` | `false`)
-- `alignFrozen` : frozen alignement
-- `displayFormat` : display format
+- `isFrozen` : frozen mode into the table (`true` | `false`)
+- `alignFrozen` : frozen alignement in the table (`right` | `left`)
+- `displayFormat` : display format for **numbers** or **date** by providing the required `BiaFieldNumberFormat` or `BiaFieldDateFormat`
+- `specificOutput` : specific output mode (`true` | `false`) (see [next chapter](#specific-inputoutput))
+- `specificInput` : specific input mode (`true` | `false`) (see [next chapter](#specific-inputoutput))
 
 Example : 
 ``` typescript title="feature.ts"
@@ -55,7 +56,7 @@ export const featureFieldsConfiguration: BiaFieldsConfig<Feature> = {
     // Field configuration for msn property
     Object.assign(new BiaFieldConfig('msn', 'feature.msn'), {
       isRequired: true,
-      validators: [Validators.required, Validators.maxLength(64)],
+      validators: [Validators.maxLength(64)],
     }),
     // Field configuration for manufacturer property
     Object.assign(new BiaFieldConfig('manufacturer', 'feature.manufacturer'), {}),
@@ -65,20 +66,65 @@ export const featureFieldsConfiguration: BiaFieldsConfig<Feature> = {
       isSearchable: true,
       isSortable: false,
       type: PropType.Boolean,
-      validators: [Validators.required],
+    }),
+    // Field configuration for estimatedPrice property
+    Object.assign(new BiaFieldConfig('estimatedPrice', 'plane.estimatedPrice'), {
+      type: PropType.Number,
+      filterMode: PrimeNGFiltering.Equals,
+      displayFormat: Object.assign(new BiaFieldNumberFormat(), {
+        mode: NumberMode.Currency,
+        minFractionDigits: 2,
+        maxFractionDigits: 2,
+        currency: 'EUR',
+      }),
+      validators: [Validators.min(0)],
     }),
     [...]
   ]}
+```
+:::tip
+No need to set a required `Validator` if you have set the property `isRequired` to `true`
+:::
+
+### Specific input/output
+You can set your field as specific input and/or output into your form or your table to customize the display and setting of your field's value :
+* set `specificInput` to `true` into your **BIA forms** and **BIA table using calc mode**
+* set `specificOutput` to `true` into your **BIA tables** 
+
+To use them, you must define a template for your `specificInput` or `specificOutput` into the form or the table :
+``` html title="feature-table.component.html"
+<bia-calc-table>
+  <ng-template pTemplate="specificInput" let-field="field" let-form="form">
+    <div [formGroup]="form">
+      <ng-container [ngSwitch]="field.field">
+        <ng-container *ngSwitchCase="'myField'">
+          <!-- Apply here your template for your field  -->
+          <p-checkbox binary="true" [formControlName]="field.field"></p-checkbox>
+        </ng-container>
+      </ng-container>
+  </ng-template>
+
+  <ng-template pTemplate="specificOutput" let-field="field" let-data="data">
+    <div [formGroup]="form">
+      <ng-container [ngSwitch]="field.field">
+        <ng-container *ngSwitchCase="'myField'">
+          <!-- Apply here your template for your field  -->
+          <i class="pi pi-circle-fill" [ngClass]="{ 'red-circle': !data, 'green-circle': !!data }"></i>
+        </ng-container>
+      </ng-container>
+  </ng-template>
+</bia-calc-table>
 ```
 
 ## Form layout
 ### Principles 
 #### Hierarchy
-The class `BiaFormLayoutConfig<TDto>` is the container of your form layout configuration. Each items of this class will represent a configuration to customize the disposition of your inputs into the form, where `TDto` represents your feature model.
+The class `BiaFormLayoutConfig<TDto>` is the container of your form layout configuration. Each items of this class (`BiaFormLayoutConfigItem`) will represent a configuration to customize the disposition of your inputs into the form, where `TDto` represents your feature model.
 
-These items can be :
+These `BiaFormLayoutConfigItem` can be :
 - `BiaFormLayoutConfigRow<TDto>` : a row that will contains a set of `BiaFormLayoutConfigColumn<TDto>` 
 - `BiaFormLayoutConfigGroup<TDto>` : a group of `BiaFormLayoutConfigRow<TDto>` under a title (title must refer to a traductible resource) 
+- `BiaFormLayoutConfigTabGroup<TDto>` : a bunch of `BiaFormLayoutConfigTab<TDto>` that each contains other `BiaFormLayoutConfigItem`
 
 ``` typescript
 // Config
@@ -92,12 +138,24 @@ new BiaFormLayoutConfig<Feature>([
     // Second row of the group
     new BiaFormLayoutConfigRow([]),
   ]),
+  // Third row, which is a tab
+  new BiaFormLayoutConfigTabGroup([
+    // First tab
+    new BiaFormLayoutConfigTab([
+      new BiaFormLayoutConfigRow([]),
+    ]),
+    // Second tab
+    new BiaFormLayoutConfigTab([
+      new BiaFormLayoutConfigRow([]),
+    ]),
+  ])
 ])
 ```
 
-A `BiaFormLayoutConfigColumn<TDto>` element can be both : 
+A `BiaFormLayoutConfigColumn<TDto>` element can be : 
 - `BiaFormLayoutConfigField<TDto>` which represents a field of one of your feature's property
 - `BiaFormLayoutConfigGroup<TDto>` so you can set in a column a new group of fields
+- `BiaFormLayoutConfigTabGroup<TDto>` to set a new tab group into your column
 
 ``` typescript
 // Config
@@ -116,6 +174,27 @@ new BiaFormLayoutConfig<Feature>([
         new BiaFormLayoutConfigField('field3')
       ]),
     ]),
+    // Third column, which is a tab
+    new BiaFormLayoutConfigTabGroup([
+      // First tab
+      new BiaFormLayoutConfigTab([
+        new BiaFormLayoutConfigRow([
+          // First column of the tab, which is a field
+          new BiaFormLayoutConfigField('field4')
+          // Second column of the tab, which is a field
+          new BiaFormLayoutConfigField('field5')
+        ]),
+      ]),
+      // Second tab
+      new BiaFormLayoutConfigTab([
+        new BiaFormLayoutConfigRow([
+          // First column of the tab, which is a field
+          new BiaFormLayoutConfigField('field6')
+          // Second column of the tab, which is a field
+          new BiaFormLayoutConfigField('field7')
+        ]),
+      ]),
+    ])
   ]),
 ])
 ```
@@ -124,7 +203,7 @@ All the fields used into the `BiaFormLayoutConfig` must have been declared into 
 :::
 
 #### Responsive design
-When declaring a `BiaFormLayoutConfigField<TDto>` or a `BiaFormLayoutConfigGroup<TDto>`, you can set the column size of these elements by :
+When declaring a `BiaFormLayoutConfigColumn<TDto>` element, you can set the column size by :
 - setting only the `lgSize` which represents the column size for large screen (>= 992px) :
   ``` typescript
   new BiaFormLayoutConfigGroup<Feature>('Group', groupRows, 2)
