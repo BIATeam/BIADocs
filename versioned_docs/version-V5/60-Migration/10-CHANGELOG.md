@@ -4,6 +4,11 @@ sidebar_position: 1
 
 # ChangeLog
 
+## V5.0.2 (15/07/2025)
+### Bugfix
+* Fix version of Microsoft.Identity.Client containing security risk
+* Fix application not loading when a new version is deployed and worker service is disabled
+
 ## V5.0.1 (08/07/2025)
 ### Features
 * Form layout configuration ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-layout))
