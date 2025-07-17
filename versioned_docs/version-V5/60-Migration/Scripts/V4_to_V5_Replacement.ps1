@@ -3,7 +3,7 @@ $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool', 'bia-shared', 'bia-features', 'bia-domains', 'bia-core')
+$ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool', 'bia-shared', 'bia-features', 'bia-domains', 'bia-core', '.bia')
 
 function ReplaceInProject {
   param (
@@ -389,6 +389,18 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp 'uncryptedToken' -NewRegexp 
 # BEGIN - SaveItemAsFlatTextCompressedAsync => CreateArchiveAsync
 ReplaceInProject -Source $SourceBackEnd -OldRegexp 'SaveItemAsFlatTextCompressedAsync' -NewRegexp 'CreateArchiveAsync' -Include *.cs
 # END - SaveItemAsFlatTextCompressedAsync => CreateArchiveAsync
+
+# BEGIN - Service provider CrudItemService IndexComponent
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(?s)\s*(@Component\(\s*{.*?imports\s*:\s*\[[^\]]*\],)(.*?)(export\s+class\s+\w+\s+extends\s+CrudItemsIndexComponent<(\w+)>.*?\{)" -NewRegexp "`nimport { CrudItemService } from 'src/app/shared/bia-shared/feature-templates/crud-items/services/crud-item.service';`n`n`$1`n  providers: [{ provide: CrudItemService, useExisting: `$4Service }],`$2`$3" -Include "*-index.component.ts"
+# END - Service provider CrudItemService IndexComponent
+
+# BEGIN - Add formReadOnlyMode binding form component
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(<bia-form\s*(?:\r?\n))" -NewRegexp "`$1  [formReadOnlyMode]=`"formReadOnlyMode`"`n" -Include "*-form.component.html"
+# END - Add formReadOnlyMode binding form component
+
+# BEGIN - (cancel)= -> (cancelled)=
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\(cancel\)=" -NewRegexp "(cancelled)=" -Include "*.html"
+# END - (cancel)= -> (cancelled)=
 
 ## Front end migration conclusion
 $standaloneCatchUpScript = "standalone-catch-up.js"
