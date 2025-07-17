@@ -40,11 +40,6 @@ At the source code level, in the **launchSettings.json** file, Change these sett
 }
 ```
 
-In **Api.Controllers.Base.AuthControllerBase**, replace **BiaControllerBaseNoToken** by **BiaControllerBaseIdP**
-
-```csharp
-public abstract class AuthControllerBase : BiaControllerBaseIdP
-```
 
 Add the Keycloak configuration in your different files **bianetconfig.XXX.json**
 
@@ -84,6 +79,79 @@ The login and password of the keycloak account that owns the role **view-users**
 %windir%\system32\cmdkey.exe /generic:BIA:KeycloakSearchUserAccount /user:"MyLogin" /pass:"MyPassword"
 ```
 
+## Offline JWT Verification
+
+In certain deployment scenarios, the application server might not have direct access to the Keycloak server to validate JWT tokens. In such cases, you can configure the application to verify JWT tokens offline using Keycloak's public key.
+
+### Overview
+
+This approach allows the application to validate JWT tokens without making real-time requests to Keycloak. The application downloads the public key from Keycloak and uses it to verify the token signature locally.
+
+### Configuration Steps
+
+#### 1. Download the Public Key
+
+First, you need to download the public key from your Keycloak server. The public key is available at the following URL:
+
+```
+https://[KEYCLOAK_URL]/realms/[REALM_NAME]/protocol/openid-connect/certs
+```
+
+For example:
+```
+https://mykeycloak.mycompany/realms/BIA-Realm/protocol/openid-connect/certs
+```
+
+This endpoint returns a JSON Web Key Set (JWKS) containing the public keys used to verify JWT tokens.
+
+#### 2. Create the Certificate File
+
+Save the downloaded JSON response to a file named `keycloakcerts.[ENV].json` in the same directory as your other configuration files (e.g., `bianetconfig.XXX.json`).
+
+Example file name: `keycloakcerts.DMEUEXT_INT.json`
+
+The content should look like this:
+
+```json
+{
+  "keys": [
+    {
+      "kid": "key-id",
+      "kty": "RSA",
+      "use": "sig",
+      "n": "base64-encoded-modulus",
+      "e": "AQAB",
+      "x5c": [
+        "certificate-data"
+      ],
+      "x5t": "thumbprint",
+      "alg": "RS256"
+    }
+  ]
+}
+```
+
+#### 3. Update Configuration
+
+Modify your `bianetconfig.XXX.json` file to include the `CertFileName` parameter in the Keycloak configuration:
+
+```json
+"Authentication": {
+  "Keycloak": {
+    "IsActive": true,
+    "BaseUrl": "https://url_of_my_keycloak",
+    "Configuration": {
+      "realm": "BIA-Realm",
+      "Authority": "/realms/BIA-Realm",
+      "RequireHttpsMetadata": true,
+      "ValidAudience": "account",
+      "CertFileName": "keycloakcerts.PRD.json"
+    },
+...
+  }
+}
+```
+
 ## How Restore Windows Authentication
 
 ### Back End
@@ -102,11 +170,6 @@ At the source code level, in the **launchSettings.json** file, Change these sett
 }
 ```
 
-In **Api.Controllers.Base.AuthControllerBase**, replace **BiaControllerBaseIdP** by **BiaControllerBaseNoToken**
-
-```csharp
-public abstract class AuthControllerBase : BiaControllerBaseNoToken
-```
 
 In your different files **bianetconfig.XXX.json**, set the **IsActive** param to **false**.
 
