@@ -265,11 +265,9 @@ function ApplyChangesAngular19 {
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
       @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)<\/h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
       @{Pattern = '(?s)<(\w+)(\s+[^>]*class="[^"]*p-float-label[^"]*"[^>]*)>((?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b))*<\/\1\s*>)*<\/\1\s*>)*)<\/\1\s*>'; Replacement = '<p-floatlabel$2 variant="in">$3</p-floatlabel>'},
-      @{Pattern = '(?s)<(\w+)(\s+[^>]*class="[^"]*p-fluid[^"]*"[^>]*)>((?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b))*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*<\/\1\s*>)*)<\/\1\s*>'; Replacement = '<$1$2><p-fluid>$3</p-fluid></$1>'},
       @{Pattern = '(?s)<button([^>]*class="[^"]*p-link[^"]*"[^>]*)>(.*?)<\/button'; Replacement = '<p-button [link]=true $1>$2</p-button'},
       @{Pattern = '(?<=class=")([^"]*)\b(p-float-label)\b([^"]*)'; Replacement = '${1}${3}'},
       @{Pattern = '(?<=class=")([^"]*)\b(p-link)\b([^"]*)'; Replacement = '${1}${3}'},
-      @{Pattern = '(?<=class=")([^"]*)\b(p-fluid)\b([^"]*)'; Replacement = '${1}${3}'},
       @{Pattern = 'class=""'; Replacement = ""},
       @{Pattern = "(?s)<p-dialog([^>]*)>\s*<p-header>(.*?)</p-header>"; Replacement = "<p-dialog`$1 header=""`$2"">"},
       @{Pattern = '(?s)(<p-checkbox[^>]*?)\s+label="([^"]+)"([^>]*?>)'; Replacement = '${1}${3}<label class="ml-2">${2}</label>'}
