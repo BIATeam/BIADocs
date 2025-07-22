@@ -1,4 +1,4 @@
-$Source = "C:\sources\BIADemo";
+$Source = "C:\sources\github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -305,6 +305,43 @@ function ApplyChangesAngular19 {
   }
 }
 
+function ChangeImportToUseBiaVariables(
+  [string]$Source,
+  [string]$Include) {
+
+  $importPattern = "@import( '[\S]*?bia-variables';)"
+  $replaceImportPattern = '@use$1'
+  $OldRegexp = "(\`$bia[Red|Orange|Blue|Green|Yellow])"
+  $NewRegexp = 'bia-variables.$1'
+
+  foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
+    ChangeImportToUseBiaVariables -Source $childDirectory.FullName -OldRegexp $OldRegexp -NewRegexp $NewRegexp -Include $Include
+  }
+
+  Get-ChildItem -LiteralPath $Source -File -Filter $Include | ForEach-Object {
+    $oldContent = [System.IO.File]::ReadAllText($_.FullName);
+    if ($oldContent -match $importPattern) {
+      $found = $oldContent | select-string -Pattern $OldRegexp
+      if ($found.Matches) {
+        $newContent = $oldContent -Replace $OldRegexp, $NewRegexp 
+        $match = $newContent -match '#capitalize#([a-z])'
+        if ($match) {
+          [string]$lower = $Matches[1]
+          [string]$upper = $lower.ToUpper()
+          [string]$newContent = $newContent -Replace "#capitalize#([a-z])", $upper 
+        }
+        $newContent = $newContent -Replace $importPattern, $replaceImportPattern 
+        if ($oldContent -cne $newContent) {
+          Write-Host $_.FullName -ForegroundColor Green
+          Write-Host "     => " $_.FullName
+          [System.IO.File]::WriteAllText($_.FullName, $newContent)
+        }
+      }
+    }
+  }
+
+}
+
 # FRONT END
 ApplyChangesAngular19
 
@@ -400,7 +437,11 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(<bia-form\s*(?:\r?\n))" 
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\(cancel\)=" -NewRegexp "(cancelled)=" -Include "*.html"
 # END - (cancel)= -> (cancelled)=
 
-## Front end migration conclusion
+# BEGIN - Change use of bia-variables @import in scss to @use
+ChangeImportToUseBiaVariables -Source $SourceFrontEnd -Include *.scss
+# END - Change use of bia-variables @import in scss to @use
+
+# Front end migration conclusion
 $standaloneCatchUpScript = "standalone-catch-up.js"
 Copy-Item "$currentDirectory\$standaloneCatchUpScript" "$SourceFrontEnd\$standaloneCatchUpScript"
 Set-Location $SourceFrontEnd

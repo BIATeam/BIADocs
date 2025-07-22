@@ -1,9 +1,9 @@
 ---
-title: Troubleshooting V4.1.0
+title: Troubleshooting V5
 ---
 
-# Troubleshooting on the known issues in the Framework V4.1.0
+# Troubleshooting on the known issues in the Framework V5
 
-## For the moment no know issue:
+## For the moment no known issues
 
     
