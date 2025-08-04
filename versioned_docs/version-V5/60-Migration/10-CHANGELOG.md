@@ -4,6 +4,17 @@ sidebar_position: 1
 
 # ChangeLog
 
+## V5.1.0 (04/08/2025)
+### Features
+* Customizable Notification (BaseNotification)
+* Improve BaseUser (abstract and BaseUsersController)
+
+### Bugfix
+* Change environment colors base
+* Default value for formReadOnlyMode in BiaFormComponent
+* Fix CSVTime with TimeSpan
+* Fix Unit Test
+
 ## V5.0.2 (15/07/2025)
 ### Bugfix
 * Fix version of Microsoft.Identity.Client containing security risk
