@@ -426,7 +426,7 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp 'SaveItemAsFlatTextCompressed
 # END - SaveItemAsFlatTextCompressedAsync => CreateArchiveAsync
 
 # BEGIN - Service provider CrudItemService IndexComponent
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(?s)\s*(@Component\(\s*{.*?imports\s*:\s*\[[^\]]*\],)(.*?)(export\s+class\s+\w+\s+extends\s+CrudItemsIndexComponent<(\w+)>.*?\{)" -NewRegexp "`nimport { CrudItemService } from 'src/app/shared/bia-shared/feature-templates/crud-items/services/crud-item.service';`n`n`$1`n  providers: [{ provide: CrudItemService, useExisting: `$4Service }],`$2`$3" -Include "*-index.component.ts"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(?s)\s*(@Component\(\s*{.*?imports\s*:\s*\[[^\]]*?\][^}]*)(}\s*\)\s*export\s+class\s+\w+\s+extends\s+CrudItemsIndexComponent<(\w+)>)" -NewRegexp "`nimport { CrudItemService } from 'src/app/shared/bia-shared/feature-templates/crud-items/services/crud-item.service';`n`n`$1  providers: [{ provide: CrudItemService, useExisting: `$3Service }],`n`$2" -Include "*-index.component.ts"
 # END - Service provider CrudItemService IndexComponent
 
 # BEGIN - Add formReadOnlyMode binding form component
