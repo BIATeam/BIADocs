@@ -19,10 +19,8 @@ sidebar_position: 1
 - Ng lint the angular project and remove all errors and warnings. From version >= 3.9, run the command **npm run clean**
 - Change the framework version in 
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
-  - **..\BIADemo\Angular\src\app\shared\bia-shared\framework-version.ts**
-- Verify the project version should be 0.0.0 in
-  - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
-  - **..\BIADemo\Angular\src\environments\all-environment.ts**
+  - **..\BIADemo\Angular\packages\bia-ng\framework-version.ts**
+  - **..\BIADemo\Angular\packages\bia-ng\package.json**
 - If it is a major or minor version (first or second digit modification) modify it in 
   - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - If the year change update footer :
@@ -30,6 +28,18 @@ sidebar_position: 1
   - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\ultima\footer\ultima-footer.component.html**
   - And Replace all copyright ex: ```<Copyright>Copyright © TheBIADevCompany 2024</Copyright>``` by ```<Copyright>Copyright © TheBIADevCompany 2025</Copyright>```
 - Test Authentication AD Group + ReadOnly Database + Unitary Test
+
+## Publish bia-ng:
+- Move your terminal location to Angular folder : cd Angular
+- Switch the angular application to use bia-ng references in imports by executing the switch-to-bia-ng.ps1 script.
+- Build the bia-ng lib by executing : ng build bia-ng --production
+- Start the application and fix errors if needed.
+- Publish the lib by executing :
+  - cd dist/bia-ng
+  - npm publish --access public
+- Update the dependency to bia-ng in package.json by the new version.
+
+# Test the deployment:
 - COMMIT BIADemo
 - Test a deployment in INT, UAT and PRD.
 
