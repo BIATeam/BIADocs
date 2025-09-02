@@ -3,6 +3,9 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V6 (NEXT)
+### Features
+* Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
 
 ## V5.0.1 (08/07/2025)
 ### Features
