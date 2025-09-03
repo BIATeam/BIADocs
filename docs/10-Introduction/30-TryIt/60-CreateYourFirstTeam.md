@@ -264,7 +264,7 @@ teams: [
 6. Run command `update-database -context "DataContext"`
 7. Verify your database.
 
-## Testing your Team
+## Testing your Team 
 1. Run the DotNet solution.
 2. Launch `npm start` in Angular folder.
 3. Go to *http://localhost:4200/*
