@@ -67,12 +67,12 @@ namespace TheBIADevCompany.BIADemo.Crosscutting.Ioc
 ```
 
 :::info
-The configuration for **SQLServer** is the default for all new BIA Framework projects since **V6**
+The configuration for **SQLServer** is the default one implemented for all new BIA Framework projects since BIA Framework **V6**
 :::
 
 ### Migration for existing projects
 :::warning
-This chapter is only applicable for projects under **V6** with **SQL Server** and **PostgreSQL** database providers.
+This chapter is only applicable for projects migrated from BIA Framework versions under **V6** with **SQL Server** and **PostgreSQL** database providers.
 :::
 
 You must create a custom migration in order to adapt your migration history table schema to the new extended properties seen as below :
