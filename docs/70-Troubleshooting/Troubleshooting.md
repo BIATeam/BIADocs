@@ -1,9 +1,9 @@
 ---
-title: Troubleshooting V4.1.0
+title: Troubleshooting Vnext
 ---
 
-# Troubleshooting on the known issues in the Framework V4.1.0
+# Troubleshooting on the known issues in the Framework Vnext
 
-## For the moment no know issue:
+## For the moment no known issues
 
     

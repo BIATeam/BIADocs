@@ -3,26 +3,95 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V6 (NEXT)
+### Features
+* Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
 
-## Next (WIP)
-### New features
+## V5.0.1 (08/07/2025)
+### Features
 * Form layout configuration ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-layout))
 * Component button group ([doc](../40-DeveloperGuide/20-CRUD/80-ButtonGroup.md))
 * Configuration to set the read only mode of a CRUD feature item ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-read-only))
-* Handling of errors when form is submit and not closing it ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#prevent-form-closing-on-error))
+* Handling of errors when form is submitted and preventing closing it ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#block-form))
 * Handling of outdated item currently edited ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#inform-user-of-conflict))
 * Fixable entity ([doc](../40-DeveloperGuide/20-CRUD/75-FixableCRUD.md))
-* Be able to unset team or role as default
+* Be able to unset team or role as default.
 * Configuration to clear team and have no team selected ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#clear-and-choose-no-team-in-selector))
 * Configuration to choose automatic team selection mode if no default team set ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#automatic-team-selection-mode))
+* Customization of the application logo ([doc](../50-BestPractices/40-Front%20Style%20Guide/40-CustomizeApplicationTheme.md#application-logo))
+* Easiest configuration for web API repository.
+* Adding new mode for form display : possibility to split the page to show form on the right of the table.
+* Better responsive design for the table component.
+* Add possibility to show bia applications in iframe and receive message from authorized hosts.
+* Add clear all notifications button.
+* Show boolean values as true, false or empty in data exports.
+* Allow to project content inside of the BIA layout for easier customization.
+* Exposing primeng MultiSortMeta to allow multiple sorts on table.
+* Allow swagger authentication through keycloak.
+* Accepting empty navigation list in menu.
+* Add a clone data row option in table (can be activated in feature configuration file).
+* Add detail row to tables (can be activated in feature configuration file).
+* Filter on list can search on "Id" instead of "Display" to improve search performances.
+* Simplify path of imports of css files in components.
+* Allow authorized users to connect with the same rights as another user.
+* Add noPadding and noMargin options in layout routing parameters. 
+* Short date entry with primeNg component (year only and year month)
+### Bugfix
+* Global search support for case sensitive SQL columns.
+* Limit popup width to screen width.
+* Allow keycloak user search with spaces in names.
+* Fix an error in calc mode when leaving a row by clicking on another row.
+* Disabling name change while updating a member.
+* Import of short date (year only and year month)
+* Compare of date + time (do not take care of second)
 ### Angular
 * Migration to Angular 19
 * Migration to PrimeNG 19
 * Using standalone components strategy
-* Using new PrimeNG theming
+* Using new PrimeNG theming ([doc](../50-BestPractices/40-Front%20Style%20Guide/40-CustomizeApplicationTheme.md))
 ### .NET
 * Handle user's default teams from dedicated new table `UserDefaultTeams` and remove property `IsDefault` from `Member` entity and database
+* Into `ArchiveServiceBase`, rename `SaveItemAsFlatTextCompressedAsync()` to `CreateArchiveAsync()`, and expose new virtual methods `SerializeItem()` and `AddEntriesToArchiveAsync()` ([doc](../40-DeveloperGuide/30-WorkerService/30-WorkerFeatures/20-ArchiveJob.md#archive-service))
 
+## V4.1.1 (2025-06-30)
+
+### Features
+* Add the possibility to include multiple lines of disclaimers at the top and/or bottom of the CSV file
+
+### Bugfix
+* Allow import of CSV files when a disclaimer is present
+
+## V4.1.0 (2025-06-24)
+
+### Features
+* Add the possibility to include a line on top of CSV files export.
+
+## V4.0.7 (2025-06-23)
+
+### BugFix
+* Fix multiple import of new items error
+* Fix dependency injection error of signalR when not activated
+
+## V4.0.6 (2025-06-05)
+
+### BugFix
+* Fix notification data JSON parse
+
+## V4.0.5 (2025-04-14)
+
+### BugFix
+* Fix local storage values being shared between all subsites of same domain for ultima layout and AppSettings value (offline mode)
+
+## V4.0.4 (2025-04-04)
+
+### BugFix
+* Fix Synchronize User from keycloak
+* Fix mandatory settings files in DeployDB
+* Fix missing ldapRepositoryHelper in AuthAppService for Connector
+* Fix error with import module when field is not editable
+* Fix display of specific output in import feature
+* Fix BIAToolKit option generator replacement issue
+* Fix the suppression of rights when generate a CRUD and an Option on same Feature
 
 ## V4.0.2 (2025-03-12)
 

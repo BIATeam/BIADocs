@@ -5,6 +5,19 @@ title: Troubleshooting V4.0.2
 
 ## Issues to correct manually:
 
+## Issues in V4.0.2
+### Imports module not working for more than 1 new line : 
+If you want to bulk import new rows of data the the import feature, an error appears :
+"This Id appears multiple times in the imported file"
+To fix that problem, replace in file crud-item-import.service.ts in line 540 (function checkDuplicateIdObjects) :
+```ts
+    arr.forEach(obj => {
+      if (obj.id !== undefined && obj.id !== null) {
+        idCount.set(obj.id, (idCount.get(obj.id) || 0) + 1);
+      }
+    });
+```
+
 ## Issues in V4.0.2 corrected in V4.0.4 :
 ### DTO + CRUD generation : 
 If you generate a DTO and after a CRUD on the same entity the permission Option disappear from
