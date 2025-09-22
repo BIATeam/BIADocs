@@ -280,7 +280,7 @@ His purpose is to compare a specific version of [BIADemo](https://github.com/BIA
 2. Checkout the target version
 3. Clone the BIAToolKit repository into the same root folder as BIADemo
 4. Go into BIADemo sources and run the script `BIADemo\Tools\4-BIADemo-BIAToolKit.ps1`
-5. A packaged version of BIADemo named as `BIADemo_X.Y.Z.zip` without the specific content `BIADemo` will be created into your sources of BIAToolkit into the subfolder `BIADemoVersions`
+5. A packaged version of BIADemo named as `BIADemo_X.Y.Z.zip` without the specific content between `BIADemo` markups will be created into your sources of BIAToolkit into the subfolder `BIADemoVersions`
 6. Open the BIAToolkit solution into Visual Studio
 7. Open the test explorer of the BIAToolKit solution into Visual Studio
 8. Edit into the `FileGeneratorTestFixture` class the `biaDemoZipPath` variable and `referenceProject.FrameworkVersion` to the corresponding values of the packaged version of BIADemo to compare
@@ -320,10 +320,10 @@ The details of the generation and the exceptions can be found by analyzing the *
 ### In depth
 - `npm i` command will be executed the first time the choosen BIADemo version will be unzipped into the Angular project in order to use Prettier
 - generated files will be created in `AppData\Local\Temp\BIAToolKitTestTemplatesGenerated\{Feature}_{Entity}`
-  - {Feature} = generated feature (Dto, Option, Crud...)
-  - {Entity} = entity name used for the feature
+  - **\{Feature\}** : generated feature (Dto, Option, Crud...)
+  - **\{Entity\}** : entity name used for the feature
 - you can ignore partial markup into reference file when comparing it to the generated file when calling the corresponding method `RunTestGenerate{Feature}AllFilesEqualsAsync` by providing the list of markups as `partialMarkupIdentifiersToIgnore` parameter
 - a `preProcess` action is executed for the execution of CRUD tests in order to compute angular parent location
 - the target files where partial content should be included are imported from the reference BIADemo version into the output location in order to be filled by the file generator service
 - the comparison for partial content extracts each partial part from the reference path and the generated path and stored into unique partial files named as the target file followed by `_Partial_{InsertionMarkup}{Entity}` into reference and generated folder
-- all the content between `Begin BIAToolKit Generation Ignore` and `End BIAToolKit Generation Ignore` in the reference's files will be ignore for the comparison
+- all the content between `\\ Begin BIAToolKit Generation Ignore` and `\\ End BIAToolKit Generation Ignore` in the reference's files will be ignore for the comparison
