@@ -404,8 +404,8 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bisEmpty\b)([\s\S]*?)[\s]*?\bisEmpty\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { isEmpty } from ''bia-ng/core''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bisObject\b)([\s\S]*?)[\s]*?\bisObject\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { isObject } from ''bia-ng/core''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bclone\b)([\s\S]*?)[\s]*?\bclone\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { clone } from ''bia-ng/core''; import { $1$2'},
-    
-    # TODO : some constant.ts constants moving to bia-ng core
+    # TODO : some constant.ts constants moving to bia-ng/core
+    # TODO : some permissions moved to bia-ng/core
 
     # Update bia-shared imports
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bBiaButtonGroupComponent\b)([\s\S]*?)[\s]*?\bBiaButtonGroupComponent\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/components\/bia-button-group\/bia-button-group\.component';)"; Replacement = 'import { BiaButtonGroupComponent } from ''bia-ng/shared''; import { $1$2'},

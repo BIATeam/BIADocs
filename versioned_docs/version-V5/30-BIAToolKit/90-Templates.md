@@ -31,7 +31,7 @@ The templates for a dedicated version (or a range) corresponding to a bunch of v
 Each bunch corresponds to a breaking changes version of the BIA Framework. It means that if you have a minor version that provides any changes of one of the files that must be generated using the templates, you will have a dedicated bunch of templates for this version.  
 
 Commonly, there is a new bunch created for each major version.  
-Unless a new major version, the bunch must covered all versions until the new one.
+Unless a new major version, the bunch must cover all versions until the new one.
 
 :::info
 The bunch are located into the `BIA.ToolKit.Applications.Templates`  
@@ -51,7 +51,7 @@ The new bunch must be copied from the previous one and adapted for each concerne
 ### Models
 Templates models corresponds to the model of data that will be used into the templates files `.tt` to generate the files for a dedicated feature.  
 
-It must exists a model for each kind of feature to generate, and a dedicated interface for them.
+It must exist a model for each kind of feature to generate, and a dedicated interface for them.
 
 :::info 
 - The templates models are located into the namespace `BIA.ToolKit.Applications.Templates._X_Y_Z.Models`  
@@ -199,12 +199,12 @@ The manifest contains all the files to generate for each feature kind of a versi
 ## File Generator Service
 This service is used by the BiaToolKit to generate the files using the templates configured previously.  
 
-It must be initialized by calling the method `Init()` when a BIA Framework project is choosen.
+It must be initialized by calling the method `Init()` when a BIA Framework project is chosen.
 
 Then, after calling the target feature method to generate from the service :
 1. The service will get from the model provider factory the corresponding model provider according to the target project version
 2. The service will use the model provider method to get the corresponding model template to use for the feature from the file generator context
-3. The service will generate all the files listed into the manifest of the correspoding version by using T4 tools and template model
+3. The service will generate all the files listed into the manifest of the corresponding version by using T4 tools and template model
 4. The service will clean the generated files by ordering using and apply a prettier specifically to the angular files
 
 :::info
@@ -239,7 +239,7 @@ internal interface IFileGeneratorModelProvider
 ```
 :::info
 - `CompatibleBiaFrameworkVersions` is the list of `BiaFrameworkVersion` compatible with the version X.Y.Z of the templates
-  - You can add each precise version compatbiles (4.0.0, 4.1.0, 4.2.0, 4.2.1...)
+  - You can add each precise compatible version (4.0.0, 4.1.0, 4.2.0, 4.2.1...)
   - Or you can set a specific range (4.*, 4.1.\*...)
 - Each `Get{Feature}TemplateModel` for each feature kind are used to map the provided feature file generator context to the corresponding feature model template
 :::
@@ -284,7 +284,7 @@ namespace BIA.ToolKit.Application.Services.FileGenerator.ModelProviders
 ## Unit Tests
 A dedicated unit test project for the templates is available : `BIA.ToolKit.Test.Templates`.  
 
-His purpose is to compare a specific version of [BIADemo](https://github.com/BIATeam/BIADemo) to the corresponding templates for each features that will be used for this version by the file generator service into the BiaToolKit.
+Its purpose is to compare a specific version of [BIADemo](https://github.com/BIATeam/BIADemo) to the corresponding templates for each features that will be used for this version by the file generator service into the BiaToolKit.
 
 ### Usage
 1. Clone the BIADemo repository
@@ -308,7 +308,7 @@ If you don't have Visual Studio Code, you can compare by yourself the two files 
 The error can provide from the template content or from specific code into the BIADemo file.
 :::
 #### PartialInsertionMarkupNotFoundException
-The markup where insert the partial content has not been found into the BIADemo file.
+The markup to insert the partial content has not been found into the BIADemo file.
 :::tip
 Check the `partialInsertionMarkup` of the template item into the `manifest.json` and the content of the BIADemo file (use the `outputPath` to find it). You can verify the templates too if the target file to fill with partial content is a generated file.
 :::
