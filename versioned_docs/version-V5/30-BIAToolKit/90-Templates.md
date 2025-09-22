@@ -195,6 +195,10 @@ Then, after calling the target feature method to generate from the service :
 2. The service will use the model provider method to get the corresponding model template to use for the feature from the file generator context
 3. The service will generate all the files listed into the manifest of the correspoding version by using T4 tools and template model
 4. The service will clean the generated files by ordering using and apply a prettier specifically to the angular files
+
+:::info
+If the content of a generated file is empty, it will be ignored
+:::
    
 ### Context
 This context is used to map the UI properties from the BiaToolKit to the generation context that will be used to generate the files.  
@@ -267,3 +271,59 @@ namespace BIA.ToolKit.Application.Services.FileGenerator.ModelProviders
 :::
 
 ## Unit Tests
+A dedicated unit test project for the templates is available : `BIA.ToolKit.Test.Templates`.  
+
+His purpose is to compare a specific version of [BIADemo](https://github.com/BIATeam/BIADemo) to the corresponding templates for each features that will be used for this version by the file generator service into the BiaToolKit.
+
+### Usage
+1. Clone the BIADemo repository
+2. Checkout the target version
+3. Clone the BIAToolKit repository into the same root folder as BIADemo
+4. Go into BIADemo sources and run the script `BIADemo\Tools\4-BIADemo-BIAToolKit.ps1`
+5. A packaged version of BIADemo named as `BIADemo_X.Y.Z.zip` without the specific content `BIADemo` will be created into your sources of BIAToolkit into the subfolder `BIADemoVersions`
+6. Open the BIAToolkit solution into Visual Studio
+7. Open the test explorer of the BIAToolKit solution into Visual Studio
+8. Edit into the `FileGeneratorTestFixture` class the `biaDemoZipPath` variable and `referenceProject.FrameworkVersion` to the corresponding values of the packaged version of BIADemo to compare
+9. Edit if necessary the tests files `Generate{Feature}Test.cs` to match the models of the BIADemo version to compare with
+10. Open the Solution Explorer into Visual Studio and run the tests
+
+### Handle errors
+#### AllFilesNotEqualsException
+The reference file from BIADemo and the generated file from BIAToolKit are not equals.  
+
+You can use the generated command begining by `code` and execute it into a new shell to open a new Visual Studio Code diff window.  
+If you don't have Visual Studio Code, you can compare by yourself the two files by using the file's path into the command.
+:::tip
+The error can provide from the template content or from specific code into the BIADemo file.
+:::
+#### PartialInsertionMarkupNotFoundException
+The markup where insert the partial content has not been found into the BIADemo file.
+:::tip
+Check the `partialInsertionMarkup` of the template item into the `manifest.json` and the content of the BIADemo file (use the `outputPath` to find it). You can verify the templates too if the target file to fill with partial content is a generated file.
+:::
+#### ReferenceFileNotFoundException
+The expected reference file into BIADemo has not been found.
+:::tip
+Check the `outputPath` of the template item into the `manifest.json` 
+:::
+#### GeneratedFileNotFoundException
+The expected generated file from BIAToolKit has not been found.
+:::tip
+Check the template content : if the generated content is empty, the file is not created
+:::
+#### GenerationFailureException
+The generation process has failed.
+:::tip
+The details of the generation and the exceptions can be found by analyzing the **Tests output** into Visual Studio.
+:::
+
+### In depth
+- `npm i` command will be executed the first time the choosen BIADemo version will be unzipped into the Angular project in order to use Prettier
+- generated files will be created in `AppData\Local\Temp\BIAToolKitTestTemplatesGenerated\{Feature}_{Entity}`
+  - {Feature} = generated feature (Dto, Option, Crud...)
+  - {Entity} = entity name used for the feature
+- you can ignore partial markup into reference file when comparing it to the generated file when calling the corresponding method `RunTestGenerate{Feature}AllFilesEqualsAsync` by providing the list of markups as `partialMarkupIdentifiersToIgnore` parameter
+- a `preProcess` action is executed for the execution of CRUD tests in order to compute angular parent location
+- the target files where partial content should be included are imported from the reference BIADemo version into the output location in order to be filled by the file generator service
+- the comparison for partial content extracts each partial part from the reference path and the generated path and stored into unique partial files named as the target file followed by `_Partial_{InsertionMarkup}{Entity}` into reference and generated folder
+- all the content between `Begin BIAToolKit Generation Ignore` and `End BIAToolKit Generation Ignore` in the reference's files will be ignore for the comparison
