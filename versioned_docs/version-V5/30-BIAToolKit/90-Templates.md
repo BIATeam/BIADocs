@@ -57,7 +57,18 @@ It must exists a model for each kind of feature to generate, and a dedicated int
 - The templates models are located into the namespace `BIA.ToolKit.Applications.Templates._X_Y_Z.Models`  
 - The templates models common elements are located into the namespace `BIA.ToolKit.Applications.Templates._X_Y_Z.Common`  
 - The templates models interfaces are located into the namespace `BIA.ToolKit.Applications.Templates._X_Y_Z.Common.Interfaces`  
+:::
 
+:::tip
+If the previous version models has defined methods or properties, you can edit the copied models from the previous version bunch by just inheriting from the previous model :
+``` csharp title="EntityCrudModel.cs"
+namespace BIA.ToolKit.Application.Templates._X_Y_Z.Models
+{
+    public class EntityCrudModel<TPropertyCrudModel> : _U_V_W.Models.EntityCrudModel<TPropertyCrudModel>
+        where TPropertyCrudModel : class, IPropertyCrudModel
+        {}
+}
+```
 :::
 ### Mocks
 Mocks are simply templates models implementation used into the templates files `.tt` to simulate data when editing the template file.
@@ -118,7 +129,7 @@ You must have into the `BIA.ToolKit.Application.Templates.csproj` a property `T4
 #### Templates
 - each Text Template file must be created into a folder that match the same structure as the target file to generate into the BIA Framework project
 - the name fo the Text Template file should match as possible the same target file name to generate and ends with `Template` before the extension : 
-  - `DotNet\Application\EntityAppServiceTemplate.tt` used to generate the `DotNet\Company.Project.Application\Domain\EntityAppService.cs`
+  - `DotNet\Application\EntityAppServiceTemplate.tt` used to generate the `DotNet\Company.Project.Application\{Domain}\EntityAppService.cs` *(\{Domain\} is a context property of the entity)*
 - the Text Templates used for partial content should indicates into their name the partial state, the markup name and optionally the feature kind : 
   - `DotNet\CrosscuttinCommon\Enum\PartialCrudRoleIdTemplate.tt` used to generate partial content for markup `RoleId` into the file `DotNet\Company.Project.Crosscutting.Common\Enum\RoleId.cs` when generating a CRUD feature
 
