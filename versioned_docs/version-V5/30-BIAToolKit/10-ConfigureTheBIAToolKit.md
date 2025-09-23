@@ -44,6 +44,10 @@ The GIT releases are provided from the GIT repository.
 The releases are available throught an URL or an API consumed by a web client into the BiaToolKit. 
 
 ![BIAToolKitConfig_GitRepo_ReleaseGit](../Images/BIAToolKit/Config_RepoGit_ReleaseGit.png)
+
+:::info
+In case of specific GIT Repository URL release, the name of each release will used the tag name associated to the release and added to the specific release URL provided : `{UrlRelease}/{Tag}.zip`
+:::
 #### Release Tag
 The Tag releases are produced from the direct sources of the repository at a target tag.  
 The repository will be cloned and checkout at this tag. The content of the release is the repository source.
@@ -63,28 +67,36 @@ A regex pattern can be set to filter the releases from the folder sources.
 
 ![BIAToolKitConfigRepoFolder](../Images/BIAToolKit/Config_Folder.PNG)
 
-
 ## Configure BIAToolKit release repository
+On the top right corner, click the "**Toolkit Repository Settings**" button to open repository details and configure the repository to get the releases of BIAToolkit for updating.  
+![BIAToolKitConfigReleaseToolkit](../Images/BIAToolKit/Config_Toolkit.png)
 ## Configure Templates release repositories
+Manage the template repositories onto the dedicated list : 
+![BIAToolKitConfigReleaseTemplates](../Images/BIAToolKit/Config_Templates.png)
+
+:::warning
+You must have at least one template repository to use the BiaToolkit
+:::
 ## Configure Company Files release repositories
+Company Files are custom files with sensitive data (Database connection string, credentials...) to add to your BIA Framework projects.  
+You can use or not the company files by using the toggle next the title "**Company Files Repositories**".
 
+Manage the company files repositories onto the dedicated list : 
+![BIAToolKitConfigReleaseCompanyFiles](../Images/BIAToolKit/Config_CompanyFiles.png)
 
-## Configure your BIA Template repository
-In the first tab, in the upper left corner, chose if you want to use a local folder to synchronize it.
-* It is not required so if you don't have clone the BIATemplate locally select the first radio button "Use the BIAtemplate GitHub repository" the local folder will be : C:\Users\YourLogin\AppData\Local\BIA.ToolKit\BIA.ToolKit\1.0.0\BIATemplate\Repo
-* If you work regularly on BIATemplate or if you synchronize regularly you select the second option "use a local cloned folder" and enter the local pat of this folder.
+:::warning
+You must have at least one company file repository to use the BiaToolkit when using the company files
+:::
+## Configure update settings
+On the top right corner, you will have some buttons to manage the update settings :  
+![BIAToolKitConfigUpdate](../Images/BIAToolKit/Config_Update.png)
+- Enable or not the **auto update** with dedicated checkbox : it will verify at launch if a new version is available or not
+- **Cog button** at left of BIAToolKit version indicates that a new version is available. Click on it to launch update process
+- **Refresh button** at right of BIAToolKit version is used to check if a new version is available manually
 
-Click on the "synchronize" button to do a git sync between the GitHub repo and the local folder.
-
-## Use company files 
-The Company files are use to replace some files like logos, configuration files at the creation of the project or during migration.
-The company files can be a shared folder or a git repository.
-
-It is not necessary but it is recommended to have those files if you implement severals projects with the framework. It avoid you to manually make the replacement on each project.
-
-If you do not have company files check the check box in the right part.
-Select if you want to use a git repo or a local folder.
-The synchronize work only if you have configure the repo url.
-
-## Save the settings
-Click on the save settings button to save the settings. The configuration is save for the next start of the BIAToolKit
+## Import/Export configuration
+You can import or export BIAToolKit configuration by using these buttons :  
+![BIAToolKitConfigImportExport](../Images/BIAToolKit/Config_ImportExport.png)
+:::info
+Config files must be `.btksettings` type
+:::
