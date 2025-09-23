@@ -229,9 +229,9 @@ function ApplyChangesAngular19 {
       @{Pattern = "InputTextareaModule"; Replacement = "Textarea"},
       @{Pattern = "primeng/tristatecheckbox"; Replacement = "primeng/checkbox"},
       @{Pattern = "TriStateCheckboxModule"; Replacement = "Checkbox"},
-      @{Pattern = "\bMessage\b"; Replacement = "ToastMessageOptions"},
+      @{Pattern = "\bMessage\b"; Replacement = "ToastMessageOptions"; Requirement = 'import\s*\{\s*[^}]*\bMessage\b(?:\s+as\s+\w+)?[^}]*\}\s*from\s*[''"]primeng\/api[''"]\s*;?'},
       @{Pattern = "primeng/calendar"; Replacement = "primeng/datepicker"},
-      @{Pattern = "\bCalendar\b"; Replacement = "DatePicker"},
+      @{Pattern = "\bCalendar\b"; Replacement = "DatePicker"; Requirement = 'import\s*\{\s*[^}]*\bCalendar\b(?:\s+as\s+\w+)?[^}]*\}\s*from\s*[''"]primeng\/datepicker[''"]\s*;?'},
       @{Pattern = "primeng/dropdown"; Replacement = "primeng/select"},
       @{Pattern = "DropdownModule"; Replacement = "SelectModule"},
       @{Pattern = "primeng/tabview"; Replacement = "primeng/tabs"},
@@ -289,6 +289,10 @@ function ApplyChangesAngular19 {
     $fileReplacements = @()
 
     foreach ($rule in $replacementsTS + $replacementsHTML) {
+      if($rule.Requirement -and -not ($content -cmatch $rule.Requirement)) {
+        continue;
+      }
+      
       $newContent = $content -creplace $rule.Pattern, $rule.Replacement
       if ($newContent -cne $content) {
           $content = $newContent
