@@ -65,6 +65,13 @@ sidebar_position: 1
   - force reinstall package: Update-Package -reinstall
   - and rebuild all.
 
+## Run BIAToolkit Templates Unit Tests
+- Follow the instructions of the following [chapter](../../30-BIAToolKit/90-Templates.md#usage)
+- If any differences, fix both templates into BIAToolKit and reference files into BIADemo
+:::warning
+All tests must be validated before continuing package process !
+:::
+
 ## Prepare BIATemplate:
 - Synchronize your BIATemplate local folder with github.
 - Stop the BIATemplate IIS process.
