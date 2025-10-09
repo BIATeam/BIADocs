@@ -61,8 +61,8 @@ By default, all audited entities will be stored into `AuditLogs` table :
 | Id | Table | PrimaryKey | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin |
 | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | MyEntities | \{"Id":1\} | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | \{"Id":1,"AuditedProperty":"Something"\} | Admin |
-| 2 | MyEntities | \{"Id":1\} | 0x000000000000082C | 2025-01-28 14:05:20.1660368 | Update | [\{"ColumnName":"AuditedProperty","OriginalValue":"Something","NewValue":"Another thing"\}] | Admin |
-| 3 | MyEntities | \{"Id":1\} | 0x000000000000082C | 2025-01-28 14:06:20.1660368 | Delete | \{"Id":1,"AuditedProperty":"Another thing"\} | Admin |
+| 2 | MyEntities | \{"Id":1\} | 0x000000000000082D | 2025-01-28 14:05:20.1660368 | Update | [\{"ColumnName":"AuditedProperty","OriginalValue":"Something","NewValue":"Another thing"\}] | Admin |
+| 3 | MyEntities | \{"Id":1\} | 0x000000000000082E | 2025-01-28 14:06:20.1660368 | Delete | \{"Id":1,"AuditedProperty":"Another thing"\} | Admin |
 
 - **Id** : the Id of the audit log
 - **Table** : table of the audited entity
@@ -104,7 +104,7 @@ public class MyEntityAudit : AuditEntity<MyEntity>
     }
 }
 ```
-4. Into your `Infrastructure.Data` layer, customize the `AuditFeature` class to map the entity with the custom audit table :
+4. Customize the `AuditFeature` class to map the entity with the custom audit table :
 ```csharp title="AuditFeature.cs"
 public class AuditFeature(IOptions<CommonFeatures> commonFeaturesConfigurationOptions, IServiceProvider serviceProvider) : BaseAuditFeature(commonFeaturesConfigurationOptions, serviceProvider)
 {
@@ -121,7 +121,8 @@ public class AuditFeature(IOptions<CommonFeatures> commonFeaturesConfigurationOp
 :::info
 Unmapped dedicated audit entities will be mapped as `AuditLog`
 :::
-1. Add the `DbSet` of your audit entity into your data context :
+
+5. Add into your `DataContext` the `DbSet` of your audit entity :
 ```csharp title="DataContext.cs"
 public class DataContext : BiaDataContext
 {
@@ -129,12 +130,27 @@ public class DataContext : BiaDataContext
 }
 ```
 
+6. Complete into `AuditModelBuilder` the configuration of your audit entity :
+```csharp title="AuditModelBuilder.cs"
+public class AuditModelBuilder : BaseAuditModelBuilder
+{
+    public void CreateModel(ModelBuilder modelBuilder)
+    {
+        this.CreateAuditModel(modelBuilder);
+        this.CreateUserAuditModel<UserAudit, User>(modelBuilder);
+
+        // Mandatory
+        modelBuilder.Entity<MyEntityAudit>().Property(p => p.EntityId).IsRequired();
+    }
+}
+```
+
 Your dedicated audit table will following this kind of scheme :
 | Id | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin | EntityId | LinkedEntities | AuditedProperty | CustomProperty |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"AuditedProperty","OriginalValue":null,"OriginalDisplay":null,"NewValue":"Something","NewDisplay":"Something"\}] | Admin | 1 | | Something | 2 |
-| 2 | 0x000000000000082C | 2025-01-28 14:04:21.1660368 | Update | [\{"ColumnName":"AuditedProperty","OriginalValue":"Something","OriginalDisplay":Something,"NewValue":"Another thing","NewDisplay":"Another thing"\}] | Admin | 1 | | Another thing | 2 |
-| 3 | 0x000000000000082C | 2025-01-28 14:04:22.1660368 | Delete | \{"Id":1,"AuditedProperty":"Another thing"\} | Admin | 1 | | Another thing | 2 |
+| 2 | 0x000000000000082D | 2025-01-28 14:04:21.1660368 | Update | [\{"ColumnName":"AuditedProperty","OriginalValue":"Something","OriginalDisplay":Something,"NewValue":"Another thing","NewDisplay":"Another thing"\}] | Admin | 1 | | Another thing | 2 |
+| 3 | 0x000000000000082E | 2025-01-28 14:04:22.1660368 | Delete | \{"Id":1,"AuditedProperty":"Another thing"\} | Admin | 1 | | Another thing | 2 |
 
 - **Id** : the Id of the audit log
 - **RowVersion** : row version of the audit log
@@ -202,7 +218,6 @@ public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
 
 3. Add the primary key index properties into your dedicated join audit entity with attribute `[AuditLinkedEntityPropertyIdentifier]` :
 ```csharp title="MyEntityMyLinkedEntityAudit.cs"
-[AuditLinkedEntity(linkedEntityType: typeof(MyEntity), linkedEntityPropertyName: nameof(MyEntity.LinkedEntities))]
 public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
 {
     [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyEntity))]
@@ -224,7 +239,7 @@ The dedicated audit table will be like this :
 | Id | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin | EntityId | LinkedEntities | MyEntityId | MyLinkedEntityId |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"MyEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\},\{"ColumnName":"MyLinkedEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\}] | Admin | 1 | [\{"EntityType":"MyEntity","IndexPropertyName":"MyEntityId","IndexPropertyValue":"1"\},\{"EntityType":"MyLinkedEntity","IndexPropertyName":"MyLinkedEntityId","IndexPropertyValue":"1"\}] | 1 | 1 |
-| 2 | 0x000000000000082C | 2025-01-28 14:04:21.1660368 | Delete | [\{"ColumnName":"MyEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\},\{"ColumnName":"MyLinkedEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\}] | Admin | 1 | [\{"EntityType":"MyEntity","IndexPropertyName":"MyEntityId","IndexPropertyValue":"1"\},\{"EntityType":"MyLinkedEntity","IndexPropertyName":"MyLinkedEntityId","IndexPropertyValue":"1"\}] | 1 | 1 |
+| 2 | 0x000000000000082D | 2025-01-28 14:04:21.1660368 | Delete | [\{"ColumnName":"MyEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\},\{"ColumnName":"MyLinkedEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\}] | Admin | 1 | [\{"EntityType":"MyEntity","IndexPropertyName":"MyEntityId","IndexPropertyValue":"1"\},\{"EntityType":"MyLinkedEntity","IndexPropertyName":"MyLinkedEntityId","IndexPropertyValue":"1"\}] | 1 | 1 |
 
 ### One-To-Many
 Given the following example :
@@ -370,7 +385,7 @@ Your dedicated audit table will be like this :
 | Id | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin | EntityId | LinkedEntities | LinkedPropertyDisplay |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"AuditedProperty","OriginalValue":null,"OriginalDisplay":null,"NewValue":"Something","NewDisplay":"Something"\},\{"ColumnName":"LinkedPropertyDisplay","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"LinkedEntity1"\}] | Admin | 1 | | LinkedEntity1 |
-| 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Update | [\{"ColumnName":"LinkedPropertyDisplay","OriginalValue":1,"OriginalDisplay":"LinkedEntity1","NewValue":"2","NewDisplay":"LinkedEntity2"\}] | Admin | 1 | | LinkedEntity2 |
+| 2 | 0x000000000000082D | 2025-01-28 14:04:21.1660368 | Update | [\{"ColumnName":"LinkedPropertyDisplay","OriginalValue":1,"OriginalDisplay":"LinkedEntity1","NewValue":"2","NewDisplay":"LinkedEntity2"\}] | Admin | 1 | | LinkedEntity2 |
 
 
 ## AuditLog : switch Id to longInt (Optional)
