@@ -133,8 +133,8 @@ Your dedicated audit table will following this kind of scheme :
 | Id | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin | EntityId | LinkedEntities | AuditedProperty | CustomProperty |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"AuditedProperty","OriginalValue":null,"OriginalDisplay":null,"NewValue":"Something","NewDisplay":"Something"\}] | Admin | 1 | | Something | 2 |
-| 2 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Update | [\{"ColumnName":"AuditedProperty","OriginalValue":"Something","OriginalDisplay":Something,"NewValue":"Another thing","NewDisplay":"Another thing"\}] | Admin | 1 | | Another thing | 2 |
-| 3 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Delete | \{"Id":1,"AuditedProperty":"Another thing"\} | Admin | 1 | | Another thing | 2 |
+| 2 | 0x000000000000082C | 2025-01-28 14:04:21.1660368 | Update | [\{"ColumnName":"AuditedProperty","OriginalValue":"Something","OriginalDisplay":Something,"NewValue":"Another thing","NewDisplay":"Another thing"\}] | Admin | 1 | | Another thing | 2 |
+| 3 | 0x000000000000082C | 2025-01-28 14:04:22.1660368 | Delete | \{"Id":1,"AuditedProperty":"Another thing"\} | Admin | 1 | | Another thing | 2 |
 
 - **Id** : the Id of the audit log
 - **RowVersion** : row version of the audit log
@@ -149,10 +149,229 @@ Your dedicated audit table will following this kind of scheme :
 - **AuditedProperty** : according to the current example, corresponds to the `AuditedProperty` value of the audited entity
 - **CustomProperty** : according to the current example, corresponds to the `CustomProperty` value of the audited entity
 
-### Configure Audit Linked Entities
+## Configure Audit Linked Entities
 :::warning
-Only compatible for [Dedicated Audit Tables](#dedicated-audit-table)
+Only compatible for entities with [Dedicated Audit Tables](#dedicated-audit-table)
 :::
+
+When auditing entity changes, you can't audit by default the changes happening to the entity's references.  
+This chapter explains how to configure the audit of linked entities of your audited entity.
+
+### Many-To-Many
+Given the following example :
+```csharp title="MyEntity.cs"
+[AuditInclude]
+public class MyEntity : BaseEntity<int>
+{
+    public string AuditedProperty { get; set; }
+    public ICollection<MyLinkedEntity> LinkedEntities { get; set; } 
+    public ICollection<MyEntityMyLinkedEntity> JoinLinkedEntities { get; set; } 
+}
+```
+```csharp title="MyLinkedEntity.cs"
+public class MyLinkedEntity : BaseEntity<int>
+{
+    public string LinkedAuditedProperty { get; set; }
+}
+```
+```csharp title="MyEntityMyLinkedEntity.cs"
+public class MyEntityMyLinkedEntity
+{
+    public int MyEntityId { get; set; }
+    public MyEntity MyEntity { get; set; }
+    public int MyLinkedEntityId { get; set; }
+    public MyLinkedEntity MyLinkedEntity { get; set; }
+}
+```
+
+1. Add `[AuditInclude]` attribute onto your join entity class :
+```csharp title="MyEntityMyLinkedEntity.cs"
+[AuditInclude]
+public class MyEntityMyLinkedEntity
+{
+    // [...]
+}
+```
+
+2. Create dedicated audit entity for your join entity class (follow all the steps [here](#dedicated-audit-table)) :
+```csharp title="MyEntityMyLinkedEntityAudit.cs"
+public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
+{
+}
+```
+
+3. Add the primary key index properties into your dedicated join audit entity with attribute `[AuditLinkedEntityPropertyIdentifier]` :
+```csharp title="MyEntityMyLinkedEntityAudit.cs"
+[AuditLinkedEntity(linkedEntityType: typeof(MyEntity), linkedEntityPropertyName: nameof(MyEntity.LinkedEntities))]
+public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
+{
+    [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyEntity))]
+    public int MyEntityId { get; set; }
+
+    [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyLinkedEntity))]
+    public int MyLinkedEntityId { get; set; }
+}
+```
+- **linkedEntityType** : the linked entity type that refers to the primary key index
+:::info
+Each `[AuditLinkedEntityPropertyIdentifier]` property will add data into the `LinkedEntities` column of the audited entity table.
+:::
+:::tip
+You can't add multiple `[AuditLinkedEntityPropertyIdentifier]` for the same identifier property.
+:::
+
+The dedicated audit table will be like this :
+| Id | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin | EntityId | LinkedEntities | MyEntityId | MyLinkedEntityId |
+| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"MyEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\},\{"ColumnName":"MyLinkedEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\}] | Admin | 1 | [\{"EntityType":"MyEntity","IndexPropertyName":"MyEntityId","IndexPropertyValue":"1"\},\{"EntityType":"MyLinkedEntity","IndexPropertyName":"MyLinkedEntityId","IndexPropertyValue":"1"\}] | 1 | 1 |
+| 2 | 0x000000000000082C | 2025-01-28 14:04:21.1660368 | Delete | [\{"ColumnName":"MyEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\},\{"ColumnName":"MyLinkedEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"1"\}] | Admin | 1 | [\{"EntityType":"MyEntity","IndexPropertyName":"MyEntityId","IndexPropertyValue":"1"\},\{"EntityType":"MyLinkedEntity","IndexPropertyName":"MyLinkedEntityId","IndexPropertyValue":"1"\}] | 1 | 1 |
+
+### One-To-Many
+Given the following example :
+```csharp title="MyEntity.cs"
+[AuditInclude]
+public class MyEntity : BaseEntity<int>
+{
+    public string AuditedProperty { get; set; }
+    public ICollection<MyChildEntity> ChildEntities { get; set; } 
+}
+```
+```csharp title="MyChildEntity.cs"
+public class MyChildEntity : BaseEntity<int>
+{
+    public int MyEntityId { get; set; }
+    public string ChildAuditedProperty { get; set; }
+}
+```
+
+Follow the same steps as described into [previous chapter](#many-to-many) but refers to the `MyChildEntity` collection instead of a join entity collection.
+
+### Many-To-One | One-To-One
+By default, the audit changes already save the identifier value of the linked entity declared as Many-To-One or One-To-One relation.
+
+## Configure Display Properties
+:::warning
+Only compatible for entities with [configured audit linked entities](#configure-audit-linked-entities) and for usage of historical entity display.
+:::
+### Many-To-Many | One-To-Many
+:::info
+Following code snippets will use **Many-To-Many** relationship example
+:::
+1. Add the attribute `[AuditLinkedEntity]` onto your dedicated audit table for your linked entity :
+```csharp title="MyEntityMyLinkedEntityAudit.cs"
+[AuditLinkedEntity(linkedEntityType: typeof(MyEntity), linkedEntityPropertyName: nameof(MyEntity.LinkedEntities))]
+public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
+{
+}
+```
+- **linkedEntityType** : the type of entity linked to the audited entity type
+- **linkedEntityPropertyName** : the property name that refers to the audited entity into the linked entity 
+:::info
+- In **One-To-Many** relationship, we refer the `linkedEntityPropertyName` to the **direct** reference collection property
+- In **Many-To-Many** relationship, we refer the `linkedEntityPropertyName` to the **join** reference collection property
+:::
+:::tip
+You can add multiple `[AuditLinkedEntity]` for each linked entity to the audited entity
+:::
+
+2. Add display properties that corresponds to the display value of the linked entities and fill them with the `FillSpecificProperties` overrided method :
+```csharp title="MyEntityMyLinkedEntityAudit.cs"
+[AuditLinkedEntity(linkedEntityType: typeof(MyEntity), linkedEntityPropertyName: nameof(MyEntity.LinkedEntities))]
+public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
+{
+    [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyEntity))]
+    public int MyEntityId { get; set; }
+
+    [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyLinkedEntity))]
+    public int MyLinkedEntityId { get; set; }
+
+    public string MyEntityDisplay { get; set; }
+
+    public string MyLinkedEntityDisplay { get; set; }
+
+    protected override void FillSpecificProperties(MyEntityMyLinkedEntity entity)
+    {
+        this.MyEntityDisplay = entity.MyEntity.AuditedProperty;
+        this.MyLinkedEntityDisplay = entity.MyLinkedEntity.LinkedAuditedProperty;
+    }
+}
+```
+
+3. Add attribute `[AuditLinkedEntityPropertyDisplay]` onto the target display property that corresponds to your linked entity type :
+```csharp title="MyEntityMyLinkedEntityAudit.cs"
+[AuditLinkedEntity(linkedEntityType: typeof(MyEntity), linkedEntityPropertyName: nameof(MyEntity.LinkedEntities))]
+public class MyEntityMyLinkedEntityAudit : AuditEntity<MyEntityMyLinkedEntity>
+{
+    [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyEntity))]
+    public int MyEntityId { get; set; }
+
+    [AuditLinkedEntityPropertyIdentifier(linkedEntityType: typeof(MyLinkedEntity))]
+    public int MyLinkedEntityId { get; set; }
+
+    public string MyEntityDisplay { get; set; }
+
+    [AuditLinkedEntityPropertyDisplay(linkedEntityType: typeof(MyEntity))]
+    public string MyLinkedEntityDisplay { get; set; }
+
+    protected override void FillSpecificProperties(MyEntityMyLinkedEntity entity)
+    {
+        this.MyEntityDisplay = entity.MyEntity.AuditedProperty;
+        this.MyLinkedEntityDisplay = entity.MyLinkedEntity.LinkedAuditedProperty;
+    }
+}
+```
+:::info
+Here, `MyLinkedEntityDisplay` will be considered as display value for the join relation of `MyEntity` with `MyLinkedEntity`.  
+
+It means that when this linked entity audit will be retrieve to build the historical of `MyEntity`, the link display value to all `MyLinkedEntity` will be based on the `[AuditLinkedEntityPropertyDisplay]` attribute with corresponding linked entity type `MyEntity`.
+:::
+:::tip
+You can add multiple `[AuditLinkedEntityPropertyIdentifier]` for a same display property but with different `linkedEntityType`.
+:::
+
+### Many-To-One | One-To-One
+Given the following example :
+```csharp title="MyEntity.cs"
+[AuditInclude]
+public class MyEntity : BaseEntity<int>
+{
+    public string AuditedProperty { get; set; }
+    public MyLinkedEntity LinkedEntity { get; set; } 
+    public int MyLinkedEntityId { get; set; }
+}
+```
+```csharp title="MyLinkedEntity.cs"
+public class MyLinkedEntity : BaseEntity<int>
+{
+    public string LinkedAuditedProperty { get; set; }
+}
+```
+
+Into your entity dedicated audit class, add a display property for the linked entity with attribute `[AuditLinkedEntityProperty]` : 
+```csharp title="MyEntityAudit.cs"
+public class MyEntityAudit : AuditEntity<MyEntity>
+{
+    public string AuditedProperty { get; set; }
+
+    [AuditLinkedEntityProperty(
+        linkedEntityType: typeof(MyLinkedEntity),
+        linkedEntityPropertyDisplay: nameof(MyLinkedEntity.LinkedAuditedProperty),
+        entityReferencePropertyIdentifier: nameof(MyEntity.MyLinkedEntityId),
+        entityPropertyName: nameof(MyEntity.LinkedEntity))]
+    public string LinkedPropertyDisplay { get; set; }
+}
+```
+- **linkedEntityType** : the linked entity type that refers to the property display
+- **linkedEntityPropertyDisplay** : the linked entity property use for getting the display value 
+- **entityReferencePropertyIdentifier** : the audited entity property identifier that make the link with the linked entity
+- **entityPropertyName** : the audited entity property that refers to the linked entity
+
+Your dedicated audit table will be like this :
+| Id | RowVersion | AuditDate | AuditAction | AuditChanges | AuditUserLogin | EntityId | LinkedEntities | LinkedPropertyDisplay |
+| -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"AuditedProperty","OriginalValue":null,"OriginalDisplay":null,"NewValue":"Something","NewDisplay":"Something"\},\{"ColumnName":"LinkedPropertyDisplay","OriginalValue":null,"OriginalDisplay":null,"NewValue":"1","NewDisplay":"LinkedEntity1"\}] | Admin | 1 | | LinkedEntity1 |
+| 1 | 0x000000000000082C | 2025-01-28 14:04:20.1660368 | Update | [\{"ColumnName":"LinkedPropertyDisplay","OriginalValue":1,"OriginalDisplay":"LinkedEntity1","NewValue":"2","NewDisplay":"LinkedEntity2"\}] | Admin | 1 | | LinkedEntity2 |
+
 
 ## AuditLog : switch Id to longInt (Optional)
 :::warning 
