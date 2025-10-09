@@ -3,11 +3,9 @@ sidebar_position: 80
 ---
 
 # Audit
-This file explains how to activate/deactivate the audit feature (users' modifications tracing) and how to customize it.
+This file explains how to activate/deactivate the audit feature and how to customize it.
 
 ## Prerequisite
-
-### Knowledge to have:
 The audit feature is actively using the **Audit.NET** library
 * [Audit.NET github site](https://github.com/thepirat000/Audit.NET)
 * [Audit.NET documentation](https://github.com/thepirat000/Audit.NET/blob/master/README.md)
@@ -15,7 +13,9 @@ The audit feature is actively using the **Audit.NET** library
 * [Audit.NET.SqlServer documentation](https://github.com/thepirat000/Audit.NET/blob/master/src/Audit.NET.SqlServer/README.md)
 
 ## Overview
-The audit feature, by default, stores the modifications (and the user who has done these modifications) done on entity objects in a dedicated **Events** table of the default database.
+The audit feature, by default, stores the modifications done on entity objects in a dedicated **Events** table of the default database.  
+
+BIA Framework will save by default all changes occurs to the `Users` entities.
 
 ## Activation/Deactivation
 To activate/deactivate the feature modify the "IsActive" property in the following part of the bianetconfig file:
@@ -27,6 +27,7 @@ To activate/deactivate the feature modify the "IsActive" property in the followi
 ```      
 
 ## Configuration
+This chapter will concern new entities to audit.
 ### Enable Entity Audit
 1. For each entity to audit, add the attribute `[AuditInclude]` on the class definition :
 ```csharp title="MyEntity.cs"
