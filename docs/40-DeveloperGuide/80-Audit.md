@@ -255,17 +255,7 @@ public class MyChildEntity : BaseEntity<int>
 }
 ```
 
-Add the `[AuditInclude]` attribute onto your child entity :
-```csharp title="MyChildEntity.cs"
-[AuditInclude]
-public class MyChildEntity : BaseEntity<int>
-{
-    public int MyEntityId { get; set; }
-    public string ChildAuditedProperty { get; set; }
-}
-```
-
-Then, according to the [previous chapter](#many-to-many), but using the `MyChildEntity` collection instead of a join entity collection, your dedicated audit entity must look to this :
+According to the [previous chapter](#many-to-many), but using the `MyChildEntity` collection instead of a join entity collection, your dedicated audit entity must look to this :
 ```csharp title="MyChildEntityAudit.cs"
 public class MyChildEntityAudit : AuditKeyedEntity<MyChildEntity, int, int> 
 // Not join entity, so inherits from AuditKeyedEntity<TEntity, TEntityKey, TAuditKey>
@@ -275,6 +265,12 @@ public class MyChildEntityAudit : AuditKeyedEntity<MyChildEntity, int, int>
     public string ChildAuditedProperty { get; set; }
 }
 ```
+
+The dedicated audit table will be like this :
+| AuditId | AuditDate | AuditAction | AuditChanges | AuditUserLogin | MyEntityId | ChildAuditedProperty |
+| -- | -- | -- | -- | -- | -- | -- |
+| 1 | 2025-01-28 14:04:20.1660368 | Insert | [\{"ColumnName":"MyEntityId","OriginalValue":null,"OriginalDisplay":null,"NewValue":1,"NewDisplay":"1"\},\{"ColumnName":"ChildAuditedProperty","OriginalValue":null,"OriginalDisplay":null,"NewValue":"Something","NewDisplay":"Something"\}] | Admin | 1 | Something |
+| 2 | 2025-01-28 14:04:21.1660368 | Delete | [\{"ColumnName":"MyEntityId","OriginalValue":1,"OriginalDisplay":"1","NewValue":null,"NewDisplay":null\},\{"ColumnName":"ChildAuditedProperty","OriginalValue":"Something","OriginalDisplay":"Something","NewValue":null,"NewDisplay":null\}] | Admin | 1 | Something |
 
 ### Many-To-One | One-To-One
 By default, the audit changes already save the identifier value of the linked entity declared as Many-To-One or One-To-One relation.
