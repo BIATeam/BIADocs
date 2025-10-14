@@ -294,6 +294,20 @@ public class MyEntityAuditMapper : AuditMapper<MyEntity>
     }
 }
 ```
+
+Then, inject it as `Singleton` into the `IocContainer` crosscutting class :
+``` csharp title="IocContainer"
+public static class IocContainer
+{
+    private static void ConfigureDomainContainer(IServiceCollection collection)
+    {
+        // [...]
+
+        // Inject audit mappers
+        collection.AddSingleton<IAuditMapper, MyEntityAuditMapper>();
+    }
+}
+```
 ### Many-To-Many | One-To-Many
 :::info
 Following code snippets will use **Many-To-Many** relationship example as seen in [previous chapter](#many-to-many).
