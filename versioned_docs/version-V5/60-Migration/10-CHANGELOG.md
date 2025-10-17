@@ -4,6 +4,16 @@ sidebar_position: 1
 
 # ChangeLog
 
+## V5.2.0 (17/10/2025)
+### Features
+* Support of PostGreSql database connection
+
+### Bugfix
+* Fix datepicker closing after selecting date in date + time input
+* Fix calc mode new line column position when activating detail row on table
+* Fix isOnlyInitializable and isOnlyUpdatable fields never being editable in bia-form
+* Fix filters applying before apply button clicked
+
 ## V5.1.0 (04/08/2025)
 ### Features
 * Customizable Notification (BaseNotification)
