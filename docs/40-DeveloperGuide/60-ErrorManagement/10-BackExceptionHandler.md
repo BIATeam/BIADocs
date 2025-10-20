@@ -189,7 +189,9 @@ namespace TheBIADevCompany.BIADemo.Crosscutting.Common.Error
 ```
 
 :::info
-Core errors are defined into the `BIA.Net.Core.Common.Error.BiaErrorId` enum
+BIA Core error identiifers are defined into the `BIA.Net.Core.Common.Error.BiaErrorId` enum :
+- Values starts from `1000`
+- `Unknown` value = `1000`
 :::
 
 ### Errors translations
