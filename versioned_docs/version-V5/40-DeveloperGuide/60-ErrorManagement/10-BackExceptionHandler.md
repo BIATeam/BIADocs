@@ -114,11 +114,11 @@ When using the constructor with only the **innerException** parameter, the error
 ### Catch a FrontUserException
 The BIA Framework will throw some **FrontUserException**, allowing developers to catch them.
 
-Most of these exceptions are raised from the Data layer and handled by the Domain layer inside the **FilteredServiceBase** class in a dedicated method **HandleFrontUserException**.
+Most of these exceptions are raised from the Data layer and handled by the Domain layer inside the **OperationalDomainServiceBase** class in a dedicated method **HandleFrontUserException**.
 
 The purpose of this method is to analyze the content of the original **FrontUserException** coming from sub-layers and return a new one if needed.
 
-This method can be overridden by all inherited objects from **FilteredServiceBase** to allow the developer to create custom behaviors:
+This method can be overridden by all inherited objects from **OperationalDomainServiceBase** to allow the developer to create custom behaviors:
 
 ```csharp
 protected override Exception HandleFrontUserException(FrontUserException frontUserException)
