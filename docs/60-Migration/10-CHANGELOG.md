@@ -8,7 +8,7 @@ sidebar_position: 1
 * Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
 * New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
 * Display entity's historical of modifications ([doc](../40-DeveloperGuide/20-CRUD/30-Historical.md))
-* Handle translated and custom server errors with existing **FrontUserException** back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
+* Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
 
 ## V5.2.0 (17/10/2025)
 ### Features
