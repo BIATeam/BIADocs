@@ -9,6 +9,10 @@ sidebar_position: 1
 * New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
 * Display entity's historical of modifications ([doc](../40-DeveloperGuide/20-CRUD/30-Historical.md))
 * Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
+* New team configuration
+  * Single entry point for team configuration into back-end `TeamConfig`
+  * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration))
+  * Remove team config definition for `Login` action into `AuthController`
 
 ## V5.2.0 (17/10/2025)
 ### Features

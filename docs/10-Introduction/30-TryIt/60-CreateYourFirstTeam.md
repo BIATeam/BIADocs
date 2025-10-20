@@ -213,27 +213,55 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
 3. Remove all unused imports from the generated file.
 
 ### Additionnal configuration
-#### Automatic team selection mode
-You can choose the selection mode if not default team has been set by the user : first available team (ordered by ID) or none (leave empty choice).
-In back-end, open the **TeamConfig.cs** from the domain layer, and set the `TeamSelectionMode` for your team :
+The additionnal configuration for the teams is based on the `TeamConfig.cs` from the **domain layer** in the back-end.
+
+#### Role mode
+You can set the role mode for your team.
 ``` csharp title="TeamConfig.cs"
 new BiaTeamConfig<Team>()
 {
     // [...]
-    TeamSelectionMode = BIA.Net.Core.Common.Enum.TeamSelectionMode.None,
+    RoleMode = BIA.Net.Core.Common.Enum.RoleMode.AllRoles,
 },
 ```
+- `AllRoles` : all roles are selected
+- `SingleRole` : you can select only one role
+- `MultiRoles` : you can select multiple roles
+
+#### Automatic team selection mode
+You can choose the selection mode if not default team has been set by the user.
+``` csharp title="TeamConfig.cs"
+new BiaTeamConfig<Team>()
+{
+    // [...]
+    TeamAutomaticSelectionMode = BIA.Net.Core.Common.Enum.TeamSelectionMode.None,
+},
+```
+- `None` : leave empty team selection
+- `First` : the first team available (ordered by ID)
 #### Clear and choose no team in selector
 You can set if the users can clear and select empty team in the team selector.
-In front-end, open the **all-environments.ts** and set the `teamSelectionCanBeEmpty` for your team :
-``` typescript title="all-environments.ts"
-teams: [
+``` csharp title="TeamConfig.cs"
+new BiaTeamConfig<Team>()
+{
     // [...]
-    {
-      // [...]
-      teamSelectionCanBeEmpty: true
-    },
-]
+    TeamSelectionCanBeEmpty = true,
+},
+```
+#### Display mode
+You can configure how to display your Team into your front-end.
+``` csharp title="TeamConfig.cs"
+new BiaTeamConfig<Team>()
+{
+    // [...]
+
+    // Display the Team selector into the header of your application
+    DisplayInHeader = true,
+    // Always display the Team selector or only if there is more than one team choice
+    DisplayAlways = true,
+    // Display the label (Team Title) of the Team selector
+    DisplayLabel = true,
+},
 ```
 
 ### Complete traductions
