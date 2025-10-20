@@ -6,6 +6,35 @@ sidebar_position: 1
 ## V6 (NEXT)
 ### Features
 * Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
+* New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
+* Display entity's historical of modifications ([doc](../40-DeveloperGuide/20-CRUD/30-Historical.md))
+* Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
+
+## V5.2.0 (17/10/2025)
+### Features
+* Support of PostGreSql database connection
+
+### Bugfix
+* Fix datepicker closing after selecting date in date + time input
+* Fix calc mode new line column position when activating detail row on table
+* Fix isOnlyInitializable and isOnlyUpdatable fields never being editable in bia-form
+* Fix filters applying before apply button clicked
+
+## V5.1.0 (04/08/2025)
+### Features
+* Customizable Notification (BaseNotification)
+* Improve BaseUser (abstract and BaseUsersController)
+
+### Bugfix
+* Change environment colors base
+* Default value for formReadOnlyMode in BiaFormComponent
+* Fix CSVTime with TimeSpan
+* Fix Unit Test
+
+## V5.0.2 (15/07/2025)
+### Bugfix
+* Fix version of Microsoft.Identity.Client containing security risk
+* Fix application not loading when a new version is deployed and worker service is disabled
 
 ## V5.0.1 (08/07/2025)
 ### Features
