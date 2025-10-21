@@ -254,7 +254,7 @@ function Invoke-ReplacementsInFiles {
       $contentCurrent  = $content
 
       foreach ($rule in $Replacements) {
-        if($rule.Requirement -and -not ($content -cmatch $rule.Requirement)) {
+        if($rule.Requirement -and -not ($contentCurrent -cmatch $rule.Requirement)) {
           continue;
         }
 
@@ -286,7 +286,6 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bPrimeNGFiltering\b)([\s\S]*?)[\s]*?\bPrimeNGFiltering\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/model\/bia-field-config';)"; Replacement = 'import { PrimeNGFiltering } from ''bia-ng/models/enum''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bPropType\b)([\s\S]*?)[\s]*?\bPropType\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/model\/bia-field-config';)"; Replacement = 'import { PropType } from ''bia-ng/models/enum''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bRoleMode\b)([\s\S]*?)[\s]*?\bRoleMode\b[,]?([\s\S]*?} from '[\s\S]*?\/constants';)"; Replacement = 'import { RoleMode } from ''bia-ng/models/enum''; import { $1$2'},
-    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTeamTypeId\b)([\s\S]*?)[\s]*?\bTeamTypeId\b[,]?([\s\S]*?} from '[\s\S]*?\/constants';)"; Replacement = 'import { TeamTypeId } from ''bia-ng/models/enum''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bViewType\b)([\s\S]*?)[\s]*?\bViewType\b[,]?([\s\S]*?} from '[\s\S]*?\/constants';)"; Replacement = 'import { ViewType } from ''bia-ng/models/enum''; import { $1$2'},
     
     # Update models imports
@@ -458,9 +457,15 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bisEmpty\b)([\s\S]*?)[\s]*?\bisEmpty\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { isEmpty } from ''bia-ng/core''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bisObject\b)([\s\S]*?)[\s]*?\bisObject\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { isObject } from ''bia-ng/core''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bclone\b)([\s\S]*?)[\s]*?\bclone\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { clone } from ''bia-ng/core''; import { $1$2'},
-    # TODO : some constant.ts constants moving to bia-ng/core
-    # TODO : some permissions moved to bia-ng/core
-
+    # Update constants moved to bia-core imports
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_BREADCRUMB\b)([\s\S]*?)[\s]*?\bROUTE_DATA_BREADCRUMB\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_BREADCRUMB } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_CAN_NAVIGATE\b)([\s\S]*?)[\s]*?\bROUTE_DATA_CAN_NAVIGATE\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_CAN_NAVIGATE } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_NO_MARGIN\b)([\s\S]*?)[\s]*?\bROUTE_DATA_NO_MARGIN\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_NO_MARGIN } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_NO_PADDING\b)([\s\S]*?)[\s]*?\bROUTE_DATA_NO_PADDING\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_NO_PADDING } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTHEME_LIGHT\b)([\s\S]*?)[\s]*?\bTHEME_LIGHT\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { THEME_LIGHT } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTHEME_DARK\b)([\s\S]*?)[\s]*?\bTHEME_DARK\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { THEME_DARK } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTABLE_FILTER_GLOBAL\b)([\s\S]*?)[\s]*?\bTABLE_FILTER_GLOBAL\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { TABLE_FILTER_GLOBAL } from ''bia-ng/core''; import { $1$2'},
+    
     # Update bia-shared imports
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bBiaButtonGroupComponent\b)([\s\S]*?)[\s]*?\bBiaButtonGroupComponent\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/components\/bia-button-group\/bia-button-group\.component';)"; Replacement = 'import { BiaButtonGroupComponent } from ''bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bBiaButtonGroupItem\b)([\s\S]*?)[\s]*?\bBiaButtonGroupItem\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/components\/bia-button-group\/bia-button-group\.component';)"; Replacement = 'import { BiaButtonGroupItem } from ''bia-ng/shared''; import { $1$2'},
@@ -661,6 +666,37 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTableHelperService\b)([\s\S]*?)[\s]*?\bTableHelperService\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/services\/table-helper\.service';)"; Replacement = 'import { TableHelperService } from ''bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bFieldValidator\b)([\s\S]*?)[\s]*?\bFieldValidator\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/validators\/field\.validator';)"; Replacement = 'import { FieldValidator } from ''bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bJsonValidator\b)([\s\S]*?)[\s]*?\bJsonValidator\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/validators\/json\.validator';)"; Replacement = 'import { JsonValidator } from ''bia-ng/shared''; import { $1$2'},
+    
+    # Some permissions moved to bia-permissions in bia-ng/core
+    @{Pattern = "\bPermission\b\.\bBackground_Task_Admin\b"; Replacement = 'BiaPermission.Background_Task_Admin'},
+    @{Pattern = "\bPermission\b\.\bBackground_Task_Read_Only\b"; Replacement = 'BiaPermission.Background_Task_Read_Only'},
+    @{Pattern = "\bPermission\b\.\bNotification_Create\b"; Replacement = 'BiaPermission.Notification_Create'},
+    @{Pattern = "\bPermission\b\.\bNotification_List_Access\b"; Replacement = 'BiaPermission.Notification_List_Access'},
+    @{Pattern = "\bPermission\b\.\bNotification_Delete\b"; Replacement = 'BiaPermission.Notification_Delete'},
+    @{Pattern = "\bPermission\b\.\bNotification_Read\b"; Replacement = 'BiaPermission.Notification_Read'},
+    @{Pattern = "\bPermission\b\.\bNotification_Update\b"; Replacement = 'BiaPermission.Notification_Update'},
+    @{Pattern = "\bPermission\b\.\bRoles_List\b"; Replacement = 'BiaPermission.Roles_List'},
+    @{Pattern = "\bPermission\b\.\bUser_Add\b"; Replacement = 'BiaPermission.User_Add'},
+    @{Pattern = "\bPermission\b\.\bUser_Delete\b"; Replacement = 'BiaPermission.User_Delete'},
+    @{Pattern = "\bPermission\b\.\bUser_Save\b"; Replacement = 'BiaPermission.User_Save'},
+    @{Pattern = "\bPermission\b\.\bUser_List\b"; Replacement = 'BiaPermission.User_List'},
+    @{Pattern = "\bPermission\b\.\bUser_ListAD\b"; Replacement = 'BiaPermission.User_ListAD'},
+    @{Pattern = "\bPermission\b\.\bUser_List_Access\b"; Replacement = 'BiaPermission.User_List_Access'},
+    @{Pattern = "\bPermission\b\.\bUser_Sync\b"; Replacement = 'BiaPermission.User_Sync'},
+    @{Pattern = "\bPermission\b\.\bUser_UpdateRoles\b"; Replacement = 'BiaPermission.User_UpdateRoles'},
+    @{Pattern = "\bPermission\b\.\bLdapDomains_List\b"; Replacement = 'BiaPermission.LdapDomains_List'},
+    @{Pattern = "\bPermission\b\.\bView_List\b"; Replacement = 'BiaPermission.View_List'},
+    @{Pattern = "\bPermission\b\.\bView_AddUserView\b"; Replacement = 'BiaPermission.View_AddUserView'},
+    @{Pattern = "\bPermission\b\.\bView_AddTeamViewSuffix\b"; Replacement = 'BiaPermission.View_AddTeamViewSuffix'},
+    @{Pattern = "\bPermission\b\.\bView_UpdateUserView\b"; Replacement = 'BiaPermission.View_UpdateUserView'},
+    @{Pattern = "\bPermission\b\.\bView_UpdateTeamViewSuffix\b"; Replacement = 'BiaPermission.View_UpdateTeamViewSuffix'},
+    @{Pattern = "\bPermission\b\.\bView_DeleteUserView\b"; Replacement = 'BiaPermission.View_DeleteUserView'},
+    @{Pattern = "\bPermission\b\.\bView_DeleteTeamView\b"; Replacement = 'BiaPermission.View_DeleteTeamView'},
+    @{Pattern = "\bPermission\b\.\bView_SetDefaultUserView\b"; Replacement = 'BiaPermission.View_SetDefaultUserView'},
+    @{Pattern = "\bPermission\b\.\bView_SetDefaultTeamViewSuffix\b"; Replacement = 'BiaPermission.View_SetDefaultTeamViewSuffix'},
+    @{Pattern = "\bPermission\b\.\bView_AssignToTeamSuffix\b"; Replacement = 'BiaPermission.View_AssignToTeamSuffix'},
+    @{Pattern = "\bPermission\b\.\bImpersonation_Connection_Rights\b"; Replacement = 'BiaPermission.Impersonation_Connection_Rights'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bPermission\b)([\s\S]*?)[\s]*?\bPermission\b[,]?([\s\S]*?} from '[\s\S]*?\/permission';)"; Replacement = 'import { BiaPermission } from ''bia-ng/core''; import { $1Permission$2'; Requirement = '\bBiaPermission\b\.'}
     
     # Clean empty imports
     @{Pattern = "import {[\s]*?} from '[\S]*?';"; Replacement = ''},
