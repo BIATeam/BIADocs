@@ -901,44 +901,30 @@ function Parse-TeamsFromTs {
 function Invoke-MigrationTeamConfig {
   try {
     Write-Host "Migration Team Config started" -ForegroundColor Cyan
-    $TsFilePath = Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter 'all-environments.ts' -File | Select-Object -ExpandProperty FullName -First 1
-    $CsFilePath = Get-ChildItem -Path $SourceBackEnd -Recurse -Filter 'TeamConfig.cs' -File | Select-Object -ExpandProperty FullName -First 1
-    if (-not $TsFilePath) {
-        Write-Host "File 'all-environments.ts' not found" -ForegroundColor Red
-        return
-    }
-    if (-not (Test-Path -LiteralPath $TsFilePath)) {
-        Write-Host "Path not found : $TsFilePath" -ForegroundColor Red
-        return
-    }
-    
-    if (-not $CsFilePath) {
-        Write-Host "File 'TeamConfig.cs' not found" -ForegroundColor Red
-        return
-    }
-    if (-not (Test-Path -LiteralPath $CsFilePath)) {
-        Write-Host "Path not found : $CsFilePath" -ForegroundColor Red
-        return
-    }
+
+    $TsFilePath = Get-ChildItem -Path $SourceFrontEnd -Recurse -ErrorAction SilentlyContinue -Filter 'all-environments.ts' -File | Select-Object -ExpandProperty FullName -First 1
+    $CsFilePath = Get-ChildItem -Path $SourceBackEnd  -Recurse -ErrorAction SilentlyContinue -Filter 'TeamConfig.cs' -File | Select-Object -ExpandProperty FullName -First 1
+
+    if (-not $TsFilePath) { Write-Host "File 'all-environments.ts' not found under $SourceFrontEnd" -ForegroundColor Red; return }
+    if (-not $CsFilePath) { Write-Host "File 'TeamConfig.cs' not found under $SourceBackEnd" -ForegroundColor Red; return }
+    if (-not (Test-Path -LiteralPath $TsFilePath)) { Write-Host "Path not found: $TsFilePath" -ForegroundColor Red; return }
+    if (-not (Test-Path -LiteralPath $CsFilePath)) { Write-Host "Path not found: $CsFilePath" -ForegroundColor Red; return }
+
+    Write-Host "TS file: $TsFilePath" -ForegroundColor DarkCyan
+    Write-Host "CS file: $CsFilePath" -ForegroundColor DarkCyan
+
     $tsText = Get-FileText $TsFilePath
     $csText = Get-FileText $CsFilePath
 
     $teams = Parse-TeamsFromTs -TsText $tsText
-    if ($teams.Count -eq 0) {
-      Write-Host "No team to migrate." -ForegroundColor Yellow
-      return
-    }
-
+    if ($teams.Count -eq 0) { Write-Host "No team to migrate." -ForegroundColor Yellow; return }
     Write-Host ("Teams found: " + (($teams | ForEach-Object { $_.TeamTypeId } | Sort-Object -Unique) -join ', '))
 
     $csUpdated = Update-TeamConfigCs -CsText $csText -Teams $teams
     $tsUpdated = Remove-TeamsFromTs -TsText $tsText
 
-    if ($csUpdated -ne $csText) { Set-FileText -path $CsPath -text $csUpdated }
-    else { Write-Host "TeamConfig.cs unchanged." -ForegroundColor Yellow }
-
-    if ($tsUpdated -ne $tsText) { Set-FileText -path $TsPath -text $tsUpdated }
-    else { Write-Host "all-environments.ts unchanged." -ForegroundColor Yellow }
+    if ($csUpdated -ne $csText) { Set-FileText -path $CsFilePath -text $csUpdated } else { Write-Host "TeamConfig.cs unchanged." -ForegroundColor Yellow }
+    if ($tsUpdated -ne $tsText) { Set-FileText -path $TsFilePath -text $tsUpdated } else { Write-Host "all-environments.ts unchanged." -ForegroundColor Yellow }
   }
   catch {
     Write-Error $_
@@ -975,11 +961,11 @@ Invoke-MigrationTeamConfig
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
 # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
-# FRONT END
+# FRONT END CLEAN
 # Set-Location $SourceFrontEnd
 # npm run clean
 
-# BACK END
+# BACK END RESTORE
 # Set-Location $SourceBackEnd
 # dotnet restore --no-cache
 
