@@ -899,14 +899,29 @@ function Parse-TeamsFromTs {
 }
 
 function Invoke-MigrationTeamConfig {
-  param(
-    [Parameter(Mandatory)][string] $TsPath,
-    [Parameter(Mandatory)][string] $CsPath
-  )
   try {
     Write-Host "Migration Team Config started" -ForegroundColor Cyan
-    $tsText = Get-FileText $TsPath
-    $csText = Get-FileText $CsPath
+    $TsFilePath = Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter 'all-environments.ts' -File | Select-Object -ExpandProperty FullName -First 1
+    $CsFilePath = Get-ChildItem -Path $SourceBackEnd -Recurse -Filter 'TeamConfig.cs' -File | Select-Object -ExpandProperty FullName -First 1
+    if (-not $TsFilePath) {
+        Write-Host "File 'all-environments.ts' not found" -ForegroundColor Red
+        return
+    }
+    if (-not (Test-Path -LiteralPath $TsFilePath)) {
+        Write-Host "Path not found : $TsFilePath" -ForegroundColor Red
+        return
+    }
+    
+    if (-not $CsFilePath) {
+        Write-Host "File 'TeamConfig.cs' not found" -ForegroundColor Red
+        return
+    }
+    if (-not (Test-Path -LiteralPath $CsFilePath)) {
+        Write-Host "Path not found : $CsFilePath" -ForegroundColor Red
+        return
+    }
+    $tsText = Get-FileText $TsFilePath
+    $csText = Get-FileText $CsFilePath
 
     $teams = Parse-TeamsFromTs -TsText $tsText
     if ($teams.Count -eq 0) {
@@ -934,32 +949,30 @@ function Invoke-MigrationTeamConfig {
 }
 
 # FRONT END
-# # BEGIN - deactivate navigation in breadcrumb for crudItemId
-# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
-# # END - deactivate navigation in breadcrumb for crudItemId
+# BEGIN - deactivate navigation in breadcrumb for crudItemId
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
+# END - deactivate navigation in breadcrumb for crudItemId
 
-# # BEGIN - switch to lib bia-ng
-# ApplyChangesToLib
-# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
-# # END - switch to lib bia-ng
+# BEGIN - switch to lib bia-ng
+ApplyChangesToLib
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
+# END - switch to lib bia-ng
 
-# # BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
-# ReplaceInProject `
-#  -Source $SourceFrontEnd `
-#  -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(viewNameChange\)="onViewNameChange\(\$event\)")' `
-#  -NewRegexp '${indent}${line}${nl}${indent}(viewNameChange)="onViewNameChange($event)"${nl}' `
-#  -Include '*-index.component.html'
+# BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+ReplaceInProject `
+ -Source $SourceFrontEnd `
+ -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(viewNameChange\)="onViewNameChange\(\$event\)")' `
+ -NewRegexp '${indent}${line}${nl}${indent}(viewNameChange)="onViewNameChange($event)"${nl}' `
+ -Include '*-index.component.html'
 #  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
 
 # BEGIN Team config move to back-end
-$TsFilePath = Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter 'all-environments.ts' -File | Select-Object -ExpandProperty FullName -First 1
-$CsFilePath = Get-ChildItem -Path $SourceBackEnd -Recurse -Filter 'TeamConfig.cs' -File | Select-Object -ExpandProperty FullName -First 1
-Invoke-MigrationTeamConfig -TsPath $TsFilePath -CsPath $CsFilePath
+Invoke-MigrationTeamConfig
 # End Team config move to back-end
 
 # BACK END
 # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
-# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
 # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
 # FRONT END
