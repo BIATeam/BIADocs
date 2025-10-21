@@ -684,6 +684,19 @@ ApplyChangesToLib
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
 # END - switch to lib bia-ng
 
+# BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+ReplaceInProject `
+ -Source $SourceFrontEnd `
+ -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(viewNameChange\)="onViewNameChange\(\$event\)")' `
+ -NewRegexp '${indent}${line}${nl}${indent}(viewNameChange)="onViewNameChange($event)"${nl}' `
+ -Include '*-index.component.html'
+ # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+
+# BACK END
+# BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+# END - TeamSelectionMode -> TeamAutomaticSelectionMode
+
 # FRONT END
 # Set-Location $SourceFrontEnd
 # npm run clean
