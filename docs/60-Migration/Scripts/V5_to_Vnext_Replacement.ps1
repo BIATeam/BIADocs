@@ -220,6 +220,60 @@ function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchB
   }
 }
 
+function Invoke-ReplacementsInFiles {
+  [CmdletBinding()]
+  param(
+      [Parameter(Mandatory)]
+      [string] $RootPath,
+      [Parameter(Mandatory)]
+      [hashtable[]] $Replacements,   # @{ Pattern = '<regex>'; Replacement = '<string>'; Requirement = '<string>' }
+      [Parameter(Mandatory)]
+      [string[]] $Extensions
+  )
+  $excludeFullPaths =
+      $ExcludeDir | ForEach-Object {
+          $p = if ([System.IO.Path]::IsPathRooted($_)) { $_ } else { Join-Path -Path $RootPath -ChildPath $_ }
+          [System.IO.Path]::GetFullPath($p)
+      }
+
+  Get-ChildItem -Path $RootPath -Recurse -File -Include $Extensions |
+  Where-Object {
+      $full = [System.IO.Path]::GetFullPath($_.FullName)
+      $isExcluded = $false
+      foreach ($ex in $excludeFullPaths) {
+          if ($full.StartsWith($ex.TrimEnd('\','/'), [System.StringComparison]::OrdinalIgnoreCase)) {
+              $isExcluded = $true
+              break
+          }
+      }
+      -not $isExcluded
+  } | ForEach-Object {
+      $content         = Get-Content -LiteralPath $_.FullName -Raw
+      $fileModified    = $false
+      $fileReplacements = @()
+      $contentCurrent  = $content
+
+      foreach ($rule in $Replacements) {
+        if($rule.Requirement -and -not ($content -cmatch $rule.Requirement)) {
+          continue;
+        }
+
+        $newContent = $contentCurrent -creplace $rule.Pattern, $rule.Replacement
+        if ($newContent -cne $contentCurrent) {
+            $contentCurrent  = $newContent
+            $fileModified    = $true
+            $fileReplacements += "  => replaced `"$($rule.Pattern)`" by `"$($rule.Replacement)`" ($occ)"
+        }
+    }
+
+      if ($fileModified) {
+          Write-Host $_.FullName -ForegroundColor Green
+          $fileReplacements | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+          [System.IO.File]::WriteAllText($_.FullName, $contentCurrent, [System.Text.Encoding]::UTF8)
+      }
+  }
+}
+
 function ApplyChangesToLib {
   Write-Host "[Apply changes for bia-ng lib]"
   
@@ -616,37 +670,7 @@ function ApplyChangesToLib {
     )
 
   $extensions = "*.ts"
-  Write-Host "Looking for files ($extensions) to analyze..."
-  Get-ChildItem -Path $SourceFrontEnd -Recurse -Include $extensions| Where-Object {
-    $excluded = $false
-    Write-Host $_.FullName
-    foreach ($exclude in $ExcludeDir) {
-        if ($_.FullName -match [regex]::Escape("\$exclude\")) {
-            $excluded = $true
-            break
-        }
-    }
-    -not $excluded
-  } | ForEach-Object {
-    $content = Get-Content $_.FullName -Raw
-    $fileModified = $false
-    $fileReplacements = @()
-
-    foreach ($rule in $replacementsTS) {
-      $newContent = $content -creplace $rule.Pattern, $rule.Replacement
-      if ($newContent -cne $content) {
-          $content = $newContent
-          $fileModified = $true
-          $fileReplacements += "  => replaced $($rule.Pattern) by $($rule.Replacement)"
-      }
-    }
-    
-    if ($fileModified) {
-        Write-Host $_.FullName -ForegroundColor Green
-        $fileReplacements | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
-        [System.IO.File]::WriteAllText($_.FullName, $content, [System.Text.Encoding]::UTF8)
-    }
-  }
+  Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTS -Extensions $extensions
 }
 
 
