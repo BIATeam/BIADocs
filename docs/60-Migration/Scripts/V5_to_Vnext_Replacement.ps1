@@ -221,7 +221,6 @@ function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchB
 }
 
 function Invoke-ReplacementsInFiles {
-  [CmdletBinding()]
   param(
       [Parameter(Mandatory)]
       [string] $RootPath,
@@ -673,6 +672,267 @@ function ApplyChangesToLib {
   Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTS -Extensions $extensions
 }
 
+function Get-FileText([string]$path) {
+  if (-not (Test-Path -LiteralPath $path)) { throw "Fichier introuvable: $path" }
+  return [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8)
+}
+
+function Set-FileText([string]$path, [string]$text, [switch]$WhatIfOnly) {
+  if ($WhatIfOnly) { Write-Host "WHATIF: Écriture ignorée -> $path" -ForegroundColor Yellow; return }
+  [System.IO.File]::WriteAllText($path, $text, [System.Text.Encoding]::UTF8)
+}
+
+function Update-TeamConfigCs {
+  param(
+    [Parameter(Mandatory)][string] $CsText,
+    [Parameter(Mandatory)][array]  $Teams
+  )
+
+  function Get-Eol([string]$text) { if ($text -match "`r`n") { "`r`n" } else { "`n" } }
+
+  
+  $mDecl = [regex]::Match($CsText, 'Config\s*=\s*new[\s\S]*?\{')
+  if (-not $mDecl.Success) {
+    Write-Host "Declaration 'Config = new … {' not found." -ForegroundColor Yellow
+    return $CsText
+  }
+  $listOpen = $mDecl.Index + $mDecl.Length - 1
+
+  $k = $listOpen; $brace = 0
+  do {
+    if ($CsText[$k] -eq '{') { $brace++ }
+    elseif ($CsText[$k] -eq '}') { $brace-- }
+    $k++
+  } while ($k -lt $CsText.Length -and $brace -gt 0)
+  $listClose = $k - 1
+
+  $listStart = $listOpen + 1
+  $listText  = $CsText.Substring($listStart, $listClose - $listStart)
+
+  $updatedList = $listText
+  foreach ($team in $Teams) {
+    $teamId   = [regex]::Escape($team.TeamTypeId)
+    $rxTeam   = [regex]"TeamTypeId\s*=\s*\(int\)\s*TeamTypeId\.$teamId\b"
+    $searchFrom = 0
+
+    while ($true) {
+      $mTeam = $rxTeam.Match($updatedList, $searchFrom)
+      if (-not $mTeam.Success) { break }
+
+      $pos = $mTeam.Index
+      $i = $pos; $depth = 0; $openIdx = -1
+      while ($i -ge 0) {
+        $ch = $updatedList[$i]
+        if ($ch -eq '}') { $depth++ }
+        elseif ($ch -eq '{') {
+          if ($depth -eq 0) { $openIdx = $i; break }
+          $depth--
+        }
+        $i--
+      }
+      if ($openIdx -lt 0) { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+
+      $segStart = [Math]::Max(0, $openIdx - 400)
+      $seg      = $updatedList.Substring($segStart, $openIdx - $segStart)
+      $mNew     = [regex]::Matches($seg, 'new\s*([A-Za-z_][A-Za-z0-9_<>.]*)?\s*(?:\(\s*\))?\s*$', 'RightToLeft')
+      if ($mNew.Count -eq 0) { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+      $typeName = $mNew[0].Groups[1].Value
+      if ($typeName -and ($typeName -notmatch '^BiaTeamConfig(\s*<[^>]+>\s*)?$')) { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+      $backScan = $updatedList.Substring([Math]::Max(0,$openIdx-800), [Math]::Min(800,$openIdx))
+      if ($backScan -match '(Children|Parents)\s*=\s*new[\s\S]*$') { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+
+      $j = $openIdx; $b2 = 0
+      do {
+        if ($updatedList[$j] -eq '{') { $b2++ }
+        elseif ($updatedList[$j] -eq '}') { $b2-- }
+        $j++
+      } while ($j -lt $updatedList.Length -and $b2 -gt 0)
+      $closeIdx = $j - 1
+
+      $bodyStart = $openIdx + 1
+      $bodyLen   = $closeIdx - $bodyStart
+      $body      = $updatedList.Substring($bodyStart, $bodyLen)
+
+      $eol = Get-Eol $body
+      $mAdmin = [regex]::Match($body, '(?m)^(?<indent>[ \t]*)AdminRoleIds\s*=\s*\[(?:[\s\S]*?)\],[ \t]*\r?\n')
+      $insertIdx = -1
+      $indent    = ''
+      if ($mAdmin.Success) {
+        $insertIdx = $mAdmin.Index + $mAdmin.Length 
+        $indent    = $mAdmin.Groups['indent'].Value
+      } else {
+        $mTeamLine = [regex]::Match($body, '(?m)^(?<indent>[ \t]*)TeamTypeId\s*=.*?,[ \t]*\r?\n')
+        if ($mTeamLine.Success) {
+          $insertIdx = $mTeamLine.Index + $mTeamLine.Length
+          $indent    = $mTeamLine.Groups['indent'].Value
+        } else {
+          $insertIdx = 0
+          $indent    = '                '
+        }
+      }
+
+      $map = [ordered]@{
+        RoleMode                = 'RoleMode'
+        DisplayInHeader         = 'DisplayInHeader'
+        DisplayOne              = 'DisplayOne'
+        DisplayAlways           = 'DisplayAlways'
+        TeamSelectionCanBeEmpty = 'TeamSelectionCanBeEmpty'
+        Label                   = 'Label'
+      }
+
+      $toInsert = New-Object System.Text.StringBuilder
+      foreach ($k in $map.Keys) {
+        $val = To-CsValue -propName $k -tsValue $team.$k
+        if ($null -eq $val) { continue }
+        if ([regex]::IsMatch($body, "(?m)^\s*$([regex]::Escape($map[$k]))\s*=")) { continue }
+        [void]$toInsert.Append($indent + $map[$k] + " = " + $val + "," + $eol)
+      }
+
+      if ($toInsert.Length -gt 0) {
+        $body = $body.Insert($insertIdx, $toInsert.ToString())
+        $updatedList = $updatedList.Substring(0,$bodyStart) + $body + $updatedList.Substring($closeIdx)
+        $searchFrom  = $bodyStart + $body.Length
+      } else {
+        $searchFrom = $mTeam.Index + $mTeam.Length
+      }
+    }
+  }
+
+  return $CsText.Substring(0,$listStart) + $updatedList + $CsText.Substring($listClose)
+}
+
+function Remove-TeamsFromTs {
+  param(
+    [Parameter(Mandatory)][string] $TsText
+  )
+  $removed = $TsText
+  $patternWithCommaBefore = [regex]'(?s),\s*teams\s*:\s*\[[\s\S]*?\]'
+  $patternStandalone      = [regex]'(?s)teams\s*:\s*\[[\s\S]*?\]\s*,?'
+
+  if ($patternWithCommaBefore.IsMatch($removed)) {
+    $removed = $patternWithCommaBefore.Replace($removed, '')
+  } elseif ($patternStandalone.IsMatch($removed)) {
+    $removed = $patternStandalone.Replace($removed, '')
+  } else {
+    Write-Host "No 'teams' section to delete" -ForegroundColor Yellow
+  }
+
+  $removed = [regex]::Replace($removed, '(?m),\s*,', ', ')
+
+  return $removed
+}
+
+function To-CsValue {
+  param(
+    [string]$propName,
+    [string]$tsValue
+  )
+  if ($null -eq $tsValue -or $tsValue -eq '') { return $null }
+
+  switch ($propName) {
+    'RoleMode' {
+      # TS: RoleMode.AllRoles -> C#: <EnumNamespace>.RoleMode.AllRoles
+      if ($tsValue -match '^\s*RoleMode\.(\w+)\s*$') {
+        return "BIA.Net.Core.Common.Enum.RoleMode.$($Matches[1])"
+      }
+      return $tsValue
+    }
+    'DisplayInHeader' { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'DisplayOne'      { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'DisplayAlways'   { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'TeamSelectionCanBeEmpty' { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'Label' {
+      # TS: 'myTeam.headerLabel' | "myTeam.headerLabel" -> C#: "myTeam.headerLabel"
+      $unq = $tsValue.Trim()
+      if ($unq.StartsWith("'") -or $unq.StartsWith('"')) {
+        $unq = $unq.Trim("'`"")
+      }
+      return '"' + $unq + '"'
+    }
+    default { return $tsValue }
+  }
+}
+
+function Parse-TeamsFromTs {
+  param(
+    [Parameter(Mandatory)][string] $TsText
+  )
+  # 1) Localiser le tableau teams [...]
+  $teamsSectionRegex = [regex]'teams\s*:\s*\[(?<array>[\s\S]*?)\]'
+  $m = $teamsSectionRegex.Match($TsText)
+  if (-not $m.Success) {
+    Write-Host "No 'teams' section found in all-environments.ts" -ForegroundColor Yellow
+    return @()
+  }
+  $teamsArrayText = $m.Groups['array'].Value
+
+  # 2) Extraire chaque objet { teamTypeId: TeamTypeId.Xxx, ... }
+  $teamObjectRegex = [regex]'\{\s*teamTypeId\s*:\s*TeamTypeId\.(?<id>\w+)\s*,(?<body>[\s\S]*?)\}'
+  $teams = New-Object System.Collections.Generic.List[object]
+
+  foreach ($tm in $teamObjectRegex.Matches($teamsArrayText)) {
+    $id = $tm.Groups['id'].Value
+    $body = $tm.Groups['body'].Value
+
+    # helpers pour extraire une propriété "clé: valeur,"
+    function Get-TsProp {
+      param([string]$source, [string]$propName)
+      $r = [regex]::new("(?m)^\s*$([regex]::Escape($propName))\s*:\s*(?<val>[^,\r\n]+)\s*,?")
+      $mm = $r.Match($source)
+      if ($mm.Success) { return $mm.Groups['val'].Value.Trim() }
+      return $null
+    }
+
+    $obj = [pscustomobject]@{
+      TeamTypeId              = $id
+      RoleMode                = (Get-TsProp -source $body -propName 'roleMode')               # e.g. RoleMode.AllRoles
+      DisplayInHeader         = (Get-TsProp -source $body -propName 'inHeader')               # true/false
+      DisplayOne              = (Get-TsProp -source $body -propName 'displayOne')
+      DisplayAlways           = (Get-TsProp -source $body -propName 'displayAlways')
+      TeamSelectionCanBeEmpty = (Get-TsProp -source $body -propName 'teamSelectionCanBeEmpty')
+      Label                   = (Get-TsProp -source $body -propName 'label')                  # 'myTeam.headerLabel'
+    }
+    $teams.Add($obj) | Out-Null
+  }
+
+  return $teams
+}
+
+function Invoke-MigrationTeamConfig {
+  try {
+    Write-Host "Migration Team Config started" -ForegroundColor Cyan
+
+    $TsFilePath = Get-ChildItem -Path $SourceFrontEnd -Recurse -ErrorAction SilentlyContinue -Filter 'all-environments.ts' -File | Select-Object -ExpandProperty FullName -First 1
+    $CsFilePath = Get-ChildItem -Path $SourceBackEnd  -Recurse -ErrorAction SilentlyContinue -Filter 'TeamConfig.cs' -File | Select-Object -ExpandProperty FullName -First 1
+
+    if (-not $TsFilePath) { Write-Host "File 'all-environments.ts' not found under $SourceFrontEnd" -ForegroundColor Red; return }
+    if (-not $CsFilePath) { Write-Host "File 'TeamConfig.cs' not found under $SourceBackEnd" -ForegroundColor Red; return }
+    if (-not (Test-Path -LiteralPath $TsFilePath)) { Write-Host "Path not found: $TsFilePath" -ForegroundColor Red; return }
+    if (-not (Test-Path -LiteralPath $CsFilePath)) { Write-Host "Path not found: $CsFilePath" -ForegroundColor Red; return }
+
+    Write-Host "TS file: $TsFilePath" -ForegroundColor DarkCyan
+    Write-Host "CS file: $CsFilePath" -ForegroundColor DarkCyan
+
+    $tsText = Get-FileText $TsFilePath
+    $csText = Get-FileText $CsFilePath
+
+    $teams = Parse-TeamsFromTs -TsText $tsText
+    if ($teams.Count -eq 0) { Write-Host "No team to migrate." -ForegroundColor Yellow; return }
+    Write-Host ("Teams found: " + (($teams | ForEach-Object { $_.TeamTypeId } | Sort-Object -Unique) -join ', '))
+
+    $csUpdated = Update-TeamConfigCs -CsText $csText -Teams $teams
+    $tsUpdated = Remove-TeamsFromTs -TsText $tsText
+
+    if ($csUpdated -ne $csText) { Set-FileText -path $CsFilePath -text $csUpdated } else { Write-Host "TeamConfig.cs unchanged." -ForegroundColor Yellow }
+    if ($tsUpdated -ne $tsText) { Set-FileText -path $TsFilePath -text $tsUpdated } else { Write-Host "all-environments.ts unchanged." -ForegroundColor Yellow }
+  }
+  catch {
+    Write-Error $_
+  }
+  finally {
+    Write-Host "Migration Team Config finished" -ForegroundColor Cyan
+  }
+}
 
 # FRONT END
 # BEGIN - deactivate navigation in breadcrumb for crudItemId
@@ -684,11 +944,28 @@ ApplyChangesToLib
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
 # END - switch to lib bia-ng
 
-# FRONT END
+# BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+ReplaceInProject `
+ -Source $SourceFrontEnd `
+ -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(viewNameChange\)="onViewNameChange\(\$event\)")' `
+ -NewRegexp '${indent}${line}${nl}${indent}(viewNameChange)="onViewNameChange($event)"${nl}' `
+ -Include '*-index.component.html'
+#  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+
+# BEGIN Team config move to back-end
+Invoke-MigrationTeamConfig
+# End Team config move to back-end
+
+# BACK END
+# BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+# END - TeamSelectionMode -> TeamAutomaticSelectionMode
+
+# FRONT END CLEAN
 # Set-Location $SourceFrontEnd
 # npm run clean
 
-# BACK END
+# BACK END RESTORE
 # Set-Location $SourceBackEnd
 # dotnet restore --no-cache
 
