@@ -74,6 +74,9 @@ onViewNameChange(viewName: string | null) {}
 
 Or, you can simply remove from the `.html` the following binding : `(viewNameChange)="onViewNameChange($event)"`
 ### Team Configuration
+:::tip
+Automatically handled by migration script, for information purpose and manual adjustement only.
+:::
 From the file `all-environments.ts`, move the content of your `teams` configuration into back-end file `TeamConfig.cs` :
 ``` typescript title="all-environments.ts"
 export const allEnvironments = {
