@@ -997,6 +997,10 @@ Invoke-MigrationTeamConfig
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
 # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
+# BEGIN - charset encoding file into controllers
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
+# END - charset encoding file into controllers
+
 # FRONT END CLEAN
 # Set-Location $SourceFrontEnd
 # npm run clean
