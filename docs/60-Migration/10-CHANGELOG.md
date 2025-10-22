@@ -15,7 +15,8 @@ sidebar_position: 1
   * Remove team config definition for `Login` action into `AuthController`
 * Add action buttons on dropdown filters rules definition
 ### Bugfix
-* FIx CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
+* Fix URL query parameter update issue when changing view from table into index page
+* Fix CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
 
 ## V5.2.0 (17/10/2025)
 ### Features
