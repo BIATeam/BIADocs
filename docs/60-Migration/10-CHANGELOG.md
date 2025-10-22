@@ -13,6 +13,7 @@ sidebar_position: 1
   * Single entry point for team configuration into back-end `TeamConfig`
   * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration))
   * Remove team config definition for `Login` action into `AuthController`
+* Add action buttons on dropdown filters rules definition
 ### Bugfix
 * FIx CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
 
