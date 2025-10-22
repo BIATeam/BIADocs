@@ -17,6 +17,7 @@ sidebar_position: 1
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
 * Fix CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
+* Fix large display of applied filters on a filtered column in table
 
 ## V5.2.0 (17/10/2025)
 ### Features
