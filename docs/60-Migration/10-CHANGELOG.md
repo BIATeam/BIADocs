@@ -14,6 +14,7 @@ sidebar_position: 1
   * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration))
   * Remove team config definition for `Login` action into `AuthController`
 * Add action buttons on dropdown filters rules definition
+* New option to generate CRUD with domain URL (BIAToolKit)
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
 * Fix CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
