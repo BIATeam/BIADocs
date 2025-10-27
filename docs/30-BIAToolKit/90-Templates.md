@@ -311,7 +311,9 @@ Its purpose is to compare a specific version of [BIADemo](https://github.com/BIA
 6. Open the BIAToolkit solution into Visual Studio
 7. Go to `BIA.ToolKit.Test.Templates` project, into the `_X_Y_Z` folder corresponding to your BIADemo framework version
    1. If not exists, copy the previous `_U_V_W` folder and name it `_X_Y_Z`
-   2. Rename all `U_V_W` to `X_Y_Z` into this folder
+   2. Rename `GenerateTestFixture_U_V_W.cs` to `GenerateTestFixture_X_Y_Z.cs`
+   3. Rename all `U_V_W` to `X_Y_Z` into this folder
+   4. Add into `GenerateTestFixtureCollection.cs` a new inheritage of interface `ICollectionFixture<GenerateTestFixture_X_Y_Z>`
 8. Into the `GenerateTestFixture_X_Y_Z` class constructor, edit the call to `Init()` method with corresponding parameters to the BIADemo version data to compare (archive name and project data) :
    ``` csharp title="GenerateTestFixture_X_Y_Z"
     public sealed class GenerateTestFixture_X_Y_Z : GenerateTestFixture
