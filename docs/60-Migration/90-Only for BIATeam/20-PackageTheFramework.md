@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 20
 ---
 # Package a new version of the Framework
 
@@ -30,7 +30,7 @@ sidebar_position: 1
 - Test Authentication AD Group + ReadOnly Database + Unitary Test
 
 ## Run BIAToolkit Templates Unit Tests
-- Follow the instructions of the following [chapter](../../30-BIAToolKit/90-Templates.md#usage)
+- Follow the instructions of the following [chapter](./10-Templates/20-BIAToolKitTemplates.md#unit-tests)
 - If any differences, fix both templates into BIAToolKit and reference files into BIADemo
 :::warning
 All tests must be validated before continuing package process !

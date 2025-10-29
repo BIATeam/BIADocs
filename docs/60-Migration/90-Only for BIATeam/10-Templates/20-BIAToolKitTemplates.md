@@ -2,15 +2,12 @@
 sidebar_position: 1
 ---
 
-# Templates
-:::warning
-**Only for BIAToolKit maintainers**
-:::
+# BIAToolKit Templates
 
 This document explains how the BIAToolkit use templates to generate Option, DTO and CRUD features, and how to maintain them.
 
 ## Diagram
-![Diagram](../Images/BIAToolKit/TemplatesDiagram.png)
+![Diagram](../../../Images/BIAToolKit/TemplatesDiagram.png)
 
 1. Developper wants to generate a feature (Option, DTO, CRUD) for his BIA Framework project using the BIAToolKit
 2. A file generator context is created based on the selected feature to generate
