@@ -172,7 +172,7 @@ When configuring templated error messages, ensure to provide the correct number 
 
 ### Errors identifiers
 You can define your own errors into the `ErrorId` class into the `Crosscutting.Common` layer :
-``` chsarp title="ErrorId.cs"
+``` csharp title="ErrorId.cs"
 namespace TheBIADevCompany.BIADemo.Crosscutting.Common.Error
 {
     /// <summary>
@@ -196,7 +196,7 @@ BIA Core error identiifers are defined into the `BIA.Net.Core.Common.Error.BiaEr
 
 ### Errors translations
 Into the `ErrorMessage` class, define the translations of your custom errors into the `Translations` collection :
-``` chsarp title="ErrorMessage.cs"
+``` csharp title="ErrorMessage.cs"
 namespace TheBIADevCompany.BIADemo.Crosscutting.Common.Error
 {
     public static class ErrorMessage
@@ -204,7 +204,7 @@ namespace TheBIADevCompany.BIADemo.Crosscutting.Common.Error
         private static readonly ImmutableList<BiaErrorTranslation> Translations =
         [
             new BiaErrorTranslation() { ErrorId = (int)ErrorId.CustomError, LanguageId = LanguageId.English, Label = "Custom error message." },
-            new BiaErrorTranslation() { ErrorId = (int)ErrorId.CustomError, LanguageId = LanguageId.French, Label = "Message d’e rreur personnalisé." },
+            new BiaErrorTranslation() { ErrorId = (int)ErrorId.CustomError, LanguageId = LanguageId.French, Label = "Message d’erreur personnalisé." },
             new BiaErrorTranslation() { ErrorId = (int)ErrorId.CustomError, LanguageId = LanguageId.Spanish, Label = "Mensaje de error personalizado." },
         ];
 
@@ -238,7 +238,7 @@ The `HttpResponse` will be modified :
 - `HttpStatusCode` will be set to `422` (Unprocessable Entity)
 - `HttpResponse` transformed as a `HttpErrorReport`
 
-``` chsarp title="HttpErrorReport.cs"
+``` csharp title="HttpErrorReport.cs"
 namespace BIA.Net.Core.Presentation.Api
 {
     /// <summary>

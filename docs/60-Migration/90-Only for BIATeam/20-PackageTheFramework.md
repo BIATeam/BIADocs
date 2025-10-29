@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 20
 ---
 # Package a new version of the Framework
 
@@ -30,7 +30,7 @@ sidebar_position: 1
 - Test Authentication AD Group + ReadOnly Database + Unitary Test
 
 ## Run BIAToolkit Templates Unit Tests
-- Follow the instructions of the following [chapter](../../30-BIAToolKit/90-Templates.md#usage)
+- Follow the instructions of the following [chapter](./10-Templates/20-BIAToolKitTemplates.md#unit-tests)
 - If any differences, fix both templates into BIAToolKit and reference files into BIADemo
 :::warning
 All tests must be validated before continuing package process !
@@ -73,6 +73,10 @@ All tests must be validated before continuing package process !
   - and rebuild all.
 
 ## Prepare BIATemplate:
+:::tip
+Use [BIA Template Documentation](./10-Templates/10-BIATemplates.md) to help you with elements to include/exclude for the final BIA Template.
+:::
+
 - Synchronize your BIATemplate local folder with github.
 - Stop the BIATemplate IIS process.
 - Launch **...\BIADemo\Tools\0-Common-BIADemo-BIATemplate.ps1** (if some additional files are to include modify the script)
@@ -94,6 +98,9 @@ All tests must be validated before continuing package process !
 - With the BIAToolKit create a project of the VX.Y.Z whith your version of CompanyFiles or VX.Y.Z of companyFiles.
 - Test it.
 - If it is ok and you have a VX.Y.Z folder, rename **...\BIACompanyFiles\VX.Y.Z** with the good version name
+:::tip
+If you have to fix anything into **BIADemo** to resolve project creation issue related to the **BIA Template**, restart process from the [Prepare BIA Template chapter](#prepare-biatemplate)
+:::
 
 ## Publish BIAPackage
 - Redact the change log of the new version

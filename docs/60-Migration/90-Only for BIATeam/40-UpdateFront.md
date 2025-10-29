@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 40
 ---
 
 This upgrade is to apply only on **BIADemo project**.
