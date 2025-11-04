@@ -3,6 +3,21 @@ sidebar_position: 1
 ---
 # V5 to Vnext
 
+## Prerequisites 
+:::warning
+These steps are mandatory before applying [BIA Framework migration](#bia-framework-migration)
+:::
+
+1. Download and install [v24.11.0 LTS of node.js](https://nodejs.org/dist/v24.11.0/node-v24.11.0-x64.msi)
+2. Run `npm i -g npm@11.6.1`
+3. Run `npm i -g @angular/cli@20`
+4. For each Angular project :
+   1. run `ng update @angular/core@20 @angular/cli@20`, then commit
+      1. Decline `use-application-builder` migration
+      2. Decline `control-flow-migration` migration
+      3. **Accept** `router-current-navigation` migration
+   2. run `ng update @ngrx/store@20.0.0`, then commit
+
 ## BIA Framework Migration
  
 1. Delete from your Angular projects all **package-lock.json** and **node_modules** folder
@@ -22,19 +37,30 @@ sidebar_position: 1
    :::tip
    Use the [conflict resolution chapter](#conflict-resolution) to help you
    :::
-5. For each Angular project, launch the **npm install** and **npm audit fix** command
-6. Download the [migration script](./Scripts/V5_to_Vnext_Replacement.ps1)
-   1. Change source path of the migration script to target your project root and your Angular project 
-   2. Run it for each of your Angular project (change the Angular source path each time)
-7. Apply other manual steps for [Front](#front-manual-steps) (for each Angular project) and [Back](#back-manual-steps)
-8. Resolve missing and obsolete usings in back-end with BIAToolKit (step **6 - Resolve Usings**)
-9. Resolve building issues into your Angular projects and back end
-10. If all is ok, you can remove the `.rej` files. During the process they can be useful to resolve build problems
-11. Execute the [database migration instructions](#database-migration)
-12. For each Angular project, launch the `npm run clean` command
-13. Clean back-end solution
+5. For each Angular project :
+   1. run `npm install` 
+   2. run `npm audit fix`
+6. Download the [migration script](./Scripts/V5_to_Vnext_Replacement.ps1), then :
+   1. change source path of the migration script to target your project root and your Angular project 
+   2. run it for each of your Angular project (change the Angular source path each time)
+7. For each Angular project :
+   1. run `ng generate @angular/core:control-flow`
+      1. validate current path as target path
+      2. accept reformat templates option
+   2. run `ng generate @angular/core:cleanup-unused-imports`
+   3. download and launch the [cleanup standalone imports script](./Scripts/V5_to_Vnext_Replacement.ps1)
+8. Apply other manual steps for [Front](#front-manual-steps) (for each Angular project) and [Back](#back-manual-steps)
+9.  Resolve missing and obsolete usings in back-end with BIAToolKit (step **6 - Resolve Usings**)
+10. Resolve building issues into your Angular projects and back end
+11. If all is ok, you can remove the `.rej` files. During the process they can be useful to resolve build problems
+12. Execute the [database migration instructions](#database-migration)
+13. For each Angular project, launch the `npm run clean` command
+14. Clean back-end solution
 
 ## Conflict Resolution
+### all-environments.ts
+Keep all your `teams` definition, there will be used by the migration script for the [Team Configuration step](#team-configuration)
+
 ### AuditFeature
 Into `AuditTypeMapper` method, integrate your old switch case conditions into the new one :
 ``` csharp title="AuditFeature.cs (OLD)"
