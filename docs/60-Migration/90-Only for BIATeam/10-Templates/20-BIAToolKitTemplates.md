@@ -2,15 +2,12 @@
 sidebar_position: 1
 ---
 
-# Templates
-:::warning
-**Only for BIAToolKit maintainers**
-:::
+# BIAToolKit Templates
 
 This document explains how the BIAToolkit use templates to generate Option, DTO and CRUD features, and how to maintain them.
 
 ## Diagram
-![Diagram](../Images/BIAToolKit/TemplatesDiagram.png)
+![Diagram](../../../Images/BIAToolKit/TemplatesDiagram.png)
 
 1. Developper wants to generate a feature (Option, DTO, CRUD) for his BIA Framework project using the BIAToolKit
 2. A file generator context is created based on the selected feature to generate
@@ -155,12 +152,26 @@ The manifest contains all the files to generate for each feature kind of a versi
   "version": "X.Y.Z",
   "features": [
     {
-      "type": "Option",
+      "type": "Crud",
       "angularTemplates": [
         {
-          "inputPath": "src\\app\\domains\\services\\EntityOptionDasServiceTemplate.tt",
-          "outputPath": "src\\app\\domains\\{Entity}-option\\services\\{Entity}-option-das.service.ts"
-        }
+          "inputPath": "src\\app\\features\\views\\item\\EntityItemComponentTsTemplate.tt",
+          "outputPath": "src\\app\\features\\{ParentChildrenRelativePath}\\{EntityPlural}\\views\\{Entity}-item\\{Entity}-item.component.ts"
+        },
+        {
+          "inputPath": "src\\app\\PartialCrudAppRoutingModule.tt",
+          "outputPath": "src\\app\\app-routing.module.ts",
+          "isPartial": true,
+          "partialInsertionMarkup": "Routing"
+        },
+        {
+          "inputPath": "src\\app\\PartialCrudAppRoutingModule_Domain.tt",
+          "outputPath": "src\\app\\app-routing.module.ts",
+          "isPartial": true,
+          "partialInsertionMarkup": "RoutingDomain",
+          "useDomainPartialInsertionMarkup": true,
+          "ignoredInnerMarkups": [ "RoutingDomain{Domain}Children" ]
+        },
       ],
       "dotNetTemplates": [
         {
@@ -186,7 +197,9 @@ The manifest contains all the files to generate for each feature kind of a versi
   - these path are both relatives to their source kind (`DotNet` or `Angular`)
 - you can mark a template as partial with `isPartial` property
   - you must then provide the `partialInsertionMarkup` value that corresponds to the area into the target file where the generated content will be added
-- you can use templates property between `{}` into path properties that will be replaced by the file generator service :
+  - you can set `useDomainPartialInsertionMarkup` to `true` if you want to generate partial content with the `Domain` identifier instead of the `Entity` identifier
+  - you can set into `ignoredInnerMarkups` a list of inner markups into the markup content to generate where the content between these will not be erased by the generation process
+- you can use templates property between `{}` into `outputPath`, `partialInsertionMarkup` or `ignoredInnerMarkups` properties that will be replaced by the file generator service :
   - `{Project}` : the target project name
   - `{Domain}` : the target entity's domain name 
   - `{Entity}` : the target entity's name (Pascal case)
@@ -293,10 +306,30 @@ Its purpose is to compare a specific version of [BIADemo](https://github.com/BIA
 4. Go into BIADemo sources and run the script `BIADemo\Tools\4-BIADemo-BIAToolKit.ps1`
 5. A packaged version of BIADemo named as `BIADemo_X.Y.Z.zip` without the specific content between `BIADemo` markups will be created into your sources of BIAToolkit into the subfolder `BIADemoVersions`
 6. Open the BIAToolkit solution into Visual Studio
-7. Open the test explorer of the BIAToolKit solution into Visual Studio
-8. Edit into the `FileGeneratorTestFixture` class the `biaDemoZipPath` variable and `referenceProject.FrameworkVersion` to the corresponding values of the packaged version of BIADemo to compare
-9. Edit if necessary the tests files `Generate{Feature}Test.cs` to match the models of the BIADemo version to compare with
-10. Open the Solution Explorer into Visual Studio and run the tests
+7. Go to `BIA.ToolKit.Test.Templates` project, into the `_X_Y_Z` folder corresponding to your BIADemo framework version
+   1. If not exists, copy the previous `_U_V_W` folder and name it `_X_Y_Z`
+   2. Rename `GenerateTestFixture_U_V_W.cs` to `GenerateTestFixture_X_Y_Z.cs`
+   3. Rename all `U_V_W` to `X_Y_Z` into this folder
+   4. Add into `GenerateTestFixtureCollection.cs` a new inheritage of interface `ICollectionFixture<GenerateTestFixture_X_Y_Z>`
+8. Into the `GenerateTestFixture_X_Y_Z` class constructor, edit the call to `Init()` method with corresponding parameters to the BIADemo version data to compare (archive name and project data) :
+   ``` csharp title="GenerateTestFixture_X_Y_Z"
+    public sealed class GenerateTestFixture_X_Y_Z : GenerateTestFixture
+    {
+        public GenerateTestFixture_X_Y_Z()
+        {
+            Init("BIADemo_X.Y.Z", new Project
+            {
+                Name = "BIADemo",
+                CompanyName = "TheBIADevCompany",
+                BIAFronts = ["Angular"],
+                FrameworkVersion = "X.Y.Z"
+            });
+        }
+    }
+   ```
+9.  Adapt if necessary each tests files content to match the tests settings with the targeted BIADemo feature and entity to compare with
+10. Open the Test Explorer into Visual Studio and run the tests of your version `_X_Y_Z` under `BIA.ToolKit.Test.Templates._X_Y_Z`
+11. Use the [next chapter](#handle-errors) to help you with occured exceptions from the unit tests
 
 ### Handle errors
 #### AllFilesNotEqualsException
@@ -327,14 +360,20 @@ The generation process has failed.
 :::tip
 The details of the generation and the exceptions can be found by analyzing the **Tests output** into Visual Studio.
 :::
+#### PartialInsertionMarkupBeginAndMarkupCountNotEqualException
+The insertion markups `Begin` and `End` are not matching.
+:::tip
+Check into the related file the `Begin` and `End` insertion markups.
+:::
 
 ### In depth
 - `npm i` command will be executed the first time the choosen BIADemo version will be unzipped into the Angular project in order to use Prettier
-- generated files will be created in `AppData\Local\Temp\BIAToolKitTestTemplatesGenerated\{Feature}_{Entity}`
+- generated files will be created in `AppData\Local\Temp\BIAToolKitTestTemplatesGenerated\{X.Y.Z}\{Feature}_{Entity}`
+  - **\{X.Y.Z\}** : BIAFramework version of generated files
   - **\{Feature\}** : generated feature (Dto, Option, Crud...)
   - **\{Entity\}** : entity name used for the feature
 - you can ignore partial markup into reference file when comparing it to the generated file when calling the corresponding method `RunTestGenerate{Feature}AllFilesEqualsAsync` by providing the list of markups as `partialMarkupIdentifiersToIgnore` parameter
 - a `preProcess` action is executed for the execution of CRUD tests in order to compute angular parent location
 - the target files where partial content should be included are imported from the reference BIADemo version into the output location in order to be filled by the file generator service
-- the comparison for partial content extracts each partial part from the reference path and the generated path and stored into unique partial files named as the target file followed by `_Partial_{InsertionMarkup}{Entity}` into reference and generated folder
+- the comparison for partial content extracts each partial part from the reference path and the generated path and stored into unique partial files named as the target file followed by `_Partial_{InsertionMarkup}_{Entity}` into reference and generated folder
 - all the content between `\\ Begin BIAToolKit Generation Ignore` and `\\ End BIAToolKit Generation Ignore` in the reference's files will be ignore for the comparison

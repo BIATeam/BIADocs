@@ -130,7 +130,9 @@ Add the TeamType :
   - AdminRoleIds : is the list of the ids of the roles that can administrate the teams. It is necessary to display correctly the list of administrators in the CRUD.
   - Children : it list the children teams. To be able to see the parent teams when you are member of one child team.
   - Parent : it list the parent teams. To be able to see the children teams when you are member of one parents team. To be able to retrieve the parent teams and ensure that the right of the child team is compute in a correct context.
-
+:::tip
+You can have additionnal configuration for your team : follow instructions [here](../../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration)
+:::
 
 ### Add the team CRUD
 
@@ -162,11 +164,6 @@ In addition, to finish update the database.
   - In TeamTypeRightPrefix dictionary add the mapping with prefix (similar to back) 
   ```ts
     {key: TeamTypeId.[YourTeamType], value: "[YourTeamType]"},
-  ```
-- In Angular\src\environments\all-environments.ts
-  - add the following line and adapt roleMode and inHeader similarly to loginParam in back
-  ```ts
-    { teamTypeId: TeamTypeId.[YourTeamType], roleMode: RoleMode.AllRoles, inHeader: true },
   ```
 
 ### Add the team CRUD

@@ -220,6 +220,59 @@ function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchB
   }
 }
 
+function Invoke-ReplacementsInFiles {
+  param(
+      [Parameter(Mandatory)]
+      [string] $RootPath,
+      [Parameter(Mandatory)]
+      [hashtable[]] $Replacements,   # @{ Pattern = '<regex>'; Replacement = '<string>'; Requirement = '<string>' }
+      [Parameter(Mandatory)]
+      [string[]] $Extensions
+  )
+  $excludeFullPaths =
+      $ExcludeDir | ForEach-Object {
+          $p = if ([System.IO.Path]::IsPathRooted($_)) { $_ } else { Join-Path -Path $RootPath -ChildPath $_ }
+          [System.IO.Path]::GetFullPath($p)
+      }
+
+  Get-ChildItem -Path $RootPath -Recurse -File -Include $Extensions |
+  Where-Object {
+      $full = [System.IO.Path]::GetFullPath($_.FullName)
+      $isExcluded = $false
+      foreach ($ex in $excludeFullPaths) {
+          if ($full.StartsWith($ex.TrimEnd('\','/'), [System.StringComparison]::OrdinalIgnoreCase)) {
+              $isExcluded = $true
+              break
+          }
+      }
+      -not $isExcluded
+  } | ForEach-Object {
+      $content         = Get-Content -LiteralPath $_.FullName -Raw
+      $fileModified    = $false
+      $fileReplacements = @()
+      $contentCurrent  = $content
+
+      foreach ($rule in $Replacements) {
+        if($rule.Requirement -and -not ($contentCurrent -cmatch $rule.Requirement)) {
+          continue;
+        }
+
+        $newContent = $contentCurrent -creplace $rule.Pattern, $rule.Replacement
+        if ($newContent -cne $contentCurrent) {
+            $contentCurrent  = $newContent
+            $fileModified    = $true
+            $fileReplacements += "  => replaced `"$($rule.Pattern)`" by `"$($rule.Replacement)`" ($occ)"
+        }
+    }
+
+      if ($fileModified) {
+          Write-Host $_.FullName -ForegroundColor Green
+          $fileReplacements | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+          [System.IO.File]::WriteAllText($_.FullName, $contentCurrent, [System.Text.Encoding]::UTF8)
+      }
+  }
+}
+
 function ApplyChangesToLib {
   Write-Host "[Apply changes for bia-ng lib]"
   
@@ -232,7 +285,6 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bPrimeNGFiltering\b)([\s\S]*?)[\s]*?\bPrimeNGFiltering\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/model\/bia-field-config';)"; Replacement = 'import { PrimeNGFiltering } from ''bia-ng/models/enum''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bPropType\b)([\s\S]*?)[\s]*?\bPropType\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/model\/bia-field-config';)"; Replacement = 'import { PropType } from ''bia-ng/models/enum''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bRoleMode\b)([\s\S]*?)[\s]*?\bRoleMode\b[,]?([\s\S]*?} from '[\s\S]*?\/constants';)"; Replacement = 'import { RoleMode } from ''bia-ng/models/enum''; import { $1$2'},
-    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTeamTypeId\b)([\s\S]*?)[\s]*?\bTeamTypeId\b[,]?([\s\S]*?} from '[\s\S]*?\/constants';)"; Replacement = 'import { TeamTypeId } from ''bia-ng/models/enum''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bViewType\b)([\s\S]*?)[\s]*?\bViewType\b[,]?([\s\S]*?} from '[\s\S]*?\/constants';)"; Replacement = 'import { ViewType } from ''bia-ng/models/enum''; import { $1$2'},
     
     # Update models imports
@@ -404,9 +456,15 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bisEmpty\b)([\s\S]*?)[\s]*?\bisEmpty\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { isEmpty } from ''bia-ng/core''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bisObject\b)([\s\S]*?)[\s]*?\bisObject\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { isObject } from ''bia-ng/core''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bclone\b)([\s\S]*?)[\s]*?\bclone\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/utils';)"; Replacement = 'import { clone } from ''bia-ng/core''; import { $1$2'},
-    # TODO : some constant.ts constants moving to bia-ng/core
-    # TODO : some permissions moved to bia-ng/core
-
+    # Update constants moved to bia-core imports
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_BREADCRUMB\b)([\s\S]*?)[\s]*?\bROUTE_DATA_BREADCRUMB\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_BREADCRUMB } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_CAN_NAVIGATE\b)([\s\S]*?)[\s]*?\bROUTE_DATA_CAN_NAVIGATE\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_CAN_NAVIGATE } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_NO_MARGIN\b)([\s\S]*?)[\s]*?\bROUTE_DATA_NO_MARGIN\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_NO_MARGIN } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bROUTE_DATA_NO_PADDING\b)([\s\S]*?)[\s]*?\bROUTE_DATA_NO_PADDING\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { ROUTE_DATA_NO_PADDING } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTHEME_LIGHT\b)([\s\S]*?)[\s]*?\bTHEME_LIGHT\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { THEME_LIGHT } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTHEME_DARK\b)([\s\S]*?)[\s]*?\bTHEME_DARK\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { THEME_DARK } from ''bia-ng/core''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTABLE_FILTER_GLOBAL\b)([\s\S]*?)[\s]*?\bTABLE_FILTER_GLOBAL\b[,]?([\s\S]*?} from 'src\/app\/shared\/constants';)"; Replacement = 'import { TABLE_FILTER_GLOBAL } from ''bia-ng/core''; import { $1$2'},
+    
     # Update bia-shared imports
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bBiaButtonGroupComponent\b)([\s\S]*?)[\s]*?\bBiaButtonGroupComponent\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/components\/bia-button-group\/bia-button-group\.component';)"; Replacement = 'import { BiaButtonGroupComponent } from ''bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bBiaButtonGroupItem\b)([\s\S]*?)[\s]*?\bBiaButtonGroupItem\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/components\/bia-button-group\/bia-button-group\.component';)"; Replacement = 'import { BiaButtonGroupItem } from ''bia-ng/shared''; import { $1$2'},
@@ -608,6 +666,37 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bFieldValidator\b)([\s\S]*?)[\s]*?\bFieldValidator\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/validators\/field\.validator';)"; Replacement = 'import { FieldValidator } from ''bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bJsonValidator\b)([\s\S]*?)[\s]*?\bJsonValidator\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/validators\/json\.validator';)"; Replacement = 'import { JsonValidator } from ''bia-ng/shared''; import { $1$2'},
     
+    # Some permissions moved to bia-permissions in bia-ng/core
+    @{Pattern = "\bPermission\b\.\bBackground_Task_Admin\b"; Replacement = 'BiaPermission.Background_Task_Admin'},
+    @{Pattern = "\bPermission\b\.\bBackground_Task_Read_Only\b"; Replacement = 'BiaPermission.Background_Task_Read_Only'},
+    @{Pattern = "\bPermission\b\.\bNotification_Create\b"; Replacement = 'BiaPermission.Notification_Create'},
+    @{Pattern = "\bPermission\b\.\bNotification_List_Access\b"; Replacement = 'BiaPermission.Notification_List_Access'},
+    @{Pattern = "\bPermission\b\.\bNotification_Delete\b"; Replacement = 'BiaPermission.Notification_Delete'},
+    @{Pattern = "\bPermission\b\.\bNotification_Read\b"; Replacement = 'BiaPermission.Notification_Read'},
+    @{Pattern = "\bPermission\b\.\bNotification_Update\b"; Replacement = 'BiaPermission.Notification_Update'},
+    @{Pattern = "\bPermission\b\.\bRoles_List\b"; Replacement = 'BiaPermission.Roles_List'},
+    @{Pattern = "\bPermission\b\.\bUser_Add\b"; Replacement = 'BiaPermission.User_Add'},
+    @{Pattern = "\bPermission\b\.\bUser_Delete\b"; Replacement = 'BiaPermission.User_Delete'},
+    @{Pattern = "\bPermission\b\.\bUser_Save\b"; Replacement = 'BiaPermission.User_Save'},
+    @{Pattern = "\bPermission\b\.\bUser_List\b"; Replacement = 'BiaPermission.User_List'},
+    @{Pattern = "\bPermission\b\.\bUser_ListAD\b"; Replacement = 'BiaPermission.User_ListAD'},
+    @{Pattern = "\bPermission\b\.\bUser_List_Access\b"; Replacement = 'BiaPermission.User_List_Access'},
+    @{Pattern = "\bPermission\b\.\bUser_Sync\b"; Replacement = 'BiaPermission.User_Sync'},
+    @{Pattern = "\bPermission\b\.\bUser_UpdateRoles\b"; Replacement = 'BiaPermission.User_UpdateRoles'},
+    @{Pattern = "\bPermission\b\.\bLdapDomains_List\b"; Replacement = 'BiaPermission.LdapDomains_List'},
+    @{Pattern = "\bPermission\b\.\bView_List\b"; Replacement = 'BiaPermission.View_List'},
+    @{Pattern = "\bPermission\b\.\bView_AddUserView\b"; Replacement = 'BiaPermission.View_AddUserView'},
+    @{Pattern = "\bPermission\b\.\bView_AddTeamViewSuffix\b"; Replacement = 'BiaPermission.View_AddTeamViewSuffix'},
+    @{Pattern = "\bPermission\b\.\bView_UpdateUserView\b"; Replacement = 'BiaPermission.View_UpdateUserView'},
+    @{Pattern = "\bPermission\b\.\bView_UpdateTeamViewSuffix\b"; Replacement = 'BiaPermission.View_UpdateTeamViewSuffix'},
+    @{Pattern = "\bPermission\b\.\bView_DeleteUserView\b"; Replacement = 'BiaPermission.View_DeleteUserView'},
+    @{Pattern = "\bPermission\b\.\bView_DeleteTeamView\b"; Replacement = 'BiaPermission.View_DeleteTeamView'},
+    @{Pattern = "\bPermission\b\.\bView_SetDefaultUserView\b"; Replacement = 'BiaPermission.View_SetDefaultUserView'},
+    @{Pattern = "\bPermission\b\.\bView_SetDefaultTeamViewSuffix\b"; Replacement = 'BiaPermission.View_SetDefaultTeamViewSuffix'},
+    @{Pattern = "\bPermission\b\.\bView_AssignToTeamSuffix\b"; Replacement = 'BiaPermission.View_AssignToTeamSuffix'},
+    @{Pattern = "\bPermission\b\.\bImpersonation_Connection_Rights\b"; Replacement = 'BiaPermission.Impersonation_Connection_Rights'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bPermission\b)([\s\S]*?)[\s]*?\bPermission\b[,]?([\s\S]*?} from '[\s\S]*?\/permission';)"; Replacement = 'import { BiaPermission } from ''bia-ng/core''; import { $1Permission$2'; Requirement = '\bBiaPermission\b\.'}
+    
     # Clean empty imports
     @{Pattern = "import {[\s]*?} from '[\S]*?';"; Replacement = ''},
     
@@ -616,39 +705,270 @@ function ApplyChangesToLib {
     )
 
   $extensions = "*.ts"
-  Write-Host "Looking for files ($extensions) to analyze..."
-  Get-ChildItem -Path $SourceFrontEnd -Recurse -Include $extensions| Where-Object {
-    $excluded = $false
-    Write-Host $_.FullName
-    foreach ($exclude in $ExcludeDir) {
-        if ($_.FullName -match [regex]::Escape("\$exclude\")) {
-            $excluded = $true
-            break
-        }
-    }
-    -not $excluded
-  } | ForEach-Object {
-    $content = Get-Content $_.FullName -Raw
-    $fileModified = $false
-    $fileReplacements = @()
+  Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTS -Extensions $extensions
+}
 
-    foreach ($rule in $replacementsTS) {
-      $newContent = $content -creplace $rule.Pattern, $rule.Replacement
-      if ($newContent -cne $content) {
-          $content = $newContent
-          $fileModified = $true
-          $fileReplacements += "  => replaced $($rule.Pattern) by $($rule.Replacement)"
+function Get-FileText([string]$path) {
+  if (-not (Test-Path -LiteralPath $path)) { throw "Fichier introuvable: $path" }
+  return [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8)
+}
+
+function Set-FileText([string]$path, [string]$text, [switch]$WhatIfOnly) {
+  if ($WhatIfOnly) { Write-Host "WHATIF: Écriture ignorée -> $path" -ForegroundColor Yellow; return }
+  [System.IO.File]::WriteAllText($path, $text, [System.Text.Encoding]::UTF8)
+}
+
+function Update-TeamConfigCs {
+  param(
+    [Parameter(Mandatory)][string] $CsText,
+    [Parameter(Mandatory)][array]  $Teams
+  )
+
+  function Get-Eol([string]$text) { if ($text -match "`r`n") { "`r`n" } else { "`n" } }
+
+  
+  $mDecl = [regex]::Match($CsText, 'Config\s*=\s*new[\s\S]*?\{')
+  if (-not $mDecl.Success) {
+    Write-Host "Declaration 'Config = new … {' not found." -ForegroundColor Yellow
+    return $CsText
+  }
+  $listOpen = $mDecl.Index + $mDecl.Length - 1
+
+  $k = $listOpen; $brace = 0
+  do {
+    if ($CsText[$k] -eq '{') { $brace++ }
+    elseif ($CsText[$k] -eq '}') { $brace-- }
+    $k++
+  } while ($k -lt $CsText.Length -and $brace -gt 0)
+  $listClose = $k - 1
+
+  $listStart = $listOpen + 1
+  $listText  = $CsText.Substring($listStart, $listClose - $listStart)
+
+  $updatedList = $listText
+  foreach ($team in $Teams) {
+    $teamId   = [regex]::Escape($team.TeamTypeId)
+    $rxTeam   = [regex]"TeamTypeId\s*=\s*\(int\)\s*TeamTypeId\.$teamId\b"
+    $searchFrom = 0
+
+    while ($true) {
+      $mTeam = $rxTeam.Match($updatedList, $searchFrom)
+      if (-not $mTeam.Success) { break }
+
+      $pos = $mTeam.Index
+      $i = $pos; $depth = 0; $openIdx = -1
+      while ($i -ge 0) {
+        $ch = $updatedList[$i]
+        if ($ch -eq '}') { $depth++ }
+        elseif ($ch -eq '{') {
+          if ($depth -eq 0) { $openIdx = $i; break }
+          $depth--
+        }
+        $i--
+      }
+      if ($openIdx -lt 0) { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+
+      $segStart = [Math]::Max(0, $openIdx - 400)
+      $seg      = $updatedList.Substring($segStart, $openIdx - $segStart)
+      $mNew     = [regex]::Matches($seg, 'new\s*([A-Za-z_][A-Za-z0-9_<>.]*)?\s*(?:\(\s*\))?\s*$', 'RightToLeft')
+      if ($mNew.Count -eq 0) { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+      $typeName = $mNew[0].Groups[1].Value
+      if ($typeName -and ($typeName -notmatch '^BiaTeamConfig(\s*<[^>]+>\s*)?$')) { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+      $backScan = $updatedList.Substring([Math]::Max(0,$openIdx-800), [Math]::Min(800,$openIdx))
+      if ($backScan -match '(Children|Parents)\s*=\s*new[\s\S]*$') { $searchFrom = $mTeam.Index + $mTeam.Length; continue }
+
+      $j = $openIdx; $b2 = 0
+      do {
+        if ($updatedList[$j] -eq '{') { $b2++ }
+        elseif ($updatedList[$j] -eq '}') { $b2-- }
+        $j++
+      } while ($j -lt $updatedList.Length -and $b2 -gt 0)
+      $closeIdx = $j - 1
+
+      $bodyStart = $openIdx + 1
+      $bodyLen   = $closeIdx - $bodyStart
+      $body      = $updatedList.Substring($bodyStart, $bodyLen)
+
+      $eol = Get-Eol $body
+      $mAdmin = [regex]::Match($body, '(?m)^(?<indent>[ \t]*)AdminRoleIds\s*=\s*\[(?:[\s\S]*?)\],[ \t]*\r?\n')
+      $insertIdx = -1
+      $indent    = ''
+      if ($mAdmin.Success) {
+        $insertIdx = $mAdmin.Index + $mAdmin.Length 
+        $indent    = $mAdmin.Groups['indent'].Value
+      } else {
+        $mTeamLine = [regex]::Match($body, '(?m)^(?<indent>[ \t]*)TeamTypeId\s*=.*?,[ \t]*\r?\n')
+        if ($mTeamLine.Success) {
+          $insertIdx = $mTeamLine.Index + $mTeamLine.Length
+          $indent    = $mTeamLine.Groups['indent'].Value
+        } else {
+          $insertIdx = 0
+          $indent    = '                '
+        }
+      }
+
+      $map = [ordered]@{
+        RoleMode                = 'RoleMode'
+        DisplayInHeader         = 'DisplayInHeader'
+        DisplayOne              = 'DisplayOne'
+        DisplayAlways           = 'DisplayAlways'
+        TeamSelectionCanBeEmpty = 'TeamSelectionCanBeEmpty'
+        Label                   = 'Label'
+      }
+
+      $toInsert = New-Object System.Text.StringBuilder
+      foreach ($k in $map.Keys) {
+        $val = To-CsValue -propName $k -tsValue $team.$k
+        if ($null -eq $val) { continue }
+        if ([regex]::IsMatch($body, "(?m)^\s*$([regex]::Escape($map[$k]))\s*=")) { continue }
+        [void]$toInsert.Append($indent + $map[$k] + " = " + $val + "," + $eol)
+      }
+
+      if ($toInsert.Length -gt 0) {
+        $body = $body.Insert($insertIdx, $toInsert.ToString())
+        $updatedList = $updatedList.Substring(0,$bodyStart) + $body + $updatedList.Substring($closeIdx)
+        $searchFrom  = $bodyStart + $body.Length
+      } else {
+        $searchFrom = $mTeam.Index + $mTeam.Length
       }
     }
-    
-    if ($fileModified) {
-        Write-Host $_.FullName -ForegroundColor Green
-        $fileReplacements | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
-        [System.IO.File]::WriteAllText($_.FullName, $content, [System.Text.Encoding]::UTF8)
+  }
+
+  return $CsText.Substring(0,$listStart) + $updatedList + $CsText.Substring($listClose)
+}
+
+function Remove-TeamsFromTs {
+  param(
+    [Parameter(Mandatory)][string] $TsText
+  )
+  $removed = $TsText
+  $patternWithCommaBefore = [regex]'(?s),\s*teams\s*:\s*\[[\s\S]*?\]'
+  $patternStandalone      = [regex]'(?s)teams\s*:\s*\[[\s\S]*?\]\s*,?'
+
+  if ($patternWithCommaBefore.IsMatch($removed)) {
+    $removed = $patternWithCommaBefore.Replace($removed, '')
+  } elseif ($patternStandalone.IsMatch($removed)) {
+    $removed = $patternStandalone.Replace($removed, '')
+  } else {
+    Write-Host "No 'teams' section to delete" -ForegroundColor Yellow
+  }
+
+  $removed = [regex]::Replace($removed, '(?m),\s*,', ', ')
+
+  return $removed
+}
+
+function To-CsValue {
+  param(
+    [string]$propName,
+    [string]$tsValue
+  )
+  if ($null -eq $tsValue -or $tsValue -eq '') { return $null }
+
+  switch ($propName) {
+    'RoleMode' {
+      # TS: RoleMode.AllRoles -> C#: <EnumNamespace>.RoleMode.AllRoles
+      if ($tsValue -match '^\s*RoleMode\.(\w+)\s*$') {
+        return "BIA.Net.Core.Common.Enum.RoleMode.$($Matches[1])"
+      }
+      return $tsValue
     }
+    'DisplayInHeader' { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'DisplayOne'      { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'DisplayAlways'   { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'TeamSelectionCanBeEmpty' { return ($tsValue -replace '^\s*true\s*$', 'true'  -replace '^\s*false\s*$', 'false') }
+    'Label' {
+      # TS: 'myTeam.headerLabel' | "myTeam.headerLabel" -> C#: "myTeam.headerLabel"
+      $unq = $tsValue.Trim()
+      if ($unq.StartsWith("'") -or $unq.StartsWith('"')) {
+        $unq = $unq.Trim("'`"")
+      }
+      return '"' + $unq + '"'
+    }
+    default { return $tsValue }
   }
 }
 
+function Parse-TeamsFromTs {
+  param(
+    [Parameter(Mandatory)][string] $TsText
+  )
+  # 1) Localiser le tableau teams [...]
+  $teamsSectionRegex = [regex]'teams\s*:\s*\[(?<array>[\s\S]*?)\]'
+  $m = $teamsSectionRegex.Match($TsText)
+  if (-not $m.Success) {
+    Write-Host "No 'teams' section found in all-environments.ts" -ForegroundColor Yellow
+    return @()
+  }
+  $teamsArrayText = $m.Groups['array'].Value
+
+  # 2) Extraire chaque objet { teamTypeId: TeamTypeId.Xxx, ... }
+  $teamObjectRegex = [regex]'\{\s*teamTypeId\s*:\s*TeamTypeId\.(?<id>\w+)\s*,(?<body>[\s\S]*?)\}'
+  $teams = New-Object System.Collections.Generic.List[object]
+
+  foreach ($tm in $teamObjectRegex.Matches($teamsArrayText)) {
+    $id = $tm.Groups['id'].Value
+    $body = $tm.Groups['body'].Value
+
+    # helpers pour extraire une propriété "clé: valeur,"
+    function Get-TsProp {
+      param([string]$source, [string]$propName)
+      $r = [regex]::new("(?m)^\s*$([regex]::Escape($propName))\s*:\s*(?<val>[^,\r\n]+)\s*,?")
+      $mm = $r.Match($source)
+      if ($mm.Success) { return $mm.Groups['val'].Value.Trim() }
+      return $null
+    }
+
+    $obj = [pscustomobject]@{
+      TeamTypeId              = $id
+      RoleMode                = (Get-TsProp -source $body -propName 'roleMode')               # e.g. RoleMode.AllRoles
+      DisplayInHeader         = (Get-TsProp -source $body -propName 'inHeader')               # true/false
+      DisplayOne              = (Get-TsProp -source $body -propName 'displayOne')
+      DisplayAlways           = (Get-TsProp -source $body -propName 'displayAlways')
+      TeamSelectionCanBeEmpty = (Get-TsProp -source $body -propName 'teamSelectionCanBeEmpty')
+      Label                   = (Get-TsProp -source $body -propName 'label')                  # 'myTeam.headerLabel'
+    }
+    $teams.Add($obj) | Out-Null
+  }
+
+  return $teams
+}
+
+function Invoke-MigrationTeamConfig {
+  try {
+    Write-Host "Migration Team Config started" -ForegroundColor Cyan
+
+    $TsFilePath = Get-ChildItem -Path $SourceFrontEnd -Recurse -ErrorAction SilentlyContinue -Filter 'all-environments.ts' -File | Select-Object -ExpandProperty FullName -First 1
+    $CsFilePath = Get-ChildItem -Path $SourceBackEnd  -Recurse -ErrorAction SilentlyContinue -Filter 'TeamConfig.cs' -File | Select-Object -ExpandProperty FullName -First 1
+
+    if (-not $TsFilePath) { Write-Host "File 'all-environments.ts' not found under $SourceFrontEnd" -ForegroundColor Red; return }
+    if (-not $CsFilePath) { Write-Host "File 'TeamConfig.cs' not found under $SourceBackEnd" -ForegroundColor Red; return }
+    if (-not (Test-Path -LiteralPath $TsFilePath)) { Write-Host "Path not found: $TsFilePath" -ForegroundColor Red; return }
+    if (-not (Test-Path -LiteralPath $CsFilePath)) { Write-Host "Path not found: $CsFilePath" -ForegroundColor Red; return }
+
+    Write-Host "TS file: $TsFilePath" -ForegroundColor DarkCyan
+    Write-Host "CS file: $CsFilePath" -ForegroundColor DarkCyan
+
+    $tsText = Get-FileText $TsFilePath
+    $csText = Get-FileText $CsFilePath
+
+    $teams = Parse-TeamsFromTs -TsText $tsText
+    if ($teams.Count -eq 0) { Write-Host "No team to migrate." -ForegroundColor Yellow; return }
+    Write-Host ("Teams found: " + (($teams | ForEach-Object { $_.TeamTypeId } | Sort-Object -Unique) -join ', '))
+
+    $csUpdated = Update-TeamConfigCs -CsText $csText -Teams $teams
+    $tsUpdated = Remove-TeamsFromTs -TsText $tsText
+
+    if ($csUpdated -ne $csText) { Set-FileText -path $CsFilePath -text $csUpdated } else { Write-Host "TeamConfig.cs unchanged." -ForegroundColor Yellow }
+    if ($tsUpdated -ne $tsText) { Set-FileText -path $TsFilePath -text $tsUpdated } else { Write-Host "all-environments.ts unchanged." -ForegroundColor Yellow }
+  }
+  catch {
+    Write-Error $_
+  }
+  finally {
+    Write-Host "Migration Team Config finished" -ForegroundColor Cyan
+  }
+}
 
 # FRONT END
 # BEGIN - deactivate navigation in breadcrumb for crudItemId
@@ -660,11 +980,32 @@ ApplyChangesToLib
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
 # END - switch to lib bia-ng
 
-# FRONT END
+# BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+ReplaceInProject `
+ -Source $SourceFrontEnd `
+ -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(viewNameChange\)="onViewNameChange\(\$event\)")' `
+ -NewRegexp '${indent}${line}${nl}${indent}(viewNameChange)="onViewNameChange($event)"${nl}' `
+ -Include '*-index.component.html'
+#  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+
+# BEGIN Team config move to back-end
+Invoke-MigrationTeamConfig
+# End Team config move to back-end
+
+# BACK END
+# BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+# END - TeamSelectionMode -> TeamAutomaticSelectionMode
+
+# BEGIN - charset encoding file into controllers
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
+# END - charset encoding file into controllers
+
+# FRONT END CLEAN
 # Set-Location $SourceFrontEnd
 # npm run clean
 
-# BACK END
+# BACK END RESTORE
 # Set-Location $SourceBackEnd
 # dotnet restore --no-cache
 
