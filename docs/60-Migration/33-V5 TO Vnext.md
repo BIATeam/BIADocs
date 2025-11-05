@@ -7,12 +7,28 @@ import CheckItem from '@site/src/components/CheckItem';
 # V5 to Vnext
 
 ## Prerequisites 
-<CheckItem>Install compatible version of **node.js** and **npm** ([Setup Environment Angular](../10-Introduction/20-SetupEnvironment/SetupEnvironmentAngular.md#nodejs))</CheckItem>
+<CheckItem>Upgrade to compatible versions of **node.js** and **npm** for Angular V20 ([Setup Environment Angular](../10-Introduction/20-SetupEnvironment/SetupEnvironmentAngular.md#nodejs))</CheckItem>
 <CheckItem>Run `npm i -g @angular/cli@20`</CheckItem>
 <CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
 
 ## Angular V20 Migration
+### Editor's migration guides
+:::info
+- [Angular v19 -> v20](https://angular.dev/update-guide?v=19.0-20.0&l=3)
+- [NgRx v20](https://ngrx.io/guide/migration/v20)
+- [PrimeNG v20](https://primeng.org/migration/v20)
+- [ngx-translate v16 -> v17](https://ngx-translate.org/getting-started/migration-guide/)
+:::
 
+### Deprecation of Angular's animations package
+:::warning
+Angular has deprecated the animations package to use the native CSS instead.  
+Your project can lead to some warning issues when linting.  
+
+To fix them, follow the [official migration documentation](https://angular.dev/guide/animations/migration)
+:::
+
+### Manual migration instructions
 For each Angular project :
 <CheckItem indent="1">run `ng update @angular/core@20 @angular/cli@20`</CheckItem>
 :::info
@@ -24,8 +40,10 @@ For each Angular project :
 <CheckItem indent="1">run `ng update @ngrx/store@20.0.0`</CheckItem>
 <CheckItem indent="1">⚡**COMMIT**</CheckItem>
 
-## BIA Framework Migration
 
+
+
+## BIA Framework Migration
 <CheckItem>Delete from your Angular projects all **package-lock.json** and **node_modules** folder</CheckItem>
 <CheckItem>Use the BIAToolKit to migrate the project</CheckItem>
 :::info 
