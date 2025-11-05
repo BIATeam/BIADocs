@@ -90,6 +90,11 @@ For each Angular project :
 <CheckItem indent="1">Download the [cleanup standalone imports script](./Scripts/cleanup-standalone-imports.ps1) ([.txt - Save link as](./Scripts/cleanup-standalone-imports.txt)) :</CheckItem>
 <CheckItem indent="2">Change `$RootPath` value to your Angular project</CheckItem>
 <CheckItem indent="2">Run the script</CheckItem>
+:::warning
+If some warning about deprecation of `NgIf`, `NgFor` or `NgSwitch` are printed from the final linting, it means that the execution of `ng generate @angular/core:control-flow` has ignored the migration for concerned file due to some safety constraints.  
+
+**You have to manually migrate to control flow instructions the identified files ([Angular Documentation](https://angular.dev/guide/templates/control-flow))**
+:::
 <CheckItem>⚡**COMMIT**</CheckItem>
 <br/>
 

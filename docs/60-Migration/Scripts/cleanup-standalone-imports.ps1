@@ -125,3 +125,4 @@ foreach ($f in $files) {
 "Skipped (no imports[])       : $skNoImports`n"
 
 if (-not $DryRun) { Write-Host "Running: npm run clean ..."; Set-Location $RootPath; npm run clean }
+Pause
