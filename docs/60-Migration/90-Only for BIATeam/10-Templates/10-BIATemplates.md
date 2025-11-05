@@ -14,7 +14,7 @@ To have the correct templates for a BIA Framework version, we need to configure 
 - ignore some files when creating or migrating a project with the **BIAToolKit** from the `BIATemplate` release
 
 :::info
-The script used for packaging are listed into [this documentation](../20-PackageTheFramework.md/#prepare-biatemplate)
+The script used for packaging are listed into [this documentation](../20-PackageTheFramework.md#prepare-biatemplate)
 :::
 
 ## Folders exclusion
