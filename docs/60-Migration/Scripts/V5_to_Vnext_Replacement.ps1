@@ -992,6 +992,69 @@ ReplaceInProject `
 Invoke-MigrationTeamConfig
 # End Team config move to back-end
 
+# BEGIN Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
+$replacementsHtml = @(
+    # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
+    @{
+        Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
+        Replacement = '$1'
+    },
+
+    # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
+    @{
+        Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
+        Replacement = '$1'
+    }
+)
+
+Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsHtml -Extensions @('*.html')
+# END Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
+
+# BEGIN Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
+$replacementsTs = @(
+    @{
+        Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
+        Replacement = ''
+    },
+    @{
+        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
+        Replacement = '$1'
+    },
+    @{
+        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
+        Replacement = '$1'
+    },
+    @{
+        Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
+        Replacement = '$1$2'
+    },
+
+    @{
+        Requirement = 'extends\s+BiaFormComponent'
+        Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
+        Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
+    },
+    @{
+        Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
+        Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
+        Replacement='$1, protected renderer: Renderer2)'
+    },
+    @{
+        Requirement = 'extends\s+BiaFormComponent'
+        Pattern     = '(?s)constructor\s*\(\s*\)'
+        Replacement = 'constructor(protected renderer: Renderer2)'
+    },
+    @{
+        Requirement = 'extends\s+BiaFormComponent'
+        Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
+        Replacement = 'super($1, renderer)'
+    }
+)
+
+Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
+# END Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
+
+
 # BACK END
 # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
