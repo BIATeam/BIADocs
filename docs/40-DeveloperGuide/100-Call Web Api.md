@@ -81,7 +81,7 @@ and add it in **Domain** project, **RepoContract** folder.
 In the **Crosscutting.Ioc.IocContainer** class, modify the **ConfigureInfrastructureServiceContainer** method by adding:
 
 ```csharp
-collection.AddTransient<IYourRepositoryNameRepository, YourRepositoryNameRepository>();
+collection.AddHttpClient<IYourRepositoryNameRepository, YourRepositoryNameRepository>().ConfigurePrimaryHttpMessageHandler(() => BiaIocContainer.CreateHttpClientHandler(biaNetSection));
 ```
 
 Add the repository in the constructor of a service so that it is injected and use it in a method

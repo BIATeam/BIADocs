@@ -168,7 +168,7 @@ To create a new migration for PostgreSQL:
 If you prefer to use the .NET CLI instead of Visual Studio, use the following command for PostgreSQL:
 
 ```powershell
-dotnet ef migrations add Initial --context DataContextPostGreSql --output-dir MigrationsPostGreSql --project A3DR.BFF.Infrastructure.Data --startup-project A3DR.BFF.Presentation.Api
+dotnet ef migrations add Initial --context DataContextPostGreSql --output-dir MigrationsPostGreSql --project TheBIADevCompany.BIADemo.Infrastructure.Data --startup-project TheBIADevCompany.BIADemo.Presentation.Api
 ```
 
 Replace `Initial` with your migration name. Adjust the project paths if needed.

@@ -137,14 +137,6 @@ Use this configuration for runtime application operations where only data access
 
 ## Entity Framework Migrations
 
-### Prerequisites
-
-Before creating migrations, ensure:
-1. The database exists in PostgreSQL
-2. You're using the **Owner User** configuration (PostGreSQL_U)
-3. The **API project** is set as the startup project
-4. The **Data project** is selected in Package Manager Console
-
 ### Creating Migrations
 
 To create a new migration for PostgreSQL:
@@ -168,7 +160,7 @@ To create a new migration for PostgreSQL:
 If you prefer to use the .NET CLI instead of Visual Studio, use the following command for PostgreSQL:
 
 ```powershell
-dotnet ef migrations add Initial --context DataContextPostGreSql --output-dir MigrationsPostGreSql --project A3DR.BFF.Infrastructure.Data --startup-project A3DR.BFF.Presentation.Api
+dotnet ef migrations add Initial --context DataContextPostGreSql --output-dir MigrationsPostGreSql --project TheBIADevCompany.BIADemo.Infrastructure.Data --startup-project TheBIADevCompany.BIADemo.Presentation.Api
 ```
 
 Replace `Initial` with your migration name. Adjust the project paths if needed.
