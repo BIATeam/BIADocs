@@ -1,5 +1,5 @@
 # === CONFIG ===
-$RootPath = "C:\sources\Azure\SCardNG\AngularOperator"
+$RootPath = "C:\sources\Project\Angular"
 $DryRun   = $false   # true = report; false = actually modify files
 
 Set-StrictMode -Version Latest

@@ -119,7 +119,7 @@ For manual management of conflitcs case : you can remove the `.rej` files
 ### all-environments.ts
 Keep all your `teams` definition, there will be used by the migration script for the [Team Configuration step](#team-configuration)
 
-### AuditFeature
+### AuditFeature.cs
 Into `AuditTypeMapper` method, integrate your old switch case conditions into the new one :
 ``` csharp title="AuditFeature.cs (OLD)"
 public override Type AuditTypeMapper(Type type)
