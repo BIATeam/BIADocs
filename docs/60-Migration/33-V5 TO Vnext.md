@@ -42,8 +42,7 @@ Execute each step manually until step **3 - Apply Diff**
 :::info
 - **SOLUTION 1** : Merging rejected files
 <CheckItem indent="1">execute step **4 - Merge Rejected** (already executed with automatic migration)</CheckItem>
-<CheckItem indent="1">search `<<<<<` in all files</CheckItem>
-<CheckItem indent="1">resolve the conflicts</CheckItem>
+<CheckItem indent="1">resolve the files marked as conflicts in your favorite IDE or merge editor</CheckItem>
 
 - **SOLUTION 2** : Analyzing rejected files - **MANUAL MIGRATION ONLY**
 <CheckItem indent="1">analyze all the `.rej` files (search "diff a/" in VS code)</CheckItem>
