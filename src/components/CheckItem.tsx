@@ -30,7 +30,7 @@ export default function CheckItem({ children, id, indent = 0, persist = false }:
         style={{
           cursor: 'pointer',
           textDecoration: checked ? 'line-through' : 'none',
-          userSelect: 'none',
+          userSelect: 'text',
         }}
       >
         <input
