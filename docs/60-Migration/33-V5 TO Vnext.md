@@ -1,40 +1,124 @@
 ---
 sidebar_position: 1
 ---
+
+import CheckItem from '@site/src/components/CheckItem';
+
 # V5 to Vnext
 
+## Prerequisites 
+<CheckItem>Upgrade to compatible versions of **node.js** and **npm** for Angular V20 ([Setup Environment Angular](../10-Introduction/20-SetupEnvironment/SetupEnvironmentAngular.md#nodejs))</CheckItem>
+<CheckItem>Run `npm i -g @angular/cli@20`</CheckItem>
+<CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
+
+## Angular V20 Migration
+### Editor's migration guides
+:::info
+- [Angular v19 -> v20](https://angular.dev/update-guide?v=19.0-20.0&l=3)
+- [NgRx v20](https://ngrx.io/guide/migration/v20)
+- [PrimeNG v20](https://primeng.org/migration/v20)
+- [ngx-translate v16 -> v17](https://ngx-translate.org/getting-started/migration-guide/)
+:::
+
+### Deprecation of Angular's animations package
+:::warning
+Angular has deprecated the animations package to use the native CSS instead.  
+Your project can lead to some warning issues when linting.  
+
+To fix them, follow the [official migration documentation](https://angular.dev/guide/animations/migration)
+:::
+
+### Manual migration instructions
+For each Angular project :
+<CheckItem indent="1">run `ng update @angular/core@20 @angular/cli@20`</CheckItem>
+:::info
+1. Decline `use-application-builder` migration
+2. Decline `control-flow-migration` migration
+3. **Accept** `router-current-navigation` migration
+:::
+<CheckItem indent="1">⚡**COMMIT**</CheckItem>
+<CheckItem indent="1">run `ng update @ngrx/store@20.0.0`</CheckItem>
+<CheckItem indent="1">⚡**COMMIT**</CheckItem>
+
+
+
+
 ## BIA Framework Migration
- 
-1. Delete from your Angular projects all **package-lock.json** and **node_modules** folder
-2. Use the BIAToolKit to migrate the project : 
-   * Run it automatically by clicking on **Migrate** button  
-   **or**
-   * Execute each step manually until step **3 - Apply Diff**
-3. **Mind to check the output logs to check any errors or missing deleted files**
-4. Manage the conflicts (two solutions) :
-   * Merging rejected files
-     * Execute step **4 - Merge Rejected** (already executed with automatic migration)
-     * Search `<<<<<` in all files
-     * Resolve the conflicts
-   * Analyzing rejected files - **MANUAL MIGRATION ONLY**
-     * Analyze all the `.rej` files (search "diff a/" in VS code)
-     * Apply manually the changes into your files
-   :::tip
-   Use the [conflict resolution chapter](#conflict-resolution) to help you
-   :::
-5. For each Angular project, launch the **npm install** and **npm audit fix** command
-6. Download the [migration script](./Scripts/V5_to_Vnext_Replacement.ps1)
-   1. Change source path of the migration script to target your project root and your Angular project 
-   2. Run it for each of your Angular project (change the Angular source path each time)
-7. Apply other manual steps for [Front](#front-manual-steps) (for each Angular project) and [Back](#back-manual-steps)
-8. Resolve missing and obsolete usings in back-end with BIAToolKit (step **6 - Resolve Usings**)
-9. Resolve building issues into your Angular projects and back end
-10. If all is ok, you can remove the `.rej` files. During the process they can be useful to resolve build problems
-11. Execute the [database migration instructions](#database-migration)
-12. For each Angular project, launch the `npm run clean` command
-13. Clean back-end solution
+<CheckItem>Delete from your Angular projects all **package-lock.json** and **node_modules** folder</CheckItem>
+<CheckItem>Use the BIAToolKit to migrate the project</CheckItem>
+:::info 
+Run it automatically by clicking on **Migrate** button  
+**or**  
+Execute each step manually until step **3 - Apply Diff**
+:::
+:::warning
+**Mind to check the output logs to check any errors or missing deleted files**
+:::
+<CheckItem>Manage the conflicts</CheckItem>
+:::info
+- **SOLUTION 1** : Merging rejected files
+<CheckItem indent="1">execute step **4 - Merge Rejected** (already executed with automatic migration)</CheckItem>
+<CheckItem indent="1">resolve the files marked as conflicts in your favorite IDE or merge editor</CheckItem>
+
+- **SOLUTION 2** : Analyzing rejected files - **MANUAL MIGRATION ONLY**
+<CheckItem indent="1">analyze all the `.rej` files (search "diff a/" in VS code)</CheckItem>
+<CheckItem indent="1">apply manually the changes into your files</CheckItem>
+:::
+:::tip
+Use the [conflict resolution chapter](#conflict-resolution) to help you
+:::
+<CheckItem>⚡**COMMIT**</CheckItem>
+<br/>
+
+For each Angular project :
+<CheckItem indent="1">run `npm install`</CheckItem>
+<CheckItem indent="1">run `npm audit fix`</CheckItem>
+<CheckItem>⚡**COMMIT**</CheckItem>
+
+Download the [migration script](./Scripts/V5_to_Vnext_Replacement.ps1) ([.txt - Save link as](./Scripts/V5_to_Vnext_Replacement.txt)), then :
+<CheckItem indent="1">change source path of the migration script to target your project root and your Angular project</CheckItem>
+<CheckItem indent="1">run it for each of your Angular project (change the Angular source path each time)</CheckItem>
+<CheckItem>⚡**COMMIT**</CheckItem>
+
+For each Angular project :
+<CheckItem indent="1">run `ng generate @angular/core:control-flow`</CheckItem>
+:::info
+   1. validate current path as target path
+   2. accept reformat templates option
+:::
+<CheckItem indent="1">run `ng generate @angular/core:cleanup-unused-imports`</CheckItem>
+<CheckItem indent="1">Download the [cleanup standalone imports script](./Scripts/cleanup-standalone-imports.ps1) ([.txt - Save link as](./Scripts/cleanup-standalone-imports.txt)) :</CheckItem>
+<CheckItem indent="2">Change `$RootPath` value to your Angular project</CheckItem>
+<CheckItem indent="2">Run the script</CheckItem>
+<CheckItem>⚡**COMMIT**</CheckItem>
+<br/>
+
+<CheckItem>For each Angular project, apply manual steps for [Front](#front-manual-steps)</CheckItem>
+<CheckItem>Apply  manual steps for [Back](#back-manual-steps)</CheckItem>
+<CheckItem>⚡**COMMIT**</CheckItem>
+<br/>
+
+<CheckItem>Resolve missing and obsolete usings in back-end with BIAToolKit (step **6 - Resolve Usings**)</CheckItem>
+<CheckItem>Resolve building issues into Back</CheckItem>
+<CheckItem>Resolve building issues into your Angular projects</CheckItem>
+:::tip
+For manual management of conflitcs case : you can remove the `.rej` files
+:::
+<CheckItem>⚡**COMMIT**</CheckItem>
+<br/>
+
+<CheckItem>Execute the [database migration instructions](#database-migration)</CheckItem>
+<CheckItem>⚡**COMMIT**</CheckItem>
+<br/>
+
+<CheckItem>For each Angular project, launch the `npm run clean` command</CheckItem>
+<CheckItem>Clean back-end solution</CheckItem>
+<CheckItem>⚡**COMMIT**</CheckItem>
 
 ## Conflict Resolution
+### all-environments.ts
+Keep all your `teams` definition, there will be used by the migration script for the [Team Configuration step](#team-configuration)
+
 ### AuditFeature
 Into `AuditTypeMapper` method, integrate your old switch case conditions into the new one :
 ``` csharp title="AuditFeature.cs (OLD)"
