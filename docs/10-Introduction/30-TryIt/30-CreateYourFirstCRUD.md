@@ -76,8 +76,8 @@ For more informations about creating a DTO, see [Create a DTO with BIAToolkit do
 * Open the BIAToolkit
 * Go to "Modify existing project" tab
 * Set the projects parent path and choose your project
-* Go to tab "3 - DTO Generator"
-* Select your entity Plane on the list
+* Go to tab 3 "DTO Generator"
+* Select your entity **Plane** on the list
 
 ![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.png)
 
@@ -186,7 +186,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 
 * Click on generate button
 
-### Finalize DotNet generation
+### Launch application generation
 * In VSCode Stop all debug launched.
 * Run and debug "Debug Full Stack" 
 * The swagger page will be open. 
