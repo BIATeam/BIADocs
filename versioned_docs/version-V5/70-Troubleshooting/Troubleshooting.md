@@ -12,4 +12,28 @@ You must then :
 2. Create your Option/DTO/CRUD
 3. Delete the duplicated properties
 
-    
+## Fix for Keycloak
+Update the **initKeycloack** method of **bia-app-init.service.ts**
+
+```ts
+protected initKeycloack(appSettings: AppSettings): Observable<AuthInfo> {
+    this.initEventKeycloakLogin();
+    const obs$: Observable<AuthInfo> = this.initEventKeycloakSuccess();
+
+    this.keycloakService.init({
+      config: {
+        url: appSettings.keycloak?.baseUrl,
+        realm: appSettings.keycloak?.configuration.realm,
+        clientId: appSettings.keycloak?.api.tokenConf.clientId,
+      },
+      enableBearerInterceptor: false,
+      initOptions: {
+        onLoad: 'check-sso',
+        checkLoginIframe: false,
+        enableLogging: isDevMode(),
+      },
+    });
+
+    return obs$;
+  }
+```
