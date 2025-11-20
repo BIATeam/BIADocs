@@ -207,6 +207,37 @@ public static class TeamConfig
 ```
 Then, remove the `teams` from `all-environments.ts`
 
+### useRefreshAtLanguageChange
+In previous version, you'll have to use `useRefreshAtLanguageChange` property defined into your index components, usually to handle changes of current culture to refresh your data by calling `onLoadLazy` :
+``` typescript title="my-features-index.component.ts"
+ngOnInit(): void {
+   super.ngOnInit();
+
+   if (this.useRefreshAtLanguageChange) {
+   this.sub.add(
+      this.biaTranslationService.currentCulture$
+         .pipe(skip(1))
+         .subscribe(() => {
+         this.onLoadLazy(this.crudItemListComponent.getLazyLoadMetadata());
+      })
+   );
+   }
+}
+```
+
+By now, this refresh is automatically handled into the `CrudItemsIndexCompoent` by using the property `useRefreshAtLanguageChange` from the `crudConfiguration`.  
+So, you can remove from your index component the handler of `this.biaTranslationService.currentCulture$` to call `onLoadLazy`, and set into your feature constants the `useRefreshAtLanguageChange` to `true` :
+``` typescript title="my-feature.constants.ts"
+export const announcementCRUDConfiguration: CrudConfig<MyFeature> =
+  new CrudConfig({
+    // [...]
+    useRefreshAtLanguageChange: true,
+  });
+```
+
+For all cases using the previous `useRefreshAtLanguageChange` from `CrudItemIndexComponent`, simply use now the same property from the `crudConfiguration`.
+
+
 ## Back Manual Steps
 ### Audit Entities
 For all your previous audit entities inherited from `AuditEntity` :
@@ -217,6 +248,6 @@ See [Audit documentation](../40-DeveloperGuide/80-Audit.md#dedicated-audit-table
 :::
 
 ## Database Migration
-You must create a new database migration in order to update the audit entities and the `AuditLogs` table scheme :
-1. `add-migration MigrationV6_AuditEntitiesSchemeUpdate -c datacontext`
+You must create a new database migration in order to apply framework changes to your database scheme :
+1. `add-migration MigrationBiaFrameworkV6 -c datacontext`
 2. `update-database -context datacontext`

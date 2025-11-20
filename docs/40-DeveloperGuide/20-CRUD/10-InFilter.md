@@ -83,3 +83,34 @@ In this example, PlaneType and SimilarTypes are filtered by string in the in fil
             }
         }
 ```
+
+## Define default sort order 
+You can set a default filter in front-end by using the property `multiSortMeta` into your index component.  
+
+1. Implements `AfterViewInit` and set the `multiSortMeta` :
+``` typescript title="my-features-index.component.ts"
+xport class MyFeaturesIndexComponent
+  extends CrudItemsIndexComponent<MyFeature>
+  implements OnInit, AfterViewInit
+{
+  // [...]
+
+  ngAfterViewInit(): void {
+    this.multiSortMeta = [{ field: 'field', order: 1 }];
+  }
+}
+```
+:::info
+- `field` : the field name of your feature to sort
+- `order` :
+  - `-1` : descending
+  - `1` : ascending
+
+You can define multiple fields ordered by priority.
+:::
+
+1. Bind `multiSortMeta` property of the `bia-table` (and `bia-calc-table` if exists) into your index component template HTML :
+``` html title="my-features-index.component.html"
+<bia-table
+    [multiSortMeta]="multiSortMeta"></bia-table>
+```

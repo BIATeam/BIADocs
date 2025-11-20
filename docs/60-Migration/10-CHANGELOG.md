@@ -15,6 +15,8 @@ sidebar_position: 1
   * Remove team config definition for `Login` action into `AuthController`
 * Add action buttons on dropdown filters rules definition
 * New option to generate CRUD with domain URL (BIAToolKit)
+* Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](../40-DeveloperGuide/20-CRUD/10-InFilter.md#define-default-sort-order))
+* Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
 * Fix CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
