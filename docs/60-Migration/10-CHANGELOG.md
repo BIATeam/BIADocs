@@ -17,10 +17,17 @@ sidebar_position: 1
 * New option to generate CRUD with domain URL (BIAToolKit)
 * Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](../40-DeveloperGuide/20-CRUD/10-InFilter.md#define-default-sort-order))
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
+* Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
 * Fix CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
 * Fix large display of applied filters on a filtered column in table
+* Fix input's style in forms when field configuration has `isEditable` to `false`
+* Fix behaviors of `isEditable`, `isOnlyInitializable` and `isOnlyUpdatable` in forms
+### Breaking changes
+* Removed `bia-input` and `bia-output` components
+  * use `bia-form-field` instead
+  * `[form]` assignement is no longer needed
 
 ## V5.2.0 (17/10/2025)
 ### Features

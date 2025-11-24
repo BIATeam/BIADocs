@@ -1244,6 +1244,27 @@ $replacementsTs = @(
 Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
 # END Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
 
+# BEGIN - bia-input -> bia-form-field
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.ts"
+# END - bia-input -> bia-form-field
+
+# BEGIN - BiaInput -> BiaFormField
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaInput" -NewRegexp 'BiaFormField' -Include "*.ts"
+# END - BiaInput -> BiaFormField
+
+# BEGIN - bia-output -> bia-form-field
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.ts"
+# END - bia-output -> bia-form-field
+
+# BEGIN - BiaOutput -> BiaFormField
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
+# END - BiaOutput -> BiaFormField
+
+# BEGIN - Remove [form] from <bia-form-field>
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp '<bia-form-field\b([^>]*?)\s*\[form\]\s*=\s*("[^"]*"|''[^'']*''|[^\s>]+)([^>]*?)>' -NewRegexp '<bia-form-field$1$3>' -Include "*.html"
+# END - Remove [form] from <bia-form-field>
 
 # BACK END
 # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
