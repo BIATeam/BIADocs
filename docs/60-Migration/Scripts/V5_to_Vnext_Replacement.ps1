@@ -1275,6 +1275,10 @@ ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -Ne
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
 # END - charset encoding file into controllers
 
+# BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -NewRegexp 'class, IPagingFilterFormatDto, new\(\)' -Include "*.cs"
+# END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+
 # FRONT END CLEAN
 # Set-Location $SourceFrontEnd
 # npm run clean

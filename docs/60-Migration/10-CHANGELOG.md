@@ -24,10 +24,13 @@ sidebar_position: 1
 * Fix large display of applied filters on a filtered column in table
 * Fix input's style in forms when field configuration has `isEditable` to `false`
 * Fix behaviors of `isEditable`, `isOnlyInitializable` and `isOnlyUpdatable` in forms
+* Fix inherited objects from `PagingFilterFormatDto<T>` not recognized as `PagingFilterFormatDto` when exporting CSV
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
   * use `bia-form-field` instead
   * `[form]` assignement is no longer needed
+* Remove `LazyLoadDto`
+  * use `PagingFilterFormatDto` instead
 
 ## V5.2.0 (17/10/2025)
 ### Features
