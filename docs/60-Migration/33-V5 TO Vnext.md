@@ -121,6 +121,11 @@ For manual management of conflitcs case : you can remove the `.rej` files
 <CheckItem>For each Angular project, launch the `npm run clean` command</CheckItem>
 <CheckItem>Clean back-end solution</CheckItem>
 <CheckItem>⚡**COMMIT**</CheckItem>
+<br/>
+
+:::warning
+<CheckItem>If applicable, follow migration instructions for [build pipeline](#build-pipeline)</CheckItem>
+:::
 
 ## Conflict Resolution
 ### all-environments.ts
@@ -323,7 +328,7 @@ You must create a new database migration in order to apply framework changes to 
 1. `add-migration MigrationBiaFrameworkV6 -c datacontext`
 2. `update-database -context datacontext`
 
-### BUILD
+## Build Pipeline
 
 1. **Set the Visual Studio version**
    - **Task:** Build solution → Visual Studio Version  
