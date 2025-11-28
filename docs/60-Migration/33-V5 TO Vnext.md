@@ -273,6 +273,10 @@ You can inherits your class interface from the dedicated interface `IOperationDo
 :::
 
 #### Overrides
+:::tip
+Automatically handled by migration script for classes that inherits from `CrudAppServiceBase` or `CrudAppServiceListAndItemBase`, for information purpose and manual adjustement only.
+:::
+
 You can't override these protected generic methods of `OperationDomainServiceBase` anymore :
 - `GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
 - `GetAllAsync<TOtherDto, TOtherMapper>`
