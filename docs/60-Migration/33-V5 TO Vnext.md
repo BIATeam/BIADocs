@@ -11,6 +11,8 @@ import CheckItem from '@site/src/components/CheckItem';
 <CheckItem>Run `npm i -g @angular/cli@20`</CheckItem>
 <CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
 
+<CheckItem>Install Visual Studio 2026</CheckItem>
+
 ## Angular V20 Migration
 ### Editor's migration guides
 :::info
@@ -320,3 +322,32 @@ You can still use the protected generic methods into the overrides of the non ge
 You must create a new database migration in order to apply framework changes to your database scheme :
 1. `add-migration MigrationBiaFrameworkV6 -c datacontext`
 2. `update-database -context datacontext`
+
+### BUILD
+
+1. **Set the Visual Studio version**
+   - **Task:** Build solution → Visual Studio Version  
+   - **Value:** Visual Studio 2026
+
+2. **Declare pipeline variables**
+   - **Name:** `DotNetVersion`  
+   - **Value:** `net10.0`
+
+3. **Update paths to target `.NET 10.0`**
+   - **API Tests → Test files**
+     ```
+     **\$(BuildConfiguration)\$(DotNetVersion)\*$(ProjectName).Test.dll
+     !**\obj\**
+     ```
+   - **Copy Files Presentation Api → Source Folder**
+     ```
+     DotNet/$(CompanyName).$(ProjectName).Presentation.Api/bin/$(BuildConfiguration)/$(DotNetVersion)
+     ```
+   - **Copy Files Worker service → Source Folder**
+     ```
+     DotNet/$(CompanyName).$(ProjectName).WorkerService/bin/$(BuildConfiguration)/$(DotNetVersion)
+     ```
+   - **Copy Files DeployDB → Source Folder**
+     ```
+     DotNet/$(CompanyName).$(ProjectName).DeployDB/bin/$(BuildConfiguration)/$(DotNetVersion)
+     ```
