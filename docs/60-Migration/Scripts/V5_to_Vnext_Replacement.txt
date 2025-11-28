@@ -273,6 +273,264 @@ function Invoke-ReplacementsInFiles {
   }
 }
 
+function Get-GenericBlock {
+  param(
+    [string]$Text,
+    [int]$StartIndex
+  )
+
+  $depth = 0
+  $start = -1
+  for ($i = $StartIndex; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '<') {
+      if ($depth -eq 0) {
+        $start = $i + 1
+      }
+      $depth++
+    }
+    elseif ($char -eq '>') {
+      $depth--
+      if ($depth -eq 0 -and $start -ge 0) {
+        return @{ Inner = $Text.Substring($start, $i - $start); EndIndex = $i }
+      }
+    }
+  }
+
+  return $null
+}
+
+function Split-GenericArguments {
+  param(
+    [string]$Text
+  )
+
+  $items = @()
+  $depth = 0
+  $segmentStart = 0
+  for ($i = 0; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '<') {
+      $depth++
+    }
+    elseif ($char -eq '>') {
+      $depth--
+    }
+    elseif ($char -eq ',' -and $depth -eq 0) {
+      $items += $Text.Substring($segmentStart, $i - $segmentStart).Trim()
+      $segmentStart = $i + 1
+    }
+  }
+
+  $items += $Text.Substring($segmentStart).Trim()
+  return $items
+}
+
+function Get-ClassBodySpan {
+  param(
+    [string]$Text,
+    [int]$OpenBraceIndex
+  )
+
+  if ($OpenBraceIndex -lt 0 -or $OpenBraceIndex -ge $Text.Length) {
+    return $null
+  }
+
+  $depth = 0
+  for ($i = $OpenBraceIndex; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '{') {
+      $depth++
+    }
+    elseif ($char -eq '}') {
+      $depth--
+    }
+
+    if ($depth -eq 0) {
+      return @{ BodyStart = $OpenBraceIndex + 1; BodyEnd = $i }
+    }
+  }
+
+  return $null
+}
+
+function Get-BlockSpan {
+  param(
+    [string]$Text,
+    [int]$OpenBraceIndex
+  )
+
+  if ($OpenBraceIndex -lt 0 -or $OpenBraceIndex -ge $Text.Length) {
+    return $null
+  }
+
+  $depth = 0
+  for ($i = $OpenBraceIndex; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '{') {
+      $depth++
+    }
+    elseif ($char -eq '}') {
+      $depth--
+    }
+
+    if ($depth -eq 0) {
+      return @{ BodyStart = $OpenBraceIndex + 1; BodyEnd = $i }
+    }
+  }
+
+  return $null
+}
+
+function Invoke-CrudAppServiceOverridesMigration {
+  param(
+    [Parameter(Mandatory)]
+    [string] $RootPath
+  )
+
+  $methodNames = @('GetRangeAsync', 'GetAllAsync', 'GetCsvAsync', 'GetAsync', 'AddAsync', 'UpdateAsync', 'RemoveAsync', 'SaveSafeAsync', 'SaveAsync', 'UpdateFixedAsync')
+  $classRegex = [regex]::new('(?s)class\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)[^{]*:\s*[^{]*?\b(?<base>(?:[\w\.]+\.)?(?:CrudAppServiceBase|CrudAppServiceListAndItemBase))\s*<')
+  $excludeFullPaths =
+      $ExcludeDir | ForEach-Object {
+          $p = if ([System.IO.Path]::IsPathRooted($_)) { $_ } else { Join-Path -Path $RootPath -ChildPath $_ }
+          [System.IO.Path]::GetFullPath($p)
+      }
+
+  Get-ChildItem -Path $RootPath -Recurse -File -Include '*.cs' |
+  Where-Object {
+      $full = [System.IO.Path]::GetFullPath($_.FullName)
+      $isExcluded = $false
+      foreach ($ex in $excludeFullPaths) {
+          if ($full.StartsWith($ex.TrimEnd('\','/'), [System.StringComparison]::OrdinalIgnoreCase)) {
+              $isExcluded = $true
+              break
+          }
+      }
+      -not $isExcluded
+  } | ForEach-Object {
+      $content = Get-Content -LiteralPath $_.FullName -Raw
+      $updated = $content
+      $pos = 0
+      $fileChanged = $false
+
+      while ($true) {
+          $classMatch = $classRegex.Match($updated, $pos)
+          if (-not $classMatch.Success) {
+            break
+          }
+
+          $baseName = $classMatch.Groups['base'].Value
+          $crudIndex = $updated.IndexOf($baseName, $classMatch.Index, [System.StringComparison]::Ordinal)
+          if ($crudIndex -lt 0) {
+            $pos = $classMatch.Index + $classMatch.Length
+            continue
+          }
+
+          $genericStart = $updated.IndexOf('<', $crudIndex)
+          if ($genericStart -lt 0) {
+            $pos = $classMatch.Index + $classMatch.Length
+            continue
+          }
+
+          $genericBlock = Get-GenericBlock -Text $updated -StartIndex $genericStart
+          if ($null -eq $genericBlock) {
+            $pos = $classMatch.Index + $classMatch.Length
+            continue
+          }
+
+          $genericArgs = Split-GenericArguments -Text $genericBlock.Inner
+          if ($genericArgs.Count -lt 4) {
+            $pos = $classMatch.Index + $classMatch.Length
+            continue
+          }
+
+          $dtoIndex = 0
+          $filterIndex = 3
+          if ($baseName -like '*CrudAppServiceListAndItemBase*') {
+            $dtoIndex = 1
+            $filterIndex = 4
+          }
+
+          if ($genericArgs.Count -le [Math]::Max($dtoIndex, $filterIndex)) {
+            $pos = $classMatch.Index + $classMatch.Length
+            continue
+          }
+
+          $dtoType = $genericArgs[$dtoIndex].Trim()
+          $filterType = $genericArgs[$filterIndex].Trim()
+          $mapperType = $genericArgs[$genericArgs.Count - 1].Trim()
+
+          $openBraceIndex = $updated.IndexOf('{', $genericBlock.EndIndex)
+          $span = Get-ClassBodySpan -Text $updated -OpenBraceIndex $openBraceIndex
+          if ($null -eq $span) {
+            $pos = $classMatch.Index + $classMatch.Length
+            continue
+          }
+
+          $body = $updated.Substring($span.BodyStart, $span.BodyEnd - $span.BodyStart)
+          $newBody = $body
+          $bodyChanged = $false
+
+          foreach ($methodName in $methodNames) {
+              $methodRegex = [regex]::new("(?s)protected\s+override\s+[^{;]*?\b$([regex]::Escape($methodName))\b\s*<[^>]*>\s*\([^)]*\)[^{;]*\{")
+              $searchPos = 0
+
+              while ($true) {
+                  $methodMatch = $methodRegex.Match($newBody, $searchPos)
+                  if (-not $methodMatch.Success) {
+                    break
+                  }
+
+                  $methodStart = $methodMatch.Index
+                  $braceIndex = $newBody.IndexOf('{', $methodStart)
+                  if ($braceIndex -lt 0) {
+                    $searchPos = $methodMatch.Index + $methodMatch.Length
+                    continue
+                  }
+
+                  $methodSpan = Get-BlockSpan -Text $newBody -OpenBraceIndex $braceIndex
+                  if ($null -eq $methodSpan) {
+                    $searchPos = $methodMatch.Index + $methodMatch.Length
+                    continue
+                  }
+
+                  $methodText = $newBody.Substring($methodStart, $methodSpan.BodyEnd - $methodStart + 1)
+                  $methodUpdated = $methodText
+                  $methodUpdated = ([regex]::new('(?s)\bprotected\s+override\b')).Replace($methodUpdated, 'public override', 1)
+                  $methodUpdated = [regex]::Replace($methodUpdated, "(\b$([regex]::Escape($methodName))\b)\s*<[^>]*>", '${1}')
+                  $methodUpdated = [regex]::Replace($methodUpdated, '(?m)^\s*where\s+(?:TOtherDto|TOtherMapper|TOtherFilterDto)\s*:[^\r\n{;]+', '')
+                  $methodUpdated = [regex]::Replace($methodUpdated, '\swhere\s+(?:TOtherDto|TOtherMapper|TOtherFilterDto)\s*:[^\r\n{;]+', '')
+                  $methodUpdated = [regex]::Replace($methodUpdated, '\bTOtherDto\b', { param($m) $dtoType })
+                  $methodUpdated = [regex]::Replace($methodUpdated, '\bTOtherMapper\b', { param($m) $mapperType })
+                  $methodUpdated = [regex]::Replace($methodUpdated, '\bTOtherFilterDto\b', { param($m) $filterType })
+
+                  if ($methodUpdated -cne $methodText) {
+                      $newBody = $newBody.Substring(0, $methodStart) + $methodUpdated + $newBody.Substring($methodSpan.BodyEnd + 1)
+                      $bodyChanged = $true
+                      $searchPos = $methodStart + $methodUpdated.Length
+                  }
+                  else {
+                      $searchPos = $methodMatch.Index + $methodMatch.Length
+                  }
+              }
+          }
+
+          if ($bodyChanged) {
+              $updated = $updated.Substring(0, $span.BodyStart) + $newBody + $updated.Substring($span.BodyEnd)
+              $fileChanged = $true
+              Write-Host ("  => updated protected overrides of OperationalDomainServiceBase in class " + $classMatch.Groups['name'].Value) -ForegroundColor Yellow
+          }
+
+          $pos = $span.BodyStart + $newBody.Length + 1
+      }
+
+      if ($fileChanged) {
+          Write-Host $_.FullName -ForegroundColor Green
+          [System.IO.File]::WriteAllText($_.FullName, $updated, [System.Text.Encoding]::UTF8)
+      }
+  }
+}
+
 function ApplyChangesToLib {
   Write-Host "[Apply changes for bia-ng lib]"
   
@@ -1274,6 +1532,18 @@ ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -Ne
 # BEGIN - charset encoding file into controllers
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
 # END - charset encoding file into controllers
+
+# BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -NewRegexp 'class, IPagingFilterFormatDto, new\(\)' -Include "*.cs"
+# END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+
+# BEGIN - LazyLoadDto -> PagingFilterFormatDto
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp '\bPagingFilterFormatDto\b' -Include "*.cs"
+# END - LazyLoadDto -> PagingFilterFormatDto
+
+# BEGIN - Replace protected generic overrides in CrudAppServiceBase classes
+Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
+# END - Replace protected generic overrides in CrudAppServiceBase classes
 
 # FRONT END CLEAN
 # Set-Location $SourceFrontEnd
