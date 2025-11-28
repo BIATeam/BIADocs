@@ -25,12 +25,16 @@ sidebar_position: 1
 * Fix input's style in forms when field configuration has `isEditable` to `false`
 * Fix behaviors of `isEditable`, `isOnlyInitializable` and `isOnlyUpdatable` in forms
 * Fix inherited objects from `PagingFilterFormatDto<T>` not recognized as `PagingFilterFormatDto` when exporting CSV
+* Fix the failure to recognize overrides of `GetRangeAsync`, `AddAsync`, `UpdateAsync`, and `RemoveAsync` methods from the `CrudAppServiceBase` in the generic methods of the `OperationalDomainServiceBase`
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
   * use `bia-form-field` instead
   * `[form]` assignement is no longer needed
 * Remove `LazyLoadDto`
   * use `PagingFilterFormatDto` instead
+* All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
+* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](33-V5%20TO%20Vnext.md#inheritage))
+* Remove `virtual` from generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20Vnext.md#overrides))
 
 ## V5.2.0 (17/10/2025)
 ### Features

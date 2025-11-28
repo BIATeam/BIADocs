@@ -247,6 +247,71 @@ For all your previous audit entities inherited from `AuditEntity` :
 See [Audit documentation](../40-DeveloperGuide/80-Audit.md#dedicated-audit-table) for dedicated audit tables.
 :::
 
+### OperationalDomainServiceBase inheritage and override
+#### Inheritage
+You must fix your class that inherits from `OperationalDomainServiceBase` by providing new required generic types : 
+- `TDto` : DTO mapped to your `TEntity`
+- `TDtoListItem` : DTO mapped to your `TEntity` for your lists display and export
+- `TMapper` : mapper between your entity and the DTO
+- `TMapperListItem` : mapper between your entity and the DTO used for lists
+- `TFilterDto` : filter type of your entity
+
+:::tip
+Prefer to inherit from `CrudAppServiceBase` or `CrudAppServiceListAndItemBase` when you need the `OperationDomainServiceBase` methods.  
+Inherit directly from `DomainServiceBase` if you just need to access to the `IRepository`.
+:::
+
+``` csharp title="BEFORE"
+public class MyService : OperationDomainServiceBase<MyEntity, int>
+```
+``` csharp title="AFTER"
+public class MyService : OperationDomainServiceBase<MyEntityDto, MyEntityDto, MyEntity, int, PagingFilterFormatDto, MyEntityMapper, MyEntityMapper>
+```
+
+:::tip
+You can inherits your class interface from the dedicated interface `IOperationDomainServiceBase<TDto, TDtoListItem, TEntity, TKey, TFilterDto>` if needed
+:::
+
+#### Overrides
+You can't override these protected generic methods of `OperationDomainServiceBase` anymore :
+- `GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
+- `GetAllAsync<TOtherDto, TOtherMapper>`
+- `GetCsvAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
+- `GetAsync<TOtherDto, TOtherMapper>`
+- `AddAsync<TOtherDto, TOtherMapper>`
+- `UpdateAsync<TOtherDto, TOtherMapper>`
+- `RemoveAsync<TOtherDto, TOtherMapper>`
+- `SaveSafeAsync<TOtherDto, TOtherMapper>`
+- `SaveAsync<TOtherDto, TOtherMapper>`
+- `UpdateFixedAsync<TOtherDto, TOtherMapper>`
+
+You should only override the public non generic methods equivalent
+``` csharp title="BEFORE"
+public class MyService : OperationDomainServiceBase<MyEntity, int>
+{
+   protected override async Task<(IEnumerable<TOtherDto> Results, int Total)> GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>(TOtherFilterDto filters = null, int id = default, Specification<MyEntity> specification = null, Expression<Func<MyEntity, bool>> filter = null, string accessMode = "Read", string queryMode = "ReadList", string mapperMode = null, bool isReadOnlyMode = false)
+   {
+      // Custom code...
+
+      return base.GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>(filters, id, specification, filter, accessMode, queryMode, mapperMode, isReadOnlyMode);
+   }
+}
+```
+``` csharp title="AFTER"
+public class MyService : OperationDomainServiceBase<MyEntityDto, MyEntityDto, MyEntity, int, PagingFilterFormatDto, MyEntityMapper, MyEntityMapper>
+{
+   public override Task<(IEnumerable<MyEntityDto> Results, int Total)> GetRangeAsync(PagingFilterFormatDto filters = null, int id = 0, Specification<MyEntity> specification = null, Expression<Func<MyEntity, bool>> filter = null, string accessMode = "Read", string queryMode = "ReadList", string mapperMode = null, bool isReadOnlyMode = false)
+   {
+      // Custom code...
+      
+      return base.GetRangeAsync(filters, id, specification, filter, accessMode, queryMode, mapperMode, isReadOnlyMode);
+   }
+}
+```
+:::tip
+You can still use the protected generic methods into the overrides of the non generic methods, or somewhere else into your class that inherits from `OperationDomainServiceBase`
+:::
+
 ## Database Migration
 You must create a new database migration in order to apply framework changes to your database scheme :
 1. `add-migration MigrationBiaFrameworkV6 -c datacontext`
