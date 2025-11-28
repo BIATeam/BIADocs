@@ -293,18 +293,18 @@ public class MyService : OperationDomainServiceBase<MyEntity, int>
    {
       // Custom code...
 
-      return base.GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>(filters, id, specification, filter, accessMode, queryMode, mapperMode, isReadOnlyMode);
+      return await base.GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>(filters, id, specification, filter, accessMode, queryMode, mapperMode, isReadOnlyMode);
    }
 }
 ```
 ``` csharp title="AFTER"
 public class MyService : OperationDomainServiceBase<MyEntityDto, MyEntityDto, MyEntity, int, PagingFilterFormatDto, MyEntityMapper, MyEntityMapper>
 {
-   public override Task<(IEnumerable<MyEntityDto> Results, int Total)> GetRangeAsync(PagingFilterFormatDto filters = null, int id = 0, Specification<MyEntity> specification = null, Expression<Func<MyEntity, bool>> filter = null, string accessMode = "Read", string queryMode = "ReadList", string mapperMode = null, bool isReadOnlyMode = false)
+   public override async Task<(IEnumerable<MyEntityDto> Results, int Total)> GetRangeAsync(PagingFilterFormatDto filters = null, int id = 0, Specification<MyEntity> specification = null, Expression<Func<MyEntity, bool>> filter = null, string accessMode = "Read", string queryMode = "ReadList", string mapperMode = null, bool isReadOnlyMode = false)
    {
       // Custom code...
       
-      return base.GetRangeAsync(filters, id, specification, filter, accessMode, queryMode, mapperMode, isReadOnlyMode);
+      return await base.GetRangeAsync(filters, id, specification, filter, accessMode, queryMode, mapperMode, isReadOnlyMode);
    }
 }
 ```
