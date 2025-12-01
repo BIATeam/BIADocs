@@ -1545,6 +1545,53 @@ ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegex
 Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
 # END - Replace protected generic overrides in CrudAppServiceBase classes
 
+# BEGIN Replace old protected generic methods names from OperationDomainServiceBase
+$replacementsTs = @(
+    @{
+        Pattern     = 'GetRangeAsync<'
+        Replacement = 'GetRangeGenericAsync<'
+    },
+    @{
+        Pattern     = 'GetAllAsync<'
+        Replacement = 'GetAllGenericAsync<'
+    },
+    @{
+        Pattern     = 'GetCsvAsync<'
+        Replacement = 'GetCsvGenericAsync<'
+    },
+    @{
+        Pattern     = 'GetGenericAsync<'
+        Replacement = 'GetGenericGenericAsync<'
+    },
+    @{
+        Pattern     = 'AddAsync<'
+        Replacement = 'AddGenericAsync<'
+    },
+    @{
+        Pattern     = 'UpdateAsync<'
+        Replacement = 'UpdateGenericAsync<'
+    },
+    @{
+        Pattern     = 'RemoveAsync<'
+        Replacement = 'RemoveGenericAsync<'
+    },
+    @{
+        Pattern     = 'SaveSafeAsync<'
+        Replacement = 'SaveSafeGenericAsync<'
+    },
+    @{
+        Pattern     = 'SaveAsync<'
+        Replacement = 'SaveGenericAsync<'
+    },
+    @{
+        Pattern     = 'UpdateFixedAsync<'
+        Replacement = 'UpdateFixedGenericAsync<'
+    }
+)
+
+Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsTs -Extensions @('*.cs')
+# END Replace old protected generic methods names from OperationDomainServiceBase
+
 # FRONT END CLEAN
 # Set-Location $SourceFrontEnd
 # npm run clean
