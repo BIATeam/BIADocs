@@ -280,23 +280,21 @@ You can inherits your class interface from the dedicated interface `IOperationDo
 :::
 
 #### Overrides
-:::tip
-Automatically handled by migration script for classes that inherits from `CrudAppServiceBase` or `CrudAppServiceListAndItemBase`, for information purpose and manual adjustement only.
+:::warning
+- These methods have been renamed as **`{MethodName}GenericAsync`** :
+  - `GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
+  - `GetAllAsync<TOtherDto, TOtherMapper>`
+  - `GetCsvAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
+  - `GetAsync<TOtherDto, TOtherMapper>`
+  - `AddAsync<TOtherDto, TOtherMapper>`
+  - `UpdateAsync<TOtherDto, TOtherMapper>`
+  - `RemoveAsync<TOtherDto, TOtherMapper>`
+  - `SaveSafeAsync<TOtherDto, TOtherMapper>`
+  - `SaveAsync<TOtherDto, TOtherMapper>`
+  - `UpdateFixedAsync<TOtherDto, TOtherMapper>`
 :::
 
-You can't override these protected generic methods of `OperationDomainServiceBase` anymore :
-- `GetRangeAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
-- `GetAllAsync<TOtherDto, TOtherMapper>`
-- `GetCsvAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
-- `GetAsync<TOtherDto, TOtherMapper>`
-- `AddAsync<TOtherDto, TOtherMapper>`
-- `UpdateAsync<TOtherDto, TOtherMapper>`
-- `RemoveAsync<TOtherDto, TOtherMapper>`
-- `SaveSafeAsync<TOtherDto, TOtherMapper>`
-- `SaveAsync<TOtherDto, TOtherMapper>`
-- `UpdateFixedAsync<TOtherDto, TOtherMapper>`
-
-You should only override the public non generic methods equivalent
+You should only override the **public non generic methods** equivalent
 ``` csharp title="BEFORE"
 public class MyService : OperationDomainServiceBase<MyEntity, int>
 {
@@ -319,8 +317,44 @@ public class MyService : OperationDomainServiceBase<MyEntityDto, MyEntityDto, My
    }
 }
 ```
-:::tip
-You can still use the protected generic methods into the overrides of the non generic methods, or somewhere else into your class that inherits from `OperationDomainServiceBase`
+
+:::info
+The transformation for the previous overrides of the protected generic methods into public non generic, and the rename of the generic methods usage, are automatically handled by migration script for classes that inherits from `CrudAppServiceBase` or `CrudAppServiceListAndItemBase`.  
+
+Please review the migration script actions into your application services.
+:::
+
+:::warning
+- Following methods required now one or multiple delegate parameter in order to execute their algorithm with overriden methods :
+  - `GetCsvGenericAsync<TOtherDto, TOtherMapper, TOtherFilterDto>`
+  - `SaveSafeGenericAsync<TOtherDto, TOtherMapper>`
+  - `SaveGenericAsync<TOtherDto, TOtherMapper>`
+  - `UpdateFixedGenericAsync<TOtherDto, TOtherMapper>`
+:::
+
+Example below shows you how to call properly one of them with the correct delegate :
+``` csharp title="MyService"
+public class MyService : OperationDomainServiceBase<MyEntityDto, MyEntityDto, MyEntity, int, PagingFilterFormatDto, MyEntityMapper, MyEntityMapper>
+{
+   public Task<byte[]> GetCsvCustomAsync()
+   {
+      // Use of non generic GetRangeAsync
+      return this.GetCsvGenericAsync<MyEntityDto, MyEntityMapper, PagingFilterFormatDto>(this.GetRangeAsync);
+
+      // Use of generic GetRangeGenericAsync with custom types
+      return this.GetCsvGenericAsync<MyOtherEntityDto, MyOtherEntityMapper, CustomPagingFilterFormatDto>(this.GetRangeGenericAsync<MyOtherEntityDto, MyOtherEntityMapper, CustomPagingFilterFormatDto>);
+
+      // Use of custom generic GetRangeGenericAsync with custom types
+      return this.GetCsvGenericAsync<MyOtherEntityDto, MyOtherEntityMapper, CustomPagingFilterFormatDto>(this.GetRangeGenericCustomAsync<MyOtherEntityDto, MyOtherEntityMapper, CustomPagingFilterFormatDto>);
+   }
+
+   // Must respect the signature of the delegate GetRangeGenericAsyncDelegate
+   private async Task<(IEnumerable<TOtherDto> Results, int Total)> GetRangeGenericCustomAsync<TOtherDto, TOtherMapper, TOtherFilterDto>(TOtherFilterDto filters = null, Guid id = default, Specification<Pilot> specification = null, Expression<Func<Pilot, bool>> filter = null, string accessMode = "Read", string queryMode = "ReadList", string mapperMode = null, bool isReadOnlyMode = false)
+   {
+      // Custom code...
+   }
+}
+```
 :::
 
 ## Database Migration
