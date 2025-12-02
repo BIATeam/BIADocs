@@ -39,7 +39,7 @@ export const ROUTES: Routes = [
 ### Parent configuration
 **injectComponent** is the only mandatory parameter for the DynamicLayoutComponent to work:
 - **injectComponent** is the main component of the feature. The parent displayed when accessing the base route of the feature.
-- **configuration** is the CrudConfig of the feature. If not given, each children will need to indicate their display mode manually. If given, the default display mode will be set to popup, fullpage or splitPage depending on the setup inside the CrudConfig object.
+- **configuration** is the CrudConfig of the feature. If not given, each children will need to indicate their layout mode manually. If given, the default layout mode will be set to popup, fullpage or splitPage depending on the setup inside the CrudConfig object.
 - **maxScanDepth** is the max depth of the routing to find a children. It is by default at 3 (children of children of children of the DynamicLayoutComponent) but can be increased if your feature has more complex routing.
 - **heightOffset** is the offset for the height of the right side container in split page mode. By default, it is set to fill the height of the page by adding 1.5rem. If you have some custom items displays on top or bottom of your components, you can set this value to change the offset to an appropriate number.
 - **leftWidth** is the width (in percentage of the space) allocated to the left side (parent) container in split page mode. It is by default at 70, letting 30% of the width to the children component on the right side. This value can be set on any children of the DynamicLayoutComponent, allowing for different configurations depending of the childrens.
