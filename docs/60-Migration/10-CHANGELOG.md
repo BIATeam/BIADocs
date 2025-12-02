@@ -30,7 +30,6 @@ sidebar_position: 1
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
   * use `bia-form-field` instead
-  * `[form]` assignement is no longer needed
 * Remove `LazyLoadDto`
   * use `PagingFilterFormatDto` instead
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
