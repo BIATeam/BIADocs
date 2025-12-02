@@ -1520,13 +1520,9 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'b
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
 # END - BiaOutput -> BiaFormField
 
-# BEGIN - Remove [form] from <bia-form-field>
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp '<bia-form-field\b([^>]*?)\s*\[form\]\s*=\s*("[^"]*"|''[^'']*''|[^\s>]+)([^>]*?)>' -NewRegexp '<bia-form-field$1$3>' -Include "*.html"
-# END - Remove [form] from <bia-form-field>
-
 # BACK END
 # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bTeamSelectionMode\b" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
 # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
 # BEGIN - charset encoding file into controllers
