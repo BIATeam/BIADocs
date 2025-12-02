@@ -35,7 +35,7 @@ sidebar_position: 1
   * use `PagingFilterFormatDto` instead
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
 * `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](33-V5%20TO%20Vnext.md#inheritage))
-* Remove `virtual` from generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20Vnext.md#overrides))
+* Rename generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20Vnext.md#overrides))
 
 ## V5.2.0 (17/10/2025)
 ### Features
