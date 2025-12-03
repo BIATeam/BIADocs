@@ -19,6 +19,8 @@ sidebar_position: 1
 * Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](../40-DeveloperGuide/20-CRUD/10-InFilter.md#define-default-sort-order))
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
 * Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
+* Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](../40-DeveloperGuide/20-CRUD/91-QueryModelMapper.md))
+  
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
 * Fix CSV encoding issue for special symbols (`ISO-8859-1` to `windows-1252`)
@@ -27,6 +29,7 @@ sidebar_position: 1
 * Fix behaviors of `isEditable`, `isOnlyInitializable` and `isOnlyUpdatable` in forms
 * Fix inherited objects from `PagingFilterFormatDto<T>` not recognized as `PagingFilterFormatDto` when exporting CSV
 * Fix the failure to recognize overrides of `GetRangeAsync`, `AddAsync`, `UpdateAsync`, and `RemoveAsync` methods from the `CrudAppServiceBase` in the generic methods of the `OperationalDomainServiceBase`
+
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
   * use `bia-form-field` instead
