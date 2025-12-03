@@ -1434,25 +1434,25 @@ function Invoke-MigrationTeamConfig {
 
 function Invoke-DynamicLayoutTransform {
     param (
-    [Parameter(Mandatory=$true)]
-    [string]$InputFile
-  )
+        [Parameter(Mandatory = $true)]
+        [string[]]$Files
+    )
 
-  # Save original dir
-  $orig = Get-Location
+    # Save original dir
+    $orig = Get-Location
 
-  # Verify Node
-  if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-      Write-Error "Node.js not found on PATH. Install Node and re-run."
-      exit 1
-  }
+    # Verify Node
+    if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+        Write-Error "Node.js not found on PATH. Install Node and re-run."
+        exit 1
+    }
 
-  # Create temp dir
-  $temp = Join-Path $env:TEMP ("ng-route-transformer-" + [guid]::NewGuid().Guid)
-  New-Item -ItemType Directory -Path $temp | Out-Null
-  Set-Location $temp
+    # Create temp dir (installed once)
+    $temp = Join-Path $env:TEMP ("ng-route-transformer-" + [guid]::NewGuid().Guid)
+    New-Item -ItemType Directory -Path $temp | Out-Null
+    Set-Location $temp
 
-  # package.json (ES module)
+    # package.json (ES module)
 @"
 {
   "type": "module",
@@ -1460,71 +1460,36 @@ function Invoke-DynamicLayoutTransform {
 }
 "@ | Out-File -FilePath (Join-Path $temp "package.json") -Encoding utf8
 
-  Write-Host "Installing typescript (local)..."
-  npm install typescript --no-audit --no-fund --silent --no-progress | Out-Null
+    Write-Host "Installing typescript (local, once)..."
+    npm install typescript --no-audit --no-fund --silent --no-progress | Out-Null
 
-  # Write transformer.mjs
-  $transformer = @'
-import ts from "typescript";
+    # Write transformer.mjs (same transformer logic as your last working version, but main() loops over args)
+    $transformer = @'
+// transformer.mjs
 import fs from "fs";
+import ts from "typescript";
+import path from "path";
 
-// --- Helpers ---
-const factory = ts.factory;
+/*
+  Fixed transformer:
+  - Deduplicates edits and eliminates duplicate/conflicting edits per route
+  - Uses node.getLastToken().getStart() for insertion inside object literals
+  - Minimal, AST-driven text edits; uses node.getText(sf) for safe extraction
+  - Keeps comments / blank lines outside replaced ranges
+  - Avoids inserting layoutMode for DynamicLayoutComponent (Rule 1)
+  - Removes trailing newline when removing injectComponent
+*/
 
-function getProp(obj, name) {
+function isIdentifierNamed(node, name) {
+  return node && ts.isIdentifier(node) && node.text === name;
+}
+function findProp(obj, name) {
   if (!obj || !ts.isObjectLiteralExpression(obj)) return undefined;
   for (const p of obj.properties) {
     if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === name) return p;
   }
   return undefined;
 }
-
-function propNameText(prop) {
-  if (!prop) return undefined;
-  if (ts.isIdentifier(prop.name)) return prop.name.text;
-  return prop.name.getText();
-}
-
-function removeInjectFromData(dataObj, keepIfDynamic = true) {
-  if (!dataObj || !ts.isObjectLiteralExpression(dataObj)) return dataObj;
-  const props = [];
-  for (const p of dataObj.properties) {
-    if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === "injectComponent") {
-      continue;
-    }
-    props.push(p);
-  }
-  return factory.createObjectLiteralExpression(props, true);
-}
-
-function createOrUpdateDataProperty(originalDataProp, newEntries = {}) {
-  const props = [];
-  if (originalDataProp && ts.isObjectLiteralExpression(originalDataProp.initializer)) {
-    for (const p of originalDataProp.initializer.properties) {
-      if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === "injectComponent") {
-        props.push(p);
-      } else {
-        props.push(p);
-      }
-    }
-  }
-  for (const [k, vNode] of Object.entries(newEntries)) {
-    let replaced = false;
-    for (let i = 0; i < props.length; i++) {
-      const p = props[i];
-      if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === k) {
-        props[i] = factory.createPropertyAssignment(factory.createIdentifier(k), vNode);
-        replaced = true;
-        break;
-      }
-    }
-    if (!replaced) {
-      props.push(factory.createPropertyAssignment(factory.createIdentifier(k), vNode));
-    }
-  }
-  return factory.createPropertyAssignment(factory.createIdentifier("data"), factory.createObjectLiteralExpression(props, true));
-}
-
 function looksLikeRoute(obj) {
   if (!obj || !ts.isObjectLiteralExpression(obj)) return false;
   for (const p of obj.properties) {
@@ -1536,582 +1501,631 @@ function looksLikeRoute(obj) {
   return false;
 }
 
-function isIdentifierNamed(node, name) {
-  return node && ts.isIdentifier(node) && node.text === name;
-}
-
-function findInjectInitializer(dataProp) {
-  if (!dataProp || !ts.isPropertyAssignment(dataProp) || !ts.isObjectLiteralExpression(dataProp.initializer)) return undefined;
-  const inj = getProp(dataProp.initializer, "injectComponent");
-  if (inj && ts.isPropertyAssignment(inj)) return inj.initializer;
-  return undefined;
-}
-
-function layoutModePropertyAccess(mode) {
-  return factory.createPropertyAccessExpression(factory.createIdentifier("LayoutMode"), factory.createIdentifier(mode));
-}
-
-// --- Transform logic ---
-function createTransformer() {
-  return (context) => {
-    function visitNode(node, depth = 0) {
-      if (ts.isArrayLiteralExpression(node)) {
-        const newElements = node.elements.map(el => {
-          if (ts.isObjectLiteralExpression(el) && looksLikeRoute(el)) {
-            return visitRouteObject(el, depth);
-          } else if (ts.isArrayLiteralExpression(el)) {
-            return ts.visitEachChild(el, (n) => visitNode(n, depth), context);
-          } else {
-            return ts.visitEachChild(el, (n) => visitNode(n, depth), context);
-          }
-        });
-        return factory.updateArrayLiteralExpression(node, newElements);
+// Collapse duplicate edits and detect true conflicts
+function dedupeEdits(edits) {
+  // key => { start,end,text }
+  const map = new Map();
+  const conflicts = [];
+  for (const e of edits) {
+    const key = `${e.start}:${e.end}`;
+    if (!map.has(key)) {
+      map.set(key, e);
+    } else {
+      const existing = map.get(key);
+      if (existing.text === e.text) {
+        // identical duplicate — ignore
+        continue;
+      } else {
+        // conflicting replacement for same span
+        conflicts.push({ span: key, existing, conflict: e });
+        // Deterministic resolution: prefer the existing (first inserted)
       }
-      return ts.visitEachChild(node, (n) => visitNode(n, depth), context);
+    }
+  }
+  return { edits: Array.from(map.values()), conflicts };
+}
+
+function applyEdits(src, edits) {
+  if (!edits || edits.length === 0) return src;
+  // detect overlaps first (safer): if overlapping, we will throw
+  edits.sort((a,b) => a.start - b.start);
+  for (let i = 1; i < edits.length; ++i) {
+    if (edits[i].start < edits[i-1].end) {
+      throw new Error(`Overlapping edits detected (start ${edits[i].start} < prev end ${edits[i-1].end}). Aborting apply.`);
+    }
+  }
+  // apply descending
+  edits.sort((a,b) => b.start - a.start);
+  let out = src;
+  for (const e of edits) out = out.slice(0,e.start) + e.text + out.slice(e.end);
+  return out;
+}
+
+function safeRemoveRangeWithComma(src, start, end) {
+  let s = start, e = end;
+  // absorb trailing whitespace then comma if present
+  while (e < src.length && /\s/.test(src[e])) e++;
+  if (src[e] === ",") { e = e+1; return { s,e }; }
+  // else look for leading comma
+  let ls = s - 1;
+  while (ls >= 0 && /\s/.test(src[ls])) ls--;
+  if (ls >= 0 && src[ls] === ",") {
+    // include comma and any whitespace before it
+    let ls2 = ls;
+    while (ls2 - 1 >= 0 && /\s/.test(src[ls2 - 1])) ls2--;
+    s = ls2;
+  }
+  return { s, e };
+}
+
+function buildLayoutConditionalText(condNode, trueIsPopup, sf) {
+  const condText = condNode.getText(sf);
+  const left = trueIsPopup ? "LayoutMode.popup" : "LayoutMode.fullPage";
+  const right = trueIsPopup ? "LayoutMode.fullPage" : "LayoutMode.popup";
+  return `(${condText} ? ${left} : ${right})`;
+}
+
+function patchImportsText(text) {
+  const needed = ["DynamicLayoutComponent", "LayoutMode"];
+  const importRegex = /import\s*\{([\s\S]*?)\}\s*from\s*(['"][^'"]+['"])\s*;/g;
+  let out = text;
+  let m;
+  const inserts = [];
+  while ((m = importRegex.exec(text)) !== null) {
+    const full = m[0], inner = m[1], matchStart = m.index;
+    const names = inner.split(",").map(s => s.trim()).filter(Boolean).map(s => { const a = s.indexOf(" as "); return a >= 0 ? s.slice(0,a).trim() : s; });
+    const touchesLayout = names.includes("FullPageLayoutComponent") || names.includes("PopupLayoutComponent");
+    if (!touchesLayout) continue;
+    const toAdd = needed.filter(n => !names.includes(n));
+    if (toAdd.length === 0) continue;
+    const braceCloseRel = full.lastIndexOf("}");
+    const insertPos = matchStart + braceCloseRel;
+    const insertionText = (inner.trim().length === 0 || inner.trim().endsWith(",")) ? " " + toAdd.join(", ") : ", " + toAdd.join(", ");
+    inserts.push({ pos: insertPos, newText: insertionText });
+  }
+  inserts.sort((a,b) => b.pos - a.pos);
+  for (const ins of inserts) out = out.slice(0, ins.pos) + ins.newText + out.slice(ins.pos);
+  // ---- NEW: Insert missing CRUDConfiguration imports ----
+  if (text.includes("DynamicLayoutComponent")) {
+    // Find all config names in output
+    const configRegex = /([a-zA-Z0-9]+)CRUDConfiguration\b/g;
+    let m2;
+    const neededCRUD = new Map();
+    while ((m2 = configRegex.exec(out)) !== null) {
+      const feature = m2[1];
+      neededCRUD.set(feature, `${feature}CRUDConfiguration`);
     }
 
-    function visitRouteObject(routeObj, depth) {
-      let componentProp, dataProp, childrenProp;
-      for (const p of routeObj.properties) {
-        if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name)) {
-          const n = p.name.text;
-          if (n === "component") componentProp = p;
-          else if (n === "data") dataProp = p;
-          else if (n === "children") childrenProp = p;
+    // For each needed config → ensure import exists
+    for (const [feature, cfg] of neededCRUD) {
+      const importLine = `import { ${cfg} } from './${feature}.constants';`;
+
+      if (!out.includes(importLine)) {
+        // Insert after last import
+        const lastImport = out.lastIndexOf("import ");
+        const insertPos = out.indexOf("\n", lastImport) + 1;
+        out = out.slice(0, insertPos) + importLine + "\n" + out.slice(insertPos);
+      }
+    }
+  }
+  return out;
+}
+
+function transformOneFile(src, filename) {
+  const sf = ts.createSourceFile(filename, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const edits = [];
+  const removeInjectCandidates = [];
+
+  function visitNode(node, depth = 0) {
+    if (ts.isArrayLiteralExpression(node)) {
+      node.elements.forEach(el => {
+        if (ts.isObjectLiteralExpression(el) && looksLikeRoute(el)) visitRouteObject(el, depth, null);
+        else if (ts.isArrayLiteralExpression(el)) visitNode(el, depth);
+      });
+      return;
+    }
+    ts.forEachChild(node, c => visitNode(c, depth));
+  }
+
+  function getInsertPosBeforeClosingBrace(objNode) {
+    const lastTok = objNode.getLastToken && objNode.getLastToken();
+    if (lastTok) return lastTok.getStart();
+    // fallback: getEnd()-1
+    return objNode.getEnd() - 1;
+  }
+
+  function prefixForInsertion(objNode, sf) {
+    // If object literal text right before "}" has a comma, use a space
+    const text = objNode.getFullText(sf);
+    const lastProp = objNode.properties[objNode.properties.length - 1];
+    if (!lastProp) return ""; // empty object → no prefix needed
+    const afterLastProp = text.slice(lastProp.end - objNode.pos, objNode.end - objNode.pos);
+    return /,\s*\}$/.test(afterLastProp) ? " " : ", ";
+  }
+
+  // SINGLE-DECISION visitRouteObject (computes actions once per route)
+  function visitRouteObject(routeObj, depth, inheritedFinalComponent) {
+    const compProp = findProp(routeObj, "component");
+    const dataProp = findProp(routeObj, "data");
+    const childrenProp = findProp(routeObj, "children");
+
+    // compute existing final component name if possible
+    let currentFinalComponent = inheritedFinalComponent;
+    if (compProp && ts.isPropertyAssignment(compProp) && ts.isIdentifier(compProp.initializer)) {
+      currentFinalComponent = compProp.initializer.text;
+    }
+
+    // Decide exactly once what we will do for this route
+    let desiredComponentText = null;     // if not null -> replace component initializer with this text
+    let desiredLayoutModeText = null;    // if not null -> set/replace data.layoutMode to this text
+    let shouldRemoveInject = false;      // whether to remove injectComponent later
+    let keepInjectAlways = false;        // RULE 1: keep injectComponent when root FullPage -> Dynamic
+
+    function getInjectInitializerText() {
+      if (!dataProp || !ts.isPropertyAssignment(dataProp) || !ts.isObjectLiteralExpression(dataProp.initializer)) return null;
+      const inj = findProp(dataProp.initializer, "injectComponent");
+      if (inj && ts.isPropertyAssignment(inj)) return inj.initializer.getText(sf);
+      return null;
+    }
+
+    if (compProp && ts.isPropertyAssignment(compProp)) {
+      const compInit = compProp.initializer;
+
+      // RULE 1: root-level FullPageLayoutComponent -> DynamicLayoutComponent (NO layoutMode)
+      if (isIdentifierNamed(compInit, "FullPageLayoutComponent") && depth === 0) {
+        desiredComponentText = "DynamicLayoutComponent";
+        // DO NOT set desiredLayoutModeText here — DynamicLayoutComponent should not receive layoutMode
+        keepInjectAlways = true;
+
+        // ---- NEW: extract feature name from injectComponent ----
+        const injText = getInjectInitializerText();
+        if (injText) {
+          // Example injText: "PlanesIndexComponent"
+          const m = injText.match(/([A-Za-z0-9]+?)sIndexComponent$/);
+          if (m) {
+            const feature = m[1].charAt(0).toLowerCase() + m[1].slice(1); // camelCase
+            const configName = `${feature}CRUDConfiguration`;
+            routeObj.__crudFeature = { feature, configName };
+          }
         }
-      }
-
-      let updatedComponentProp = componentProp;
-      let updatedDataProp = dataProp;
-
-      function setData(newDataObj) {
-        updatedDataProp = createOrUpdateDataProperty(updatedDataProp, newDataObj);
-      }
-
-      function replaceComponentWith(exprNode) {
-        if (!componentProp) return;
-        updatedComponentProp = factory.updatePropertyAssignment(componentProp, componentProp.name, exprNode);
-      }
-
-      if (componentProp && isIdentifierNamed(componentProp.initializer, "FullPageLayoutComponent") && depth === 0) {
-        replaceComponentWith(factory.createIdentifier("DynamicLayoutComponent"));
-      } else if (componentProp) {
-        if (isIdentifierNamed(componentProp.initializer, "PopupLayoutComponent") ||
-            isIdentifierNamed(componentProp.initializer, "FullPageLayoutComponent")) {
-
-          const isPopup = isIdentifierNamed(componentProp.initializer, "PopupLayoutComponent");
-          const layoutExpr = layoutModePropertyAccess(isPopup ? "popup" : "fullPage");
-          setData({ layoutMode: layoutExpr });
-
-          const injInit = findInjectInitializer(updatedDataProp);
-          if (injInit) replaceComponentWith(injInit);
-
-        } else if (ts.isConditionalExpression(componentProp.initializer)) {
-          const cond = componentProp.initializer;
+      } else {
+        // RULE 2: PopupLayoutComponent or FullPageLayoutComponent (non-root)
+        if (isIdentifierNamed(compInit, "PopupLayoutComponent") || isIdentifierNamed(compInit, "FullPageLayoutComponent")) {
+          const isPopup = isIdentifierNamed(compInit, "PopupLayoutComponent");
+          desiredLayoutModeText = `LayoutMode.${isPopup ? "popup" : "fullPage"}`;
+          const injText = getInjectInitializerText();
+          if (injText) desiredComponentText = injText;
+          shouldRemoveInject = true;
+        }
+        // RULE 3: ternary cond ? Popup : Full or reversed
+        else if (ts.isConditionalExpression(compInit)) {
+          const cond = compInit;
           const whenT = cond.whenTrue;
           const whenF = cond.whenFalse;
           const trueIsPopup = isIdentifierNamed(whenT, "PopupLayoutComponent");
           const trueIsFull = isIdentifierNamed(whenT, "FullPageLayoutComponent");
           const falseIsPopup = isIdentifierNamed(whenF, "PopupLayoutComponent");
           const falseIsFull = isIdentifierNamed(whenF, "FullPageLayoutComponent");
-
           const validPair = (trueIsPopup && falseIsFull) || (trueIsFull && falseIsPopup);
           if (validPair) {
-            const condExpr = cond.condition;
-            const layoutConditional = factory.createConditionalExpression(
-              condExpr,
-              cond.questionToken,
-              factory.createPropertyAccessExpression(factory.createIdentifier("LayoutMode"), factory.createIdentifier(trueIsPopup ? "popup" : "fullPage")),
-              cond.colonToken,
-              factory.createPropertyAccessExpression(factory.createIdentifier("LayoutMode"), factory.createIdentifier(trueIsPopup ? "fullPage" : "popup"))
-            );
-            setData({ layoutMode: layoutConditional });
-
-            const injInit = findInjectInitializer(updatedDataProp);
-            if (injInit) replaceComponentWith(injInit);
+            desiredLayoutModeText = buildLayoutConditionalText(cond.condition, trueIsPopup, sf);
+            const injText = getInjectInitializerText();
+            if (injText) desiredComponentText = injText;
+            shouldRemoveInject = true;
+          }
+        }
+        // RULE 4: contains Popup/Full anywhere (not ternary)
+        else {
+          const txt = compInit.getText(sf);
+          const containsPopup = /\bPopupLayoutComponent\b/.test(txt);
+          const containsFull = /\bFullPageLayoutComponent\b/.test(txt);
+          if ((containsPopup || containsFull) && !ts.isConditionalExpression(compInit)) {
+            const mode = containsPopup ? "popup" : "fullPage";
+            desiredLayoutModeText = `LayoutMode.${mode}`;
+            const injText = getInjectInitializerText();
+            if (injText) desiredComponentText = injText;
+            shouldRemoveInject = true;
           }
         }
       }
-
-      let newChildrenProp = childrenProp;
-      if (childrenProp && ts.isArrayLiteralExpression(childrenProp.initializer)) {
-        const visitedArray = visitNode(childrenProp.initializer, depth + 1);
-        newChildrenProp = factory.updatePropertyAssignment(childrenProp, childrenProp.name, visitedArray);
-      }
-
-      const newProps = [];
-      for (const p of routeObj.properties) {
-        if (p === componentProp && updatedComponentProp) { newProps.push(updatedComponentProp); continue; }
-        if (p === dataProp && updatedDataProp) { newProps.push(updatedDataProp); continue; }
-        if (p === childrenProp && newChildrenProp) { newProps.push(newChildrenProp); continue; }
-        newProps.push(p);
-      }
-      if (!dataProp && updatedDataProp) newProps.push(updatedDataProp);
-
-      return factory.updateObjectLiteralExpression(routeObj, newProps);
     }
 
-    return (sf) => ts.visitNode(sf, (n) => visitNode(n, 0));
-  };
-}
-
-// --- Final Sweep ---
-// Removes injectComponent if final component is NOT DynamicLayoutComponent
-function finalSweepTransformer() {
-  return (context) => {
-
-    function visitRouteObject(node, parentFinalComponent) {
-      if (!ts.isObjectLiteralExpression(node)) {
-        return ts.visitEachChild(node, (child) => visitRouteObject(child, parentFinalComponent), context);
-      }
-
-      let finalComponent = parentFinalComponent;
-      let dataProp = null;
-
-      // detect component inside THIS route object
-      for (const p of node.properties) {
-        if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name)) {
-          if (p.name.text === "component" && ts.isIdentifier(p.initializer)) {
-            finalComponent = p.initializer.text;
-          }
-          if (p.name.text === "data") dataProp = p;
-        }
-      }
-
-      // --- process `data` object if present ---
-      let newNode = node;
-      if (dataProp && ts.isObjectLiteralExpression(dataProp.initializer)) {
-        const dataObj = dataProp.initializer;
-
-        const newDataProps = [];
-        for (const dp of dataObj.properties) {
-          if (
-            ts.isPropertyAssignment(dp) &&
-            ts.isIdentifier(dp.name) &&
-            dp.name.text === "injectComponent"
-          ) {
-            const injInit = dp.initializer;
-
-            const injIsDynamic =
-              ts.isIdentifier(injInit) && injInit.text === "DynamicLayoutComponent";
-
-            const compIsDynamic = finalComponent === "DynamicLayoutComponent";
-
-            // KEEP only when final component is DynamicLayoutComponent
-            if (injIsDynamic || compIsDynamic) {
-              newDataProps.push(dp);
-            }
-          } else {
-            newDataProps.push(dp);
-          }
-        }
-
-        const newDataObj = ts.factory.createPropertyAssignment(
-          ts.factory.createIdentifier("data"),
-          ts.factory.createObjectLiteralExpression(newDataProps, true)
-        );
-
-        const newProps = node.properties.map(p => p === dataProp ? newDataObj : p);
-        newNode = ts.factory.updateObjectLiteralExpression(node, newProps);
-      }
-
-      // --- recursively process children[] if present ---
-      const childrenProp = newNode.properties.find(p =>
-        ts.isPropertyAssignment(p) &&
-        ts.isIdentifier(p.name) &&
-        p.name.text === "children"
-      );
-
-      if (
-        childrenProp &&
-        ts.isPropertyAssignment(childrenProp) &&
-        ts.isArrayLiteralExpression(childrenProp.initializer)
-      ) {
-        const newElements = childrenProp.initializer.elements.map(child =>
-          visitRouteObject(child, finalComponent)
-        );
-
-        const newChildrenProp = ts.factory.updatePropertyAssignment(
-          childrenProp,
-          childrenProp.name,
-          ts.factory.updateArrayLiteralExpression(childrenProp.initializer, newElements)
-        );
-
-        const updatedProps = newNode.properties.map(p =>
-          p === childrenProp ? newChildrenProp : p
-        );
-
-        newNode = ts.factory.updateObjectLiteralExpression(newNode, updatedProps);
-      }
-
-      return newNode;
+    // Emit the decided edits (one per target)
+    if (desiredComponentText !== null && compProp && ts.isPropertyAssignment(compProp)) {
+      const compInit = compProp.initializer;
+      edits.push({ start: compInit.getStart(sf), end: compInit.getEnd(), text: desiredComponentText });
     }
 
-    return (sf) => ts.visitNode(sf, (node) => visitRouteObject(node, null));
-  };
-}
+    const hasDynamicComponent =
+      dataProp &&
+      ts.isPropertyAssignment(dataProp) &&
+      ts.isObjectLiteralExpression(dataProp.initializer) &&
+      findProp(dataProp.initializer, "dynamicComponent");
 
-// --- NEW: patch imports in printed text (safe text-edit approach) ---
-function patchImportsText(text) {
-  // find import blocks with braces: import { ... } from '...';
-  // supports multiline inside braces.
-  const needed = ["DynamicLayoutComponent", "LayoutMode"];
+    if (desiredLayoutModeText !== null && !hasDynamicComponent) {
+      if (dataProp && ts.isPropertyAssignment(dataProp) && ts.isObjectLiteralExpression(dataProp.initializer)) {
+        const dataInit = dataProp.initializer;
+        const layoutProp = findProp(dataInit, "layoutMode");
+        if (layoutProp) {
+          edits.push({ start: layoutProp.initializer.getStart(sf), end: layoutProp.initializer.getEnd(), text: desiredLayoutModeText });
+        } else {
+          const insertPos = getInsertPosBeforeClosingBrace(dataInit);
+          const insertion = prefixForInsertion(dataInit, sf) + `layoutMode: ${desiredLayoutModeText} `;
+          edits.push({ start: insertPos, end: insertPos, text: insertion });
+        }
+      } else {
+        const insertPos = getInsertPosBeforeClosingBrace(routeObj);
+        // use prefixForInsertion for routeObj as well so we handle trailing comma cases
+        const insertion = prefixForInsertion(routeObj, sf) + `data: { layoutMode: ${desiredLayoutModeText} } `;
+        edits.push({ start: insertPos, end: insertPos, text: insertion });
+      }
+    }
 
-  // global regex to find named import blocks
-  const importRegex = /import\s*\{([\s\S]*?)\}\s*from\s*(['"][^'"]+['"]);/g;
-  let out = text;
-  let match;
-  const inserts = []; // collect changes to apply (start, end, newText) to avoid messing indices while iterating
+    // ---- NEW: Add configuration when converting to DynamicLayoutComponent ----
+    if (routeObj.__crudFeature && desiredComponentText === "DynamicLayoutComponent") {
+      const { configName, feature } = routeObj.__crudFeature;
 
-  while ((match = importRegex.exec(text)) !== null) {
-    const fullMatch = match[0];
-    const inner = match[1]; // content inside braces
-    const moduleSpecifier = match[2];
-    const matchStart = match.index;
-    const matchEnd = matchStart + fullMatch.length;
-    // Only target imports that already include FullPageLayoutComponent or PopupLayoutComponent
-    const names = inner.split(",").map(s => s.trim()).filter(s => s.length > 0).map(s => {
-      // remove possible aliasing "X as Y"
-      const asIdx = s.indexOf(" as ");
-      return asIdx >= 0 ? s.slice(0, asIdx).trim() : s;
-    });
+      // ---- RULE: Only add configuration: if the import file exists ----
+      const basePath = path.dirname(filename);
+      const configFileBase = path.join(basePath, `${feature}.constants`);
+      const possibleExtensions = [".ts", ".js", ".mts", ".cts"];
+      const importExists = possibleExtensions.some(ext => fs.existsSync(configFileBase + ext));
 
-    const touchesLayout = names.includes("FullPageLayoutComponent") || names.includes("PopupLayoutComponent");
-    if (!touchesLayout) continue;
+      if (!importExists) {
+        // Skip adding configuration & do not mark imports
+        // Still remove injectComponent normally later
+        // -> Abort patch 2 safely
+        return;
+      }
 
-    // Find which needed are missing
-    const toAdd = needed.filter(n => !names.includes(n));
-    if (toAdd.length === 0) continue;
+      if (dataProp && ts.isPropertyAssignment(dataProp) && ts.isObjectLiteralExpression(dataProp.initializer)) {
+        const dataInit = dataProp.initializer;
 
-    // Insert before the closing brace of this match.
-    // Compute insertion position relative to 'out' (we'll collect edits and apply after loop)
-    // We want to preserve formatting: add ", " + toAdd.join(", ")
-    // Find position of the '}' inside the original match: the last index of '}' relative to matchStart
-    const braceCloseRel = fullMatch.lastIndexOf("}");
-    const insertPos = matchStart + braceCloseRel; // position in original text
-    const insertionText = (inner.trim().length === 0 || inner.trim().endsWith(",")) ?
-      " " + toAdd.join(", ") :
-      ", " + toAdd.join(", ");
+        // Only add if not already present
+        const existing = findProp(dataInit, "configuration");
+        if (!existing) {
+          const insertPos = getInsertPosBeforeClosingBrace(dataInit);
+          const insertion = prefixForInsertion(dataInit, sf) + `configuration: ${configName} `;
+          edits.push({ start: insertPos, end: insertPos, text: insertion });
+        }
+      } else {
+        // No data property → create it
+        const insertPos = getInsertPosBeforeClosingBrace(routeObj);
+        const insertion =
+          prefixForInsertion(routeObj, sf) +
+          `data: { configuration: ${configName} } `;
+        edits.push({ start: insertPos, end: insertPos, text: insertion });
+      }
 
-    inserts.push({ pos: insertPos, newText: insertionText });
+      // Mark import
+      routeObj.__needsCRUDImport = true;
+    }
+
+    if (shouldRemoveInject && !keepInjectAlways && dataProp && ts.isPropertyAssignment(dataProp) && ts.isObjectLiteralExpression(dataProp.initializer)) {
+      removeInjectCandidates.push({ dataProp, routeObj });
+    }
+
+    // Recurse children after decisions emitted
+    if (childrenProp && ts.isPropertyAssignment(childrenProp) && ts.isArrayLiteralExpression(childrenProp.initializer)) {
+      const childArr = childrenProp.initializer;
+      childArr.elements.forEach(el => {
+        if (ts.isObjectLiteralExpression(el)) visitRouteObject(el, depth + 1, currentFinalComponent);
+      });
+    }
   }
 
-  // Apply inserts from end to start so indices don't shift
-  inserts.sort((a,b) => b.pos - a.pos);
-  for (const ins of inserts) {
-    out = out.slice(0, ins.pos) + ins.newText + out.slice(ins.pos);
-  }
-
-  return out;
-}
-
-// --- NEW: robust preserve blank lines around Routes variable declarations ---
-function preserveBlankLinesAroundRoutes(text) {
-  // parse printed text so we can locate nodes reliably
-  const sf2 = ts.createSourceFile("printed.ts", text, ts.ScriptTarget.Latest, /*setParentNodes*/ true, ts.ScriptKind.TS);
-
-  const inserts = []; // { pos: number, text: string }
-
-  function ensureBlankBefore(pos) {
-    // count consecutive '\n' characters directly before pos
-    let i = pos - 1;
-    let count = 0;
-    while (i >= 0 && text[i] === '\n') { count++; i--; }
-    // We want at least TWO newlines in a row before the declaration (i.e. one blank line)
-    if (count >= 2) return;
-    // if there's one newline, add one. If zero, add two.
-    const add = count === 1 ? '\n' : '\n\n';
-    inserts.push({ pos: pos, text: add });
-  }
-
-  function ensureBlankAfter(pos) {
-    // count consecutive '\n' characters directly after pos-1 (i.e. starting at pos)
-    let i = pos;
-    let count = 0;
-    while (i < text.length && text[i] === '\n') { count++; i++; }
-    if (count >= 2) return;
-    const add = count === 1 ? '\n' : '\n\n';
-    inserts.push({ pos: pos, text: add });
-  }
-
-  function visit(node) {
+  function walkForRoutes(node) {
     if (ts.isVariableStatement(node)) {
-      // check each declaration on this statement
       for (const decl of node.declarationList.declarations) {
-        // type must be "Routes" (type reference) and initializer must be an array literal
-        if (
-          decl.type &&
-          ts.isTypeReferenceNode(decl.type) &&
-          decl.type.typeName &&
-          decl.type.typeName.getText(sf2) === "Routes" &&
-          decl.initializer &&
-          ts.isArrayLiteralExpression(decl.initializer)
-        ) {
-          // Use node.getFullStart() for start (includes leading trivia) so blank line inserted before any leading comments too.
-          const stmtFullStart = node.getFullStart(); // index in printed text
-          const stmtEnd = node.getEnd(); // end index (after semicolon)
-          ensureBlankBefore(stmtFullStart);
-          ensureBlankAfter(stmtEnd);
+        if (decl.type && ts.isTypeReferenceNode(decl.type) && decl.type.typeName && decl.type.typeName.getText(sf) === "Routes" && decl.initializer && ts.isArrayLiteralExpression(decl.initializer)) {
+          visitNode(decl.initializer, 0, null);
         }
       }
     }
-    ts.forEachChild(node, visit);
+    if (ts.isArrayLiteralExpression(node)) {
+      node.elements.forEach(el => { if (ts.isObjectLiteralExpression(el) && looksLikeRoute(el)) visitRouteObject(el, 0, null); });
+    }
+    ts.forEachChild(node, walkForRoutes);
   }
 
-  visit(sf2);
+  walkForRoutes(sf);
 
-  if (inserts.length === 0) return text;
+  // Final sweep: remove injectComponent unless final component is DynamicLayoutComponent
+  for (const cand of removeInjectCandidates) {
+    const { dataProp, routeObj } = cand;
+    if (!dataProp || !ts.isPropertyAssignment(dataProp)) continue;
+    const dataInit = dataProp.initializer;
+    if (!dataInit || !ts.isObjectLiteralExpression(dataInit)) continue;
 
-  // apply inserts from end to start to avoid shifting positions
-  inserts.sort((a, b) => b.pos - a.pos);
-  let out = text;
-  for (const ins of inserts) {
-    out = out.slice(0, ins.pos) + ins.text + out.slice(ins.pos);
+    let finalComponent = null;
+    for (const p of routeObj.properties) {
+      if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === "component" && ts.isIdentifier(p.initializer)) {
+        finalComponent = p.initializer.text;
+      }
+    }
+
+    if (finalComponent !== "DynamicLayoutComponent") {
+      for (const dp of dataInit.properties) {
+        if (
+          ts.isPropertyAssignment(dp) &&
+          ts.isIdentifier(dp.name) &&
+          (dp.name.text === "injectComponent" || dp.name.text === "dynamicComponent")
+        ) {
+          const start = dp.getStart(sf);
+          const end = dp.getEnd();
+          let { s, e } = safeRemoveRangeWithComma(src, start, end);
+
+          // consume trailing spaces/tabs
+          while (e < src.length && /[ \t]/.test(src[e])) e++;
+
+          // consume one newline (CRLF or LF)
+          if (src[e] === "\r" && src[e+1] === "\n") e += 2;
+          else if (src[e] === "\n" || src[e] === "\r") e += 1;
+
+          edits.push({ start: s, end: e, text: "" });
+        }
+      }
+    }
   }
-  return out;
+
+  // Dedupe edits and apply
+  const dedup = dedupeEdits(edits);
+  if (dedup.conflicts && dedup.conflicts.length > 0) {
+    const dbg = {
+      message: "Conflicting edits for identical spans detected (dedupe).",
+      file: filename,
+      conflicts: dedup.conflicts
+    };
+    fs.writeFileSync(filename + ".dedupe-debug.json", JSON.stringify(dbg, null, 2), "utf8");
+    throw new Error("Conflicting edits detected; see " + filename + ".dedupe-debug.json");
+  }
+
+  try {
+    const result = applyEdits(src, dedup.edits);
+    const final = patchImportsText(result);
+    return final;
+  } catch (err) {
+    console.error("Aborting write due to overlapping edits:", err && err.message ? err.message : err);
+    const dbg = {
+      message: "Overlapping edits prevented to avoid corruption",
+      file: filename,
+      plannedEdits: dedup.edits.map(e => ({ start: e.start, end: e.end, snippetStart: src.slice(Math.max(0,e.start-40), e.start), snippetEnd: src.slice(e.end, Math.min(src.length, e.end+40)), newTextPreview: e.text.length>200? e.text.slice(0,200)+"...": e.text }))
+    };
+    fs.writeFileSync(filename + ".edit-debug.json", JSON.stringify(dbg, null, 2), "utf8");
+    throw err;
+  }
 }
 
-// --- Main ---
 function main() {
   const args = process.argv.slice(2);
-  if (!args[0]) {
-    console.error("Usage: node transformer.mjs <inputFile> <outputFile>");
+  if (!args || args.length === 0) {
+    console.error("Usage: node transformer.mjs <file1> <file2> ...");
     process.exit(2);
   }
-  const input = args[0];
-  const output = args[1] || (input + ".transformed.ts");
-  const src = fs.readFileSync(input, "utf8");
-  const originalNewline =
-    src.includes("\r\n") ? "\r\n" :
-    src.includes("\n")   ? "\n"   :
-                          "\n"; // fallback
-  const sf = ts.createSourceFile(input, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
 
-  // Apply transformers: main transform then final sweep
-  const result = ts.transform(sf, [createTransformer(), finalSweepTransformer()]);
-  const transformed = result.transformed[0];
-  const printed = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed }).printFile(transformed);
+  for (const f of args) {
+    const abs = path.resolve(process.cwd(), f);
+    let src = fs.readFileSync(abs, "utf8");
 
-  // Apply the safe text-based import patch (adds DynamicLayoutComponent and LayoutMode to the same brace)
-  const patched = patchImportsText(printed);
-
-  // Use the robust AST-based blank-line preserver:
-  const preserved = preserveBlankLinesAroundRoutes(patched);
-
-  const finalOut = preserved.replace(/\r?\n/g, originalNewline);
-  fs.writeFileSync(output, finalOut, "utf8");
-  console.log("Wrote:", output);
+    try {
+      const out = transformOneFile(src, abs);
+      fs.writeFileSync(abs, out, "utf8");
+      console.log("Wrote:", f);
+    } catch (e) {
+      console.error("Transform failed for", f);
+      console.error(e && e.stack ? e.stack : e);
+    }
+  }
 }
 
 main();
 '@
 
-  $transformerPath = Join-Path $temp "transformer.mjs"
-  Set-Content -Path $transformerPath -Value $transformer -Encoding utf8
+    $transformerPath = Join-Path $temp "transformer.mjs"
+    Set-Content -Path $transformerPath -Value $transformer -Encoding utf8
 
-  # Run transformer
-  try {
-      Write-Host "Transforming $InputFile -> $InputFile"
-      node $transformerPath $InputFile $InputFile
-  }
-  catch {
-      Write-Error "Transformer failed: $_"
-      Set-Location $orig
-      exit 1
-  }
-  finally {
-      # try cleanup
-      try { Set-Location $orig } catch {}
-      # We keep temp dir briefly in case you want to inspect; remove if you want
-      # Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
-  }
+    # Run transformer for all files in single Node invocation
+    try {
+        Write-Host "Transforming $($Files.Count) files..."
+        & node $transformerPath @Files
+    }
+    catch {
+        Write-Error "Transformer failed: $_"
+        Set-Location $orig
+        exit 1
+    }
+    finally {
+        # try cleanup
+        try { Set-Location $orig } catch {}
+        # We keep temp dir briefly in case you want to inspect; remove if you want
+        # Remove-Item -Recurse -Force $temp -ErrorAction SilentlyContinue
+    }
 
-    Write-Host "Done. Output: $InputFile"
+    Write-Host "Done. Output: $($Files.Count) files"
 }
+
 
 function Invoke-DynamicLayoutTransformInFiles {
   param (
     [string]$Source,
     [string]$Include
   )
-  foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
-    Invoke-DynamicLayoutTransformInFiles -Source $childDirectory.FullName -Include $Include
-  }
-	
-  Get-ChildItem -LiteralPath $Source -File -Filter $Include | ForEach-Object {
-    Invoke-DynamicLayoutTransform -InputFile $_.FullName
+  $allFiles = Get-ChildItem -LiteralPath $Source -Recurse -File -Filter $Include
+
+  if ($allFiles.Count -gt 0) {
+      Invoke-DynamicLayoutTransform -Files $allFiles.FullName
   }
 }
 
-# FRONT END
-# BEGIN - deactivate navigation in breadcrumb for crudItemId
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
-# END - deactivate navigation in breadcrumb for crudItemId
+# # FRONT END
+# # BEGIN - deactivate navigation in breadcrumb for crudItemId
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
+# # END - deactivate navigation in breadcrumb for crudItemId
 
-# BEGIN - switch to lib bia-ng
-ApplyChangesToLib
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
-# END - switch to lib bia-ng
+# # BEGIN - switch to lib bia-ng
+# ApplyChangesToLib
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
+# # END - switch to lib bia-ng
 
-# BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
-ReplaceInProject `
- -Source $SourceFrontEnd `
- -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(selectedViewChanged\)="onSelectedViewChanged\(\$event\)")' `
- -NewRegexp '${indent}${line}${nl}${indent}(selectedViewChanged)="onSelectedViewChanged($event)"${nl}' `
- -Include '*-index.component.html'
-#  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+# # BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+# ReplaceInProject `
+#  -Source $SourceFrontEnd `
+#  -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(selectedViewChanged\)="onSelectedViewChanged\(\$event\)")' `
+#  -NewRegexp '${indent}${line}${nl}${indent}(selectedViewChanged)="onSelectedViewChanged($event)"${nl}' `
+#  -Include '*-index.component.html'
+# #  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
 
-# BEGIN Team config move to back-end
-Invoke-MigrationTeamConfig
-# End Team config move to back-end
+# # BEGIN Team config move to back-end
+# Invoke-MigrationTeamConfig
+# # End Team config move to back-end
 
-# BEGIN Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
-$replacementsHtml = @(
-    # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
-    @{
-        Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
-        Replacement = '$1'
-    },
+# # BEGIN Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
+# $replacementsHtml = @(
+#     # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
+#     @{
+#         Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
+#         Replacement = '$1'
+#     },
 
-    # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
-    @{
-        Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
-        Replacement = '$1'
-    }
-)
+#     # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
+#     @{
+#         Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
+#         Replacement = '$1'
+#     }
+# )
 
-Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsHtml -Extensions @('*.html')
-# END Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
+# Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsHtml -Extensions @('*.html')
+# # END Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
 
-# BEGIN Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
-$replacementsTs = @(
-    @{
-        Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
-        Replacement = ''
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
-        Replacement = '$1'
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
-        Replacement = '$1'
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
-        Replacement = '$1$2'
-    },
+# # BEGIN Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
+# $replacementsTs = @(
+#     @{
+#         Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
+#         Replacement = ''
+#     },
+#     @{
+#         Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
+#         Replacement = '$1'
+#     },
+#     @{
+#         Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
+#         Replacement = '$1'
+#     },
+#     @{
+#         Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
+#         Replacement = '$1$2'
+#     },
 
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
-        Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
-        Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
-        Replacement='$1, protected renderer: Renderer2)'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)constructor\s*\(\s*\)'
-        Replacement = 'constructor(protected renderer: Renderer2)'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
-        Replacement = 'super($1, renderer)'
-    }
-)
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent'
+#         Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
+#         Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
+#     },
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
+#         Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
+#         Replacement='$1, protected renderer: Renderer2)'
+#     },
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent'
+#         Pattern     = '(?s)constructor\s*\(\s*\)'
+#         Replacement = 'constructor(protected renderer: Renderer2)'
+#     },
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent'
+#         Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
+#         Replacement = 'super($1, renderer)'
+#     }
+# )
 
-Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
-# END Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
+# Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
+# # END Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
 
-# BEGIN - bia-input -> bia-form-field
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.ts"
-# END - bia-input -> bia-form-field
+# # BEGIN - bia-input -> bia-form-field
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.html"
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.ts"
+# # END - bia-input -> bia-form-field
 
-# BEGIN - BiaInput -> BiaFormField
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaInput" -NewRegexp 'BiaFormField' -Include "*.ts"
-# END - BiaInput -> BiaFormField
+# # BEGIN - BiaInput -> BiaFormField
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaInput" -NewRegexp 'BiaFormField' -Include "*.ts"
+# # END - BiaInput -> BiaFormField
 
-# BEGIN - bia-output -> bia-form-field
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.ts"
-# END - bia-output -> bia-form-field
+# # BEGIN - bia-output -> bia-form-field
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.html"
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.ts"
+# # END - bia-output -> bia-form-field
 
-# BEGIN - BiaOutput -> BiaFormField
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
-# END - BiaOutput -> BiaFormField
+# # BEGIN - BiaOutput -> BiaFormField
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
+# # END - BiaOutput -> BiaFormField
 
-# BACK END
-# BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
-# END - TeamSelectionMode -> TeamAutomaticSelectionMode
+# # BACK END
+# # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+# # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
-# BEGIN - charset encoding file into controllers
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
-# END - charset encoding file into controllers
+# # BEGIN - charset encoding file into controllers
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
+# # END - charset encoding file into controllers
 
-# BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -NewRegexp 'class, IPagingFilterFormatDto, new\(\)' -Include "*.cs"
-# END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+# # BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -NewRegexp 'class, IPagingFilterFormatDto, new\(\)' -Include "*.cs"
+# # END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
 
-# BEGIN - LazyLoadDto -> PagingFilterFormatDto
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp '\bPagingFilterFormatDto\b' -Include "*.cs"
-# END - LazyLoadDto -> PagingFilterFormatDto
+# # BEGIN - LazyLoadDto -> PagingFilterFormatDto
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp '\bPagingFilterFormatDto\b' -Include "*.cs"
+# # END - LazyLoadDto -> PagingFilterFormatDto
 
-# BEGIN - Replace protected generic overrides in CrudAppServiceBase classes
-Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
-# END - Replace protected generic overrides in CrudAppServiceBase classes
+# # BEGIN - Replace protected generic overrides in CrudAppServiceBase classes
+# Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
+# # END - Replace protected generic overrides in CrudAppServiceBase classes
 
-# BEGIN Replace old protected generic methods names from OperationDomainServiceBase
-$replacementsTs = @(
-    @{
-        Pattern     = 'GetRangeAsync<'
-        Replacement = 'GetRangeGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetAllAsync<'
-        Replacement = 'GetAllGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetCsvAsync<'
-        Replacement = 'GetCsvGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetGenericAsync<'
-        Replacement = 'GetGenericGenericAsync<'
-    },
-    @{
-        Pattern     = 'AddAsync<'
-        Replacement = 'AddGenericAsync<'
-    },
-    @{
-        Pattern     = 'UpdateAsync<'
-        Replacement = 'UpdateGenericAsync<'
-    },
-    @{
-        Pattern     = 'RemoveAsync<'
-        Replacement = 'RemoveGenericAsync<'
-    },
-    @{
-        Pattern     = 'SaveSafeAsync<'
-        Replacement = 'SaveSafeGenericAsync<'
-    },
-    @{
-        Pattern     = 'SaveAsync<'
-        Replacement = 'SaveGenericAsync<'
-    },
-    @{
-        Pattern     = 'UpdateFixedAsync<'
-        Replacement = 'UpdateFixedGenericAsync<'
-    }
-)
+# # BEGIN Replace old protected generic methods names from OperationDomainServiceBase
+# $replacementsTs = @(
+#     @{
+#         Pattern     = 'GetRangeAsync<'
+#         Replacement = 'GetRangeGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'GetAllAsync<'
+#         Replacement = 'GetAllGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'GetCsvAsync<'
+#         Replacement = 'GetCsvGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'GetGenericAsync<'
+#         Replacement = 'GetGenericGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'AddAsync<'
+#         Replacement = 'AddGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'UpdateAsync<'
+#         Replacement = 'UpdateGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'RemoveAsync<'
+#         Replacement = 'RemoveGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'SaveSafeAsync<'
+#         Replacement = 'SaveSafeGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'SaveAsync<'
+#         Replacement = 'SaveGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'UpdateFixedAsync<'
+#         Replacement = 'UpdateFixedGenericAsync<'
+#     }
+# )
 
-Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsTs -Extensions @('*.cs')
-# END Replace old protected generic methods names from OperationDomainServiceBase
+# Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsTs -Extensions @('*.cs')
+# # END Replace old protected generic methods names from OperationDomainServiceBase
 
 # BEGIN - Replace FullPageLayout by DynamicLayout in routing
 Invoke-DynamicLayoutTransformInFiles -Source $SourceFrontEnd -Include @('*module.ts')
