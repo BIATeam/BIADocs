@@ -37,3 +37,45 @@ protected initKeycloack(appSettings: AppSettings): Observable<AuthInfo> {
     return obs$;
   }
 ```
+
+## Calc mode closing when navigating from multiselect to another multiselect
+
+During calc mode edit or new, opening a multiselect while closing another multiselect happens is a wrong order, registering the opening of the new multiselect and then the closing of the previous multiselect. The form then thinks it isn't currently working on a complexinput and when another click happens in the multiselect overlay, the form considers the user is leaving the form and validates it.
+
+To fix the problem, we need to let the closing of the previous multiselect register before registering the opening.
+
+To fix it, you need to edit the file **bia-calc-table.component.ts**, function ***onComplexInput*** like that:
+
+Current version:
+```ts
+  public onComplexInput(isIn: boolean) {
+    if (isIn) {
+      this.isInComplexInput = true;
+      this.currentRow = this.getParentComponent(
+        document.activeElement,
+        'bia-selectable-row'
+      ) as HTMLElement;
+      this.currentInput = document.activeElement as HTMLElement;
+    }
+    ...
+  }
+```
+
+Fixed version:
+```ts
+  public onComplexInput(isIn: boolean) {
+    if (isIn) {
+      setTimeout(() => {
+        this.isInComplexInput = true;
+        this.currentRow = this.getParentComponent(
+          document.activeElement,
+          'bia-selectable-row'
+        ) as HTMLElement;
+        this.currentInput = document.activeElement as HTMLElement;
+      });
+    }
+    ...
+  }
+```
+
+This bug is fixed in V6.
