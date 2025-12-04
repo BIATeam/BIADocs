@@ -20,6 +20,7 @@ sidebar_position: 1
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
 * Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
 * Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](../40-DeveloperGuide/20-CRUD/91-QueryModelMapper.md))
+* Added database connection resiliency by enabling EnableRetryOnFailure()
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
