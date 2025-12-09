@@ -18,9 +18,13 @@ sidebar_position: 1
 * New option to generate CRUD with domain URL (BIAToolKit)
 * Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](../40-DeveloperGuide/20-CRUD/10-InFilter.md#define-default-sort-order))
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
-* Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
+* Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` class (Front-end). Purpose is to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
 * Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](../40-DeveloperGuide/20-CRUD/91-QueryModelMapper.md))
 * Added database connection resiliency by enabling EnableRetryOnFailure()
+* Add `maxWidth` property into `BiaFieldConfig`
+* Add `.bia-table-output` CSS class for non specific output in a calc table
+* Add `.bia-table-input` CSS class and derived classes for each input type in a calc table
+* Set default max width to `15rem` for `.bia-table-input-select` and `.bia-table-input-multiselect` CSS classes
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
@@ -30,6 +34,9 @@ sidebar_position: 1
 * Fix behaviors of `isEditable`, `isOnlyInitializable` and `isOnlyUpdatable` in forms
 * Fix inherited objects from `PagingFilterFormatDto<T>` not recognized as `PagingFilterFormatDto` when exporting CSV
 * Fix the failure to recognize overrides of `GetRangeAsync`, `AddAsync`, `UpdateAsync`, and `RemoveAsync` methods from the `CrudAppServiceBase` in the generic methods of the `OperationalDomainServiceBase`
+* Fix clone issue in calc mode that didn't save the many to many relations
+* Fix clone issue in form mode that didn't save the new choice in one to many relation
+* Fix bad dispay of select/multiselect overlay when the column width is greater than the current scroll view
 
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
