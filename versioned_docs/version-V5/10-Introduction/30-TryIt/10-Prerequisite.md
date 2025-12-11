@@ -2,6 +2,8 @@
 sidebar_position: 1
 ---
 # Prerequisite
+## Previous steps:
+  You have to install your environment : [Setup environment](../20-SetupEnvironment/)
 
 ## Knowledge to have for DotNet:
 * [C# 8](https://docs.microsoft.com/fr-fr/dotnet/csharp/)

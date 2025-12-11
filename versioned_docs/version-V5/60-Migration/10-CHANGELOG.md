@@ -4,6 +4,20 @@ sidebar_position: 1
 
 # ChangeLog
 
+## V5.2.2 (11/12/2025)
+### Bugfix
+* Fix ManyToMany elements not being cloned with the clone feature in calc-mode
+* Fix very long dropdown breaking the table display in calc-mode
+* Adding auto-scroll to focused element in calc mode to avoid display of dropdown outside of screen boundaries
+* Adding a maxWidth property to BiaFieldConfig to avoid extra long label. Ellipsis activates when label is longer than max-width
+* Fix specification concatenation to use AndAlso instead of And and OrElse instead of Or to gain performances in SQL requests
+* Fix number of element per page dropdown not being displayed correctly when the bia-table in included in a display: block element
+* Fix to avoid keycloack to use an iframe for authentication
+
+## V5.2.1 (17/10/2025)
+### Bugfix
+* Fix for PostGreSql : correcting UserDefaultTeams table naming
+
 ## V5.2.0 (17/10/2025)
 ### Features
 * Support of PostGreSql database connection
