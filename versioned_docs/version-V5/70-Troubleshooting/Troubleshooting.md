@@ -8,7 +8,7 @@ title: Troubleshooting V5
 When using BIAToolkit to generate Option, DTO or CRUD with V5 project, the inherited properties from BIA.Net.Core base objects or from your own classes (ex: Id, RowVersion...) will not be available into the Toolkit when choosing your mapping properties.  
 
 You must then : 
-1. Declare into your target entity the missing properties thtat you need, even if its a duplicate of the inherited ones
+1. Declare into your target entity the missing properties that you need, even if it's a duplicate of the inherited ones
 2. Create your Option/DTO/CRUD
 3. Delete the duplicated properties
 
@@ -37,6 +37,8 @@ protected initKeycloack(appSettings: AppSettings): Observable<AuthInfo> {
     return obs$;
   }
 ```
+
+This bug is fixed in V5.2.2.
 
 ## Calc mode closing when navigating from multiselect to another multiselect
 
@@ -78,4 +80,4 @@ Fixed version:
   }
 ```
 
-This bug is fixed in V6.
+This bug is fixed in V5.2.2.
