@@ -2169,6 +2169,14 @@ ReplaceInProject `
  -Include '*Service.cs'
 # END - autoCommit
 
+# BEGIN - Directory.Packages.props
+ReplaceInProject `
+ -Source $SourceBackEnd `
+ -OldRegexp '<PackageReference Include="([\s\S]*?)" Version="(.*)"' `
+ -NewRegexp '<PackageReference Include="$1"' `
+ -Include '*.csproj'
+# END - Directory.Packages.props
+
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
 npm run clean
