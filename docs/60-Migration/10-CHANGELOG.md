@@ -6,6 +6,7 @@ sidebar_position: 1
 ## V6 (NEXT)
 ### Features
 * .NET 10 / Angular 20
+* Centralization of NuGet package versions in a single file (`Directory.Packages.props`)
 * Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
 * New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
 * Display entity's historical of modifications ([doc](../40-DeveloperGuide/20-CRUD/30-Historical.md))
