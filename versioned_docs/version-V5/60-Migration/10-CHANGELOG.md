@@ -14,7 +14,7 @@ sidebar_position: 1
 * Fix number of element per page dropdown not being displayed correctly when the bia-table in included in a display: block element
 * Fix to avoid keycloack to use an iframe for authentication
 
-## V5.2.1 (17/10/2025)
+## V5.2.1 (04/11/2025)
 ### Bugfix
 * Fix for PostGreSql : correcting UserDefaultTeams table naming
 
