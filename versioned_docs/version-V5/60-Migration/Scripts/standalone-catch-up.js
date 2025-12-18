@@ -42,6 +42,16 @@ const standaloneComponentsMapping = [
     '',
     '',
     'biaFrozenColumn'
+  ),
+  new ComponentMapping(
+    'Divider',
+    'primeng/divider',
+    'p-divider'
+  ),
+  new ComponentMapping(
+    'Badge',
+    'primeng/badge',
+    'p-badge'
   )
 ];
 
