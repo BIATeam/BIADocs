@@ -442,10 +442,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\(cancel\)=" -NewRegexp "
 # END - (cancel)= -> (cancelled)=
 
 # BEGIN - /// BIAToolKit -> // BIAToolKit
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\/\/\/ BIAToolkit" -NewRegexp "\/\/ BIAToolkit" -Include "*.cs"
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\/\/\/ BIAToolkit" -NewRegexp "\/\/ BIAToolkit" -Include "*.json"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\/\/\/ BIAToolkit" -NewRegexp "\/\/ BIAToolkit" -Include "*.ts"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\/\/\/ BIAToolkit" -NewRegexp "\/\/ BIAToolkit" -Include "*.html"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "/// BIAToolkit" -NewRegexp "// BIAToolkit" -Include "*.cs"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "/// BIAToolkit" -NewRegexp "// BIAToolkit" -Include "*.json"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "/// BIAToolkit" -NewRegexp "// BIAToolkit" -Include "*.ts"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "/// BIAToolkit" -NewRegexp "// BIAToolkit" -Include "*.html"
 # END - /// BIAToolKit -> // BIAToolKit
 
 # BEGIN - Change use of bia-variables @import in scss to @use
