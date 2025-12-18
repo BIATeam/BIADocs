@@ -4,6 +4,10 @@ sidebar_position: 1
 
 # ChangeLog
 
+## V5.2.3 (18/12/2025)
+### Bugfix
+* Fix bug when adding additionnal entries into archive entry when using archive service
+
 ## V5.2.2 (11/12/2025)
 ### Bugfix
 * Fix ManyToMany elements not being cloned with the clone feature in calc-mode
