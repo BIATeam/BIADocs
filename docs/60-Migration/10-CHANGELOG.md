@@ -26,6 +26,7 @@ sidebar_position: 1
 * Add `.bia-table-output` CSS class for non specific output in a calc table
 * Add `.bia-table-input` CSS class and derived classes for each input type in a calc table
 * Set default max width to `15rem` for `.bia-table-input-select` and `.bia-table-input-multiselect` CSS classes
+* Add new customizable front-end constant `DEFAULT_POPUP_MINWIDTH` set to `60vw`
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
@@ -38,6 +39,7 @@ sidebar_position: 1
 * Fix clone issue in calc mode that didn't save the many to many relations
 * Fix clone issue in form mode that didn't save the new choice in one to many relation
 * Fix bad dispay of select/multiselect overlay when the column width is greater than the current scroll view
+* Fix bad display of forms with layout config on split mode
 
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
