@@ -9,9 +9,9 @@ sidebar_position: 200
 The `TGenericRepositoryEF<TEntity, TKey>` class provides several high-performance methods for handling large-scale database operations. These methods are designed to efficiently handle bulk operations while maintaining performance and memory management through batching strategies.
 
 This guide covers six essential mass operation methods:
-- `DeleteByIdsAsync`
 - `ExecuteDeleteAsync` 
 - `ExecuteUpdateAsync`
+- `DeleteByIdsAsync`
 - `MassAddAsync`
 - `MassUpdateAsync`
 - `MassDeleteAsync`
@@ -31,50 +31,19 @@ Mass operations solve these problems by:
 - **Reduced Round-trips**: Minimizing database communication
 - **Memory Management**: Processing data incrementally
 
----
+## Benefits of the batchSize Parameter
 
-## 1. DeleteByIdsAsync
+ All the methods described below use the batchSize parameter. The batchSize parameter is a crucial optimization feature in mass database operations that offers several important benefits:
 
-### Purpose
-Deletes multiple entities by their identifiers in an efficient, batched manner.
+### Timeout Prevention
+Strongly recommended for avoiding timeouts: One of the primary benefits of using batchSize is preventing database timeouts during large-scale operations. When processing thousands or millions of records without batching, the database operation can exceed the default command timeout limits, causing the entire operation to fail. By breaking large operations into smaller, manageable chunks, each batch completes within acceptable time limits.
 
-### Method Signature
-```csharp
-Task<int> DeleteByIdsAsync(IEnumerable<TKey> ids, int? batchSize = 100)
-```
+### Reduced Table Locking Duration
+Minimizing table locks: Database operations often require exclusive locks on tables or rows being modified. Without batching, a single operation affecting many records can hold these locks for extended periods, blocking other database operations and potentially causing performance bottlenecks. The recommended batch size of 100 records strikes an optimal balance between:
+•	Processing efficiency (not too many small transactions)
+•	Lock duration minimization (preventing long-running locks that block other operations)
 
-### Parameters
-- **ids**: Collection of entity identifiers to delete
-- **batchSize**: Number of entities to process per batch (default: 100, null = no batching)
-
-### Returns
-Number of entities successfully deleted
-
-### How It Works
-1. Validates input parameters
-2. Groups IDs into batches of specified size
-3. Uses Entity Framework's `ExecuteDeleteAsync` for each batch
-4. Returns total count of deleted entities
-
-### Example with Planes
-```csharp
-// Delete multiple planes by their IDs
-var planeIdsToDelete = new List<int> { 1, 2, 3, 4, 5, 15, 28, 31 };
-
-// Delete in batches of 3
-int deletedCount = await this.Repository.DeleteByIdsAsync(planeIdsToDelete, batchSize: 3);
-Console.WriteLine($"Deleted {deletedCount} planes");
-
-// Delete all at once (no batching)
-int deletedCount2 = await this.Repository.DeleteByIdsAsync(planeIdsToDelete, batchSize: null);
-```
-
-### When to Use
-- Bulk deletion based on a list of known IDs
-
----
-
-## 2. ExecuteDeleteAsync
+## 1. ExecuteDeleteAsync
 
 ### Purpose
 Deletes entities based on filter criteria without loading them into memory first.
@@ -126,7 +95,7 @@ int maintenanceDeleted = await this.Repository.ExecuteDeleteAsync(
 
 ---
 
-## 3. ExecuteUpdateAsync
+## 2. ExecuteUpdateAsync
 
 ### Purpose
 Updates multiple entities' fields based on filter criteria without loading them into memory.
@@ -214,6 +183,45 @@ int businessRuleCount = await this.Repository.ExecuteUpdateAsync(
 
 ---
 
+## 3. DeleteByIdsAsync
+
+### Purpose
+Deletes multiple entities by their identifiers in an efficient, batched manner.
+
+### Method Signature
+```csharp
+Task<int> DeleteByIdsAsync(IEnumerable<TKey> ids, int? batchSize = 100)
+```
+
+### Parameters
+- **ids**: Collection of entity identifiers to delete
+- **batchSize**: Number of entities to process per batch (default: 100, null = no batching)
+
+### Returns
+Number of entities successfully deleted
+
+### How It Works
+1. Validates input parameters
+2. Groups IDs into batches of specified size
+3. Uses Entity Framework's `ExecuteDeleteAsync` for each batch
+4. Returns total count of deleted entities
+
+### Example with Planes
+```csharp
+// Delete multiple planes by their IDs
+var planeIdsToDelete = new List<int> { 1, 2, 3, 4, 5, 15, 28, 31 };
+
+// Delete in batches of 3
+int deletedCount = await this.Repository.DeleteByIdsAsync(planeIdsToDelete, batchSize: 3);
+Console.WriteLine($"Deleted {deletedCount} planes");
+
+// Delete all at once (no batching)
+int deletedCount2 = await this.Repository.DeleteByIdsAsync(planeIdsToDelete, batchSize: null);
+```
+
+### When to Use
+- Bulk deletion based on a list of known IDs
+
 ## 4. MassAddAsync
 
 ### Purpose
@@ -274,8 +282,6 @@ Console.WriteLine($"Added {addedCount} planes using batch operations");
 - Importing large datasets
 - Test data generation
 
----
-
 ## 5. MassUpdateAsync
 
 ### Purpose
@@ -330,8 +336,6 @@ Console.WriteLine($"Updated {updatedCount} planes");
 - Data synchronization between systems
 - Performance-critical updates of large datasets
 
----
-
 ## 6. MassDeleteAsync
 
 ### Purpose
@@ -352,9 +356,9 @@ Task<int> MassDeleteAsync(IEnumerable<TEntity> items, int batchSize = 100, bool 
 Number of entities successfully deleted
 
 ### How It Works
-1. **Priority 1**: If bulk operations are supported and enabled, uses database bulk delete
-2. **Priority 2**: If `useExecuteDelete` is true, extracts IDs and calls `DeleteByIdsAsync`
-3. **Priority 3**: Falls back to batched `RemoveRange` operations
+1. If bulk operations are supported and enabled, uses database bulk delete
+2. If `useExecuteDelete` is true, extracts IDs and calls `DeleteByIdsAsync`
+3. Falls back to batched `RemoveRange` operations
 4. Each strategy optimizes for different scenarios
 
 ### Example with Planes
@@ -395,15 +399,4 @@ Console.WriteLine($"Deleted {deletedCount1} old planes");
 - Removing obsolete records
 - Processing deletion queues
 - Cleanup operations based on complex business rules
-
- ## Benefits of the batchSize Parameter
-
- The batchSize parameter is a crucial optimization feature in mass database operations that offers several important benefits:
-
-### Timeout Prevention
-Strongly recommended for avoiding timeouts: One of the primary benefits of using batchSize is preventing database timeouts during large-scale operations. When processing thousands or millions of records without batching, the database operation can exceed the default command timeout limits, causing the entire operation to fail. By breaking large operations into smaller, manageable chunks, each batch completes within acceptable time limits.
-
-### Reduced Table Locking Duration
-Minimizing table locks: Database operations often require exclusive locks on tables or rows being modified. Without batching, a single operation affecting many records can hold these locks for extended periods, blocking other database operations and potentially causing performance bottlenecks. The recommended batch size of 100 records strikes an optimal balance between:
-•	Processing efficiency (not too many small transactions)
-•	Lock duration minimization (preventing long-running locks that block other operations)
+ 
