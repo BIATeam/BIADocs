@@ -6,7 +6,7 @@ sidebar_position: 1
 ## V6 (NEXT)
 ### Features
 * .NET 10 / Angular 20
-* Centralization of NuGet package versions in a single file (`Directory.Packages.props`)
+* Centralization of NuGet package versions in a single file ([doc](https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management))
 * Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
 * New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
 * Display entity's historical of modifications ([doc](../40-DeveloperGuide/20-CRUD/30-Historical.md))
@@ -40,6 +40,7 @@ sidebar_position: 1
 * Fix clone issue in form mode that didn't save the new choice in one to many relation
 * Fix bad dispay of select/multiselect overlay when the column width is greater than the current scroll view
 * Fix bad display of forms with layout config on split mode
+* Fix RowVersion for PostGreSQL
 
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
