@@ -43,6 +43,8 @@ export const ROUTES: Routes = [
 - **maxScanDepth** is the max depth of the routing to find a children. It is by default at 3 (children of children of children of the DynamicLayoutComponent) but can be increased if your feature has more complex routing.
 - **heightOffset** is the offset for the height of the right side container in split page mode. By default, it is set to fill the height of the page by adding 1.5rem. If you have some custom items displays on top or bottom of your components, you can set this value to change the offset to an appropriate number.
 - **leftWidth** is the width (in percentage of the space) allocated to the left side (parent) container in split page mode. It is by default at 70, letting 30% of the width to the children component on the right side. This value can be set on any children of the DynamicLayoutComponent, allowing for different configurations depending of the childrens.
+- **minLeftWidth** is the minimum width (as a string) allocated to the left side (parent) container in split page mode. It is by default at 36rem.
+- **minRightWidth** is the minimum width (as a string) allocated to the right side container in split page mode. It is by default at 25rem.
 - **allowSplitScreenResize** determine if the split page can be resized by the user to allow more or less width to each container. By default, the resize is allowed.
   
 ### Children configuration
@@ -50,49 +52,51 @@ export const ROUTES: Routes = [
 - **style** is the CSS style for the popup in popup mode. You can set the width, max-width, etc. for the popup through that parameter.
 - **maximizable** determines if the popup is maximizable in popup mode. Set by default to true.
 - **leftWidth** is the width (in percentage of the space) allocated to the left side (parent) container in split page mode. It is by default at 70, letting 30% of the width to the children component on the right side.
+- **minLeftWidth** is the minimum width (as a string) allocated to the left side (parent) container in split page mode. It is by default at 36rem.
+- **minRightWidth** is the minimum width (as a string) allocated to the right side container in split page mode. It is by default at 25rem.
 - **layoutMode** override the layout mode set in the crudconfig sent to the parent in **configuration**. If the configuration indicates that all children should be in popup, **layoutMode** allows to bypass that for that children. Should always be set if the **configuration** is not set for the DynamicLayoutComponent.
 
-Example of some child routes in a dynamic lyout parent:
+Example of some child routes in a dynamic layout parent:
 ```typescript
-{
-            path: 'edit',
-            data: {
-              breadcrumb: 'bia.edit',
-              canNavigate: true,
-              permission: Permission.Plane_Update,
-              title: 'plane.edit',
-            },
-            component: PlaneEditComponent,
-            canActivate: [PermissionGuard],
-          },
-          {
-            path: 'historical',
-            data: {
-              breadcrumb: 'bia.historical',
-              canNavigate: false,
-              layoutMode: LayoutMode.popup,
-              style: {
-                minWidth: '50vw',
-              },
-              title: 'bia.historical',
-              permission: Permission.Plane_Read,
-            },
-            component: PlaneHistoricalComponent,
-            canActivate: [PermissionGuard],
-          },
-          {
-            path: 'engines',
-            data: {
-              breadcrumb: 'app.engines',
-              canNavigate: true,
-              permission: Permission.Engine_List_Access,
-              layoutMode: LayoutMode.fullPage,
-            },
-            loadChildren: () =>
-              import('./children/engines/engine.module').then(
-                m => m.EngineModule
-              ),
-          },
+  {
+    path: 'edit',
+    data: {
+      breadcrumb: 'bia.edit',
+      canNavigate: true,
+      permission: Permission.Plane_Update,
+      title: 'plane.edit',
+    },
+    component: PlaneEditComponent,
+    canActivate: [PermissionGuard],
+  },
+  {
+    path: 'historical',
+    data: {
+      breadcrumb: 'bia.historical',
+      canNavigate: false,
+      layoutMode: LayoutMode.popup,
+      style: {
+        minWidth: '50vw',
+      },
+      title: 'bia.historical',
+      permission: Permission.Plane_Read,
+    },
+    component: PlaneHistoricalComponent,
+    canActivate: [PermissionGuard],
+  },
+  {
+    path: 'engines',
+    data: {
+      breadcrumb: 'app.engines',
+      canNavigate: true,
+      permission: Permission.Engine_List_Access,
+      layoutMode: LayoutMode.fullPage,
+    },
+    loadChildren: () =>
+      import('./children/engines/engine.module').then(
+        m => m.EngineModule
+      ),
+  },
 ```
 
 - *edit* route LayoutMode is not set so it will use the default layout mode given in the feature configuration. If in popup mode, the title will be 'plane.edit'.

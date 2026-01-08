@@ -1479,6 +1479,43 @@ import path from "path";
   - Avoids inserting layoutMode for DynamicLayoutComponent (Rule 1)
   - Removes trailing newline when removing injectComponent
 */
+function extractFeatureFromConstantsFile(moduleFilename) {
+  const dir = path.dirname(moduleFilename);
+
+  let files;
+  try {
+    files = fs.readdirSync(dir).filter(f => f.endsWith(".constants.ts"));
+  } catch {
+    return null;
+  }
+
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+    let text;
+    try {
+      text = fs.readFileSync(fullPath, "utf8");
+    } catch {
+      continue;
+    }
+
+    const m = text.match(
+      /export\s+const\s+([a-zA-Z0-9]+)CRUDConfiguration\b/
+    );
+
+    if (m) {
+      const raw = m[1];
+      return raw.charAt(0).toUpperCase() + raw.slice(1);
+    }
+  }
+
+  return null;
+}
+
+function resolveFeature(route, sf, filename) {
+  return (
+    extractFeatureFromConstantsFile(filename)
+  );
+}
 
 function isIdentifierNamed(node, name) {
   return node && ts.isIdentifier(node) && node.text === name;
@@ -1565,29 +1602,45 @@ function buildLayoutConditionalText(condNode, trueIsPopup, sf) {
   return `(${condText} ? ${left} : ${right})`;
 }
 
+function toKebabCase(str) {
+  return str
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")        // lowercase/number followed by uppercase
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")    // consecutive uppercase letters (acronyms)
+    .replace(/_/g, "-")                            // underscores
+    .toLowerCase();
+}
+
 function patchImportsText(text) {
   const needed = ["DynamicLayoutComponent", "LayoutMode"];
   const importRegex = /import\s*\{([\s\S]*?)\}\s*from\s*(['"][^'"]+['"])\s*;/g;
   let out = text;
   let m;
   const inserts = [];
+
+  // ---- Patch layout imports ----
   while ((m = importRegex.exec(text)) !== null) {
     const full = m[0], inner = m[1], matchStart = m.index;
-    const names = inner.split(",").map(s => s.trim()).filter(Boolean).map(s => { const a = s.indexOf(" as "); return a >= 0 ? s.slice(0,a).trim() : s; });
+    const names = inner.split(",").map(s => s.trim()).filter(Boolean).map(s => {
+      const a = s.indexOf(" as ");
+      return a >= 0 ? s.slice(0,a).trim() : s;
+    });
     const touchesLayout = names.includes("FullPageLayoutComponent") || names.includes("PopupLayoutComponent");
     if (!touchesLayout) continue;
+
     const toAdd = needed.filter(n => !names.includes(n));
     if (toAdd.length === 0) continue;
+
     const braceCloseRel = full.lastIndexOf("}");
     const insertPos = matchStart + braceCloseRel;
     const insertionText = (inner.trim().length === 0 || inner.trim().endsWith(",")) ? " " + toAdd.join(", ") : ", " + toAdd.join(", ");
     inserts.push({ pos: insertPos, newText: insertionText });
   }
+
   inserts.sort((a,b) => b.pos - a.pos);
   for (const ins of inserts) out = out.slice(0, ins.pos) + ins.newText + out.slice(ins.pos);
-  // ---- NEW: Insert missing CRUDConfiguration imports ----
+
+  // ---- Insert missing CRUDConfiguration imports ----
   if (text.includes("DynamicLayoutComponent")) {
-    // Find all config names in output
     const configRegex = /([a-zA-Z0-9]+)CRUDConfiguration\b/g;
     let m2;
     const neededCRUD = new Map();
@@ -1596,18 +1649,19 @@ function patchImportsText(text) {
       neededCRUD.set(feature, `${feature}CRUDConfiguration`);
     }
 
-    // For each needed config → ensure import exists
     for (const [feature, cfg] of neededCRUD) {
-      const importLine = `import { ${cfg} } from './${feature}.constants';`;
+      // Use kebab-case for import path
+      const kebabFeature = toKebabCase(feature);
+      const importLine = `import { ${cfg} } from './${kebabFeature}.constants';`;
 
       if (!out.includes(importLine)) {
-        // Insert after last import
         const lastImport = out.lastIndexOf("import ");
         const insertPos = out.indexOf("\n", lastImport) + 1;
         out = out.slice(0, insertPos) + importLine + "\n" + out.slice(insertPos);
       }
     }
   }
+
   return out;
 }
 
@@ -1641,6 +1695,13 @@ function transformOneFile(src, filename) {
     if (!lastProp) return ""; // empty object → no prefix needed
     const afterLastProp = text.slice(lastProp.end - objNode.pos, objNode.end - objNode.pos);
     return /,\s*\}$/.test(afterLastProp) ? " " : ", ";
+  }
+
+  function getLoadChildrenImportPath(loadChildrenProp, sf) {
+    if (!loadChildrenProp || !ts.isPropertyAssignment(loadChildrenProp)) return null;
+    const text = loadChildrenProp.initializer.getText(sf);
+    const m = text.match(/import\s*\(\s*['"](.+?)['"]\s*\)/);
+    return m ? m[1] : null;
   }
 
   // SINGLE-DECISION visitRouteObject (computes actions once per route)
@@ -1677,16 +1738,16 @@ function transformOneFile(src, filename) {
         // DO NOT set desiredLayoutModeText here — DynamicLayoutComponent should not receive layoutMode
         keepInjectAlways = true;
 
-        // ---- NEW: extract feature name from injectComponent ----
-        const injText = getInjectInitializerText();
-        if (injText) {
-          // Example injText: "PlanesIndexComponent"
-          const m = injText.match(/([A-Za-z0-9]+?)sIndexComponent$/);
-          if (m) {
-            const feature = m[1].charAt(0).toLowerCase() + m[1].slice(1); // camelCase
-            const configName = `${feature}CRUDConfiguration`;
-            routeObj.__crudFeature = { feature, configName };
-          }
+        const feature = resolveFeature(routeObj, sf, filename);
+
+        if (feature) {
+          const featureLower =
+            feature.charAt(0).toLowerCase() + feature.slice(1);
+
+          routeObj.__crudFeature = {
+            feature,
+            configName: `${featureLower}CRUDConfiguration`
+          };
         }
       } else {
         // RULE 2: PopupLayoutComponent or FullPageLayoutComponent (non-root)
@@ -1730,10 +1791,51 @@ function transformOneFile(src, filename) {
       }
     }
 
+    // ---- NEW RULE: all descendants of DynamicLayoutComponent ----
+    if (
+      (inheritedFinalComponent === "DynamicLayoutComponent") &&
+      !desiredLayoutModeText // do not override explicit layout decisions
+    ) {
+      const loadChildrenProp = findProp(routeObj, "loadChildren");
+      const importPath = getLoadChildrenImportPath(loadChildrenProp, sf);
+
+      if (importPath && importPath.includes("/children/")) {
+        const hasLayoutMode =
+          dataProp &&
+          ts.isPropertyAssignment(dataProp) &&
+          ts.isObjectLiteralExpression(dataProp.initializer) &&
+          findProp(dataProp.initializer, "layoutMode");
+
+        if (!hasLayoutMode) {
+          const modeText = "LayoutMode.fullPage";
+
+          if (
+            dataProp &&
+            ts.isPropertyAssignment(dataProp) &&
+            ts.isObjectLiteralExpression(dataProp.initializer)
+          ) {
+            const dataInit = dataProp.initializer;
+            const insertPos = getInsertPosBeforeClosingBrace(dataInit);
+            const insertion =
+              prefixForInsertion(dataInit, sf) +
+              `layoutMode: ${modeText} `;
+            edits.push({ start: insertPos, end: insertPos, text: insertion });
+          } else {
+            const insertPos = getInsertPosBeforeClosingBrace(routeObj);
+            const insertion =
+              prefixForInsertion(routeObj, sf) +
+              `data: { layoutMode: ${modeText} } `;
+            edits.push({ start: insertPos, end: insertPos, text: insertion });
+          }
+        }
+      }
+    }
+
     // Emit the decided edits (one per target)
     if (desiredComponentText !== null && compProp && ts.isPropertyAssignment(compProp)) {
       const compInit = compProp.initializer;
       edits.push({ start: compInit.getStart(sf), end: compInit.getEnd(), text: desiredComponentText });
+      inheritedFinalComponent = desiredComponentText;
     }
 
     const hasDynamicComponent =
@@ -1766,8 +1868,9 @@ function transformOneFile(src, filename) {
       const { configName, feature } = routeObj.__crudFeature;
 
       // ---- RULE: Only add configuration: if the import file exists ----
+      const kebabFeature = toKebabCase(feature);
       const basePath = path.dirname(filename);
-      const configFileBase = path.join(basePath, `${feature}.constants`);
+      const configFileBase = path.join(basePath, `${kebabFeature}.constants`);
       const possibleExtensions = [".ts", ".js", ".mts", ".cts"];
       const importExists = possibleExtensions.some(ext => fs.existsSync(configFileBase + ext));
 
@@ -1809,7 +1912,7 @@ function transformOneFile(src, filename) {
     if (childrenProp && ts.isPropertyAssignment(childrenProp) && ts.isArrayLiteralExpression(childrenProp.initializer)) {
       const childArr = childrenProp.initializer;
       childArr.elements.forEach(el => {
-        if (ts.isObjectLiteralExpression(el)) visitRouteObject(el, depth + 1, currentFinalComponent);
+        if (ts.isObjectLiteralExpression(el)) visitRouteObject(el, depth + 1, inheritedFinalComponent);
       });
     }
   }
@@ -1944,6 +2047,312 @@ main();
     Write-Host "Done. Output: $($Files.Count) files"
 }
 
+function Invoke-DynamicLayoutViewChildInsert {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string[]]$Files
+    )
+
+    $orig = Get-Location
+
+    if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+        Write-Error "Node.js not found on PATH."
+        exit 1
+    }
+
+    $temp = Join-Path $env:TEMP ("ng-view-child-transformer-" + [guid]::NewGuid().Guid)
+    New-Item -ItemType Directory -Path $temp | Out-Null
+    Set-Location $temp
+
+@"
+{
+  "type": "module",
+  "private": true
+}
+"@ | Out-File (Join-Path $temp "package.json") -Encoding utf8
+
+    npm install typescript --no-audit --no-fund --silent --no-progress | Out-Null
+
+    $transformer = @'
+import fs from "fs";
+import ts from "typescript";
+import path from "path";
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+function serviceExists(filename, featureKebab) {
+  const servicePath = path.join(
+    path.dirname(filename),
+    "services",
+    `${featureKebab}.service.ts`
+  );
+
+  return fs.existsSync(servicePath);
+}
+
+
+function toKebabCase(str) {
+  return str
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/_/g, "-")
+    .toLowerCase();
+}
+
+function findProp(obj, name) {
+  return obj.properties.find(
+    p => ts.isPropertyAssignment(p) &&
+         ts.isIdentifier(p.name) &&
+         p.name.text === name
+  );
+}
+
+function getStringProp(obj, name) {
+  const p = findProp(obj, name);
+  return p && ts.isStringLiteral(p.initializer) ? p.initializer.text : null;
+}
+
+function insertBeforeBrace(obj) {
+  const tok = obj.getLastToken();
+  return tok ? tok.getStart() : obj.getEnd() - 1;
+}
+
+function prefix(obj) {
+  return obj.properties.length ? ", " : "";
+}
+
+function dedupe(edits) {
+  const map = new Map();
+  for (const e of edits) {
+    const k = `${e.start}:${e.end}`;
+    if (!map.has(k)) map.set(k, e);
+  }
+  return [...map.values()];
+}
+
+function apply(src, edits) {
+  edits.sort((a,b) => b.start - a.start);
+  let out = src;
+  for (const e of edits)
+    out = out.slice(0, e.start) + e.text + out.slice(e.end);
+  return out;
+}
+
+/* ============================================================
+   Feature extraction
+   ============================================================ */
+function extractFeatureFromConfiguration(route, sf) {
+  const data = findProp(route, "data");
+  if (!data || !ts.isObjectLiteralExpression(data.initializer)) return null;
+
+  const cfg = findProp(data.initializer, "configuration");
+  if (!cfg || !ts.isIdentifier(cfg.initializer)) return null;
+
+  // planeCRUDConfiguration → Plane
+  const m = cfg.initializer.text.match(/^([a-z0-9]+)CRUDConfiguration$/i);
+  if (!m) return null;
+
+  const raw = m[1];
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
+}
+
+/* ============================================================
+   Import patching
+   ============================================================ */
+
+function patchImports(src, filename, feature) {
+  const featureLower = feature.charAt(0).toLowerCase() + feature.slice(1);
+  const featureKebab = toKebabCase(feature);
+
+  const serviceImport =
+    `import { ${feature}Service } from './services/${featureKebab}.service';`;
+
+  const crudImport =
+    `import { ${featureLower}CRUDConfiguration } from './${featureKebab}.constants';`;
+
+  // ✅ SKIP if imports already exist (like first script)
+  if (src.includes(serviceImport) && src.includes(crudImport)) {
+    return src;
+  }
+
+  let out = src;
+
+  const importRegex = /^import .*;$/gm;
+  let lastImportEnd = 0;
+  let m;
+  while ((m = importRegex.exec(out)) !== null) {
+    lastImportEnd = m.index + m[0].length;
+  }
+
+  const inserts = [];
+  if (!out.includes(serviceImport)) inserts.push(serviceImport);
+  if (!out.includes(crudImport)) inserts.push(crudImport);
+
+  if (inserts.length) {
+    out =
+      out.slice(0, lastImportEnd) +
+      "\n" +
+      inserts.join("\n") +
+      out.slice(lastImportEnd);
+  }
+
+  return out;
+}
+
+/* ============================================================
+   View path resolution
+   ============================================================ */
+
+function computeViewImportPath(filename) {
+  const normalized = filename.replace(/\\/g, "/");
+
+  const marker = "/src/app/";
+  const idx = normalized.indexOf(marker);
+
+  if (idx === -1) {
+    throw new Error(
+      `Cannot compute ViewModule path: file is not under src/app\n${filename}`
+    );
+  }
+
+  const appRoot = normalized.slice(0, idx + marker.length);
+  const viewModule = path.join(
+    appRoot,
+    "shared/bia-shared/view.module"
+  );
+
+  let rel = path.relative(path.dirname(filename), viewModule);
+
+  if (!rel.startsWith(".")) rel = "./" + rel;
+
+  return rel.replace(/\\/g, "/");
+}
+
+/* ============================================================
+   Main transform
+   ============================================================ */
+
+function transform(src, filename) {
+  const sf = ts.createSourceFile(filename, src, ts.ScriptTarget.Latest, true);
+  const edits = [];
+  let usedFeature = null;
+
+  function visit(node) {
+    if (ts.isObjectLiteralExpression(node)) {
+      const comp = findProp(node, "component");
+      if (comp && comp.initializer.getText(sf) === "DynamicLayoutComponent") {
+        processRoute(node);
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  function processRoute(route) {
+    const feature = extractFeatureFromConfiguration(route, sf);
+    if (!feature) return;
+    const featureKebab = toKebabCase(feature);
+
+    // 🚫 HARD STOP: service must exist
+    if (!serviceExists(filename, featureKebab)) {
+      return;
+    }
+
+    usedFeature = feature;
+
+    const featureLower = feature.charAt(0).toLowerCase() + feature.slice(1);
+    const viewPath = computeViewImportPath(filename);
+
+    const viewChild = `{
+      path: 'view',
+      data: {
+        featureConfiguration: ${featureLower}CRUDConfiguration,
+        featureServiceType: ${feature}Service,
+        leftWidth: 60,
+      },
+      loadChildren: () =>
+        import('${viewPath}').then(m => m.ViewModule),
+    }`;
+
+    let childrenProp = findProp(route, "children");
+
+    if (!childrenProp) {
+      const pos = insertBeforeBrace(route);
+      edits.push({
+        start: pos,
+        end: pos,
+        text: `${prefix(route)}children: [ ${viewChild} ] `
+      });
+      return;
+    }
+
+    const arr = childrenProp.initializer;
+    if (!ts.isArrayLiteralExpression(arr)) return;
+
+    for (const el of arr.elements) {
+      if (ts.isObjectLiteralExpression(el)) {
+        if (getStringProp(el, "path") === "view") return;
+      }
+    }
+
+    let after = null;
+    for (const el of arr.elements) {
+      if (ts.isObjectLiteralExpression(el)) {
+        const p = getStringProp(el, "path");
+        if (p === "import") after = el;
+      }
+    }
+    if (!after) {
+      for (const el of arr.elements) {
+        if (ts.isObjectLiteralExpression(el)) {
+          const p = getStringProp(el, "path");
+          if (p === "create") after = el;
+        }
+      }
+    }
+
+    if (after) {
+      edits.push({
+        start: after.getEnd(),
+        end: after.getEnd(),
+        text: `, ${viewChild}`
+      });
+    } else {
+      edits.push({
+        start: arr.elements.pos,
+        end: arr.elements.pos,
+        text: `${viewChild}, `
+      });
+    }
+  }
+
+  visit(sf);
+
+  let out = apply(src, dedupe(edits));
+  if (usedFeature) out = patchImports(out, filename, usedFeature);
+
+  return out;
+}
+
+/* ============================================================
+   CLI
+   ============================================================ */
+
+for (const f of process.argv.slice(2)) {
+  const abs = path.resolve(f);
+  const src = fs.readFileSync(abs, "utf8");
+  const out = transform(src, abs);
+  fs.writeFileSync(abs, out, "utf8");
+  console.log("Updated:", f);
+}
+'@
+
+    $path = Join-Path $temp "transformer.mjs"
+    Set-Content $path $transformer -Encoding utf8
+
+    & node $path @Files
+
+    Set-Location $orig
+}
 
 function Invoke-DynamicLayoutTransformInFiles {
   param (
@@ -1954,6 +2363,18 @@ function Invoke-DynamicLayoutTransformInFiles {
 
   if ($allFiles.Count -gt 0) {
       Invoke-DynamicLayoutTransform -Files $allFiles.FullName
+  }
+}
+
+function Invoke-DynamicLayoutViewChildInsertInFiles {
+  param (
+    [string]$Source,
+    [string]$Include
+  )
+  $allFiles = Get-ChildItem -LiteralPath $Source -Recurse -File -Filter $Include
+
+  if ($allFiles.Count -gt 0) {
+      Invoke-DynamicLayoutViewChildInsert -Files $allFiles.FullName
   }
 }
 
@@ -2130,6 +2551,10 @@ Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsT
 # BEGIN - Replace FullPageLayout by DynamicLayout in routing
 Invoke-DynamicLayoutTransformInFiles -Source $SourceFrontEnd -Include @('*module.ts')
 # END - Replace FullPageLayout by DynamicLayout in routing
+
+# BEGIN - Add view routing in feature routing
+Invoke-DynamicLayoutViewChildInsertInFiles -Source $SourceFrontEnd -Include @('*module.ts')
+# END - Add view routing in feature routing
 
 # BEGIN - autoCommit
 ReplaceInProject `

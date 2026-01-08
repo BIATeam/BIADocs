@@ -37,15 +37,38 @@ All tests must be validated before continuing package process !
 :::
 
 ## Publish bia-ng:
-- Move your terminal location to Angular folder: cd Angular
-- Switch the angular application to use bia-ng references in imports by executing the switch-to-bia-ng.ps1 script and selecting No so the references of bia-ng are taking from dist instead of npm..
-- Build the bia-ng lib by executing: **ng build bia-ng --production**
-- Delete your node_modules folder and then run **npm install**
+- Move your terminal location to Angular folder: 
+  ```
+  cd Angular
+  ```
+- Switch the angular application to use bia-ng references in imports by executing the **switch-to-bia-ng.ps1** script and selecting No so the references of bia-ng are taken from dist instead of npm.
+- Move your terminal location to bia-ng folder: 
+  ```
+  cd packages/bia-ng
+  ```
+- Build the bia-ng lib by executing: 
+  ```
+  npx ng-packagr
+  ```
+- Move your terminal location to Angular: 
+  ```
+  cd ../..
+  ```
+- Delete your node_modules folder and package-lock.json and then run 
+  ```
+  npm install
+  ```
 - Start the application, test that there are no errors and fix them if needed.
 - Publish the lib by:
-  - checking the version is correct in the package.json dist/bia-ng
-  - executing command: **cd dist/bia-ng**
-  - executing command: **npm publish --tag latest --access public**
+  - checking the version is correct in the package.json of folder dist/bia-ng
+  - executing command: 
+  ```
+  cd dist/bia-ng
+  ```
+  - executing command: 
+  ```
+  npm publish --tag latest --access public
+  ```
 - Update the dependency to *@bia-team/bia-ng@[version]* in package.json of BIADemo instead of *file:./dist/bia-ng*.
 
 # Test the deployment:
