@@ -2486,7 +2486,7 @@ ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode
 # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
 # BEGIN - charset encoding file into controllers
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this.File(buffer, BiaConstants.Csv.ContentType + $";charset={BiaConstants.Csv.CharsetEncoding}"' -Include "*Controller.cs"
 # END - charset encoding file into controllers
 
 # BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
