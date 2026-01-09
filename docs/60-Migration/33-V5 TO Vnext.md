@@ -39,7 +39,7 @@ For each Angular project :
 3. **Accept** `router-current-navigation` migration
 :::
 <CheckItem indent="1">⚡**COMMIT**</CheckItem>
-<CheckItem indent="1">run `ng update @ngrx/store@20.0.0`</CheckItem>
+<CheckItem indent="1">run `ng update @ngrx/store@20`</CheckItem>
 <CheckItem indent="1">⚡**COMMIT**</CheckItem>
 
 
