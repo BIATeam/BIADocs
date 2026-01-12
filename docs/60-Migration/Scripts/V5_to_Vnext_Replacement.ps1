@@ -1,4 +1,4 @@
-$Source = "C:\Sources\Azure.DevOps.Safran\SCardNG";
+$Source = "C:\sources\github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -2400,6 +2400,194 @@ function Invoke-DynamicLayoutViewChildInsertInFiles {
   }
 }
 
+function Invoke-ManageCentralPackageVersions {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$SourcePath
+  )
+
+  $biaPropsPath = Join-Path $SourcePath 'Directory.Packages.Bia.props'
+  $projectPropsPath = Join-Path $SourcePath 'Directory.Packages.Project.props'
+
+  if (-not (Test-Path -LiteralPath $projectPropsPath)) {
+    Write-Warning ("Directory.Packages.Project.props not found: {0}" -f $projectPropsPath)
+    return
+  }
+
+  $biaPackages = @{}
+  if (Test-Path -LiteralPath $biaPropsPath) {
+    try {
+      $biaDoc = New-Object System.Xml.XmlDocument
+      $biaDoc.PreserveWhitespace = $false
+      $biaDoc.Load($biaPropsPath)
+      foreach ($node in $biaDoc.SelectNodes('//PackageVersion[@Include]')) {
+        $includeAttr = $node.Attributes['Include']
+        if ($includeAttr -and -not [string]::IsNullOrWhiteSpace($includeAttr.Value)) {
+          $biaPackages[$includeAttr.Value] = $true
+        }
+      }
+    }
+    catch {
+      Write-Warning ("Unable to read {0}: {1}" -f $biaPropsPath, $_.Exception.Message)
+      $biaPackages = @{}
+    }
+  }
+
+  $projectDoc = New-Object System.Xml.XmlDocument
+  $projectDoc.PreserveWhitespace = $false
+  try {
+    $projectDoc.Load($projectPropsPath)
+  }
+  catch {
+    Write-Error ("Unable to read {0}: {1}" -f $projectPropsPath, $_.Exception.Message)
+    return
+  }
+
+  $projectItemGroup = $projectDoc.SelectSingleNode('/Project/ItemGroup')
+  if (-not $projectItemGroup) {
+    $projectItemGroup = $projectDoc.CreateElement('ItemGroup')
+    [void]$projectDoc.DocumentElement.AppendChild($projectItemGroup)
+  }
+
+  $existingProjectPackages = @{}
+  foreach ($node in $projectItemGroup.SelectNodes('PackageVersion')) {
+    $includeAttr = $node.Attributes['Include']
+    if ($includeAttr -and -not [string]::IsNullOrWhiteSpace($includeAttr.Value)) {
+      $versionAttr = $node.Attributes['Version']
+      if ($versionAttr) {
+        $existingProjectPackages[$includeAttr.Value] = $versionAttr.Value
+      }
+      else {
+        $existingProjectPackages[$includeAttr.Value] = $null
+      }
+    }
+  }
+
+  $packagesForProject = @{}
+  $packageSources = @{}
+
+  $excludeFullPaths = @()
+  foreach ($ex in $ExcludeDir) {
+    $fullPath = if ([System.IO.Path]::IsPathRooted($ex)) { $ex } else { Join-Path -Path $SourcePath -ChildPath $ex }
+    $excludeFullPaths += [System.IO.Path]::GetFullPath($fullPath)
+  }
+
+  $csprojFiles = Get-ChildItem -LiteralPath $SourcePath -Recurse -File -Filter '*.csproj' |
+  Where-Object {
+    $full = [System.IO.Path]::GetFullPath($_.FullName)
+    $isExcluded = $false
+    foreach ($ex in $excludeFullPaths) {
+      $normalizedEx = $ex.TrimEnd([char[]]@([char]0x5C, [char]0x2F))
+      if ($full.StartsWith($normalizedEx, [System.StringComparison]::OrdinalIgnoreCase)) {
+        $isExcluded = $true
+        break
+      }
+    }
+    -not $isExcluded
+  }
+
+  foreach ($proj in $csprojFiles) {
+    $projDoc = New-Object System.Xml.XmlDocument
+    $projDoc.PreserveWhitespace = $true
+    try {
+      $projDoc.Load($proj.FullName)
+    }
+    catch {
+      Write-Warning ("Unable to read {0}: {1}" -f $proj.FullName, $_.Exception.Message)
+      continue
+    }
+
+    $packageRefs = $projDoc.SelectNodes('//PackageReference[@Include]')
+    foreach ($packageRef in $packageRefs) {
+      $includeAttr = $packageRef.Attributes['Include']
+      if (-not $includeAttr -or [string]::IsNullOrWhiteSpace($includeAttr.Value)) {
+        continue
+      }
+
+      $packageId = $includeAttr.Value
+      $versionAttr = $packageRef.Attributes['Version']
+      $versionValue = $null
+      if ($versionAttr) {
+        $versionValue = $versionAttr.Value
+      }
+
+      if (-not $biaPackages.ContainsKey($packageId) -and -not [string]::IsNullOrWhiteSpace($versionValue)) {
+        if ($packagesForProject.ContainsKey($packageId) -and $packagesForProject[$packageId] -ne $versionValue) {
+          $previousSource = $packageSources[$packageId]
+          Write-Warning ("Version conflict for {0}: keeping {1} (from {2}), ignoring {3} (from {4})" -f $packageId, $packagesForProject[$packageId], $previousSource, $versionValue, $proj.FullName)
+        }
+        elseif (-not $packagesForProject.ContainsKey($packageId)) {
+          $packagesForProject[$packageId] = $versionValue
+          $packageSources[$packageId] = $proj.FullName
+        }
+      }
+    }
+  }
+
+  $projectPropsChanged = $false
+  $finalPackages = @{}
+  foreach ($key in $existingProjectPackages.Keys) {
+    $finalPackages[$key] = $existingProjectPackages[$key]
+  }
+
+  foreach ($packageId in $packagesForProject.Keys) {
+    $versionValue = $packagesForProject[$packageId]
+    if (-not $finalPackages.ContainsKey($packageId)) {
+      Write-Host ("  -> adding {0} {1} to Directory.Packages.Project.props" -f $packageId, $versionValue)
+      $finalPackages[$packageId] = $versionValue
+      $projectPropsChanged = $true
+    }
+    elseif ($versionValue -and $finalPackages[$packageId] -ne $versionValue) {
+      Write-Host ("  -> updating {0}: {1} -> {2} in Directory.Packages.Project.props" -f $packageId, $finalPackages[$packageId], $versionValue)
+      $finalPackages[$packageId] = $versionValue
+      $projectPropsChanged = $true
+    }
+  }
+
+  if ($projectPropsChanged) {
+    foreach ($node in @($projectItemGroup.SelectNodes('PackageVersion'))) {
+      [void]$projectItemGroup.RemoveChild($node)
+    }
+
+    $sortedPackages = $finalPackages.Keys | Sort-Object
+    foreach ($packageId in $sortedPackages) {
+      $versionValue = $finalPackages[$packageId]
+      if ([string]::IsNullOrWhiteSpace($versionValue)) {
+        continue
+      }
+
+      $packageNode = $projectDoc.CreateElement('PackageVersion')
+      $includeAttribute = $projectDoc.CreateAttribute('Include')
+      $includeAttribute.Value = $packageId
+      [void]$packageNode.Attributes.Append($includeAttribute)
+
+      $versionAttribute = $projectDoc.CreateAttribute('Version')
+      $versionAttribute.Value = $versionValue
+      [void]$packageNode.Attributes.Append($versionAttribute)
+
+      [void]$projectItemGroup.AppendChild($packageNode)
+    }
+
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    $settings = New-Object System.Xml.XmlWriterSettings
+    $settings.Indent = $true
+    $settings.IndentChars = '  '
+    $settings.OmitXmlDeclaration = $true
+    $settings.NewLineChars = [Environment]::NewLine
+    $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
+    $settings.Encoding = $utf8NoBom
+
+    $writer = [System.Xml.XmlWriter]::Create($projectPropsPath, $settings)
+    $projectDoc.Save($writer)
+    $writer.Close()
+
+    Write-Host ("  -> updated {0}" -f $projectPropsPath)
+  }
+  else {
+    Write-Host "  -> Directory.Packages.Project.props already up to date"
+  }
+}
+
 # FRONT END
 # BEGIN - deactivate navigation in breadcrumb for crudItemId
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
@@ -2412,10 +2600,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src
 
 # BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
 ReplaceInProject `
- -Source $SourceFrontEnd `
- -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(selectedViewChanged\)="onSelectedViewChanged\(\$event\)")' `
- -NewRegexp '${indent}${line}${nl}${indent}(selectedViewChanged)="onSelectedViewChanged($event)"${nl}' `
- -Include '*-index.component.html'
+  -Source $SourceFrontEnd `
+  -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(selectedViewChanged\)="onSelectedViewChanged\(\$event\)")' `
+  -NewRegexp '${indent}${line}${nl}${indent}(selectedViewChanged)="onSelectedViewChanged($event)"${nl}' `
+  -Include '*-index.component.html'
 #  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
 
 # BEGIN Team config move to back-end
@@ -2424,17 +2612,17 @@ Invoke-MigrationTeamConfig
 
 # BEGIN Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
 $replacementsHtml = @(
-    # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
-    @{
-        Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
-        Replacement = '$1'
-    },
+  # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
+  @{
+    Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
+    Replacement = '$1'
+  },
 
-    # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
-    @{
-        Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
-        Replacement = '$1'
-    }
+  # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
+  @{
+    Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
+    Replacement = '$1'
+  }
 )
 
 Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsHtml -Extensions @('*.html')
@@ -2442,43 +2630,43 @@ Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacements
 
 # BEGIN Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
 $replacementsTs = @(
-    @{
-        Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
-        Replacement = ''
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
-        Replacement = '$1'
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
-        Replacement = '$1'
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
-        Replacement = '$1$2'
-    },
+  @{
+    Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
+    Replacement = ''
+  },
+  @{
+    Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
+    Replacement = '$1'
+  },
+  @{
+    Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
+    Replacement = '$1'
+  },
+  @{
+    Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
+    Replacement = '$1$2'
+  },
 
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
-        Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
-    },
-    @{
+  @{
+    Requirement = 'extends\s+BiaFormComponent'
+    Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
+    Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
+  },
+  @{
         Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
         Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
         Replacement='$1, protected renderer: Renderer2)'
     },
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)constructor\s*\(\s*\)'
-        Replacement = 'constructor(protected renderer: Renderer2)'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
-        Replacement = 'super($1, renderer)'
-    }
+  @{
+    Requirement = 'extends\s+BiaFormComponent'
+    Pattern     = '(?s)constructor\s*\(\s*\)'
+    Replacement = 'constructor(protected renderer: Renderer2)'
+  },
+  @{
+    Requirement = 'extends\s+BiaFormComponent'
+    Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
+    Replacement = 'super($1, renderer)'
+  }
 )
 
 Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
@@ -2525,46 +2713,46 @@ Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
 
 # BEGIN Replace old protected generic methods names from OperationDomainServiceBase
 $replacementsTs = @(
-    @{
-        Pattern     = 'GetRangeAsync<'
-        Replacement = 'GetRangeGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetAllAsync<'
-        Replacement = 'GetAllGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetCsvAsync<'
-        Replacement = 'GetCsvGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetGenericAsync<'
-        Replacement = 'GetGenericGenericAsync<'
-    },
-    @{
-        Pattern     = 'AddAsync<'
-        Replacement = 'AddGenericAsync<'
-    },
-    @{
-        Pattern     = 'UpdateAsync<'
-        Replacement = 'UpdateGenericAsync<'
-    },
-    @{
-        Pattern     = 'RemoveAsync<'
-        Replacement = 'RemoveGenericAsync<'
-    },
-    @{
-        Pattern     = 'SaveSafeAsync<'
-        Replacement = 'SaveSafeGenericAsync<'
-    },
-    @{
-        Pattern     = 'SaveAsync<'
-        Replacement = 'SaveGenericAsync<'
-    },
-    @{
-        Pattern     = 'UpdateFixedAsync<'
-        Replacement = 'UpdateFixedGenericAsync<'
-    }
+  @{
+    Pattern     = 'GetRangeAsync<'
+    Replacement = 'GetRangeGenericAsync<'
+  },
+  @{
+    Pattern     = 'GetAllAsync<'
+    Replacement = 'GetAllGenericAsync<'
+  },
+  @{
+    Pattern     = 'GetCsvAsync<'
+    Replacement = 'GetCsvGenericAsync<'
+  },
+  @{
+    Pattern     = 'GetGenericAsync<'
+    Replacement = 'GetGenericGenericAsync<'
+  },
+  @{
+    Pattern     = 'AddAsync<'
+    Replacement = 'AddGenericAsync<'
+  },
+  @{
+    Pattern     = 'UpdateAsync<'
+    Replacement = 'UpdateGenericAsync<'
+  },
+  @{
+    Pattern     = 'RemoveAsync<'
+    Replacement = 'RemoveGenericAsync<'
+  },
+  @{
+    Pattern     = 'SaveSafeAsync<'
+    Replacement = 'SaveSafeGenericAsync<'
+  },
+  @{
+    Pattern     = 'SaveAsync<'
+    Replacement = 'SaveGenericAsync<'
+  },
+  @{
+    Pattern     = 'UpdateFixedAsync<'
+    Replacement = 'UpdateFixedGenericAsync<'
+  }
 )
 
 Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsTs -Extensions @('*.cs')
@@ -2580,48 +2768,49 @@ Invoke-DynamicLayoutViewChildInsertInFiles -Source $SourceFrontEnd -Include @('*
 
 # BEGIN - autoCommit
 ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'public override async Task<([\s\S]*?)> AddAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
- -NewRegexp 'public override async Task<$1> AddAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
- -Include '*Service.cs'
+  -Source $SourceBackEnd `
+  -OldRegexp 'public override async Task<([\s\S]*?)> AddAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
+  -NewRegexp 'public override async Task<$1> AddAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
+  -Include '*Service.cs'
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'await base.AddAsync\(([\s\S]*?)mapperMode\)' `
- -NewRegexp 'await base.AddAsync($1mapperMode, autoCommit: autoCommit)' `
- -Include '*Service.cs'
+ReplaceInProject `
+  -Source $SourceBackEnd `
+  -OldRegexp 'await base.AddAsync\(([\s\S]*?)mapperMode\)' `
+  -NewRegexp 'await base.AddAsync($1mapperMode, autoCommit: autoCommit)' `
+  -Include '*Service.cs'
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'public override async Task<([\s\S]*?)> UpdateAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
- -NewRegexp 'public override async Task<$1> UpdateAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
- -Include '*Service.cs'
+ReplaceInProject `
+  -Source $SourceBackEnd `
+  -OldRegexp 'public override async Task<([\s\S]*?)> UpdateAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
+  -NewRegexp 'public override async Task<$1> UpdateAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
+  -Include '*Service.cs'
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'await base.UpdateAsync\(([\s\S]*?)mapperMode\)' `
- -NewRegexp 'await base.UpdateAsync($1mapperMode, autoCommit: autoCommit)' `
- -Include '*Service.cs'
+ReplaceInProject `
+  -Source $SourceBackEnd `
+  -OldRegexp 'await base.UpdateAsync\(([\s\S]*?)mapperMode\)' `
+  -NewRegexp 'await base.UpdateAsync($1mapperMode, autoCommit: autoCommit)' `
+  -Include '*Service.cs'
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'public override async Task<([\s\S]*?)> RemoveAsync\(([\s\S]*?),(\s*)bool bypassFixed = false\)' `
- -NewRegexp 'public override async Task<$1> RemoveAsync($2, bool bypassFixed = false,$3bool autoCommit = true)' `
- -Include '*Service.cs'
+ReplaceInProject `
+  -Source $SourceBackEnd `
+  -OldRegexp 'public override async Task<([\s\S]*?)> RemoveAsync\(([\s\S]*?),(\s*)bool bypassFixed = false\)' `
+  -NewRegexp 'public override async Task<$1> RemoveAsync($2, bool bypassFixed = false,$3bool autoCommit = true)' `
+  -Include '*Service.cs'
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'await base.RemoveAsync\(([\s\S]*?)bypassFixed\)' `
- -NewRegexp 'await base.RemoveAsync($1bypassFixed, autoCommit: autoCommit)' `
- -Include '*Service.cs'
+ReplaceInProject `
+  -Source $SourceBackEnd `
+  -OldRegexp 'await base.RemoveAsync\(([\s\S]*?)bypassFixed\)' `
+  -NewRegexp 'await base.RemoveAsync($1bypassFixed, autoCommit: autoCommit)' `
+  -Include '*Service.cs'
 # END - autoCommit
 
 # BEGIN - Directory.Packages.props
+Invoke-ManageCentralPackageVersions -SourcePath $SourceBackEnd
 ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp '<PackageReference Include="([\s\S]*?)" Version="(.*)"' `
- -NewRegexp '<PackageReference Include="$1"' `
- -Include '*.csproj'
+  -Source $SourceBackEnd `
+  -OldRegexp '<PackageReference Include="([\s\S]*?)" Version="(.*)"' `
+  -NewRegexp '<PackageReference Include="$1"' `
+  -Include '*.csproj'
 # END - Directory.Packages.props
 
 # FRONT END CLEAN

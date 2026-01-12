@@ -248,7 +248,33 @@ For all cases using the previous `useRefreshAtLanguageChange` from `CrudItemInde
 ## Back Manual Steps
 
 ### Package Version
-After running the migration script, the versions of the NuGet packages are no longer specified in the `csproj` files but in the `Directory.Packages.props` files. If you use a NuGet package that is not included by default in the BIA, you must add its version to the `Directory.Packages.Project.props` file.
+Open the `DotNet\Directory.Packages.Project.props` file and check that no package version contains a wildcard (*). If a wildcard is found, replace it with the desired version number.
+
+Example Before
+
+``` xml
+<Project>
+  <ItemGroup>
+    <!-- Add the versions of your packages here. -->
+    <!-- <PackageVersion Include="MyPackageNameExample" Version="6.0.4" /> -->
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
+    <PackageVersion Include="System.Security.Principal.Windows" Version="5.0.*" />
+  </ItemGroup>
+</Project>
+```
+
+Example After
+
+``` xml
+<Project>
+  <ItemGroup>
+    <!-- Add the versions of your packages here. -->
+    <!-- <PackageVersion Include="MyPackageNameExample" Version="6.0.4" /> -->
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
+    <PackageVersion Include="System.Security.Principal.Windows" Version="5.0.0" />
+  </ItemGroup>
+</Project>
+```
 
 ### Audit Entities
 For all your previous audit entities inherited from `AuditEntity` :
