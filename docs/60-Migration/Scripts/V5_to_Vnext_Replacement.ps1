@@ -1,4 +1,4 @@
-$Source = "C:\sources\github\BIADemo";
+$Source = "C:\sources\Azure\SCardNG";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -2378,237 +2378,246 @@ function Invoke-DynamicLayoutViewChildInsertInFiles {
   }
 }
 
-# FRONT END
-# BEGIN - deactivate navigation in breadcrumb for crudItemId
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
-# END - deactivate navigation in breadcrumb for crudItemId
+# # FRONT END
+# # BEGIN - deactivate navigation in breadcrumb for crudItemId
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "(path:\s*':crudItemId',\s*data:\s*\{\s*breadcrumb:\s*'',\s*canNavigate:\s*)true(,\s*\})" -NewRegexp '$1false$2' -Include "*module.ts"
+# # END - deactivate navigation in breadcrumb for crudItemId
 
-# BEGIN - switch to lib bia-ng
-ApplyChangesToLib
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
-# END - switch to lib bia-ng
+# # BEGIN - switch to lib bia-ng
+# ApplyChangesToLib
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '("includePaths":\s*\["src\/styles",\s*")src\/scss\/bia("\])' -NewRegexp '$1node_modules/bia-ng/scss$2' -Include "*angular.json"
+# # END - switch to lib bia-ng
 
-# BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+# # BEGIN - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+# ReplaceInProject `
+#  -Source $SourceFrontEnd `
+#  -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(selectedViewChanged\)="onSelectedViewChanged\(\$event\)")' `
+#  -NewRegexp '${indent}${line}${nl}${indent}(selectedViewChanged)="onSelectedViewChanged($event)"${nl}' `
+#  -Include '*-index.component.html'
+# #  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
+
+# # BEGIN Team config move to back-end
+# Invoke-MigrationTeamConfig
+# # End Team config move to back-end
+
+# # BEGIN Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
+# $replacementsHtml = @(
+#     # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
+#     @{
+#         Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
+#         Replacement = '$1'
+#     },
+
+#     # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
+#     @{
+#         Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
+#         Replacement = '$1'
+#     }
+# )
+
+# Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsHtml -Extensions @('*.html')
+# # END Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
+
+# # BEGIN Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
+# $replacementsTs = @(
+#     @{
+#         Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
+#         Replacement = ''
+#     },
+#     @{
+#         Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
+#         Replacement = '$1'
+#     },
+#     @{
+#         Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
+#         Replacement = '$1'
+#     },
+#     @{
+#         Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
+#         Replacement = '$1$2'
+#     },
+
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent'
+#         Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
+#         Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
+#     },
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
+#         Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
+#         Replacement='$1, protected renderer: Renderer2)'
+#     },
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent'
+#         Pattern     = '(?s)constructor\s*\(\s*\)'
+#         Replacement = 'constructor(protected renderer: Renderer2)'
+#     },
+#     @{
+#         Requirement = 'extends\s+BiaFormComponent'
+#         Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
+#         Replacement = 'super($1, renderer)'
+#     }
+# )
+
+# Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
+# # END Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
+
+# # BEGIN - bia-input -> bia-form-field
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.html"
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.ts"
+# # END - bia-input -> bia-form-field
+
+# # BEGIN - BiaInput -> BiaFormField
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaInput" -NewRegexp 'BiaFormField' -Include "*.ts"
+# # END - BiaInput -> BiaFormField
+
+# # BEGIN - bia-output -> bia-form-field
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.html"
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.ts"
+# # END - bia-output -> bia-form-field
+
+# # BEGIN - BiaOutput -> BiaFormField
+# ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
+# # END - BiaOutput -> BiaFormField
+
+# # BACK END
+# # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
+# # END - TeamSelectionMode -> TeamAutomaticSelectionMode
+
+# # BEGIN - charset encoding file into controllers
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this.File(buffer, BiaConstants.Csv.ContentType + $";charset={BiaConstants.Csv.CharsetEncoding}"' -Include "*Controller.cs"
+# # END - charset encoding file into controllers
+
+# # BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -NewRegexp 'class, IPagingFilterFormatDto, new\(\)' -Include "*.cs"
+# # END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
+
+# # BEGIN - LazyLoadDto -> PagingFilterFormatDto
+# ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp '\bPagingFilterFormatDto\b' -Include "*.cs"
+# # END - LazyLoadDto -> PagingFilterFormatDto
+
+# # BEGIN - Replace protected generic overrides in CrudAppServiceBase classes
+# Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
+# # END - Replace protected generic overrides in CrudAppServiceBase classes
+
+# # BEGIN Replace old protected generic methods names from OperationDomainServiceBase
+# $replacementsTs = @(
+#     @{
+#         Pattern     = 'GetRangeAsync<'
+#         Replacement = 'GetRangeGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'GetAllAsync<'
+#         Replacement = 'GetAllGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'GetCsvAsync<'
+#         Replacement = 'GetCsvGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'GetGenericAsync<'
+#         Replacement = 'GetGenericGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'AddAsync<'
+#         Replacement = 'AddGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'UpdateAsync<'
+#         Replacement = 'UpdateGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'RemoveAsync<'
+#         Replacement = 'RemoveGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'SaveSafeAsync<'
+#         Replacement = 'SaveSafeGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'SaveAsync<'
+#         Replacement = 'SaveGenericAsync<'
+#     },
+#     @{
+#         Pattern     = 'UpdateFixedAsync<'
+#         Replacement = 'UpdateFixedGenericAsync<'
+#     }
+# )
+
+# Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsTs -Extensions @('*.cs')
+# # END Replace old protected generic methods names from OperationDomainServiceBase
+
+# # BEGIN - Replace FullPageLayout by DynamicLayout in routing
+# Invoke-DynamicLayoutTransformInFiles -Source $SourceFrontEnd -Include @('*module.ts')
+# # END - Replace FullPageLayout by DynamicLayout in routing
+
+# # BEGIN - Add view routing in feature routing
+# Invoke-DynamicLayoutViewChildInsertInFiles -Source $SourceFrontEnd -Include @('*module.ts')
+# # END - Add view routing in feature routing
+
+# # BEGIN - autoCommit
+# ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp 'public override async Task<([\s\S]*?)> AddAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
+#  -NewRegexp 'public override async Task<$1> AddAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
+#  -Include '*Service.cs'
+
+#  ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp 'await base.AddAsync\(([\s\S]*?)mapperMode\)' `
+#  -NewRegexp 'await base.AddAsync($1mapperMode, autoCommit: autoCommit)' `
+#  -Include '*Service.cs'
+
+#  ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp 'public override async Task<([\s\S]*?)> UpdateAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
+#  -NewRegexp 'public override async Task<$1> UpdateAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
+#  -Include '*Service.cs'
+
+#  ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp 'await base.UpdateAsync\(([\s\S]*?)mapperMode\)' `
+#  -NewRegexp 'await base.UpdateAsync($1mapperMode, autoCommit: autoCommit)' `
+#  -Include '*Service.cs'
+
+#  ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp 'public override async Task<([\s\S]*?)> RemoveAsync\(([\s\S]*?),(\s*)bool bypassFixed = false\)' `
+#  -NewRegexp 'public override async Task<$1> RemoveAsync($2, bool bypassFixed = false,$3bool autoCommit = true)' `
+#  -Include '*Service.cs'
+
+#  ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp 'await base.RemoveAsync\(([\s\S]*?)bypassFixed\)' `
+#  -NewRegexp 'await base.RemoveAsync($1bypassFixed, autoCommit: autoCommit)' `
+#  -Include '*Service.cs'
+# # END - autoCommit
+
+# # BEGIN - Directory.Packages.props
+# ReplaceInProject `
+#  -Source $SourceBackEnd `
+#  -OldRegexp '<PackageReference Include="([\s\S]*?)" Version="(.*)"' `
+#  -NewRegexp '<PackageReference Include="$1"' `
+#  -Include '*.csproj'
+# # END - Directory.Packages.props
+
+# BEGIN - Transform RowVersion properties for versioning
 ReplaceInProject `
- -Source $SourceFrontEnd `
- -OldRegexp '(?m)^(?<indent>\s*)(?<line>\(viewChange\)="onViewChange\(\$event\)")\s*(?<nl>\r?\n)(?!\k<indent>\(selectedViewChanged\)="onSelectedViewChanged\(\$event\)")' `
- -NewRegexp '${indent}${line}${nl}${indent}(selectedViewChanged)="onSelectedViewChanged($event)"${nl}' `
- -Include '*-index.component.html'
-#  # END - add (viewNameChange)="onViewNameChange($event)" to index component HTML
-
-# BEGIN Team config move to back-end
-Invoke-MigrationTeamConfig
-# End Team config move to back-end
-
-# BEGIN Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
-$replacementsHtml = @(
-    # <p-table ... [autoLayout]="..."   OU   <p-table ... autoLayout="...">   OU   <p-table ... [autoLayout]>
-    @{
-        Pattern     = '(?is)(<p-table\b[^>]*?)\s+(?:\[\s*autoLayout\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|autoLayout\s*=\s*(?:"[^"]*"|''[^'']*''))'
-        Replacement = '$1'
-    },
-
-    # <p-(table|dialog) ... [responsive]="..."   OU   responsive="..."   OU   [responsive]>
-    @{
-        Pattern     = '(?is)(<(?:p-table|p-dialog)\b[^>]*?)\s+(?:\[\s*responsive\s*\](?:\s*=\s*(?:"[^"]*"|''[^'']*''))?|responsive\s*=\s*(?:"[^"]*"|''[^'']*''))'
-        Replacement = '$1'
-    }
-)
-
-Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsHtml -Extensions @('*.html')
-# END Remove [autoLayout] in <p-table> and [responsive]/responsive from <p-table> | <p-dialog>
-
-# BEGIN Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
-$replacementsTs = @(
-    @{
-        Pattern     = '(?m)^\s*import\s*\{\s*Textarea\s*\}\s*from\s*''primeng/inputtextarea''\s*;\s*\r?\n?'
-        Replacement = ''
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?)\s*\bTextarea\b\s*,\s*'
-        Replacement = '$1'
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[[^\]]*?),\s*\bTextarea\b\s*'
-        Replacement = '$1'
-    },
-    @{
-        Pattern     = '(?is)(\bimports\s*:\s*\[)\s*\bTextarea\b\s*(\])'
-        Replacement = '$1$2'
-    },
-
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)import\s*\{\s*(?![^}]*\bRenderer2\b)([^}]*)\}\s*from\s*''@angular/core''\s*;'
-        Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
-        Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
-        Replacement='$1, protected renderer: Renderer2)'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)constructor\s*\(\s*\)'
-        Replacement = 'constructor(protected renderer: Renderer2)'
-    },
-    @{
-        Requirement = 'extends\s+BiaFormComponent'
-        Pattern     = '(?s)super\s*\(\s*(?![^)]*\brenderer\b)([^)]*?)\)'
-        Replacement = 'super($1, renderer)'
-    }
-)
-
-Invoke-ReplacementsInFiles -RootPath $SourceFrontEnd -Replacements $replacementsTs -Extensions @('*.ts')
-# END Remove import Textarea and add Renderer2 injection for extended classes of BiaFormComponent
-
-# BEGIN - bia-input -> bia-form-field
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-input" -NewRegexp 'bia-form-field' -Include "*.ts"
-# END - bia-input -> bia-form-field
-
-# BEGIN - BiaInput -> BiaFormField
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaInput" -NewRegexp 'BiaFormField' -Include "*.ts"
-# END - BiaInput -> BiaFormField
-
-# BEGIN - bia-output -> bia-form-field
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'bia-form-field' -Include "*.ts"
-# END - bia-output -> bia-form-field
-
-# BEGIN - BiaOutput -> BiaFormField
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
-# END - BiaOutput -> BiaFormField
-
-# BACK END
-# BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
-# END - TeamSelectionMode -> TeamAutomaticSelectionMode
-
-# BEGIN - charset encoding file into controllers
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this.File(buffer, BiaConstants.Csv.ContentType + $";charset={BiaConstants.Csv.CharsetEncoding}"' -Include "*Controller.cs"
-# END - charset encoding file into controllers
-
-# BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -NewRegexp 'class, IPagingFilterFormatDto, new\(\)' -Include "*.cs"
-# END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
-
-# BEGIN - LazyLoadDto -> PagingFilterFormatDto
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp '\bPagingFilterFormatDto\b' -Include "*.cs"
-# END - LazyLoadDto -> PagingFilterFormatDto
-
-# BEGIN - Replace protected generic overrides in CrudAppServiceBase classes
-Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
-# END - Replace protected generic overrides in CrudAppServiceBase classes
-
-# BEGIN Replace old protected generic methods names from OperationDomainServiceBase
-$replacementsTs = @(
-    @{
-        Pattern     = 'GetRangeAsync<'
-        Replacement = 'GetRangeGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetAllAsync<'
-        Replacement = 'GetAllGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetCsvAsync<'
-        Replacement = 'GetCsvGenericAsync<'
-    },
-    @{
-        Pattern     = 'GetGenericAsync<'
-        Replacement = 'GetGenericGenericAsync<'
-    },
-    @{
-        Pattern     = 'AddAsync<'
-        Replacement = 'AddGenericAsync<'
-    },
-    @{
-        Pattern     = 'UpdateAsync<'
-        Replacement = 'UpdateGenericAsync<'
-    },
-    @{
-        Pattern     = 'RemoveAsync<'
-        Replacement = 'RemoveGenericAsync<'
-    },
-    @{
-        Pattern     = 'SaveSafeAsync<'
-        Replacement = 'SaveSafeGenericAsync<'
-    },
-    @{
-        Pattern     = 'SaveAsync<'
-        Replacement = 'SaveGenericAsync<'
-    },
-    @{
-        Pattern     = 'UpdateFixedAsync<'
-        Replacement = 'UpdateFixedGenericAsync<'
-    }
-)
-
-Invoke-ReplacementsInFiles -RootPath $SourceBackEnd -Replacements $replacementsTs -Extensions @('*.cs')
-# END Replace old protected generic methods names from OperationDomainServiceBase
-
-# BEGIN - Replace FullPageLayout by DynamicLayout in routing
-Invoke-DynamicLayoutTransformInFiles -Source $SourceFrontEnd -Include @('*module.ts')
-# END - Replace FullPageLayout by DynamicLayout in routing
-
-# BEGIN - Add view routing in feature routing
-Invoke-DynamicLayoutViewChildInsertInFiles -Source $SourceFrontEnd -Include @('*module.ts')
-# END - Add view routing in feature routing
-
-# BEGIN - autoCommit
-ReplaceInProject `
  -Source $SourceBackEnd `
- -OldRegexp 'public override async Task<([\s\S]*?)> AddAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
- -NewRegexp 'public override async Task<$1> AddAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
- -Include '*Service.cs'
+ -OldRegexp '(\s*)\[Timestamp\]\r?\n\s*\[Column\("RowVersion"\)\]\r?\n\s*public byte\[\] RowVersion([A-Za-z0-9_]+) \{ get; set; \}' `
+ -NewRegexp '$1[Column(nameof(IEntityVersioned.RowVersion))]$1[AuditIgnore]$1public byte[] RowVersion$2 { get; set; }
+$1/// <summary>$1/// Add row version for Postgre in table $2.$1/// </summary>$1[Column(nameof(IEntityVersioned.RowVersionXmin))]$1[AuditIgnore]$1public uint RowVersionXmin$2 { get; set; }' `
+ -Include "*.cs"
+# END - Transform RowVersion properties for versioning
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'await base.AddAsync\(([\s\S]*?)mapperMode\)' `
- -NewRegexp 'await base.AddAsync($1mapperMode, autoCommit: autoCommit)' `
- -Include '*Service.cs'
+# # FRONT END CLEAN
+# Set-Location $SourceFrontEnd
+# npm run clean
 
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'public override async Task<([\s\S]*?)> UpdateAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
- -NewRegexp 'public override async Task<$1> UpdateAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
- -Include '*Service.cs'
-
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'await base.UpdateAsync\(([\s\S]*?)mapperMode\)' `
- -NewRegexp 'await base.UpdateAsync($1mapperMode, autoCommit: autoCommit)' `
- -Include '*Service.cs'
-
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'public override async Task<([\s\S]*?)> RemoveAsync\(([\s\S]*?),(\s*)bool bypassFixed = false\)' `
- -NewRegexp 'public override async Task<$1> RemoveAsync($2, bool bypassFixed = false,$3bool autoCommit = true)' `
- -Include '*Service.cs'
-
- ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp 'await base.RemoveAsync\(([\s\S]*?)bypassFixed\)' `
- -NewRegexp 'await base.RemoveAsync($1bypassFixed, autoCommit: autoCommit)' `
- -Include '*Service.cs'
-# END - autoCommit
-
-# BEGIN - Directory.Packages.props
-ReplaceInProject `
- -Source $SourceBackEnd `
- -OldRegexp '<PackageReference Include="([\s\S]*?)" Version="(.*)"' `
- -NewRegexp '<PackageReference Include="$1"' `
- -Include '*.csproj'
-# END - Directory.Packages.props
-
-# FRONT END CLEAN
-Set-Location $SourceFrontEnd
-npm run clean
-
-# BACK END RESTORE
-Set-Location $SourceBackEnd
-dotnet restore --no-cache
+# # BACK END RESTORE
+# Set-Location $SourceBackEnd
+# dotnet restore --no-cache
 
 Write-Host "Finish"
 pause
