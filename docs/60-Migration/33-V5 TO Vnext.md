@@ -162,6 +162,9 @@ public override Type AuditTypeMapper(Type type)
 }
 ```
 
+### CS projects packages references
+Keep your packages references into your `.csproj`, they will be modified by the migration script on the next steps
+
 ## Front Manual Steps
 ### Full code Index Component
 For your full code `feature-index.component.html`, you will have to add into the `.ts` the following method :
