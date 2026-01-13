@@ -43,7 +43,9 @@ For each Angular project :
 <CheckItem indent="1">⚡**COMMIT**</CheckItem>
 
 
-
+## EF Migration History table migration
+<CheckItem indent="1">Refers to and apply the following [documentation](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md#migration-for-existing-projects)</CheckItem>
+<CheckItem indent="1">⚡**COMMIT**</CheckItem>
 
 ## BIA Framework Migration
 <CheckItem>Delete from your Angular projects all **package-lock.json** and **node_modules** folder</CheckItem>
