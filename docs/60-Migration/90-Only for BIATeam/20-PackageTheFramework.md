@@ -16,22 +16,21 @@ sidebar_position: 20
   - Launch the command **npm install**
   - Launch the command **npm audit fix**
   - In the package.json file, under dependencies and devDependencies, replace all **^** by **~**. Example: "primeng": "~16.9.1", "rxjs": "~7.8.1",
+  - Compare the `package.json` from angular project and the one from **packages/bia-ng** : all the packages versions should be the same. If not, harmonize the versions based on the `package.json` from angular project, then delete `package-lock.json` and `node-modules` from **packages/bia-ng** and run `npm i` from it
 - Ng lint the angular project and remove all errors and warnings. From version >= 3.9, run the command **npm run clean**
 - Change the framework version in 
   - **..\BIADemo\DotNet\TheBIADevCompany.BIADemo.Crosscutting.Common\Constants.cs**
   - **..\BIADemo\Angular\packages\bia-ng\framework-version.ts**
   - **..\BIADemo\Angular\packages\bia-ng\package.json**
-- If it is a major or minor version (first or second digit modification) modify it in 
-  - **..\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - If the year change update footer :
-  - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\classic-footer\classic-footer.component.html**
   - **..\BIADemo\Angular\src\app\shared\bia-shared\components\layout\ultima\footer\ultima-footer.component.html**
-  - And Replace all copyright ex: ```<Copyright>Copyright © TheBIADevCompany 2024</Copyright>``` by ```<Copyright>Copyright © TheBIADevCompany 2025</Copyright>```
+  - And Replace all copyright ex: ```<Copyright>Copyright © TheBIADevCompany 2025</Copyright>``` by ```<Copyright>Copyright © TheBIADevCompany 2026</Copyright>```
 - Test Authentication AD Group + ReadOnly Database + Unitary Test
 
 ## Run BIAToolkit Templates Unit Tests
 - Follow the instructions of the following [chapter](./10-Templates/20-BIAToolKitTemplates.md#unit-tests)
 - If any differences, fix both templates into BIAToolKit and reference files into BIADemo
+- If you have done modificatin to BIAToolkit, don't forget to publish a new version at the end
 :::warning
 All tests must be validated before continuing package process !
 :::
@@ -70,6 +69,10 @@ All tests must be validated before continuing package process !
   npm publish --tag latest --access public
   ```
 - Update the dependency to *@bia-team/bia-ng@[version]* in package.json of BIADemo instead of *file:./dist/bia-ng*.
+- Delete your node_modules folder and package-lock.json and then run 
+  ```
+  npm install
+  ```
 
 # Test the deployment:
 - COMMIT BIADemo
@@ -81,13 +84,10 @@ All tests must be validated before continuing package process !
 - If the year change change the copyright:
   - ex : Replace all ```<Copyright>Copyright © BIA 2024</Copyright>``` by ```<Copyright>Copyright © BIA 2025</Copyright>```
 - Compile the whole solution in release
-- Publish all the packages (right click on each project, publish, "Copy to NuGetPackage folder", Publish)
+- Publish all the packages (right click on each project, publish, "Copy to NuGetPackage folder", Publish) or use the dedicated script located to `DotNet\BIAPackages\Pack-BIANetProjects.ps1`
 
 ## Switch the BIADemo project to nuget
-- In the file **...\BIADemo\DotNet\Switch-To-Nuget.ps1** adapt the package version number in the line :
-    ```
-    dotnet add $ProjectFile package BIA.Net.Core.$layerPackage -v 3.5.*
-    ```
+- In the file `DotNet\Directory.Packages.Bia.props` update the version of `BIA.Net.*` with the new version number packaged
 - In Visual Studio select the local Package source (on your folder ...\BIADemo\DotNet\BIAPackage\NuGetPackage) by going to Nuget Package manager, then click on the config wheel on the top right and adding a new Package Source
 - Start the script **...\BIADemo\DotNet\Switch-To-Nuget.ps1**
 - Check that the solution compiles (need to have configured a local source nuget to ...\BIADemo\BIAPackage\NuGetPackage)
@@ -129,7 +129,7 @@ If you have to fix anything into **BIADemo** to resolve project creation issue r
 
 ## Publish BIAPackage
 - Redact the change log of the new version
-- If everything is ok Publish the packages by connection on nuget.org and use the change log in the comments of each package. You will need an account with authorization on the packages repository.
+- If everything is ok Publish the packages by connection on nuget.org and use the change log in the comments of each package. You will need an account with authorization on the packages repository and a valid API key for your nuget.org account. Execute the script located at `DotNet\BIAPackage\NugetPackage\PushMissingPackages.ps1` like that : `.\PushMissingPackages.ps1 ".\*\*X.Y.Z.nupkg" "NUGET_ACCOUNT_API_KEY" "https://api.nuget.org/v3/index.json"`
 - Wait the confirmation by mail of all packages
 - Use GitFlow extension in VSCode to release the project BIADemo, BIACompanyFiles and BIATemplate use the version name like (V4.0.0)
 
