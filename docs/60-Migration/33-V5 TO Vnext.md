@@ -9,9 +9,8 @@ import CheckItem from '@site/src/components/CheckItem';
 ## Prerequisites 
 <CheckItem>Upgrade to compatible versions of **node.js** and **npm** for Angular V20 ([Setup Environment Angular](../10-Introduction/20-SetupEnvironment/SetupEnvironmentAngular.md#nodejs))</CheckItem>
 <CheckItem>Run `npm i -g @angular/cli@20`</CheckItem>
-<CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
-
 <CheckItem>Install Visual Studio 2026</CheckItem>
+<CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
 
 ## Angular V20 Migration
 ### Editor's migration guides
@@ -39,11 +38,13 @@ For each Angular project :
 3. **Accept** `router-current-navigation` migration
 :::
 <CheckItem indent="1">⚡**COMMIT**</CheckItem>
-<CheckItem indent="1">run `ng update @ngrx/store@20.0.0`</CheckItem>
+<CheckItem indent="1">run `ng update @ngrx/store@20`</CheckItem>
 <CheckItem indent="1">⚡**COMMIT**</CheckItem>
 
 
-
+## EF Migration History table migration
+<CheckItem indent="1">Refers to and apply the following [documentation](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md#migration-for-existing-projects)</CheckItem>
+<CheckItem indent="1">⚡**COMMIT**</CheckItem>
 
 ## BIA Framework Migration
 <CheckItem>Delete from your Angular projects all **package-lock.json** and **node_modules** folder</CheckItem>
@@ -160,6 +161,9 @@ public override Type AuditTypeMapper(Type type)
    };
 }
 ```
+
+### CS projects packages references
+Keep your packages references into your `.csproj`, they will be modified by the migration script on the next steps
 
 ## Front Manual Steps
 ### Full code Index Component

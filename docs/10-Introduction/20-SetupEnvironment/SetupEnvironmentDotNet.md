@@ -6,7 +6,7 @@ sidebar_position: 1
 
 ## Minimum requirements
 
-### Visual Studio 2019 & components
+### Visual Studio 2026 & components
 **Installation :**
 
 Install [Visual Studio](https://visualstudio.microsoft.com/fr/vs/) 
@@ -15,15 +15,15 @@ Install [Visual Studio](https://visualstudio.microsoft.com/fr/vs/)
   * Ask to your teammate if an the Visual Studio install package is store on the local network.
   * If not create a share folder bia and prepare yourself the package with the command:
   ```
-  cd '\\share.bia.[MyCompany]\VSPro2022\VS Pro 2022 Setup\'
+  cd '\\share.bia.[MyCompany]\VSPro2026\VS Pro 2026 Setup\'
   .\vs_Professional.exe --layout '\\DMShare\VSPro2019\VS Pro 2019 Setup' --lang en-US fr-FR es-ES
   ```
-  * Launch \\\\share.bia.[MyCompany]\VSPro2022\VS Pro 2022 Setup\vs_Professional.exe with your Admin account. 
+  * Launch \\\\share.bia.[MyCompany]\VSPro2026\VS Pro 2026 Setup\vs_Professional.exe with your Admin account. 
   * Before click install or update your version click on "More" >  "Update settings" 
   * Select the channel "Private Chanel" 
   * Click ok.  
   => By using the private chanel, you can install or update your Visual studio by clicking on Launch or update. 
-  => If a new version is available in \\share.bia.[MyCompany]\VSPro2022\VS Pro 2022 Setup\ a popup will warn you in Visual Studio. 
+  => If a new version is available in \\share.bia.[MyCompany]\VSPro2026\VS Pro 2026 Setup\ a popup will warn you in Visual Studio. 
 
 - Add the latest SDK of .NET Core from the components list:
 - Add [Development Time IIS Support](https://devblogs.microsoft.com/aspnet/development-time-iis-support-for-asp-net-core-applications/) follow the blog instruction with this additional tips: 

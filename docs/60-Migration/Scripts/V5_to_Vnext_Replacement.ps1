@@ -1,4 +1,4 @@
-$Source = "C:\sources\github\BIADemo";
+$Source = "C:\sources\Azure\SCardNG";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -2696,7 +2696,7 @@ ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode
 # END - TeamSelectionMode -> TeamAutomaticSelectionMode
 
 # BEGIN - charset encoding file into controllers
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ \$";charset={BiaConstants\.Csv\.CharsetEncoding}"' -Include "*Controller.cs"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'this\.File\(buffer, BiaConstants\.Csv\.ContentType \+ ";charset=utf-8"' -NewRegexp 'this.File(buffer, BiaConstants.Csv.ContentType + $";charset={BiaConstants.Csv.CharsetEncoding}"' -Include "*Controller.cs"
 # END - charset encoding file into controllers
 
 # BEGIN - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
@@ -2812,6 +2812,15 @@ ReplaceInProject `
   -NewRegexp '<PackageReference Include="$1"' `
   -Include '*.csproj'
 # END - Directory.Packages.props
+
+# BEGIN - Transform RowVersion properties for versioning
+ReplaceInProject `
+ -Source $SourceBackEnd `
+ -OldRegexp '(\s*)\[Timestamp\]\r?\n\s*\[Column\("RowVersion"\)\]\r?\n\s*public byte\[\] RowVersion([A-Za-z0-9_]+) \{ get; set; \}' `
+ -NewRegexp '$1[Column(nameof(IEntityVersioned.RowVersion))]$1[AuditIgnore]$1public byte[] RowVersion$2 { get; set; }
+$1/// <summary>$1/// Add row version for Postgre in table $2.$1/// </summary>$1[Column(nameof(IEntityVersioned.RowVersionXmin))]$1[AuditIgnore]$1public uint RowVersionXmin$2 { get; set; }' `
+ -Include "*.cs"
+# END - Transform RowVersion properties for versioning
 
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
