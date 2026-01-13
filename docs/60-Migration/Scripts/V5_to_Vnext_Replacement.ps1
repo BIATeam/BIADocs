@@ -1470,15 +1470,6 @@ import fs from "fs";
 import ts from "typescript";
 import path from "path";
 
-/*
-  Fixed transformer:
-  - Deduplicates edits and eliminates duplicate/conflicting edits per route
-  - Uses node.getLastToken().getStart() for insertion inside object literals
-  - Minimal, AST-driven text edits; uses node.getText(sf) for safe extraction
-  - Keeps comments / blank lines outside replaced ranges
-  - Avoids inserting layoutMode for DynamicLayoutComponent (Rule 1)
-  - Removes trailing newline when removing injectComponent
-*/
 function extractFeatureFromConstantsFile(moduleFilename) {
   const dir = path.dirname(moduleFilename);
 
@@ -1616,10 +1607,13 @@ function patchImportsText(text) {
   let out = text;
   let m;
   const inserts = [];
+  let sharedImportFound = false;
+  let sharedImportPath = null;
 
   // ---- Patch layout imports ----
   while ((m = importRegex.exec(text)) !== null) {
     const full = m[0], inner = m[1], matchStart = m.index;
+    const fromPath = m[2];
     const names = inner.split(",").map(s => s.trim()).filter(Boolean).map(s => {
       const a = s.indexOf(" as ");
       return a >= 0 ? s.slice(0,a).trim() : s;
@@ -1630,14 +1624,44 @@ function patchImportsText(text) {
     const toAdd = needed.filter(n => !names.includes(n));
     if (toAdd.length === 0) continue;
 
-    const braceCloseRel = full.lastIndexOf("}");
-    const insertPos = matchStart + braceCloseRel;
-    const insertionText = (inner.trim().length === 0 || inner.trim().endsWith(",")) ? " " + toAdd.join(", ") : ", " + toAdd.join(", ");
-    inserts.push({ pos: insertPos, newText: insertionText });
+    // Check if this is from a shared library (not individual component paths)
+    const fromPathStr = fromPath.slice(1, -1); // remove quotes
+    const isSharedLibrary = !fromPathStr.includes("/fullpage-layout/") && 
+                            !fromPathStr.includes("/popup-layout/") &&
+                            !fromPathStr.includes("/dynamic-layout/");
+    
+    if (isSharedLibrary) {
+      // Add to existing shared import
+      sharedImportFound = true;
+      sharedImportPath = fromPathStr;
+      const braceCloseRel = full.lastIndexOf("}");
+      const insertPos = matchStart + braceCloseRel;
+      const insertionText = (inner.trim().length === 0 || inner.trim().endsWith(",")) ? " " + toAdd.join(", ") : ", " + toAdd.join(", ");
+      inserts.push({ pos: insertPos, newText: insertionText });
+    } else {
+      // This is from individual component paths - we'll add a separate import for shared path
+      // Mark that we need to add the shared library import
+      sharedImportFound = null; // Mark as needing separate import
+    }
   }
 
   inserts.sort((a,b) => b.pos - a.pos);
   for (const ins of inserts) out = out.slice(0, ins.pos) + ins.newText + out.slice(ins.pos);
+
+  // If we found individual component imports, add a new shared import for DynamicLayoutComponent and LayoutMode
+  if (text.includes("FullPageLayoutComponent") || text.includes("PopupLayoutComponent")) {
+    if (!sharedImportFound || sharedImportPath === null) {
+      // Need to add new import from shared library
+      const dynamicImportLine = "import { DynamicLayoutComponent, LayoutMode } from 'src/app/shared/bia-shared/components/layout/dynamic-layout/dynamic-layout.component';";
+      
+      // Check if it already exists
+      if (!out.includes("import { DynamicLayoutComponent") && !out.includes("import { LayoutMode")) {
+        const lastImport = out.lastIndexOf("import ");
+        const insertPos = out.indexOf("\n", lastImport) + 1;
+        out = out.slice(0, insertPos) + dynamicImportLine + "\n" + out.slice(insertPos);
+      }
+    }
+  }
 
   // ---- Insert missing CRUDConfiguration imports ----
   if (text.includes("DynamicLayoutComponent")) {
@@ -1792,7 +1816,18 @@ function transformOneFile(src, filename) {
           const falseIsFull = isIdentifierNamed(whenF, "FullPageLayoutComponent");
           const validPair = (trueIsPopup && falseIsFull) || (trueIsFull && falseIsPopup);
           if (validPair) {
-            desiredLayoutModeText = buildLayoutConditionalText(cond.condition, trueIsPopup, sf);
+            // Only set desiredLayoutModeText if the condition doesn't contain the CrudConfiguration
+            const feature = resolveFeature(routeObj, sf, filename);
+            const configName = feature
+              ? `${feature.charAt(0).toLowerCase() + feature.slice(1)}CRUDConfiguration`
+              : null;
+            const conditionText = cond.condition.getText(sf);
+            const containsConfig = configName && conditionText.includes(configName);
+
+            if (!containsConfig) {
+              desiredLayoutModeText = buildLayoutConditionalText(cond.condition, trueIsPopup, sf);
+            }
+
             const injText = getInjectInitializerText();
             if (injText) desiredComponentText = injText;
             shouldRemoveInject = true;
@@ -1820,9 +1855,8 @@ function transformOneFile(src, filename) {
       !desiredLayoutModeText // do not override explicit layout decisions
     ) {
       const loadChildrenProp = findProp(routeObj, "loadChildren");
-      const importPath = getLoadChildrenImportPath(loadChildrenProp, sf);
 
-      if (importPath && importPath.includes("/children/")) {
+      if (loadChildrenProp) {
         const hasLayoutMode =
           dataProp &&
           ts.isPropertyAssignment(dataProp) &&
@@ -1869,7 +1903,7 @@ function transformOneFile(src, filename) {
 
     const hasDynamicComponent = isTrulyDynamicComponent(dynamicProp);
 
-    if (desiredLayoutModeText !== null && !hasDynamicComponent) {
+    if (desiredLayoutModeText !== null) {
       if (dataProp && ts.isPropertyAssignment(dataProp) && ts.isObjectLiteralExpression(dataProp.initializer)) {
         const dataInit = dataProp.initializer;
         const layoutProp = findProp(dataInit, "layoutMode");
@@ -2376,15 +2410,48 @@ for (const f of process.argv.slice(2)) {
     Set-Location $orig
 }
 
+function Invoke-DynamicLayoutTransformInFilesRec {
+  param (
+    [string]$Source,
+    [string]$Include,
+    [System.Collections.Generic.List[string]]$FileList
+  )
+  foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
+    Invoke-DynamicLayoutTransformInFilesRec -Source $childDirectory.FullName -Include $Include -FileList $FileList
+  }
+
+  $fileItems = Get-ChildItem -LiteralPath $Source -File -Filter $Include
+  foreach ($file in $fileItems) {
+    $FileList.Add($file.FullName)
+  }
+}
+
 function Invoke-DynamicLayoutTransformInFiles {
   param (
     [string]$Source,
     [string]$Include
   )
-  $allFiles = Get-ChildItem -LiteralPath $Source -Recurse -File -Filter $Include
+  $fileList = New-Object System.Collections.Generic.List[string]
+  Invoke-DynamicLayoutTransformInFilesRec -Source $Source -Include $Include -FileList $fileList
 
-  if ($allFiles.Count -gt 0) {
-      Invoke-DynamicLayoutTransform -Files $allFiles.FullName
+  if ($fileList.Count -gt 0) {
+      Invoke-DynamicLayoutTransform -Files $fileList.ToArray()
+  }
+}
+
+function Invoke-DynamicLayoutViewChildInsertInFilesRec {
+  param (
+    [string]$Source,
+    [string]$Include,
+    [System.Collections.Generic.List[string]]$FileList
+  )
+  foreach ($childDirectory in Get-ChildItem -Force -Path $Source -Directory -Exclude $ExcludeDir) {
+    Invoke-DynamicLayoutViewChildInsertInFilesRec -Source $childDirectory.FullName -Include $Include -FileList $FileList
+  }
+
+  $fileItems = Get-ChildItem -LiteralPath $Source -File -Filter $Include
+  foreach ($file in $fileItems) {
+    $FileList.Add($file.FullName)
   }
 }
 
@@ -2393,10 +2460,11 @@ function Invoke-DynamicLayoutViewChildInsertInFiles {
     [string]$Source,
     [string]$Include
   )
-  $allFiles = Get-ChildItem -LiteralPath $Source -Recurse -File -Filter $Include
+  $fileList = New-Object System.Collections.Generic.List[string]
+  Invoke-DynamicLayoutViewChildInsertInFilesRec -Source $Source -Include $Include -FileList $fileList
 
-  if ($allFiles.Count -gt 0) {
-      Invoke-DynamicLayoutViewChildInsert -Files $allFiles.FullName
+  if ($fileList.Count -gt 0) {
+      Invoke-DynamicLayoutViewChildInsert -Files $fileList.ToArray()
   }
 }
 
