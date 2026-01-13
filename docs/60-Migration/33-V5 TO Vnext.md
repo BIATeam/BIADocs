@@ -106,6 +106,7 @@ If some warning about deprecation of `NgIf`, `NgFor` or `NgSwitch` are printed f
 <CheckItem>⚡**COMMIT**</CheckItem>
 <br/>
 
+<CheckItem>Relaunch BIAToolKit and reload your project on **Modify existing project** tab, or click on **Refresh project informations** button if it still opened</CheckItem>
 <CheckItem>Resolve missing and obsolete usings in back-end with BIAToolKit (step **6 - Resolve Usings**)</CheckItem>
 <CheckItem>Resolve building issues into Back</CheckItem>
 <CheckItem>Resolve building issues into your Angular projects</CheckItem>
