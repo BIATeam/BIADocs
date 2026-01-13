@@ -2837,38 +2837,32 @@ Invoke-DynamicLayoutViewChildInsertInFiles -Source $SourceFrontEnd -Include @('*
 # BEGIN - autoCommit
 ReplaceInProject `
   -Source $SourceBackEnd `
-  -OldRegexp 'public override async Task<([\s\S]*?)> AddAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
-  -NewRegexp 'public override async Task<$1> AddAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
+  -OldRegexp 'public\s*override(?<async>\s+async)?\s*Task<([\S]*?)>\s*(AddAsync|UpdateAsync)\(([\s\S]*?),(\s*)string mapperMode = null\)' `
+  -NewRegexp 'public override${async} Task<$1> $2($3,$4string mapperMode = null,$4bool autoCommit = true)' `
   -Include '*Service.cs'
 
 ReplaceInProject `
   -Source $SourceBackEnd `
-  -OldRegexp 'await base.AddAsync\(([\s\S]*?)mapperMode\)' `
-  -NewRegexp 'await base.AddAsync($1mapperMode, autoCommit: autoCommit)' `
+  -OldRegexp 'base.AddAsync\(([\s\S]*?)mapperMode\)' `
+  -NewRegexp 'base.AddAsync($1mapperMode, autoCommit: autoCommit)' `
   -Include '*Service.cs'
 
 ReplaceInProject `
   -Source $SourceBackEnd `
-  -OldRegexp 'public override async Task<([\s\S]*?)> UpdateAsync\(([\s\S]*?),(\s*)string mapperMode = null\)' `
-  -NewRegexp 'public override async Task<$1> UpdateAsync($2,$3string mapperMode = null,$3bool autoCommit = true)' `
+  -OldRegexp 'base.UpdateAsync\(([\s\S]*?)mapperMode\)' `
+  -NewRegexp 'base.UpdateAsync($1mapperMode, autoCommit: autoCommit)' `
   -Include '*Service.cs'
 
 ReplaceInProject `
   -Source $SourceBackEnd `
-  -OldRegexp 'await base.UpdateAsync\(([\s\S]*?)mapperMode\)' `
-  -NewRegexp 'await base.UpdateAsync($1mapperMode, autoCommit: autoCommit)' `
+  -OldRegexp 'public\s*override(?<async>\s+async)?\s*Task<([\S]*?)>\s*RemoveAsync\(([\s\S]*?),(\s*)bool bypassFixed = false\)' `
+  -NewRegexp 'public override${async} Task<$1> RemoveAsync($2,$3bool bypassFixed = false,$3bool autoCommit = true)' `
   -Include '*Service.cs'
 
 ReplaceInProject `
   -Source $SourceBackEnd `
-  -OldRegexp 'public override async Task<([\s\S]*?)> RemoveAsync\(([\s\S]*?),(\s*)bool bypassFixed = false\)' `
-  -NewRegexp 'public override async Task<$1> RemoveAsync($2, bool bypassFixed = false,$3bool autoCommit = true)' `
-  -Include '*Service.cs'
-
-ReplaceInProject `
-  -Source $SourceBackEnd `
-  -OldRegexp 'await base.RemoveAsync\(([\s\S]*?)bypassFixed\)' `
-  -NewRegexp 'await base.RemoveAsync($1bypassFixed, autoCommit: autoCommit)' `
+  -OldRegexp 'base.RemoveAsync\(([\s\S]*?)bypassFixed\)' `
+  -NewRegexp 'base.RemoveAsync($1bypassFixed, autoCommit: autoCommit)' `
   -Include '*Service.cs'
 # END - autoCommit
 
