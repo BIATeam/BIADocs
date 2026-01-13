@@ -9,9 +9,8 @@ import CheckItem from '@site/src/components/CheckItem';
 ## Prerequisites 
 <CheckItem>Upgrade to compatible versions of **node.js** and **npm** for Angular V20 ([Setup Environment Angular](../10-Introduction/20-SetupEnvironment/SetupEnvironmentAngular.md#nodejs))</CheckItem>
 <CheckItem>Run `npm i -g @angular/cli@20`</CheckItem>
-<CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
-
 <CheckItem>Install Visual Studio 2026</CheckItem>
+<CheckItem>⚡**Create a new feature branch for the migration**</CheckItem>
 
 ## Angular V20 Migration
 ### Editor's migration guides
