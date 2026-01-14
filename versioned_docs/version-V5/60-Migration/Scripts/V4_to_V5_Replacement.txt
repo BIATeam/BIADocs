@@ -364,7 +364,7 @@ ReplaceInProject -Source $SourceBackEnd -OldRegexp "\.DtoToEntity\(dto, entity(,
 # END - Base Mapper
 
 # BEGIN - CrudItemService Injector
-ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public optionsService: .*OptionsService,)" -NewRegexp '$1protected injector: Injector,' -Include *service.ts
+ReplaceInProject -Source $SourceFrontEnd -OldRegexp "(public optionsService: .*OptionsService,)(?![\s\S]*?protected injector: Injector)" -NewRegexp '$1protected injector: Injector,' -Include *service.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "super\(dasService, signalRService, optionsService\);" -NewRegexp 'super(dasService, signalRService, optionsService, injector);' -Include *service.ts
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "import \{ Injectable \} from '@angular/core';" -NewRegexp 'import { Injectable, Injector } from ''@angular/core'';' -Include *service.ts
 # END - CrudItemService Injector
@@ -460,12 +460,12 @@ node $standaloneCatchUpScript
 Remove-Item "$SourceFrontEnd\$standaloneCatchUpScript"
 
 # FRONT END
-# Set-Location $SourceFrontEnd
-# npm run clean
+Set-Location $SourceFrontEnd
+npm run clean
 
 # BACK END
-# Set-Location $SourceBackEnd
-# dotnet restore --no-cache
+Set-Location $SourceBackEnd
+dotnet restore --no-cache
 
 Write-Host "Finish"
 pause
