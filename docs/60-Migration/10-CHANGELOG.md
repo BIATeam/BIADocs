@@ -3,9 +3,10 @@ sidebar_position: 1
 ---
 
 # ChangeLog
-## V6 (NEXT)
+## V6
 ### Features
 * .NET 10 / Angular 20
+* Moving all `bia` core front files into dedicated angular package `@bia-team/bia-ng`
 * Centralization of NuGet package versions in a single file ([doc](https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management))
 * Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
 * New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
@@ -27,6 +28,18 @@ sidebar_position: 1
 * Add `.bia-table-input` CSS class and derived classes for each input type in a calc table
 * Set default max width to `15rem` for `.bia-table-input-select` and `.bia-table-input-multiselect` CSS classes
 * Add new customizable front-end constant `DEFAULT_POPUP_MINWIDTH` set to `60vw`
+* Improve back to back communication with compressed data
+* Prevent multiple submission on add or update
+* `BaseDto<TKey>` in front-end can now have `number` or `string` primary key
+* Add dynamic filter based on periods from current day (tommorow, day before today...)
+* Improve `GetAsync` method to use with `HttpClient` by returning the `HttpStatusCode` into the Tuple data
+* Usage of `NewStyleCop.Analyzers` instead of `StyleCop.Analyzers`
+* Add `EnableRetryOnFailure` to data context options in dependcy injection configuration
+* New configuration screens for Views into tables
+* Add bulk methods for Insert, Update and Delete (back-end)
+* New split button to group buttons into table header
+* Rebranding export and export CSV buttons
+* Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
@@ -41,6 +54,12 @@ sidebar_position: 1
 * Fix bad dispay of select/multiselect overlay when the column width is greater than the current scroll view
 * Fix bad display of forms with layout config on split mode
 * Fix RowVersion for PostGreSQL
+* Fix height view for table with 2 rows displayed at least
+* Fix disabling of notification button if usr don't have the permissions to access it
+* Fix breadcrumb disabled link elements
+* Fix notification button redirection
+* Fix handling of token expiration
+* Improve cleaning of local storage cache
 
 ### Breaking changes
 * Removed `bia-input` and `bia-output` components
