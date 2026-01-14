@@ -8,7 +8,7 @@ DynamicLayout is necessary in V5+ of the framework if you want to use the clone 
 
 You need to update your module file to use DynamicLayoutComponent by using this script on your project:
 
-Download the [migration script](../Scripts/Migrate_to_DynamicLayout.ps1) ([.txt - Save link as](./Scripts/Migrate_to_DynamicLayout.txt)), then :
+Download the [migration script](../../Scripts/Migrate_to_DynamicLayout.ps1) ([.txt - Save link as](../../Scripts/Migrate_to_DynamicLayout.txt)), then :
 - change source path of the migration script to target your project root and your Angular project
 - run it for each of your Angular project (change the Angular source path each time)
 :::
