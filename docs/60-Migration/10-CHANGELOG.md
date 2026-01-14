@@ -67,8 +67,8 @@ sidebar_position: 1
 * Remove `LazyLoadDto`
   * use `PagingFilterFormatDto` instead
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
-* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](33-V5%20TO%20Vnext.md#inheritage))
-* Rename generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20Vnext.md#overrides))
+* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](33-V5%20TO%20V6.md#inheritage))
+* Rename generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20V6.md#overrides))
 
 ## V5.2.3 (18/12/2025)
 ### Bugfix
