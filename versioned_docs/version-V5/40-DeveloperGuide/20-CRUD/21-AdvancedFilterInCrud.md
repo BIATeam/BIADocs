@@ -78,3 +78,6 @@ To add more filter criteria:
 2. Add specification logic in `GetMyFeatureAdvancedFilterSpecification()` method
 3. Add form control and options list to component class (frontend)
 4. Add filter control to template
+
+## Working example
+A working example can be found in BIA Demo under [PlaneSpecific feature](https://github.com/BIATeam/BIADemo/tree/develop/Angular/src/app/features/planes-specific)
