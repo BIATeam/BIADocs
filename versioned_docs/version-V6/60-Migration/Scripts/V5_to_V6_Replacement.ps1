@@ -1,4 +1,4 @@
-$Source = "C:\sources\Project";
+$Source = "C:\sources\github\BIADemo";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -2173,10 +2173,6 @@ function insertBeforeBrace(obj) {
   return tok ? tok.getStart() : obj.getEnd() - 1;
 }
 
-function prefix(obj) {
-  return obj.properties.length ? ", " : "";
-}
-
 function dedupe(edits) {
   const map = new Map();
   for (const e of edits) {
@@ -2336,7 +2332,7 @@ function transform(src, filename) {
       edits.push({
         start: pos,
         end: pos,
-        text: `${prefix(route)}children: [ ${viewChild} ] `
+        text: `children: [ ${viewChild} ] `
       });
       return;
     }
