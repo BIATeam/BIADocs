@@ -2595,16 +2595,19 @@ function Invoke-ManageCentralPackageVersions {
   }
 
   foreach ($packageId in $packagesForProject.Keys) {
-    $versionValue = $packagesForProject[$packageId]
-    if (-not $finalPackages.ContainsKey($packageId)) {
-      Write-Host ("  -> adding {0} {1} to Directory.Packages.Project.props" -f $packageId, $versionValue)
-      $finalPackages[$packageId] = $versionValue
-      $projectPropsChanged = $true
-    }
-    elseif ($versionValue -and $finalPackages[$packageId] -ne $versionValue) {
-      Write-Host ("  -> updating {0}: {1} -> {2} in Directory.Packages.Project.props" -f $packageId, $finalPackages[$packageId], $versionValue)
-      $finalPackages[$packageId] = $versionValue
-      $projectPropsChanged = $true
+    $excludedPackages = @("System.Security.Principal.Windows")
+    if (-not $excludedPackages.Contains($packageId)) {
+      $versionValue = $packagesForProject[$packageId]
+      if (-not $finalPackages.ContainsKey($packageId)) {
+        Write-Host ("  -> adding {0} {1} to Directory.Packages.Project.props" -f $packageId, $versionValue)
+        $finalPackages[$packageId] = $versionValue
+        $projectPropsChanged = $true
+      }
+      elseif ($versionValue -and $finalPackages[$packageId] -ne $versionValue) {
+        Write-Host ("  -> updating {0}: {1} -> {2} in Directory.Packages.Project.props" -f $packageId, $finalPackages[$packageId], $versionValue)
+        $finalPackages[$packageId] = $versionValue
+        $projectPropsChanged = $true
+      }
     }
   }
 
