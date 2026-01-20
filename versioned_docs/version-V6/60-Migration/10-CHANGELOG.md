@@ -69,6 +69,8 @@ sidebar_position: 1
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
 * `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](33-V5%20TO%20V6.md#inheritage))
 * Rename generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20V6.md#overrides))
+* `TeamsConfig` property has been removed from `LoginParamDto` and is now returned into `AppSettingsDto`
+  * In front-end, inject `AppSettingService` and use `appSettings.teamsConfig` property to access it ([migration note](33-V5%20TO%20V6.md#teamsconfig))
 
 ## V5.2.3 (18/12/2025)
 ### Bugfix
