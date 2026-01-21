@@ -2464,6 +2464,527 @@ function Invoke-DynamicLayoutViewChildInsertInFiles {
   }
 }
 
+function Invoke-IndexComponentFullCodeViews {
+    [CmdletBinding()]
+    param(
+        [string]$Source
+    )
+
+    $colors = @{
+        Reset  = "`e[0m"
+        Red    = "`e[31m"
+        Green  = "`e[32m"
+        Yellow = "`e[33m"
+        Blue   = "`e[34m"
+        Cyan   = "`e[36m"
+    }
+
+    $IndexBaseClasses = @(
+        'CrudItemsIndexComponent'
+        'AnnouncementsIndexComponent'
+        'NotificationsIndexComponent'
+        'UsersIndexComponent'
+        'MembersIndexComponent'
+    )
+
+    function Write-Colored {
+        param([string]$Message, [string]$Color)
+        Write-Host "$($colors[$Color])$Message$($colors.Reset)"
+    }
+
+    function Get-FileContent {
+        param([string]$FilePath)
+        try {
+            return Get-Content -Path $FilePath -Raw -ErrorAction Stop
+        }
+        catch {
+            Write-Colored "Error reading file $FilePath : $_" "Red"
+            return $null
+        }
+    }
+
+    function Has-Method {
+        param([string]$Content, [string]$MethodName)
+        return $Content -match "$MethodName\s*\([^)]*\)\s*[{:]"
+    }
+
+    function Has-Property {
+        param([string]$Content, [string]$PropertyName)
+        return $Content -match "$PropertyName\s*:\s*\w+(\s*\|)?\s*\w*\s*[;=]"
+    }
+
+    function Get-ClassName {
+        param([string]$Content)
+        $match = $Content -match 'export\s+class\s+(\w+)'
+        if ($match) {
+            return $Matches[1]
+        }
+        return $null
+    }
+
+    function Get-ParentClass {
+        param([string]$Content)
+
+        $text = $Content -replace '\r?\n', ' '
+
+        while ($text -match '<[^<>]*>') {
+            $text = [regex]::Replace($text, '<[^<>]*>', '')
+        }
+
+        if ($text -match 'export\s+(abstract\s+)?class\s+\w+\s+extends\s+(\w+)\b') {
+            return $Matches[2]
+        }
+
+        return $null
+    }
+
+    function Get-Imports {
+        param(
+            [string]$Content,
+            [string]$CurrentFilePath
+        )
+
+        $imports = @{}
+
+        $Content -split "`n" | ForEach-Object {
+            if ($_ -match "import\s+\{\s*([^}]+)\s*\}\s+from\s+['""]([^'""]+)['""]") {
+                $classNames = $Matches[1] -split ',' | ForEach-Object { $_.Trim() }
+                $importPath = $Matches[2]
+
+                foreach ($class in $classNames) {
+                    $resolvedPath = Resolve-ImportPath -ImportPath $importPath -CurrentFilePath $CurrentFilePath
+                    if ($resolvedPath) {
+                        $imports[$class] = $resolvedPath
+                    }
+                }
+            }
+        }
+
+        return $imports
+    }
+
+    function Resolve-ImportPath {
+        param(
+            [string]$ImportPath,
+            [string]$CurrentFilePath
+        )
+
+        if ($ImportPath.StartsWith('.')) {
+            $base = Split-Path $CurrentFilePath
+            $candidate = Join-Path $base $ImportPath
+
+            foreach ($ext in @('.ts', '.component.ts', '.service.ts', '.class.ts')) {
+                $full = "$candidate$ext"
+                if (Test-Path $full) { return $full }
+            }
+
+            if (Test-Path "$candidate/index.ts") {
+                return "$candidate/index.ts"
+            }
+        }
+
+        return $null
+    }
+
+    function Has-TableController {
+        param([string]$TemplateContent)
+        return $TemplateContent -match 'table-controller'
+    }
+
+    function Get-RequiredDependenciesInCode {
+        param([string]$MethodsCode)
+    
+        $dependencies = @()
+        if ($MethodsCode -match 'this\.\brouter\b') { $dependencies += 'router' }
+        if ($MethodsCode -match 'this\.\bactivatedRoute\b') { $dependencies += 'activatedRoute' }
+        if ($MethodsCode -match 'this\.\blocation\b') { $dependencies += 'location' }
+    
+        return $dependencies | Select-Object -Unique
+    }
+
+    function Has-DependencyInjection {
+        param([string]$Content, [string]$DependencyName)
+
+        if ($Content -match "constructor\s*\([^)]*\b$DependencyName\b\s*:") {
+            return $true
+        }
+
+        if ($Content -match "\bthis\.$DependencyName\b\s*=\s*this\.injector\.get") {
+            return $true
+        }
+
+        return $false
+    }
+
+    function Has-CrudItemsIndexInheritance {
+        param(
+            [string]$FilePath,
+            [hashtable]$Visited = @{}
+        )
+
+        if ($Visited[$FilePath]) { return $false }
+        $Visited[$FilePath] = $true
+
+        $content = Get-FileContent -FilePath $FilePath
+
+        $parentClass = Get-ParentClass -Content $content
+        if (-not $parentClass) { return $false }
+
+        if ($IndexBaseClasses -contains $parentClass) {
+            return $true
+        }
+
+        $imports = Get-Imports -Content $content -CurrentFilePath $FilePath
+
+        if (-not $imports.ContainsKey($parentClass)) {
+            return $false
+        }
+
+        return Has-CrudItemsIndexInheritance -FilePath $imports[$parentClass] -Visited $Visited
+    }
+
+    function Get-TemplateContentFromComponent {
+        param(
+            [string]$ComponentPath,
+            [string]$ComponentContent
+        )
+
+        if ($ComponentContent -match "templateUrl\s*:\s*['""]([^'""]+)['""]") {
+            $componentDir = Split-Path -Path $ComponentPath -Parent
+            $templatePath = Join-Path $componentDir $Matches[1]
+            if (Test-Path $templatePath) {
+                return Get-FileContent -FilePath $templatePath
+            }
+            return $null
+        }
+
+        if ($ComponentContent -match "template\s*:\s*`"(.*?)`"" -or
+            $ComponentContent -match "template\s*:\s*'(.*?)'") {
+            return $Matches[1]
+        }
+
+        return $null
+    }
+
+    $onSelectedViewChangedMethod = @"
+
+  onSelectedViewChanged(view: View | null) {
+    this.currentView = view;
+    this.updateViewQueryParam(view);
+  }
+"@
+
+    $updateViewQueryParamMethod = @"
+
+  updateViewQueryParam(view: View | null) {
+    if (this.isViewRouteLoaded()) {
+      this.changeView(view);
+    } else {
+      const tree = this.router.createUrlTree([], {
+        relativeTo: this.activatedRoute,
+        queryParams: view?.name ? { view: view.name } : { view: null },
+        queryParamsHandling: 'merge',
+      });
+
+      this.location.replaceState(this.router.serializeUrl(tree));
+    }
+  }
+"@
+
+    $isViewRouteLoadedMethod = @"
+
+  isViewRouteLoaded(): boolean {
+    const currentUrl = this.router.url;
+    const baseUrl = currentUrl.split('?')[0];
+    return baseUrl.endsWith('/saveView');
+  }
+"@
+
+    $changeViewMethod = @"
+
+  changeView(view: View | null) {
+    const segments = this.router.url.split('?')[0].split('/').filter(Boolean);
+
+    if (segments.length >= 2) {
+      segments[segments.length - 2] = view?.id.toString() ?? '0';
+
+      this.router.navigate(['/', ...segments], {
+        relativeTo: this.activatedRoute,
+        queryParams: { view: view?.name ?? null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    }
+  }
+"@
+
+    $currentViewProperty = "  currentView: View | null;`n"
+
+
+    Write-Colored "==============================================================" "Cyan"
+    Write-Colored "TS IndexComponent Checker - Deep Inheritance Analysis" "Cyan"
+    Write-Colored "==============================================================" "Cyan"
+    Write-Host ""
+
+    $indexComponentFiles = @(Get-ChildItem -Path $Source -Filter "*index.component.ts" -Recurse -ErrorAction SilentlyContinue)
+
+    Write-Colored "Found $($indexComponentFiles.Count) IndexComponent files" "Blue"
+    Write-Host ""
+
+    $filesNeedingUpdate = @()
+    $filesChecked = @()
+    $fileCache = @{}
+
+    foreach ($file in $indexComponentFiles) {
+        $content = Get-FileContent -FilePath $file.FullName
+        if ($null -eq $content) { continue }
+    
+        $fileCache[$file.FullName] = $content
+    
+        $className = Get-ClassName -Content $content
+    
+        $templateContent = Get-TemplateContentFromComponent `
+            -ComponentPath $file.FullName `
+            -ComponentContent $content
+
+        if ($null -eq $templateContent -or -not (Has-TableController -TemplateContent $templateContent)) {
+            Write-Colored "[SKIP] $($file.Name)" "Blue"
+            Write-Host "    No bia-table-controller in template"
+            $filesChecked += $file.FullName
+            continue
+        }
+
+        $extendsCrudItems = Has-CrudItemsIndexInheritance `
+            -FilePath $file.FullName `
+            -FileCache $fileCache `
+            -VisitedClasses @{}
+        
+        if ($extendsCrudItems) {
+            Write-Colored "[OK] $($file.Name)" "Green"
+            Write-Host "    Extends CrudItemsIndexComponent (directly or indirectly)"
+        }
+        else {
+            # Check for required methods and properties
+            $hasMethods = @{
+                onSelectedViewChanged = Has-Method -Content $content -MethodName "onSelectedViewChanged"
+                updateViewQueryParam  = Has-Method -Content $content -MethodName "updateViewQueryParam"
+                isViewRouteLoaded     = Has-Method -Content $content -MethodName "isViewRouteLoaded"
+                changeView            = Has-Method -Content $content -MethodName "changeView"
+            }
+        
+            $hasProperties = @{
+                currentView = Has-Property -Content $content -PropertyName "currentView"
+            }
+        
+            $hasViewImport = $content -match "import.*View.*from"
+        
+            $missing = @()
+            if (-not $hasMethods.onSelectedViewChanged) { $missing += 'onSelectedViewChanged()' }
+            if (-not $hasMethods.updateViewQueryParam) { $missing += 'updateViewQueryParam()' }
+            if (-not $hasMethods.isViewRouteLoaded) { $missing += 'isViewRouteLoaded()' }
+            if (-not $hasMethods.changeView) { $missing += 'changeView()' }
+            if (-not $hasProperties.currentView) { $missing += 'currentView property' }
+            if (-not $hasViewImport) { $missing += 'View import' }
+        
+            # Check for missing dependencies in constructor (only if methods are missing)
+            # If methods are missing, then dependencies will also be needed
+            $missingDeps = @()
+            if ($missing.Count -gt 0) {
+                $requiredDeps = Get-RequiredDependenciesInCode -MethodsCode ($onSelectedViewChangedMethod + $updateViewQueryParamMethod + $isViewRouteLoadedMethod + $changeViewMethod)
+            
+                foreach ($dep in $requiredDeps) {
+                    if (-not (Has-DependencyInjection -Content $content -DependencyName $dep)) {
+                        $missingDeps += $dep
+                    }
+                }
+            
+                if ($missingDeps.Count -gt 0) {
+                    foreach ($dep in $missingDeps) {
+                        $missing += "Missing injection: $dep"
+                    }
+                }
+            }
+        
+            if ($missing.Count -gt 0) {
+                Write-Colored "[MISSING] $($file.Name)" "Red"
+                Write-Host "    Class: $className"
+                Write-Host "    Missing:"
+                foreach ($item in $missing) {
+                    Write-Colored "      - $item" "Yellow"
+                }
+            
+                $filesNeedingUpdate += @{
+                    Path        = $file.FullName
+                    Content     = $content
+                    ClassName   = $className
+                    Missing     = $missing
+                    MissingDeps = $missingDeps
+                }
+            }
+            else {
+                Write-Colored "[OK] $($file.Name)" "Green"
+                Write-Host "    Has all required members and dependencies"
+            }
+        }
+        $filesChecked += $file.FullName
+    }
+
+    Write-Host ""
+    Write-Colored "==============================================================" "Cyan"
+    Write-Colored "Summary" "Cyan"
+    Write-Colored "==============================================================" "Cyan"
+    Write-Host "Total files checked: $($filesChecked.Count)"
+    Write-Colored "Files needing updates: $($filesNeedingUpdate.Count)" $(if ($filesNeedingUpdate.Count -eq 0) { "Green" } else { "Yellow" })
+    Write-Host ""
+
+    if ($filesNeedingUpdate.Count -gt 0) {
+        Write-Colored "Files that need updating:" "Yellow"
+        foreach ($file in $filesNeedingUpdate) {
+            Write-Host "  - $($file.Path)"
+        }
+        Write-Host ""
+        Write-Colored "Auto-fixing files (methods, properties, and injections)..." "Blue"
+        Write-Host ""
+    
+        foreach ($file in $filesNeedingUpdate) {
+            Write-Colored "Processing: $($file.Path)" "Cyan"
+        
+            $content = $file.Content
+            $updatedContent = $content
+        
+            # Add Location import if missing
+            if ($file.Missing -like '*Missing injection: location*') {
+                if ($updatedContent -notmatch 'import.*Location.*from\s+@angular/common') {
+                    $pattern = "import\s*\{\s*([^}]*)\s*\}\s*from\s+'@angular/common'\s*;"
+                    if ($updatedContent -match $pattern) {
+                        $old = $Matches[0]
+                        $new = $old -replace '\}', ', Location }'
+                        $updatedContent = $updatedContent -replace [regex]::Escape($old), $new
+                        Write-Host "    [+] Added Location import"
+                    }
+                }
+            }
+
+            if ($file.Missing -like '*Missing injection: router*' -or
+                $file.Missing -like '*Missing injection: activatedRoute*') {
+
+                if ($updatedContent -notmatch 'from\s+''@angular/router''') {
+                    $routerImport = "import { Router, ActivatedRoute } from '@angular/router';"
+                    $updatedContent = $routerImport + "`n" + $updatedContent
+                    Write-Host "    [+] Added Router & ActivatedRoute imports"
+                }
+            }
+        
+            # Add missing constructor injections
+            if ($updatedContent -match 'constructor\s*\(([\s\S]*?)\)\s*\{') {
+                $paramsBlock = $Matches[1].Trim()
+                $oldConstructor = $Matches[0]
+
+                $paramList = @()
+                if ($paramsBlock.Length -gt 0) {
+                    $paramList = $paramsBlock -split ",\s*`n?"
+                }
+
+                $joinedParams = $paramList -join "`n"
+
+                if ($file.Missing -like '*Missing injection: router*' -and
+                    $joinedParams -notmatch '\brouter\s*:') {
+                    $paramList += 'private router: Router'
+                    Write-Host "    [+] Added router parameter to constructor"
+                }
+
+                if ($file.Missing -like '*Missing injection: activatedRoute*' -and
+                    $joinedParams -notmatch '\bactivatedRoute\s*:') {
+                    $paramList += 'private activatedRoute: ActivatedRoute'
+                    Write-Host "    [+] Added activatedRoute parameter to constructor"
+                }
+
+                if ($file.Missing -like '*Missing injection: location*' -and
+                    $joinedParams -notmatch '\blocation\s*:') {
+                    $paramList += 'private location: Location'
+                    Write-Host "    [+] Added location parameter to constructor"
+                }
+
+                $newParams = ($paramList | ForEach-Object { "    $_" }) -join ",`n"
+
+                $newConstructor = "constructor(`n$newParams`n) {"
+
+                $updatedContent = $updatedContent -replace
+                [regex]::Escape($oldConstructor),
+                $newConstructor
+            }
+        
+            # Add methods and properties
+            $classClosingBraceIndex = $updatedContent.LastIndexOf('}')
+            if ($classClosingBraceIndex -gt 0) {
+                $insertionPoint = $classClosingBraceIndex
+                $toAdd = ''
+        
+                if ($file.Missing -contains 'currentView property') {
+                    $toAdd += "`n" + $currentViewProperty
+                    Write-Host "    [+] Added currentView property"
+                }
+            
+                if ($file.Missing -like '*onSelectedViewChanged*') {
+                    $toAdd += $onSelectedViewChangedMethod + "`n"
+                    Write-Host "    [+] Added onSelectedViewChanged() method"
+                }
+            
+                if ($file.Missing -like '*updateViewQueryParam*') {
+                    $toAdd += $updateViewQueryParamMethod + "`n"
+                    Write-Host "    [+] Added updateViewQueryParam() method"
+                }
+            
+                if ($file.Missing -like '*isViewRouteLoaded*') {
+                    $toAdd += $isViewRouteLoadedMethod + "`n"
+                    Write-Host "    [+] Added isViewRouteLoaded() method"
+                }
+            
+                if ($file.Missing -like '*changeView*') {
+                    $toAdd += $changeViewMethod + "`n"
+                    Write-Host "    [+] Added changeView() method"
+                }
+            
+                if ($toAdd.Length -gt 0) {
+                    $updatedContent = $updatedContent.Substring(0, $insertionPoint) + "`n" + $toAdd + $updatedContent.Substring($insertionPoint)
+                
+                    # Add View import if it was in the missing list
+                    if ($file.Missing -contains 'View import') {
+                        if ($updatedContent -notmatch 'import.*View.*from.*packages/bia-ng/shared/public-api') {
+                            # Try to add it after existing packages/bia-ng imports
+                            $searchString = "from 'packages/bia-ng/shared/public-api';"
+                            $lastPackageImport = $updatedContent.LastIndexOf($searchString)
+                            if ($lastPackageImport -gt 0) {
+                                $lineEnd = $updatedContent.IndexOf([char]10, $lastPackageImport)
+                                if ($lineEnd -gt 0) {
+                                    $newLine = "`nimport { View } from 'packages/bia-ng/shared/public-api';"
+                                    $updatedContent = $updatedContent.Insert($lineEnd, $newLine)
+                                    Write-Host "    [+] Added View import from packages/bia-ng/shared/public-api"
+                                }
+                            }
+                        }
+                    }
+            
+                    try {
+                        Set-Content -Path $file.Path -Value $updatedContent -ErrorAction Stop
+                        Write-Colored "    [SUCCESS] File updated successfully" "Green"
+                    }
+                    catch {
+                        Write-Colored "    [ERROR] Error writing file: $_" "Red"
+                    }
+                }
+            }
+        }
+        Write-Host ""
+        Write-Colored "Auto-fix complete!" "Green"
+    }
+
+    if ($filesNeedingUpdate.Count -eq 0) {
+        Write-Colored "All files are properly configured!" "Green"
+    }
+
+}
+
 function Invoke-ManageCentralPackageVersions {
   param (
     [Parameter(Mandatory = $true)]
@@ -2831,6 +3352,10 @@ Invoke-DynamicLayoutTransformInFiles -Source $SourceFrontEnd -Include @('*module
 
 # BEGIN - Add view routing in feature routing
 Invoke-DynamicLayoutViewChildInsertInFiles -Source $SourceFrontEnd -Include @('*module.ts')
+# END - Add view routing in feature routing
+
+# BEGIN - Add view routing in feature routing
+Invoke-IndexComponentFullCodeViews -Source $SourceFrontEnd
 # END - Add view routing in feature routing
 
 # BEGIN - autoCommit
