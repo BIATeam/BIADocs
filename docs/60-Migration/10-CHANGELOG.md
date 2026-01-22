@@ -40,6 +40,7 @@ sidebar_position: 1
 * New split button to group buttons into table header
 * Rebranding export and export CSV buttons
 * Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
+* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#create-the-model))
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
