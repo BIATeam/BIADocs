@@ -3403,8 +3403,8 @@ ReplaceInProject `
 ReplaceInProject `
  -Source $SourceBackEnd `
  -OldRegexp '(\s*)\[Timestamp\]\r?\n\s*\[Column\("RowVersion"\)\]\r?\n\s*public byte\[\] RowVersion([A-Za-z0-9_]+) \{ get; set; \}' `
- -NewRegexp '$1[Column(nameof(IEntityVersioned.RowVersion))]$1[AuditIgnore]$1public byte[] RowVersion$2 { get; set; }
-$1/// <summary>$1/// Add row version for Postgre in table $2.$1/// </summary>$1[Column(nameof(IEntityVersioned.RowVersionXmin))]$1[AuditIgnore]$1public uint RowVersionXmin$2 { get; set; }' `
+ -NewRegexp '$1[BiaRowVersionProperty(DbProvider.SqlServer)]$1[AuditIgnore]$1public byte[] RowVersion$2 { get; set; }
+$1/// <summary>$1/// Add row version for Postgre in table $2.$1/// </summary>$1[BiaRowVersionProperty(DbProvider.PostGreSql)]$1[AuditIgnore]$1public uint RowVersionXmin$2 { get; set; }' `
  -Include "*.cs"
 # END - Transform RowVersion properties for versioning
 
