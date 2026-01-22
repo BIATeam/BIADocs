@@ -5,36 +5,37 @@ sidebar_position: 90
 # Offline mode
 This file explains how to use the feature offline in your V3 project.
 
-## Prerequisite
-This feature must be associated with the installation of the service worker angular ([ng add @angular/pwa](https://www.npmjs.com/package/@angular/pwa))
-
-<!-- ### Knowledge to have: -->
-
 ## Overview
 The purpose of this feature is to keep http requests in memory when the server is unavailable. When the server is available again, the requests are executed.
 This feature also makes it possible to store data on GET http request.
 
 ## Activation
-In the **\src\app\core\core.module.ts** file
+In the **all-environments.ts** file
 
-Add this:
-
-```ts
-import { BiaOnlineOfflineService } from './bia-core/services/bia-online-offline.service';
-import { biaOnlineOfflineInterceptor } from './bia-core/interceptors/bia-online-offline.interceptor';
-import { AppDB } from './bia-core/db';
-const ONLINEOFFLINE = [BiaOnlineOfflineService, biaOnlineOfflineInterceptor, AppDB];
-```
-
-and add the **ONLINEOFFLINE** array in the **NgModule**, **providers** :
+Set **enableOfflineMode** parameter to true:
 
 ```ts
-@NgModule({
-  providers: [
-    ...ONLINEOFFLINE,
-  ]
-})
+enableOfflineMode: true,
 ```
+
+## Local Debug
+
+You cannot debug the Angular service worker using the classic debug mode (ng serve or VS Code debugger). To debug the service worker, you need to build your project in production mode and serve the compiled files with a static server.
+
+The first step is to copy the content of the following files into the corresponding files:
+
+* index.prod.html → index.html
+* environment.prod.ts → environment.ts
+
+
+Then launch the following commands (Replace **ProjectName** with your actual project folder name):
+
+```
+ng build --configuration production
+npx http-server .\dist\ProjectName -p 4200
+```
+
+Then, open your browser at http://localhost:4200 to debug the service worker.
 
 ## Usage
 
