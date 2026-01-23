@@ -24,8 +24,8 @@ You cannot debug the Angular service worker using the classic debug mode (ng ser
 
 The first step is to copy the content of the following files into the corresponding files:
 
-* index.prod.html → index.html
-* environment.prod.ts → environment.ts
+* index.html → index.prod.html
+* environment.ts → environment.prod.ts 
 
 
 Then launch the following commands (Replace **ProjectName** with your actual project folder name):
