@@ -2289,10 +2289,37 @@ function transform(src, filename) {
   const edits = [];
   let usedFeature = null;
 
+  function hasIndexInjectComponent(route, sf) {
+    const data = findProp(route, "data");
+    if (!data || !ts.isObjectLiteralExpression(data.initializer)) return false;
+
+    const inject = findProp(data.initializer, "injectComponent");
+    if (!inject) return false;
+
+    const init = inject.initializer;
+
+    // Identifier: MyFeatureIndexComponent
+    if (ts.isIdentifier(init)) {
+      return init.text.endsWith("IndexComponent");
+    }
+
+    // Property access: SomeNamespace.MyFeatureIndexComponent
+    if (ts.isPropertyAccessExpression(init)) {
+      return init.name.text.endsWith("IndexComponent");
+    }
+
+    return false;
+  }
+
   function visit(node) {
     if (ts.isObjectLiteralExpression(node)) {
       const comp = findProp(node, "component");
-      if (comp && comp.initializer.getText(sf) === "DynamicLayoutComponent") {
+
+      if (
+        comp &&
+        comp.initializer.getText(sf) === "DynamicLayoutComponent" &&
+        hasIndexInjectComponent(node, sf)
+      ) {
         processRoute(node);
       }
     }
@@ -2301,29 +2328,41 @@ function transform(src, filename) {
 
   function processRoute(route) {
     const feature = extractFeatureFromConfiguration(route, sf);
-    if (!feature) return;
-    const featureKebab = toKebabCase(feature);
-
-    // 🚫 HARD STOP: service must exist
-    if (!serviceExists(filename, featureKebab)) {
-      return;
-    }
-
-    usedFeature = feature;
-
-    const featureLower = feature.charAt(0).toLowerCase() + feature.slice(1);
     const viewPath = computeViewImportPath(filename);
 
-    const viewChild = `{
-      path: 'view',
-      data: {
-        featureConfiguration: ${featureLower}CRUDConfiguration,
-        featureServiceType: ${feature}Service,
-        leftWidth: 60,
-      },
-      loadChildren: () =>
-        import('${viewPath}').then(m => m.ViewModule),
-    }`;
+    let viewChild = null;
+    let featureForImports = null;
+
+    if (feature) {
+      // CRUD-based route
+      const featureLower = feature.charAt(0).toLowerCase() + feature.slice(1);
+
+      viewChild = `{
+        path: 'view',
+        data: {
+          featureConfiguration: ${featureLower}CRUDConfiguration,
+          featureServiceType: ${feature}Service,
+          leftWidth: 60,
+        },
+        loadChildren: () =>
+          import('${viewPath}').then(m => m.ViewModule),
+      }`;
+
+      usedFeature = feature;
+      featureForImports = feature;
+    } else {
+      // No CRUD configuration → fallback behavior
+      viewChild = `{
+        path: 'view',
+        data: {
+          // TODO: manually set featureStateKey to match the tableStateKey used in the IndexComponent (example 'plane' → 'planesGrid')
+          featureStateKey: 'myFeatureTableStateKey',
+          leftWidth: 60,
+        },
+        loadChildren: () =>
+          import('${viewPath}').then(m => m.ViewModule),
+      }`;
+    }
 
     let childrenProp = findProp(route, "children");
 
@@ -2340,9 +2379,13 @@ function transform(src, filename) {
     const arr = childrenProp.initializer;
     if (!ts.isArrayLiteralExpression(arr)) return;
 
+    // Avoid duplicates
     for (const el of arr.elements) {
-      if (ts.isObjectLiteralExpression(el)) {
-        if (getStringProp(el, "path") === "view") return;
+      if (
+        ts.isObjectLiteralExpression(el) &&
+        getStringProp(el, "path") === "view"
+      ) {
+        return;
       }
     }
 
@@ -3241,10 +3284,10 @@ $replacementsTs = @(
     Replacement = 'import { $1 Renderer2 } from ''@angular/core'';'
   },
   @{
-        Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
-        Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
-        Replacement='$1, protected renderer: Renderer2)'
-    },
+    Requirement = 'extends\s+BiaFormComponent(?!.*constructor\s*\([^)]*\bRenderer2\b)'
+    Pattern='(?s)(constructor\s*\(\s*(?!\s*\))([^)]*?))\)'
+    Replacement='$1, protected renderer: Renderer2)'
+  },
   @{
     Requirement = 'extends\s+BiaFormComponent'
     Pattern     = '(?s)constructor\s*\(\s*\)'
@@ -3302,42 +3345,52 @@ Invoke-CrudAppServiceOverridesMigration -RootPath $SourceBackEnd
 # BEGIN Replace old protected generic methods names from OperationDomainServiceBase
 $replacementsTs = @(
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'GetRangeAsync<'
     Replacement = 'GetRangeGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'GetAllAsync<'
     Replacement = 'GetAllGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'GetCsvAsync<'
     Replacement = 'GetCsvGenericAsync<'
   },
   @{
-    Pattern     = 'GetGenericAsync<'
-    Replacement = 'GetGenericGenericAsync<'
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
+    Pattern     = 'GetAsync<'
+    Replacement = 'GetGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'AddAsync<'
     Replacement = 'AddGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'UpdateAsync<'
     Replacement = 'UpdateGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'RemoveAsync<'
     Replacement = 'RemoveGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'SaveSafeAsync<'
     Replacement = 'SaveSafeGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'SaveAsync<'
     Replacement = 'SaveGenericAsync<'
   },
   @{
+    Requirement = 'class\s+\w*AppService\s*:\s*(?:(?!\bclass\b)[\s\S])*?\bI\w+AppService\b'
     Pattern     = 'UpdateFixedAsync<'
     Replacement = 'UpdateFixedGenericAsync<'
   }
