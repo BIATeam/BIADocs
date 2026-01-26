@@ -289,13 +289,15 @@ Updates a large number of existing entities efficiently using batching or bulk o
 
 ### Method Signature
 ```csharp
-Task<int> MassUpdateAsync(IEnumerable<TEntity> items, int batchSize = 100, bool useBulk = false)
+Task<int> MassUpdateAsync(IEnumerable<TEntity> items, int batchSize = 100, bool useBulk = false, bool useSetModified = false)
 ```
 
 ### Parameters
 - **items**: Collection of entities to update (must have valid IDs)
 - **batchSize**: Number of entities to process per batch (default: 100)  
 - **useBulk**: Whether to use database bulk update if supported (default: false)
+- **useSetModified**: if set to true, use loop + SetModified rather than UpdateRange. (default: false) UpdateRange marks each provided entity and its related/child entities as Modified, whereas SetModified marks only the specified entity as Modified.
+
 
 ### Returns
 Number of entities successfully updated
