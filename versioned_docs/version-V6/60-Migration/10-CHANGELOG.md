@@ -22,7 +22,7 @@ sidebar_position: 1
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
 * Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` class (Front-end). Purpose is to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
 * Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](../40-DeveloperGuide/20-CRUD/91-QueryModelMapper.md))
-* Added database connection resiliency by enabling EnableRetryOnFailure()
+* Added database connection resiliency by enabling `EnableRetryOnFailure`
 * Add `maxWidth` property into `BiaFieldConfig`
 * Add `.bia-table-output` CSS class for non specific output in a calc table
 * Add `.bia-table-input` CSS class and derived classes for each input type in a calc table
@@ -34,13 +34,15 @@ sidebar_position: 1
 * Add dynamic filter based on periods from current day (tommorow, day before today...)
 * Improve `GetAsync` method to use with `HttpClient` by returning the `HttpStatusCode` into the Tuple data
 * Usage of `NewStyleCop.Analyzers` instead of `StyleCop.Analyzers`
-* Add `EnableRetryOnFailure` to data context options in dependcy injection configuration
 * New configuration screens for Views into tables
 * Add bulk methods for Insert, Update and Delete (back-end)
 * New split button to group buttons into table header
 * Rebranding export and export CSV buttons
 * Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
 * Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#create-the-model))
+* Add Health checks ([doc](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-10.0))
+* Add package Http Resilience ([doc](https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience?tabs=dotnet-cli))
+* Email notification on error removed
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
