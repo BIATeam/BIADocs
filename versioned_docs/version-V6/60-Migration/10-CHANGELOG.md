@@ -3,6 +3,23 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V6.0.2 (18/12/2025)
+### Features
+* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned 
+* Add Health checks ([doc](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-10.0))
+* Add package Http Resilience ([doc](https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience?tabs=dotnet-cli))
+* Email notification on error removed
+* UpdateRange marks each provided entity and its related/child entities as Modified, whereas SetModified marks only the specified entity as Modified
+
+### Bugfix
+* Avoid blinking of button grouping in header
+* Add missing appendTo="body" to select and multiselect
+* Improve performances of app.component listeners
+* Cleaning subscribes in some layout components
+* Fix onlineOffline mode activating all the time. Adding a parameter in all-environment to activate it.
+* Fix table-compact style
+* Improve DynamicLayoutComponent performances
+
 ## V6
 ### Features
 * .NET 10 / Angular 20
@@ -39,10 +56,7 @@ sidebar_position: 1
 * New split button to group buttons into table header
 * Rebranding export and export CSV buttons
 * Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
-* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#create-the-model))
-* Add Health checks ([doc](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-10.0))
-* Add package Http Resilience ([doc](https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience?tabs=dotnet-cli))
-* Email notification on error removed
+entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#create-the-model))
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
