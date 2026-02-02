@@ -3,7 +3,7 @@ sidebar_position: 1
 ---
 
 # ChangeLog
-## V6.0.2 (18/12/2025)
+## V6.0.2 (02/02/2025)
 ### Features
 * Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned 
 * Add Health checks ([doc](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-10.0))
