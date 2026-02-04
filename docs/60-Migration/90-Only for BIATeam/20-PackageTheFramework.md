@@ -71,7 +71,7 @@ All tests must be validated before continuing package process !
   ```
   npm publish --tag latest --access public
   ```
-- Update the dependency to *@bia-team/bia-ng@[version]* in package.json of BIADemo instead of *file:./dist/bia-ng*.
+Update the dependency to *"@bia-team/bia-ng": "[version]"* in package.json of BIADemo instead of *"@bia-team/bia-ng": "file:./dist/bia-ng"*.
 - Delete your node_modules folder and package-lock.json and then run 
   ```
   npm install
