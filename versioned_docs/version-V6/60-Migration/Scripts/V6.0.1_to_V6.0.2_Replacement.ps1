@@ -1,4 +1,4 @@
-$Source = "C:\sources\github\BIADemo";
+$Source = "C:\Sources\Azure.DevOps.Safran\SCardNG";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path

@@ -1,6 +1,6 @@
-$Source = "C:\sources\github\BIADemo";
+$Source = "C:\Sources\Azure.DevOps.Safran\eSuitePortal";
 $SourceBackEnd = $Source + "\DotNet"
-$SourceFrontEnd = $Source + "\Angular\src"
+$SourceFrontEnd = $Source + "\AngularPortal\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool', 'bia-shared', 'bia-features', 'bia-domains', 'bia-core')
@@ -938,6 +938,7 @@ function ApplyChangesToLib {
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bTableHelperService\b)([\s\S]*?)[\s]*?\bTableHelperService\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/services\/table-helper\.service';)"; Replacement = 'import { TableHelperService } from ''@bia-team/bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bFieldValidator\b)([\s\S]*?)[\s]*?\bFieldValidator\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/validators\/field\.validator';)"; Replacement = 'import { FieldValidator } from ''@bia-team/bia-ng/shared''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bJsonValidator\b)([\s\S]*?)[\s]*?\bJsonValidator\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/validators\/json\.validator';)"; Replacement = 'import { JsonValidator } from ''@bia-team/bia-ng/shared''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bFRAMEWORK_VERSION\b)([\s\S]*?)[\s]*?\bFRAMEWORK_VERSION\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-shared\/framework-version';)"; Replacement = 'import { FRAMEWORK_VERSION } from ''@bia-team/bia-ng/shared''; import { $1$2'},
     
     # Update bia-domains imports
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bLanguageOptionDas\b)([\s\S]*?)[\s]*?\bLanguageOptionDas\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/services\/language-option-das\.service';)"; Replacement = 'import { LanguageOptionDas } from ''@bia-team/bia-ng/domains''; import { $1$2'},
@@ -945,13 +946,13 @@ function ApplyChangesToLib {
     @{Pattern = "(import {(?=(?:(?!import {)[\s\S])*\breducers\b)[\s\S]*?\breducers\b[\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';[\s\S]*)\breducers\b"; Replacement = '$1DomainLanguageOptionsStore.reducers'},
     @{Pattern = "(import {(?=(?:(?!import {)[\s\S])*\bgetLanguagesState\b)[\s\S]*?\bgetLanguagesState\b[\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';[\s\S]*)\bgetLanguagesState\b"; Replacement = '$1DomainLanguageOptionsStore.getLanguagesState'},
     @{Pattern = "(import {(?=(?:(?!import {)[\s\S])*\bgetLanguageOptionsEntitiesState\b)[\s\S]*?\bgetLanguageOptionsEntitiesState\b[\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';[\s\S]*)\bgetLanguageOptionsEntitiesState\b"; Replacement = '$1DomainLanguageOptionsStore.getLanguageOptionsEntitiesState'},
-    @{Pattern = "(import {(?=(?:(?!import {)[\s\S])*\bgetAllUserOptions\b)[\s\S]*?\bgetAllUserOptions\b[\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';[\s\S]*)\bgetAllUserOptions\b"; Replacement = '$1DomainLanguageOptionsStore.getAllUserOptions'},
+    @{Pattern = "(import {(?=(?:(?!import {)[\s\S])*\bgetAllLanguageOptions\b)[\s\S]*?\bgetAllLanguageOptions\b[\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';[\s\S]*)\bgetAllLanguageOptions\b"; Replacement = '$1DomainLanguageOptionsStore.getAllLanguageOptions'},
     @{Pattern = "(import {(?=(?:(?!import {)[\s\S])*\bgetLanguageOptionById\b)[\s\S]*?\bgetLanguageOptionById\b[\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';[\s\S]*)\bgetLanguageOptionById\b"; Replacement = '$1DomainLanguageOptionsStore.getLanguageOptionById'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bLanguageOptionsState\b)([\s\S]*?)[\s]*?\bLanguageOptionsState\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\breducers\b)([\s\S]*?)[\s]*?\breducers\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bgetLanguagesState\b)([\s\S]*?)[\s]*?\bgetLanguagesState\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bgetLanguageOptionsEntitiesState\b)([\s\S]*?)[\s]*?\bgetLanguageOptionsEntitiesState\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
-    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bgetAllUserOptions\b)([\s\S]*?)[\s]*?\bgetAllUserOptions\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
+    @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bgetAllLanguageOptions\b)([\s\S]*?)[\s]*?\bgetAllLanguageOptions\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bgetLanguageOptionById\b)([\s\S]*?)[\s]*?\bgetLanguageOptionById\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-option\.state';)"; Replacement = 'import { DomainLanguageOptionsStore } from ''@bia-team/bia-ng/domains''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bDomainLanguageOptionsActions\b)([\s\S]*?)[\s]*?\bDomainLanguageOptionsActions\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-options-actions';)"; Replacement = 'import { DomainLanguageOptionsActions } from ''@bia-team/bia-ng/domains''; import { $1$2'},
     @{Pattern = "import {(?=(?:(?!import {)[\s\S])*\bLanguageOptionsEffects\b)([\s\S]*?)[\s]*?\bLanguageOptionsEffects\b[,]?([\s\S]*?} from '[\s\S]*?\/bia-domains\/language-option\/store\/language-options-effects';)"; Replacement = 'import { LanguageOptionsEffects } from ''@bia-team/bia-ng/domains''; import { $1$2'},
@@ -3335,7 +3336,7 @@ ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "LazyLoadDto, new\(\)" -New
 # END - LazyLoadDto, new() -> class, IPagingFilterFormatDto, new()
 
 # BEGIN - LazyLoadDto -> PagingFilterFormatDto
-ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp '\bPagingFilterFormatDto\b' -Include "*.cs"
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "\bLazyLoadDto\b" -NewRegexp 'PagingFilterFormatDto' -Include "*.cs"
 # END - LazyLoadDto -> PagingFilterFormatDto
 
 # BEGIN - Replace protected generic overrides in CrudAppServiceBase classes
