@@ -37,18 +37,28 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
         /// </summary>
         public string CompanyName { get; set; }
 
-        /// <summary>
+                /// <summary>
         /// Add row version timestamp in table Company.
         /// </summary>
-        [Timestamp]
-        [Column("RowVersion")]
+        [BiaRowVersionProperty(DbProvider.SqlServer)]
+        [AuditIgnore]
         public byte[] RowVersionCompany { get; set; }
+
+        /// <summary>
+        /// Add row version for Postgre in table Company.
+        /// </summary>
+        [BiaRowVersionProperty(DbProvider.PostGreSql)]
+        [AuditIgnore]
+        public uint RowVersionXminCompany { get; set; }
     }
 }
 ```
 3. In case of children team, ensure to have logical links between the parent and child entities.
 
-Make sure to inherit from `Team` and expose a `byte[]` row version property mapped to column `RowVersion`.  
+Make sure to inherit from `Team` and expose : 
+- a `byte[]` row version property with attribute `BiaRowVersionProperty` for provider `SqlServer`
+- a `uint` row version property with attribute `BiaRowVersionProperty` for provider `PostGreSql`
+  
 Complete with all necessary properties.
 :::tip  
 You must expose the `Id` property even if it's hide the inherited property of `Team`

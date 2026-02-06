@@ -40,6 +40,7 @@ sidebar_position: 1
 * New split button to group buttons into table header
 * Rebranding export and export CSV buttons
 * Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
+* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#create-the-model))
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
@@ -69,6 +70,8 @@ sidebar_position: 1
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
 * `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](../../versioned_docs/version-V6/60-Migration/33-V5%20TO%20V6.md#inheritage))
 * Rename generic methods of `OperationalDomainServiceBase` ([migration note](../../versioned_docs/version-V6/60-Migration/33-V5%20TO%20V6.md#overrides))
+* `TeamsConfig` property has been removed from `LoginParamDto` and is now returned into `AppSettingsDto`
+  * In front-end, inject `AppSettingService` and use `appSettings.teamsConfig` property to access it ([migration note](../../versioned_docs/version-V6/60-Migration/33-V5%20TO%20V6.md#teamsconfig))
 
 ## V5.2.3 (18/12/2025)
 ### Bugfix

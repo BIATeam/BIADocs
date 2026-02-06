@@ -1,6 +1,9 @@
 ---
 sidebar_position: 20
 ---
+
+import CheckItem from '@site/src/components/CheckItem';
+
 # Package a new version of the Framework
 
 ## Refine the BIADemo project
@@ -68,7 +71,7 @@ All tests must be validated before continuing package process !
   ```
   npm publish --tag latest --access public
   ```
-- Update the dependency to *@bia-team/bia-ng@[version]* in package.json of BIADemo instead of *file:./dist/bia-ng*.
+- Update the dependency to *"@bia-team/bia-ng": "[version]"* in package.json of BIADemo instead of *"@bia-team/bia-ng": "file:./dist/bia-ng"*.
 - Delete your node_modules folder and package-lock.json and then run 
   ```
   npm install
@@ -120,8 +123,16 @@ Use [BIA Template Documentation](./10-Templates/10-BIATemplates.md) to help you 
 - Verify that you have the json files in **..\CompanyFiles\VX.Y.Z\DotNet\TheBIADevCompany.BIATemplate.Presentation.Api**
 
 ## Test the project creation using the VX.Y.Z
+### Test list
+| # | Custom Fields | Front End | B2B Auth | Deploy Database | Worker Service | Database | Tested |
+|----|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:------:|
+| 1 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | <CheckItem/> |
+| 2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | <CheckItem/> |
+| 3 | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | <CheckItem/> |
+| 4 | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | <CheckItem/> |
+### Instructions
 - With the BIAToolKit create a project of the VX.Y.Z whith your version of CompanyFiles or VX.Y.Z of companyFiles.
-- Test it.
+- Test it with all combination listed ahead
 - If it is ok and you have a VX.Y.Z folder, rename **...\BIACompanyFiles\VX.Y.Z** with the good version name
 :::tip
 If you have to fix anything into **BIADemo** to resolve project creation issue related to the **BIA Template**, restart process from the [Prepare BIA Template chapter](#prepare-biatemplate)

@@ -80,3 +80,32 @@ This will allow yourself to link a team that is present on another team to your 
 
 You can also set the default team view in that second part.
 Default team view means that if no personal view is selected by a user, this team view will be the default view for that user.
+
+## Accessing a specific view through URL
+You can directly access a specific view by using the view name in the URL. This is useful for sharing links to predefined views or automating navigation within your application.
+
+To access a view through the URL, use the following format:
+```
+/feature/path?view=<view-name>
+```
+
+For example:
+```
+/myfeature?view=My%20View
+/myfeature?view=teamview
+```
+
+When you access a feature page with a `view` query parameter, the application will automatically load and apply that view's configuration, including:
+- Filters applied to the data
+- Visible and hidden columns
+- Sorting preferences
+- Number of items per page
+- Any other saved view settings
+
+If the specified view name does not exist or the user does not have access to it, the application will fall back to the user's default view.
+
+You can find the view name in the views list box or in the "Manage views" popup (accessible via the gear icon). This feature is particularly useful for:
+- Creating bookmarks to frequently used view configurations
+- Sharing specific filtered data views with team members
+- Building workflows that require users to start with a specific data configuration
+- Creating deep links from external applications
