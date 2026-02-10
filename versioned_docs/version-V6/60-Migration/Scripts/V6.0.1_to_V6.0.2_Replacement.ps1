@@ -1,4 +1,4 @@
-$Source = "C:\Sources\Azure.DevOps.Safran\SCardNG";
+$Source = "C:\Sources\Projects\MyProject";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -1797,53 +1797,57 @@ function transformOneFile(src, filename) {
           };
         }
       } else {
-        // RULE 2: PopupLayoutComponent or FullPageLayoutComponent (non-root)
-        if (isIdentifierNamed(compInit, "PopupLayoutComponent") || isIdentifierNamed(compInit, "FullPageLayoutComponent")) {
-          const isPopup = isIdentifierNamed(compInit, "PopupLayoutComponent");
-          desiredLayoutModeText = `LayoutMode.${isPopup ? "popup" : "fullPage"}`;
-          const injText = getInjectInitializerText();
-          if (injText) desiredComponentText = injText;
-          shouldRemoveInject = true;
-        }
-        // RULE 3: ternary cond ? Popup : Full or reversed
-        else if (ts.isConditionalExpression(compInit)) {
-          const cond = compInit;
-          const whenT = cond.whenTrue;
-          const whenF = cond.whenFalse;
-          const trueIsPopup = isIdentifierNamed(whenT, "PopupLayoutComponent");
-          const trueIsFull = isIdentifierNamed(whenT, "FullPageLayoutComponent");
-          const falseIsPopup = isIdentifierNamed(whenF, "PopupLayoutComponent");
-          const falseIsFull = isIdentifierNamed(whenF, "FullPageLayoutComponent");
-          const validPair = (trueIsPopup && falseIsFull) || (trueIsFull && falseIsPopup);
-          if (validPair) {
-            // Only set desiredLayoutModeText if the condition doesn't contain the CrudConfiguration
-            const feature = resolveFeature(routeObj, sf, filename);
-            const configName = feature
-              ? `${feature.charAt(0).toLowerCase() + feature.slice(1)}CRUDConfiguration`
-              : null;
-            const conditionText = cond.condition.getText(sf);
-            const containsConfig = configName && conditionText.includes(configName);
-
-            if (!containsConfig) {
-              desiredLayoutModeText = buildLayoutConditionalText(cond.condition, trueIsPopup, sf);
-            }
-
+        // RULE 2/3/4: PopupLayoutComponent or FullPageLayoutComponent (non-root)
+        // Only apply non-root Popup/Full replacements once a root DynamicLayout has been consumed
+        if (dynamicLayoutRootConsumed) {
+          // RULE 2: PopupLayoutComponent or FullPageLayoutComponent (non-root)
+          if (isIdentifierNamed(compInit, "PopupLayoutComponent") || isIdentifierNamed(compInit, "FullPageLayoutComponent")) {
+            const isPopup = isIdentifierNamed(compInit, "PopupLayoutComponent");
+            desiredLayoutModeText = `LayoutMode.${isPopup ? "popup" : "fullPage"}`;
             const injText = getInjectInitializerText();
             if (injText) desiredComponentText = injText;
             shouldRemoveInject = true;
           }
-        }
-        // RULE 4: contains Popup/Full anywhere (not ternary)
-        else {
-          const txt = compInit.getText(sf);
-          const containsPopup = /\bPopupLayoutComponent\b/.test(txt);
-          const containsFull = /\bFullPageLayoutComponent\b/.test(txt);
-          if ((containsPopup || containsFull) && !ts.isConditionalExpression(compInit)) {
-            const mode = containsPopup ? "popup" : "fullPage";
-            desiredLayoutModeText = `LayoutMode.${mode}`;
-            const injText = getInjectInitializerText();
-            if (injText) desiredComponentText = injText;
-            shouldRemoveInject = true;
+          // RULE 3: ternary cond ? Popup : Full or reversed
+          else if (ts.isConditionalExpression(compInit)) {
+            const cond = compInit;
+            const whenT = cond.whenTrue;
+            const whenF = cond.whenFalse;
+            const trueIsPopup = isIdentifierNamed(whenT, "PopupLayoutComponent");
+            const trueIsFull = isIdentifierNamed(whenT, "FullPageLayoutComponent");
+            const falseIsPopup = isIdentifierNamed(whenF, "PopupLayoutComponent");
+            const falseIsFull = isIdentifierNamed(whenF, "FullPageLayoutComponent");
+            const validPair = (trueIsPopup && falseIsFull) || (trueIsFull && falseIsPopup);
+            if (validPair) {
+              // Only set desiredLayoutModeText if the condition doesn't contain the CrudConfiguration
+              const feature = resolveFeature(routeObj, sf, filename);
+              const configName = feature
+                ? `${feature.charAt(0).toLowerCase() + feature.slice(1)}CRUDConfiguration`
+                : null;
+              const conditionText = cond.condition.getText(sf);
+              const containsConfig = configName && conditionText.includes(configName);
+
+              if (!containsConfig) {
+                desiredLayoutModeText = buildLayoutConditionalText(cond.condition, trueIsPopup, sf);
+              }
+
+              const injText = getInjectInitializerText();
+              if (injText) desiredComponentText = injText;
+              shouldRemoveInject = true;
+            }
+          }
+          // RULE 4: contains Popup/Full anywhere (not ternary)
+          else {
+            const txt = compInit.getText(sf);
+            const containsPopup = /\bPopupLayoutComponent\b/.test(txt);
+            const containsFull = /\bFullPageLayoutComponent\b/.test(txt);
+            if ((containsPopup || containsFull) && !ts.isConditionalExpression(compInit)) {
+              const mode = containsPopup ? "popup" : "fullPage";
+              desiredLayoutModeText = `LayoutMode.${mode}`;
+              const injText = getInjectInitializerText();
+              if (injText) desiredComponentText = injText;
+              shouldRemoveInject = true;
+            }
           }
         }
       }
