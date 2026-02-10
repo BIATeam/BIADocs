@@ -143,7 +143,11 @@ function Get-RightsConstants {
             
             # Build the replacement mapping
             $oldReference = "Rights.$className.$constName"
-            $newReference = Get-PermissionNameofExpression -ClassName $className -ConstName $constName
+            
+            # Special case: Announcements class uses BiaPermissionId
+            $useBiaPermissionId = ($className -eq "Announcements")
+            $newReference = Get-PermissionNameofExpression -ClassName $className -ConstName $constName -UseBiaPermissionId $useBiaPermissionId
+            
             $replacements[$oldReference] = $newReference
             
             Write-Host "  Found: $oldReference = `"$constValue`" -> $newReference" -ForegroundColor Gray
@@ -208,20 +212,36 @@ function Add-PermissionsToEnum {
     
     Write-Host "  Existing enums detected: $($existingEnums.Count)" -ForegroundColor Gray
     
-    # Build new entries
-    $newEntries = @()
-    $addedCount = 0
-    $skippedCount = 0
+    # Filter constants to exclude existing enums and remove duplicates by value
+    $uniqueConstants = @()
+    $seenValues = @{}
     
     foreach ($const in $Constants) {
         $enumName = Get-EnumName -Value $const.Value
         
+        # Skip if already exists in PermissionId.cs
         if ($existingEnums -contains $enumName) {
-            Write-Host "  Skipped (already exists): $enumName" -ForegroundColor DarkGray
-            $skippedCount++
             continue
         }
         
+        # Skip if we've already seen this value (handle duplicates in Rights.cs)
+        if ($seenValues.ContainsKey($enumName)) {
+            Write-Host "  Duplicate value detected: $enumName (from $($const.ClassName).$($const.ConstName), already added from $($seenValues[$enumName]))" -ForegroundColor Yellow
+            continue
+        }
+        
+        $seenValues[$enumName] = "$($const.ClassName).$($const.ConstName)"
+        $uniqueConstants += $const
+    }
+    
+    Write-Host "  Unique new permissions to add: $($uniqueConstants.Count)" -ForegroundColor Gray
+    
+    # Build new entries
+    $newEntries = @()
+    $addedCount = 0
+    
+    foreach ($const in $uniqueConstants) {
+        $enumName = Get-EnumName -Value $const.Value
         $description = Get-Description -Value $const.Value
         
         # Build the entry with proper indentation (8 spaces)
@@ -256,8 +276,9 @@ function Add-PermissionsToEnum {
     
     $newContent = $beforeMarker + ($newEntries -join "") + "`r`n        " + $afterMarker
     
-    Set-Content -Path $PermissionIdPath -Value $newContent -NoNewline
+    Set-Content -Path $PermissionIdPath -Value $newContent -NoNewline -Encoding UTF8
     
+    $skippedCount = $Constants.Count - $addedCount
     Write-Host "  $addedCount new permissions added, $skippedCount skipped." -ForegroundColor Green
     return $true
 }
@@ -306,10 +327,17 @@ function Get-PermissionName {
 function Get-PermissionNameofExpression {
     param(
         [string]$ClassName,
-        [string]$ConstName
+        [string]$ConstName,
+        [bool]$UseBiaPermissionId = $false
     )
     
     $permissionName = Get-PermissionName -ClassName $ClassName -ConstName $ConstName
+    
+    # Replace PermissionId with BiaPermissionId if requested
+    if ($UseBiaPermissionId) {
+        $permissionName = $permissionName -replace 'PermissionId', 'BiaPermissionId'
+    }
+    
     return "nameof($permissionName)"
 }
 
@@ -333,6 +361,10 @@ function Replace-RightsReferences {
     Write-Host "  Analyzing $($csFiles.Count) .cs files..." -ForegroundColor Gray
     Write-Host "  Processing $($Replacements.Count) replacement patterns..." -ForegroundColor Gray
     
+    # Sort replacements by key length (descending) to avoid partial matches
+    # e.g., replace "Rights.Users.ListAccess" before "Rights.Users.List"
+    $sortedReplacements = $Replacements.GetEnumerator() | Sort-Object { $_.Key.Length } -Descending
+    
     $totalReplacements = 0
     $filesModified = 0
     
@@ -341,9 +373,10 @@ function Replace-RightsReferences {
         $originalContent = $content
         $fileReplacements = 0
         
-        # Apply all replacements from the dictionary
-        foreach ($oldRef in $Replacements.Keys) {
-            $newRef = $Replacements[$oldRef]
+        # Apply all replacements from the dictionary (sorted by length)
+        foreach ($replacement in $sortedReplacements) {
+            $oldRef = $replacement.Key
+            $newRef = $replacement.Value
             $escapedOldRef = [regex]::Escape($oldRef)
             
             if ($content -match $escapedOldRef) {
@@ -363,6 +396,12 @@ function Replace-RightsReferences {
             foreach ($match in $biaMatches) {
                 $className = $match.Groups[1].Value
                 $constName = $match.Groups[2].Value
+                
+                # Skip patterns ending with "Suffix" (e.g., BiaRights.XXXSuffix)
+                if ($constName -eq "Suffix") {
+                    Write-Host "  Skipped BiaRights pattern ending with Suffix: BiaRights.$className.$constName" -ForegroundColor DarkGray
+                    continue
+                }
                 
                 # Apply the same logic as Rights by reusing Get-PermissionNameofExpression
                 $oldBiaRef = "BiaRights.$className.$constName"
@@ -391,7 +430,7 @@ function Replace-RightsReferences {
         }
         
         if ($content -ne $originalContent) {
-            Set-Content -Path $file.FullName -Value $content -NoNewline
+            Set-Content -Path $file.FullName -Value $content -NoNewline -Encoding UTF8
             $totalReplacements += $fileReplacements
             $filesModified++
             Write-Host "  Modified: $($file.Name) ($fileReplacements replacements)" -ForegroundColor Green
