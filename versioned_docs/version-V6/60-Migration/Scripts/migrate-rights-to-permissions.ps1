@@ -17,8 +17,8 @@
 #
 #   3. Replace all Rights references with nameof(PermissionId.xxx)
 #      - Scans all .cs files (excluding bin/obj folders and Rights.cs itself)
-#      - Replaces: Rights.ClassName.ConstName -> nameof(PermissionId.xxx)
-#      - Also handles: BiaRights.ClassName.ConstName -> nameof(BiaPermissionId.xxx)
+#      - Replaces: Rights.ClassName.ConstName -> nameof(PermissionId.xxx) (automatic from Rights.cs)
+#      - Replaces: BiaRights.ClassName.ConstName -> nameof(BiaPermissionId.xxx) (manual dictionary)
 #
 #   4. Delete the Rights.cs file
 #
@@ -35,77 +35,83 @@
 #   BiaRights.Home.Access            -> nameof(BiaPermissionId.Home_Access)
 #
 # USAGE:
-#   Update $BackendPath variable below, then run: .\migrate-rights-to-permissions.ps1
+#   1. Fill the $biaRightsReplacements dictionary with your BiaRights constants
+#   2. Update $BackendPath variable below
+#   3. Run: .\migrate-rights-to-permissions.ps1
 
 # Define the backend path (adapt according to your project)
 $BackendPath = "C:\sources\Azure\SCardNG\DotNet"
 
+# Manual dictionary for BiaRights replacements
+# Format: "BiaRights.ClassName.ConstName" = "nameof(BiaPermissionId.Value)"
+$biaRightsReplacements = @{
+    # BIA Framework Rights replacements
+    # TODO: Fill this dictionary with your BiaRights constants
+    # Example:
+    # "BiaRights.Home.Access" = "nameof(BiaPermissionId.Home_Access)"
+
+    "BiaRights.Roles.Options" = "nameof(BiaPermissionId.Roles_Options)"
+    "BiaRights.Roles.ListForCurrentUser" = "nameof(BiaPermissionId.Roles_List_For_Current_User)"
+    "BiaRights.Permissions.Options" = "nameof(BiaPermissionId.Permissions_Options)"
+    "BiaRights.LdapDomains.List" = "nameof(BiaPermissionId.LdapDomains_List)"
+    "BiaRights.Languages.Options" = "nameof(BiaPermissionId.Languages_Options)"
+    "BiaRights.ProfileImage.Get" = "nameof(BiaPermissionId.ProfileImage_Get)"
+    "BiaRights.Home.Access" = "nameof(BiaPermissionId.Home_Access)"
+    "BiaRights.Logs.Create" = "nameof(BiaPermissionId.Logs_Create)"
+    "BiaRights.Teams.Options" = "nameof(BiaPermissionId.Team_Options)"
+    "BiaRights.Teams.AccessAll" = "nameof(BiaPermissionId.Team_AccessAll)"
+    "BiaRights.Teams.ListAccess" = "nameof(BiaPermissionId.Team_List_Access)"
+    "BiaRights.Teams.SetDefaultTeam" = "nameof(BiaPermissionId.Team_Set_Default_Team)"
+    "BiaRights.Teams.SetDefaultRoles" = "nameof(BiaPermissionId.Team_Set_Default_Roles)"
+    "BiaRights.Users.Options" = "nameof(BiaPermissionId.User_Options)"
+    "BiaRights.Users.ListAccess" = "nameof(BiaPermissionId.User_List_Access)"
+    "BiaRights.Users.List" = "nameof(BiaPermissionId.User_List)"
+    "BiaRights.Users.ListAD" = "nameof(BiaPermissionId.User_List_AD)"
+    "BiaRights.Users.Read" = "nameof(BiaPermissionId.User_Read)"
+    "BiaRights.Users.Add" = "nameof(BiaPermissionId.User_Add)"
+    "BiaRights.Users.Delete" = "nameof(BiaPermissionId.User_Delete)"
+    "BiaRights.Users.Save" = "nameof(BiaPermissionId.User_Save)"
+    "BiaRights.Users.Sync" = "nameof(BiaPermissionId.User_Sync)"
+    "BiaRights.Users.UpdateRoles" = "nameof(BiaPermissionId.User_Update_Roles)"
+    "BiaRights.Views.Read" = "nameof(BiaPermissionId.View_Read)"
+    "BiaRights.Views.List" = "nameof(BiaPermissionId.View_List)"
+    "BiaRights.Views.AddUserView" = "nameof(BiaPermissionId.View_Add_UserView)"
+    "BiaRights.Views.UpdateUserView" = "nameof(BiaPermissionId.View_Update_UserView)"
+    "BiaRights.Views.DeleteUserView" = "nameof(BiaPermissionId.View_Delete_UserView)"
+    "BiaRights.Views.DeleteTeamView" = "nameof(BiaPermissionId.View_Delete_TeamView)"
+    "BiaRights.Views.SetDefaultUserView" = "nameof(BiaPermissionId.View_Set_Default_UserView)"
+    "BiaRights.Notifications.ListAccess" = "nameof(BiaPermissionId.Notification_List_Access)"
+    "BiaRights.Notifications.Read" = "nameof(BiaPermissionId.Notification_Read)"
+    "BiaRights.Notifications.Create" = "nameof(BiaPermissionId.Notification_Create)"
+    "BiaRights.Notifications.Update" = "nameof(BiaPermissionId.Notification_Update)"
+    "BiaRights.Notifications.Delete" = "nameof(BiaPermissionId.Notification_Delete)"
+    "BiaRights.NotificationTypes.Options" = "nameof(BiaPermissionId.NotificationType_Options)"
+    "BiaRights.Impersonation.ConnectionRights" = "nameof(BiaPermissionId.Impersonation_Connection_Rights)"
+    "Rights.Announcements.ListAccess" = "nameof(BiaPermissionId.Announcement_List_Access)"
+    "Rights.Announcements.Create" = "nameof(BiaPermissionId.Announcement_Create)"
+    "Rights.Announcements.Read" = "nameof(BiaPermissionId.Announcement_Read)"
+    "Rights.Announcements.Update" = "nameof(BiaPermissionId.Announcement_Update)"
+    "Rights.Announcements.Delete" = "nameof(BiaPermissionId.Announcement_Delete)"
+    "Rights.Announcements.Save" = "nameof(BiaPermissionId.Announcement_Save)"
+    "Rights.AnnouncementTypeOptions.Options" = "nameof(BiaPermissionId.AnnouncementType_Options)"
+    "`"Background_Task_Admin`"" = "nameof(BiaPermissionId.Background_Task_Admin)"
+    "`"Background_Task_Read_Only`"" = "nameof(BiaPermissionId.Background_Task_Read_Only)"
+
+    # Suffixes
+    "BiaRights.Members.ListAccessSuffix" = "BiaPermissionSuffixes.Members.ListAccessSuffix"
+    "BiaRights.Members.CreateSuffix" = "BiaPermissionSuffixes.Members.CreateSuffix"
+    "BiaRights.Members.ReadSuffix" = "BiaPermissionSuffixes.Members.ReadSuffix"
+    "BiaRights.Members.UpdateSuffix" = "BiaPermissionSuffixes.Members.UpdateSuffix"
+    "BiaRights.Members.DeleteSuffix" = "BiaPermissionSuffixes.Members.DeleteSuffix"
+    "BiaRights.Members.SaveSuffix" = "BiaPermissionSuffixes.Members.SaveSuffix"
+    "BiaRights.Views.AddTeamViewSuffix" = "BiaPermissionSuffixes.TeamViews.AddTeamViewSuffix"
+    "BiaRights.Views.UpdateTeamViewSuffix" = "BiaPermissionSuffixes.TeamViews.UpdateTeamViewSuffix"
+    "BiaRights.Views.SetDefaultTeamViewSuffix" = "BiaPermissionSuffixes.TeamViews.SetDefaultTeamViewSuffix"
+    "BiaRights.Views.AssignToTeamSuffix" = "BiaPermissionSuffixes.TeamViews.AssignToTeamSuffix"
+}
+
 Write-Host "=== Starting Rights to Permissions Migration ===" -ForegroundColor Cyan
 Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
-
-# Function to singularize a plural English word
-function Get-SingularForm {
-    param([string]$Word)
-    
-    # Common irregular plurals
-    $irregulars = @{
-        'People' = 'Person'
-        'Men' = 'Man'
-        'Women' = 'Woman'
-        'Children' = 'Child'
-        'Teeth' = 'Tooth'
-        'Feet' = 'Foot'
-        'Mice' = 'Mouse'
-        'Geese' = 'Goose'
-    }
-    
-    if ($irregulars.ContainsKey($Word)) {
-        return $irregulars[$Word]
-    }
-    
-    # Words ending in 'ies' -> 'y'
-    if ($Word -match '(.+)ies$') {
-        return $matches[1] + 'y'
-    }
-    
-    # Words ending in 'xes' -> 'x'
-    if ($Word -match '(.+)xes$') {
-        return $matches[1] + 'x'
-    }
-    
-    # Words ending in 'ses' -> 'se' (e.g., Cases -> Case, not Cas)
-    if ($Word -match '(.+[^s])ses$') {
-        return $matches[1] + 'se'
-    }
-    
-    # Words ending in double 'sses' -> 'ss' (e.g., Glasses -> Glass)
-    if ($Word -match '(.+s)ses$') {
-        return $matches[1] + 's'
-    }
-    
-    # Words ending in 'shes' -> 'sh'
-    if ($Word -match '(.+)shes$') {
-        return $matches[1] + 'sh'
-    }
-    
-    # Words ending in 'ches' -> 'ch'
-    if ($Word -match '(.+)ches$') {
-        return $matches[1] + 'ch'
-    }
-    
-    # Words ending in 'zes' -> 'z'
-    if ($Word -match '(.+[^z])zes$') {
-        return $matches[1] + 'z'
-    }
-    
-    # Common words ending in 's' (but not 'ss')
-    if ($Word -match '(.+[^s])s$') {
-        return $matches[1]
-    }
-    
-    # If no rule applies, return as is
-    return $Word
-}
 
 # Function to extract constants from Rights.cs file
 function Get-RightsConstants {
@@ -129,6 +135,11 @@ function Get-RightsConstants {
     foreach ($classMatch in $classMatches) {
         $className = $classMatch.Groups[1].Value
         $classBody = $classMatch.Groups[2].Value
+
+        # Special case: Announcements class uses BiaPermissionId
+        if ($className -like "Announcement*") {
+            continue;
+        }
         
         # Pattern to extract all const string in this class
         $constPattern = 'public\s+const\s+string\s+(\w+)\s*=\s*"([^"]+)"'
@@ -149,14 +160,7 @@ function Get-RightsConstants {
             # Build the replacement mapping using the actual constant value
             $oldReference = "Rights.$className.$constName"
             
-            # Special case: Announcements class uses BiaPermissionId
-            if ($className -like "Announcement*") {
-                $newReference = "nameof(BiaPermissionId.$constValue)"
-            }
-            else {
-                $newReference = "nameof(PermissionId.$constValue)"
-            }
-            
+            $newReference = "nameof(PermissionId.$constValue)"
             $replacements[$oldReference] = $newReference
             
             Write-Host "  Found: $oldReference = `"$constValue`" -> $newReference" -ForegroundColor Gray
@@ -227,11 +231,6 @@ function Add-PermissionsToEnum {
     
     foreach ($const in $Constants) {
         $enumName = Get-EnumName -Value $const.Value
-        
-        # Skip if Announcement permission (handled separately with BiaPermissionId)
-        if($enumName -like "Announcement*") {
-            continue
-        }
 
         # Skip if already exists in PermissionId.cs
         if ($existingEnums -contains $enumName) {
@@ -298,62 +297,6 @@ function Add-PermissionsToEnum {
     return $true
 }
 
-# Function to convert PascalCase to Snake_Case with uppercase
-function Convert-ToSnakeCase {
-    param([string]$Text)
-    
-    # Add an underscore before each uppercase letter (except the first)
-    $result = $Text -creplace '(?<!^)([A-Z])', '_$1'
-    return $result
-}
-
-# Function to generate the permission name (for enum)
-function Get-PermissionName {
-    param(
-        [string]$ClassName,
-        [string]$ConstName
-    )
-    
-    # Special case: if class name ends with "Options" and const is "Options"
-    if ($ClassName -match '(.+)Options$' -and $ConstName -eq "Options") {
-        # Extract the base name (e.g., "PlaneOptions" -> "Plane")
-        $baseName = $matches[1]
-        # Keep the plural "Options" and add "_Options"
-        return "PermissionId.$baseName`Options_Options"
-    }
-    
-    # Singularize the class name but keep its PascalCase
-    $singularClassName = Get-SingularForm -Word $ClassName
-    
-    # If constName is "Options" (but class doesn't end with Options)
-    if ($ConstName -eq "Options") {
-        return "PermissionId.$singularClassName`_Options"
-    }
-    
-    # Otherwise, combine PascalCase singular class name with Snake_Case constant
-    $constSnake = Convert-ToSnakeCase -Text $ConstName
-    
-    return "PermissionId.$singularClassName`_$constSnake"
-}
-
-# Function to generate the complete nameof expression for replacements
-function Get-PermissionNameofExpression {
-    param(
-        [string]$ClassName,
-        [string]$ConstName,
-        [bool]$UseBiaPermissionId = $false
-    )
-    
-    $permissionName = Get-PermissionName -ClassName $ClassName -ConstName $ConstName
-    
-    # Replace PermissionId with BiaPermissionId if requested
-    if ($UseBiaPermissionId) {
-        $permissionName = $permissionName -replace 'PermissionId', 'BiaPermissionId'
-    }
-    
-    return "nameof($permissionName)"
-}
-
 # Function to replace references in all files
 function Replace-RightsReferences {
     param(
@@ -362,6 +305,12 @@ function Replace-RightsReferences {
     )
     
     Write-Host "`nStep 3: Replacing Rights constant references..." -ForegroundColor Yellow
+    
+    # Merge BiaRights replacements with Rights replacements
+    $allReplacements = $Replacements.Clone()
+    foreach ($key in $biaRightsReplacements.Keys) {
+        $allReplacements[$key] = $biaRightsReplacements[$key]
+    }
     
     # Find all .cs files (except Rights.cs and in bin/obj)
     $csFiles = Get-ChildItem -Path $BackendPath -Filter "*.cs" -Recurse | 
@@ -372,11 +321,11 @@ function Replace-RightsReferences {
         }
     
     Write-Host "  Analyzing $($csFiles.Count) .cs files..." -ForegroundColor Gray
-    Write-Host "  Processing $($Replacements.Count) replacement patterns..." -ForegroundColor Gray
+    Write-Host "  Processing $($allReplacements.Count) replacement patterns ($($Replacements.Count) from Rights.cs + $($biaRightsReplacements.Count) from BiaRights)..." -ForegroundColor Gray
     
     # Sort replacements by key length (descending) to avoid partial matches
     # e.g., replace "Rights.Users.ListAccess" before "Rights.Users.List"
-    $sortedReplacements = $Replacements.GetEnumerator() | Sort-Object { $_.Key.Length } -Descending
+    $sortedReplacements = $allReplacements.GetEnumerator() | Sort-Object { $_.Key.Length } -Descending
     
     $totalReplacements = 0
     $filesModified = 0
@@ -386,7 +335,7 @@ function Replace-RightsReferences {
         $originalContent = $content
         $fileReplacements = 0
         
-        # Apply all replacements from the dictionary (sorted by length)
+        # Apply all replacements from the merged dictionary (sorted by length)
         foreach ($replacement in $sortedReplacements) {
             $oldRef = $replacement.Key
             $newRef = $replacement.Value
@@ -396,51 +345,6 @@ function Replace-RightsReferences {
                 $content = $content -replace $escapedOldRef, $newRef
                 $matchCount = ([regex]::Matches($originalContent, $escapedOldRef)).Count
                 $fileReplacements += $matchCount
-            }
-        }
-        
-        # Also handle BiaRights -> BiaPermissionId
-        $biaPattern = 'BiaRights\.(\w+)\.(\w+)'
-        $biaMatches = [regex]::Matches($content, $biaPattern)
-        
-        if ($biaMatches.Count -gt 0) {
-            # Build unique BiaRights replacements to avoid double counting
-            $biaReplacements = @{}
-            foreach ($match in $biaMatches) {
-                $className = $match.Groups[1].Value
-                $constName = $match.Groups[2].Value
-                
-                # Skip patterns ending with "Suffix" (e.g., BiaRights.XXXSuffix)
-                if ($constName -eq "Suffix") {
-                    Write-Host "  Skipped BiaRights pattern ending with Suffix: BiaRights.$className.$constName" -ForegroundColor DarkGray
-                    continue
-                }
-                
-                $oldBiaRef = "BiaRights.$className.$constName"
-                
-                # For BiaRights, we need to construct the permission name
-                # since we don't have the actual constant value from Rights.cs
-                $singularClassName = Get-SingularForm -Word $className
-                $constSnake = Convert-ToSnakeCase -Text $constName
-                $permissionName = "$singularClassName`_$constSnake"
-                
-                $newBiaRef = "nameof(BiaPermissionId.$permissionName)"
-                
-                if (-not $biaReplacements.ContainsKey($oldBiaRef)) {
-                    $biaReplacements[$oldBiaRef] = $newBiaRef
-                }
-            }
-            
-            # Apply BiaRights replacements
-            foreach ($oldBiaRef in $biaReplacements.Keys) {
-                $newBiaRef = $biaReplacements[$oldBiaRef]
-                $escapedOldRef = [regex]::Escape($oldBiaRef)
-                
-                if ($content -match $escapedOldRef) {
-                    $content = $content -replace $escapedOldRef, $newBiaRef
-                    $matchCount = ([regex]::Matches($originalContent, $escapedOldRef)).Count
-                    $fileReplacements += $matchCount
-                }
             }
         }
         
