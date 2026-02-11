@@ -38,7 +38,7 @@
 #   Update $BackendPath variable below, then run: .\migrate-rights-to-permissions.ps1
 
 # Define the backend path (adapt according to your project)
-$BackendPath = "C:\sources\Github\BIADemo\DotNet"
+$BackendPath = "C:\sources\Azure\SCardNG\DotNet"
 
 Write-Host "=== Starting Rights to Permissions Migration ===" -ForegroundColor Cyan
 Write-Host "Backend path: $BackendPath" -ForegroundColor Gray
@@ -73,9 +73,14 @@ function Get-SingularForm {
         return $matches[1] + 'x'
     }
     
-    # Words ending in 'ses' -> 's' (only if preceded by s, not others)
-    if ($Word -match '(.+s)es$') {
-        return $matches[1]
+    # Words ending in 'ses' -> 'se' (e.g., Cases -> Case, not Cas)
+    if ($Word -match '(.+[^s])ses$') {
+        return $matches[1] + 'se'
+    }
+    
+    # Words ending in double 'sses' -> 'ss' (e.g., Glasses -> Glass)
+    if ($Word -match '(.+s)ses$') {
+        return $matches[1] + 's'
     }
     
     # Words ending in 'shes' -> 'sh'
@@ -141,12 +146,16 @@ function Get-RightsConstants {
                 FullPath = "Rights.$className.$constName"
             }
             
-            # Build the replacement mapping
+            # Build the replacement mapping using the actual constant value
             $oldReference = "Rights.$className.$constName"
             
             # Special case: Announcements class uses BiaPermissionId
-            $useBiaPermissionId = ($className -eq "Announcements")
-            $newReference = Get-PermissionNameofExpression -ClassName $className -ConstName $constName -UseBiaPermissionId $useBiaPermissionId
+            if ($className -like "Announcement*") {
+                $newReference = "nameof(BiaPermissionId.$constValue)"
+            }
+            else {
+                $newReference = "nameof(PermissionId.$constValue)"
+            }
             
             $replacements[$oldReference] = $newReference
             
@@ -219,6 +228,11 @@ function Add-PermissionsToEnum {
     foreach ($const in $Constants) {
         $enumName = Get-EnumName -Value $const.Value
         
+        # Skip if Announcement permission (handled separately with BiaPermissionId)
+        if($enumName -like "Announcement*") {
+            continue
+        }
+
         # Skip if already exists in PermissionId.cs
         if ($existingEnums -contains $enumName) {
             continue
@@ -241,6 +255,7 @@ function Add-PermissionsToEnum {
     $addedCount = 0
     
     foreach ($const in $uniqueConstants) {
+
         $enumName = Get-EnumName -Value $const.Value
         $description = Get-Description -Value $const.Value
         
@@ -303,12 +318,11 @@ function Get-PermissionName {
     if ($ClassName -match '(.+)Options$' -and $ConstName -eq "Options") {
         # Extract the base name (e.g., "PlaneOptions" -> "Plane")
         $baseName = $matches[1]
-        # Keep the 's' and add "_Options"
-        $result = Convert-ToSnakeCase -Text $baseName
-        return "PermissionId.$result`_Options"
+        # Keep the plural "Options" and add "_Options"
+        return "PermissionId.$baseName`Options_Options"
     }
     
-    # Singularize the class name for other cases
+    # Singularize the class name but keep its PascalCase
     $singularClassName = Get-SingularForm -Word $ClassName
     
     # If constName is "Options" (but class doesn't end with Options)
@@ -316,11 +330,10 @@ function Get-PermissionName {
         return "PermissionId.$singularClassName`_Options"
     }
     
-    # Otherwise, combine singular_class_constant
-    $classSnake = Convert-ToSnakeCase -Text $singularClassName
+    # Otherwise, combine PascalCase singular class name with Snake_Case constant
     $constSnake = Convert-ToSnakeCase -Text $ConstName
     
-    return "PermissionId.$classSnake`_$constSnake"
+    return "PermissionId.$singularClassName`_$constSnake"
 }
 
 # Function to generate the complete nameof expression for replacements
@@ -403,13 +416,15 @@ function Replace-RightsReferences {
                     continue
                 }
                 
-                # Apply the same logic as Rights by reusing Get-PermissionNameofExpression
                 $oldBiaRef = "BiaRights.$className.$constName"
                 
-                # Get the replacement using the same logic as Rights
-                $newBiaRef = Get-PermissionNameofExpression -ClassName $className -ConstName $constName
-                # Replace PermissionId with BiaPermissionId
-                $newBiaRef = $newBiaRef -replace 'PermissionId', 'BiaPermissionId'
+                # For BiaRights, we need to construct the permission name
+                # since we don't have the actual constant value from Rights.cs
+                $singularClassName = Get-SingularForm -Word $className
+                $constSnake = Convert-ToSnakeCase -Text $constName
+                $permissionName = "$singularClassName`_$constSnake"
+                
+                $newBiaRef = "nameof(BiaPermissionId.$permissionName)"
                 
                 if (-not $biaReplacements.ContainsKey($oldBiaRef)) {
                     $biaReplacements[$oldBiaRef] = $newBiaRef
