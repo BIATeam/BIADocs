@@ -66,7 +66,7 @@ export const featureFormCRUDConfiguration: CrudConfig<FormDto> = new CrudConfig(
 
 Notes:
 
-- Disable `useCalcMode` and `useImport` on the list `CrudConfig` if those apply only to forms.
+- Disable `useCalcMode` on the list `CrudConfig`.
 - Ensure the module routing uses `featureListCRUDConfiguration` for index/table routes and `featureFormCRUDConfiguration` for read/edit/new routes.
   After that, check that your **feature.module** routing correctly uses the featureListCRUDConfiguration and not the featureFormCRUDConfiguration for routing behavior.
 
@@ -107,7 +107,7 @@ Checklist:
 
 ### Components
 
-Component changes:
+Component simple changes:
 
 ```typescript
 export class FeaturesIndexComponent extends CrudItemsIndexComponent<
@@ -125,4 +125,46 @@ Checklist:
 
 - Ensure index/table components use the list `CrudConfig`.
 - Use `FormDto` in item, read, edit and new components and their `CrudConfig`.
-- Remove the import component and its route since it is not compatible with the split DTO approach.
+
+### Mass Import feature
+
+Mass import feature need more modifications to work because a form element can now be very different from the table elements.
+A provider for the injection token SAME_LIST_FORM_MODELS must be added to notify the CrudItemImportService that it will work with different objects than the table.
+
+```typescript
+@Component({
+  ...
+  providers: [
+    CrudItemImportService,
+    { provide: SAME_LIST_FORM_MODELS, useValue: false },
+  ],
+})
+export class FeatureImportComponent extends CrudItemImportComponent<
+  ListDto,
+  FormDto
+> {}
+```
+
+This modification will change the endpoint to get the list of elements to compare to the CSV file elements.
+You need to create this new endpoint in your controller:
+
+```csharp
+        /// <summary>
+        /// Get all feature items with filters.
+        /// </summary>
+        /// <param name="filters">The filters.</param>
+        /// <returns>The list of feature items.</returns>
+        [HttpPost("allItems")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = nameof(PermissionId.Feature_List_Access))]
+        public async Task<IActionResult> GetAllItems([FromBody] PagingFilterFormatDto filters)
+        {
+            var (results, total) = await this.featureService.GetRangeItemsAsync(filters);
+            this.HttpContext.Response.Headers.Append(BiaConstants.HttpHeaders.TotalCount, total.ToString());
+            return this.Ok(results);
+        }
+```
+
+**PagingFilterFormatDto** could be another type depending on your feature filter model.
