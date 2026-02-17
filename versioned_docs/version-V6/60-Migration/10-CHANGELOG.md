@@ -3,6 +3,11 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V6.0.3 (11/02/2025)
+### Bugfix
+* Fix view save when using a system view as base
+* Fix sortFieldValue initialization being overriden by first column
+
 ## V6.0.2 (05/02/2025)
 ### Features
 * Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned 
