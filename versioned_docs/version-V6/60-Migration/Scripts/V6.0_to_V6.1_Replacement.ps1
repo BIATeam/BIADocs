@@ -413,7 +413,6 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(focusout\)="onFocusout\
 
 # BACK END
 
-
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
 npm run clean
