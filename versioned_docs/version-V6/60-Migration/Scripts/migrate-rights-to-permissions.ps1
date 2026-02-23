@@ -49,7 +49,7 @@
 #   3. Run: .\migrate-rights-to-permissions.ps1
 
 # Define the backend path (adapt according to your project)
-$BackendPath = "C:\sources\Azure\SCardNG\DotNet"
+$BackendPath = "C:\sources\BIADemo\DotNet"
 
 # Manual dictionary for BiaRights replacements
 # Format: "BiaRights.ClassName.ConstName" = "nameof(BiaPermissionId.Value)"
