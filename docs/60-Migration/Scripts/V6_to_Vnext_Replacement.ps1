@@ -234,6 +234,11 @@ function Invoke-ReplacementsInFiles {
 }
 
 # FRONT END
+# BEGIN - Ultima 21 css change
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.ts"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.scss"
+# END - Ultima 21 css change
 
 # BACK END
 
