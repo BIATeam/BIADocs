@@ -3326,6 +3326,61 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'b
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
 # END - BiaOutput -> BiaFormField
 
+
+# BEGIN - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
+Write-Host "Adding BiaCalcTableCellComponent to components using bia-calc-table template..."
+
+$componentToAdd = 'BiaCalcTableCellComponent'
+$importPackage = '@bia-team/bia-ng/shared'
+$escapedPackage = [regex]::Escape($importPackage)
+
+$allTsFiles = Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter "*.ts" | Where-Object {
+  $fullPath = [System.IO.Path]::GetFullPath($_.FullName)
+  -not ($ExcludeDir | Where-Object { $fullPath -match "[\\/]$([regex]::Escape($_))([\\/]|`$)" })
+}
+
+foreach ($file in $allTsFiles) {
+  $content = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
+
+  # Process only files whose templateUrl ends with bia-calc-table/bia-calc-table.component.html
+  if ($content -notmatch "bia-calc-table/bia-calc-table\.component\.html") { continue }
+
+  # Skip if BiaCalcTableCellComponent is already present
+  if ($content -match [regex]::Escape($componentToAdd)) { continue }
+
+  $modified = $false
+
+  # 1. Add import statement at the top of the file
+  if ($content -match "import\s*\{[^}]*\}\s*from\s*'$escapedPackage'") {
+    # Append to the existing import block from the same package
+    $content = $content -replace "(import\s*\{[^}]*)(}\s*from\s*'$escapedPackage')", "`$1 $componentToAdd `$2"
+    $modified = $true
+  }
+  else {
+    # Insert a new import line after the last import statement
+    $fromMatches = [regex]::Matches($content, "from\s+'[^']+';")
+    if ($fromMatches.Count -gt 0) {
+      $lastMatch = $fromMatches[$fromMatches.Count - 1]
+      $lineEnd = $content.IndexOf([char]10, $lastMatch.Index + $lastMatch.Length)
+      if ($lineEnd -lt 0) { $lineEnd = $content.Length - 1 }
+      $content = $content.Insert($lineEnd + 1, "import { $componentToAdd } from '$importPackage';`n")
+      $modified = $true
+    }
+  }
+
+  # 2. Add BiaCalcTableCellComponent to the standalone imports array in @Component
+  if ($content -match 'imports\s*:\s*\[') {
+    $content = $content -replace '(imports\s*:\s*\[)', "`$1$componentToAdd, "
+    $modified = $true
+  }
+
+  if ($modified) {
+    Write-Host "     => $($file.FullName)"
+    [System.IO.File]::WriteAllText($file.FullName, $content, [System.Text.Encoding]::UTF8)
+  }
+}
+# END - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
+
 # BACK END
 # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
