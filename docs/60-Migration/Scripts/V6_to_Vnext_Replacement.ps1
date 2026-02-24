@@ -240,6 +240,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -Ne
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.scss"
 # END - Ultima 21 css change
 
+# BEGIN - Change feature singular name key
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "featureNameSingular:\s*'(?!app\.)(\S*)'" -NewRegexp 'featureNameSingular: ''app.$1''' -Include "*.ts"
+# END - Change feature singular name key
+
 # BACK END
 
 
