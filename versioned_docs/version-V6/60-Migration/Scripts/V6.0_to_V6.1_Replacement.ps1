@@ -1,4 +1,4 @@
-$Source = "C:\sources\Github\BIADemo";
+$Source = "C:\Sources\Projects\MyProject";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -466,14 +466,17 @@ foreach ($file in $allTsFiles) {
 # END - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
 
 # BACK END
+# BEGIN - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'BiaClaimsPrincipal\.RoleIds' -NewRegexp 'BiaConstants.Claims.RoleIds' -Include "*.cs"
+# END - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
 
 # FRONT END CLEAN
-# Set-Location $SourceFrontEnd
-# npm run clean
+Set-Location $SourceFrontEnd
+npm run clean
 
 # # BACK END RESTORE
-# Set-Location $SourceBackEnd
-# dotnet restore --no-cache
+Set-Location $SourceBackEnd
+dotnet restore --no-cache
 
 Write-Host "Finish"
 pause

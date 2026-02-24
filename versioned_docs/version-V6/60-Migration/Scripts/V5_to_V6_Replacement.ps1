@@ -3521,6 +3521,10 @@ $1/// <summary>$1/// Add row version for Postgre in table $2.$1/// </summary>$1[
  -Include "*.cs"
 # END - Transform RowVersion properties for versioning
 
+# BEGIN - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'BiaClaimsPrincipal\.RoleIds' -NewRegexp 'BiaConstants.Claims.RoleIds' -Include "*.cs"
+# END - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
+
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
 npm run clean
