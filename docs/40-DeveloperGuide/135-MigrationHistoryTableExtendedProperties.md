@@ -171,5 +171,5 @@ ALTER TABLE ""{HistoryTable}""
 ```
 3. Udate your database with `update-database -context datacontext`
 4. Ensure that your migration history table have now the two extended properties `AppVersion` and `MigratedAt`
-5. Ensure that your last migration have filled `AppVersion` and `MigratedAt`
+5. Ensure that your last migration have filled `MigratedAt`. Ignore `AppVersion` content that should be empty at time
   
