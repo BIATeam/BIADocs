@@ -7,12 +7,12 @@ This document explains how to create a stats report that give an overview of the
 ![Stats](../Images/Stats.PNG)
 
 ## Prerequisite
-You should install webpack-bundle-analyzer : 
+You should install esbuild-visualizer : 
 * In the terminal run the command:
 ```cmd
-npm install -g webpack-bundle-analyzer
+npm i -g esbuild-visualizer
 ```
-The doc of this project is [here](https://github.com/webpack-contrib/webpack-bundle-analyzer).
+The doc of this project is [here](https://github.com/btd/esbuild-visualizer).
 
 ## Generate the stat
 Run the command:
@@ -20,7 +20,7 @@ Run the command:
 npm run stats
 ```
 
-=> The stats will appear in a web browser at url : [http:\\localhost:4299 ](http://127.0.0.1:4299/)
+=> The stats will appear in a web browser with the file Angular/dist/BIADemo/stats.html.
 => different size appear the size to challenge is the parsed size. At the end the real size will be the parsed size or the gziped depending on how is configured your production server.
 
 ## Additional references:

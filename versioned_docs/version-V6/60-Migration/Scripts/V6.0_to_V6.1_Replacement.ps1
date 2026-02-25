@@ -1,6 +1,7 @@
-$Source = "C:\sources\Project";
+$Source = "C:\Sources\Projects\MyProject";
 $SourceBackEnd = $Source + "\DotNet"
 $SourceFrontEnd = $Source + "\Angular\src"
+$currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $ExcludeDir = ('dist', 'node_modules', 'docs', 'scss', '.git', '.vscode', '.angular', '.dart_tool', 'bia-shared', 'bia-features', 'bia-domains', 'bia-core')
 
@@ -166,6 +167,59 @@ function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   return $positionFermeture
 }
 
+function RemoveWebApiRepositoryFunctionsThirdParameter ($contenuFichier, $MatchBegin) {
+  # Define the name of the base class
+  $baseClassName = "WebApiRepository"
+
+  # Define the regular expression patterns to match the function invocations
+  $getAsyncPattern = 'this.GetAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $deleteAsyncPattern = 'this.DeleteAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $putAsyncPattern = 'this.PutAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $putAsyncWithBodyPattern = 'this.PutAsync<([^,]+),([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $postAsyncPattern = 'this.PostAsync<([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $postAsyncWithBodyPattern = 'this.PostAsync<([^,]+),([^,]+)>\s*\(([^,]+),\s*([^,]+),\s*([^)]+)(,\s*[^)]+)*\)'
+  $constructorPattern = 'public\s+(\w+)\s*\(([^)]*)\)\s*:\s*base\s*\(([^)]*)\)'
+  $modifiedConstructorPattern = 'public\s+(\w+)\s*\(([^)]*)\)\s*:\s*base\s*\(([^)]*), new AuthenticationConfiguration\(\) { Mode = AuthenticationMode\.Token }\)'
+
+  # Get all .cs files in the source directory
+  $files = Get-ChildItem -Path $sourceDirectory -Recurse -Include *.cs
+
+  foreach ($file in $files) {
+    $content = Get-Content -Path $file.FullName -Raw
+
+    # Check if the file contains the base class
+    if ($content -match "class\s+\w+\s*:\s*$baseClassName") {
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $getAsyncPattern, 'this.GetAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $deleteAsyncPattern, 'this.DeleteAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $putAsyncPattern, 'this.PutAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult, TBody> function invocation
+      $content = [regex]::Replace($content, $putAsyncWithBodyPattern, 'this.PutAsync<$1,$2>($3, $4$6)')
+
+      # Replace the PostAsync<TResult> function invocation
+      $content = [regex]::Replace($content, $postAsyncPattern, 'this.PostAsync<$1>($2, $3$5)')
+
+      # Replace the PostAsync<TResult, TBody> function invocation
+      $content = [regex]::Replace($content, $postAsyncWithBodyPattern, 'this.PostAsync<$1,$2>($3, $4$6)')
+
+      # Check if the class overrides the GetBearerTokenAsync method
+      if ($content -match "override\s+async\s+Task<string>\s+GetBearerTokenAsync\s*\(" -and $content -notmatch $modifiedConstructorPattern) {
+        # Replace the constructor to add the new parameter to the base() call
+        $content = [regex]::Replace($content, $constructorPattern, 'public $1($2) : base($3, new AuthenticationConfiguration() { Mode = AuthenticationMode.Token })')
+      }
+
+      # Write the modified content back to the file
+      Set-Content -Path $file.FullName -Value $content
+      Write-Host "Modified file: $($file.FullName)"
+    }
+  }
+}
+
 function Invoke-ReplacementsInFiles {
   param(
       [Parameter(Mandatory)]
@@ -233,25 +287,194 @@ function Invoke-ReplacementsInFiles {
   }
 }
 
-# FRONT END
-# BEGIN - Ultima 21 css change
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.ts"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.scss"
-# END - Ultima 21 css change
+function Get-GenericBlock {
+  param(
+    [string]$Text,
+    [int]$StartIndex
+  )
 
-# BEGIN - Change feature singular name key
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "featureNameSingular:\s*'(?!app\.)(\S*)'" -NewRegexp 'featureNameSingular: ''app.$1''' -Include "*.ts"
-# END - Change feature singular name key
+  $depth = 0
+  $start = -1
+  for ($i = $StartIndex; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '<') {
+      if ($depth -eq 0) {
+        $start = $i + 1
+      }
+      $depth++
+    }
+    elseif ($char -eq '>') {
+      $depth--
+      if ($depth -eq 0 -and $start -ge 0) {
+        return @{ Inner = $Text.Substring($start, $i - $start); EndIndex = $i }
+      }
+    }
+  }
+
+  return $null
+}
+
+function Split-GenericArguments {
+  param(
+    [string]$Text
+  )
+
+  $items = @()
+  $depth = 0
+  $segmentStart = 0
+  for ($i = 0; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '<') {
+      $depth++
+    }
+    elseif ($char -eq '>') {
+      $depth--
+    }
+    elseif ($char -eq ',' -and $depth -eq 0) {
+      $items += $Text.Substring($segmentStart, $i - $segmentStart).Trim()
+      $segmentStart = $i + 1
+    }
+  }
+
+  $items += $Text.Substring($segmentStart).Trim()
+  return $items
+}
+
+function Get-ClassBodySpan {
+  param(
+    [string]$Text,
+    [int]$OpenBraceIndex
+  )
+
+  if ($OpenBraceIndex -lt 0 -or $OpenBraceIndex -ge $Text.Length) {
+    return $null
+  }
+
+  $depth = 0
+  for ($i = $OpenBraceIndex; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '{') {
+      $depth++
+    }
+    elseif ($char -eq '}') {
+      $depth--
+    }
+
+    if ($depth -eq 0) {
+      return @{ BodyStart = $OpenBraceIndex + 1; BodyEnd = $i }
+    }
+  }
+
+  return $null
+}
+
+function Get-BlockSpan {
+  param(
+    [string]$Text,
+    [int]$OpenBraceIndex
+  )
+
+  if ($OpenBraceIndex -lt 0 -or $OpenBraceIndex -ge $Text.Length) {
+    return $null
+  }
+
+  $depth = 0
+  for ($i = $OpenBraceIndex; $i -lt $Text.Length; $i++) {
+    $char = $Text[$i]
+    if ($char -eq '{') {
+      $depth++
+    }
+    elseif ($char -eq '}') {
+      $depth--
+    }
+
+    if ($depth -eq 0) {
+      return @{ BodyStart = $OpenBraceIndex + 1; BodyEnd = $i }
+    }
+  }
+
+  return $null
+}
+
+function Get-FileText([string]$path) {
+  if (-not (Test-Path -LiteralPath $path)) { throw "Fichier introuvable: $path" }
+  return [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8)
+}
+
+function Set-FileText([string]$path, [string]$text, [switch]$WhatIfOnly) {
+  if ($WhatIfOnly) { Write-Host "WHATIF: Écriture ignorée -> $path" -ForegroundColor Yellow; return }
+  [System.IO.File]::WriteAllText($path, $text, [System.Text.Encoding]::UTF8)
+}
+
+# FRONT END
+# BEGIN - Add row to onFocusout table function
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(focusout\)="onFocusout\(\)"' -NewRegexp '#currentRow (focusout)="onFocusout(currentRow)"' -Include "*.html"
+# END - Add row to onFocusout table function
+
+# BEGIN - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
+Write-Host "Adding BiaCalcTableCellComponent to components using bia-calc-table template..."
+
+$componentToAdd = 'BiaCalcTableCellComponent'
+$importPackage = '@bia-team/bia-ng/shared'
+$escapedPackage = [regex]::Escape($importPackage)
+
+$allTsFiles = Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter "*.ts" | Where-Object {
+  $fullPath = [System.IO.Path]::GetFullPath($_.FullName)
+  -not ($ExcludeDir | Where-Object { $fullPath -match "[\\/]$([regex]::Escape($_))([\\/]|`$)" })
+}
+
+foreach ($file in $allTsFiles) {
+  $content = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
+
+  # Process only files whose templateUrl ends with bia-calc-table/bia-calc-table.component.html
+  if ($content -notmatch "bia-calc-table/bia-calc-table\.component\.html") { continue }
+
+  # Skip if BiaCalcTableCellComponent is already present
+  if ($content -match [regex]::Escape($componentToAdd)) { continue }
+
+  $modified = $false
+
+  # 1. Add import statement at the top of the file
+  if ($content -match "import\s*\{[^}]*\}\s*from\s*'$escapedPackage'") {
+    # Append to the existing import block from the same package
+    $content = $content -replace "(import\s*\{[^}]*)(}\s*from\s*'$escapedPackage')", "`$1 $componentToAdd `$2"
+    $modified = $true
+  }
+  else {
+    # Insert a new import line after the last import statement
+    $fromMatches = [regex]::Matches($content, "from\s+'[^']+';")
+    if ($fromMatches.Count -gt 0) {
+      $lastMatch = $fromMatches[$fromMatches.Count - 1]
+      $lineEnd = $content.IndexOf([char]10, $lastMatch.Index + $lastMatch.Length)
+      if ($lineEnd -lt 0) { $lineEnd = $content.Length - 1 }
+      $content = $content.Insert($lineEnd + 1, "import { $componentToAdd } from '$importPackage';`n")
+      $modified = $true
+    }
+  }
+
+  # 2. Add BiaCalcTableCellComponent to the standalone imports array in @Component
+  if ($content -match 'imports\s*:\s*\[') {
+    $content = $content -replace '(imports\s*:\s*\[)', "`$1$componentToAdd, "
+    $modified = $true
+  }
+
+  if ($modified) {
+    Write-Host "     => $($file.FullName)"
+    [System.IO.File]::WriteAllText($file.FullName, $content, [System.Text.Encoding]::UTF8)
+  }
+}
+# END - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
 
 # BACK END
-
+# BEGIN - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'BiaClaimsPrincipal\.RoleIds' -NewRegexp 'BiaConstants.Claims.RoleIds' -Include "*.cs"
+# END - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
 
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
 npm run clean
 
-# BACK END RESTORE
+# # BACK END RESTORE
 Set-Location $SourceBackEnd
 dotnet restore --no-cache
 
