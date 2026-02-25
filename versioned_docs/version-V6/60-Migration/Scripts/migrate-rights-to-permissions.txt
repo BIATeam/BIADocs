@@ -212,7 +212,7 @@ function Add-PermissionsToEnum {
     $content = Get-Content $PermissionIdPath -Raw
     
     # Search for the marker line
-    $marker = "// BIAToolKit - Begin Permissions"
+    $marker = "// BIAToolKit - Begin PermissionId"
     if ($content -notmatch [regex]::Escape($marker)) {
         Write-Host "ERROR: The marker '$marker' was not found in PermissionId.cs" -ForegroundColor Red
         return $false
