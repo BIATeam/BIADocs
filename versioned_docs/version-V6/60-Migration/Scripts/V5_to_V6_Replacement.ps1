@@ -1165,6 +1165,7 @@ function ApplyChangesToLib {
     
     # update components templates and scss coming from bia
     @{Pattern = "((templateUrl:|styleUrls:\s*\[|styleUrl:)[\s]*'[\S]*\/)shared\/bia-shared\/([\S]*\.component\.(html|scss)')"; Replacement = '$1../../node_modules/@bia-team/bia-ng/templates/$3'}
+    @{Pattern = "((templateUrl:|styleUrls:\s*\[|styleUrl:)[\s]*'[\S]*\/)bia-features\/([\S]*\.component\.(html|scss)')"; Replacement = '$1../../../node_modules/@bia-team/bia-ng/templates/features/$3'}
     )
 
   $extensions = "*.ts"
