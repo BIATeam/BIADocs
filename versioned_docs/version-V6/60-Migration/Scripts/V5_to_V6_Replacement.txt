@@ -1165,6 +1165,7 @@ function ApplyChangesToLib {
     
     # update components templates and scss coming from bia
     @{Pattern = "((templateUrl:|styleUrls:\s*\[|styleUrl:)[\s]*'[\S]*\/)shared\/bia-shared\/([\S]*\.component\.(html|scss)')"; Replacement = '$1../../node_modules/@bia-team/bia-ng/templates/$3'}
+    @{Pattern = "((templateUrl:|styleUrls:\s*\[|styleUrl:)[\s]*'[\S]*\/)bia-features\/([\S]*\.component\.(html|scss)')"; Replacement = '$1../../../node_modules/@bia-team/bia-ng/templates/features/$3'}
     )
 
   $extensions = "*.ts"
@@ -3326,6 +3327,55 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "bia-output" -NewRegexp 'b
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "BiaOutput" -NewRegexp 'BiaFormField' -Include "*.ts"
 # END - BiaOutput -> BiaFormField
 
+
+# BEGIN - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
+Write-Host "Adding BiaCalcTableCellComponent to components using bia-calc-table template..."
+
+$componentToAdd = 'BiaCalcTableCellComponent'
+$importPackage = '@bia-team/bia-ng/shared'
+$escapedPackage = [regex]::Escape($importPackage)
+
+$allTsFiles = Get-ChildItem -Path $SourceFrontEnd -Recurse -Filter "*.ts" | Where-Object {
+  $fullPath = [System.IO.Path]::GetFullPath($_.FullName)
+  -not ($ExcludeDir | Where-Object { $fullPath -match "[\\/]$([regex]::Escape($_))([\\/]|`$)" })
+}
+
+foreach ($file in $allTsFiles) {
+  $content = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
+
+  # Process only files whose templateUrl ends with bia-calc-table/bia-calc-table.component.html
+  if ($content -notmatch "bia-calc-table/bia-calc-table\.component\.html") { continue }
+
+  # Skip if BiaCalcTableCellComponent is already present
+  if ($content -match [regex]::Escape($componentToAdd)) { continue }
+
+  $modified = $false
+
+  # 1. Add import statement at the top of the file
+  $importLine = "import { $componentToAdd } from '$importPackage';`n"
+
+  $importMatches = [regex]::Matches($content, "import\s+.*?;")
+
+  if ($importMatches.Count -gt 0) {
+    $lastImport = $importMatches[$importMatches.Count - 1]
+    $insertPos  = $lastImport.Index + $lastImport.Length
+    $content    = $content.Insert($insertPos, "`r`n$importLine")
+    $modified   = $true
+  }
+
+  # 2. Add BiaCalcTableCellComponent to the standalone imports array in @Component
+  if ($content -match 'imports\s*:\s*\[') {
+    $content = $content -replace '(imports\s*:\s*\[)', "`$1$componentToAdd, "
+    $modified = $true
+  }
+
+  if ($modified) {
+    Write-Host "     => $($file.FullName)"
+    [System.IO.File]::WriteAllText($file.FullName, $content, [System.Text.Encoding]::UTF8)
+  }
+}
+# END - Add BiaCalcTableCellComponent to standalone imports of components using bia-calc-table template
+
 # BACK END
 # BEGIN - TeamSelectionMode -> TeamAutomaticSelectionMode
 ReplaceInProject ` -Source $SourceBackEnd -OldRegexp "(?<=^|\s)TeamSelectionMode(?=$|\s)" -NewRegexp 'TeamAutomaticSelectionMode' -Include "TeamConfig.cs"
@@ -3465,6 +3515,10 @@ ReplaceInProject `
 $1/// <summary>$1/// Add row version for Postgre in table $2.$1/// </summary>$1[BiaRowVersionProperty(DbProvider.PostGreSql)]$1[AuditIgnore]$1public uint RowVersionXmin$2 { get; set; }' `
  -Include "*.cs"
 # END - Transform RowVersion properties for versioning
+
+# BEGIN - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
+ReplaceInProject ` -Source $SourceBackEnd -OldRegexp 'BiaClaimsPrincipal\.RoleIds' -NewRegexp 'BiaConstants.Claims.RoleIds' -Include "*.cs"
+# END - BiaClaimsPrincipal.RoleIds -> BiaConstants.Claims.RoleIds
 
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd

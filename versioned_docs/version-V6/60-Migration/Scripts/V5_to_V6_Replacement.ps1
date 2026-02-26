@@ -3352,21 +3352,15 @@ foreach ($file in $allTsFiles) {
   $modified = $false
 
   # 1. Add import statement at the top of the file
-  if ($content -match "import\s*\{[^}]*\}\s*from\s*'$escapedPackage'") {
-    # Append to the existing import block from the same package
-    $content = $content -replace "(import\s*\{[^}]*)(}\s*from\s*'$escapedPackage')", "`$1 $componentToAdd `$2"
-    $modified = $true
-  }
-  else {
-    # Insert a new import line after the last import statement
-    $fromMatches = [regex]::Matches($content, "from\s+'[^']+';")
-    if ($fromMatches.Count -gt 0) {
-      $lastMatch = $fromMatches[$fromMatches.Count - 1]
-      $lineEnd = $content.IndexOf([char]10, $lastMatch.Index + $lastMatch.Length)
-      if ($lineEnd -lt 0) { $lineEnd = $content.Length - 1 }
-      $content = $content.Insert($lineEnd + 1, "import { $componentToAdd } from '$importPackage';`n")
-      $modified = $true
-    }
+  $importLine = "import { $componentToAdd } from '$importPackage';`n"
+
+  $importMatches = [regex]::Matches($content, "import\s+.*?;")
+
+  if ($importMatches.Count -gt 0) {
+    $lastImport = $importMatches[$importMatches.Count - 1]
+    $insertPos  = $lastImport.Index + $lastImport.Length
+    $content    = $content.Insert($insertPos, "`r`n$importLine")
+    $modified   = $true
   }
 
   # 2. Add BiaCalcTableCellComponent to the standalone imports array in @Component
