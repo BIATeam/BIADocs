@@ -3,7 +3,13 @@ sidebar_position: 1
 ---
 
 # ChangeLog
-## V6.1.0 (25/02/2025)
+## V6.1.1 (27/02/2026)
+### Bugfix
+* fix notification Translations from signalR 
+* add templates for bia-ng features in bia-ng
+* fix AppVersion in EF migration history table
+
+## V6.1.0 (25/02/2026)
 ### Features
 * Improvements of `RegisterServicesFromAssembly` to automatically inject implementations of each interfaces available
 * Change the announcement scroll orientation to vertical instead of horizontal
@@ -20,12 +26,12 @@ sidebar_position: 1
 * Replace usage of `p-celleditor` by dedicated `bia-calc-table-cell` component to improve performances
 * Increase bundle maximum budget
 
-## V6.0.3 (11/02/2025)
+## V6.0.3 (11/02/2026)
 ### Bugfix
 * Fix view save when using a system view as base
 * Fix sortFieldValue initialization being overriden by first column
 
-## V6.0.2 (05/02/2025)
+## V6.0.2 (05/02/2026)
 ### Features
 * Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned 
 * Add Health checks ([doc](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-10.0))
