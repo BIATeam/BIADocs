@@ -18,7 +18,7 @@ This service is particularly useful for long-running export tasks where the file
 
 ## How It Works
 
-The `IBiaFileDownloaderService` interface exposes five methods that together cover the complete download lifecycle:
+The `IFileDownloaderService` interface exposes five methods that together cover the complete download lifecycle:
 
 | Method | Description |
 |---|---|
@@ -42,29 +42,23 @@ The download token is **single-use** and is consumed immediately after the file 
 
 ### 1. Register the service in the IoC container
 
-The `IBiaFileDownloaderService` is **excluded from BIA's automatic registration** because it requires concrete notification types from your project. You must register it manually in your `IocContainer`:
+The `IFileDownloaderService` is **excluded from BIA's automatic registration** because `BiaFileDownloaderOptions` and `BiaFileDownloaderService` are both **abstract** — your project must provide concrete subclasses. You must register them manually in your `IocContainer`:
 
 ```csharp title="Crosscutting.Ioc/IocContainer.cs"
-// Configure the language IDs used for notification translations
-collection.Configure<BiaFileDownloaderOptions>(options =>
+// Configure the language IDs used for the DownloadReady notification translations
+param.Collection.Configure<FileDownloaderOptions>(options =>
 {
     options.FrenchLanguageId  = LanguageId.French;
     options.EnglishLanguageId = LanguageId.English;
     options.SpanishLanguageId = LanguageId.Spanish;
 });
 
-// Register the service, wired to your project's notification types
-collection.AddScoped<IBiaFileDownloaderService,
-    BiaFileDownloaderService<
-        BiaFileDownloaderOptions,
-        INotificationAppService,
-        Notification,
-        NotificationDto,
-        NotificationListItemDto>>();
+// Register your project-level service implementation
+param.Collection.AddTransient<IFileDownloaderService, FileDownloaderService>();
 ```
 
 :::tip
-The five generic parameters map to: `TFileDownloaderOptions`, `TINotificationAppService`, `TNotification`, `TNotificationDto`, `TNotificationListItemDto`. The notification types must match the concrete types already used in your project for the notification feature. When no customization is needed, pass `BiaFileDownloaderOptions` directly as the first parameter.
+Because `BiaFileDownloaderOptions` and `BiaFileDownloaderService` are **abstract**, every project must provide its own concrete subclasses — `FileDownloaderOptions` and `FileDownloaderService`. These classes are **already included in the BIA project template**, so no manual creation is needed in a standard project setup. See [Extending the Service](#extending-the-service) for the complete details.
 :::
 
 ### 2. Verify Hangfire is registered
@@ -111,15 +105,15 @@ This is the simplest approach — no background job is involved. It is suitable 
 
 ### Step 1 – Generate the file and call `NotifyDownloadReadyAsync`
 
-Inject `IBiaFileDownloaderService` into your application service, generate the file, then call `NotifyDownloadReadyAsync`. The example below is taken directly from BIADemo (`ExampleAppService`):
+Inject `IFileDownloaderService` into your application service, generate the file, then call `NotifyDownloadReadyAsync`. The example below is taken directly from BIADemo (`ExampleAppService`):
 
 ```csharp title="Application/Example/ExampleAppService.cs"
 public class ExampleAppService : IExampleAppService
 {
-    private readonly IBiaFileDownloaderService fileDownloaderService;
+    private readonly IFileDownloaderService fileDownloaderService;
     private readonly string fileServerMainFolderPath;
 
-    public ExampleAppService(IConfiguration configuration, IBiaFileDownloaderService fileDownloaderService)
+    public ExampleAppService(IConfiguration configuration, IFileDownloaderService fileDownloaderService)
     {
         this.fileDownloaderService = fileDownloaderService;
         // Read from configuration — must match the same path configured in the WorkerService appsettings.
@@ -213,13 +207,13 @@ The example below is taken directly from BIADemo (`BiaDemoTestHangfireService`).
 ```csharp title="Application/Job/BiaDemoTestHangfireService.cs"
 public class BiaDemoTestHangfireService : BaseJob, IBiaDemoTestHangfireService
 {
-    private readonly IBiaFileDownloaderService fileDownloaderService;
+    private readonly IFileDownloaderService fileDownloaderService;
     private readonly string fileServerMainFolderPath;
 
     public BiaDemoTestHangfireService(
         IConfiguration configuration,
         ILogger<BiaDemoTestHangfireService> logger,
-        IBiaFileDownloaderService fileDownloaderService)
+        IFileDownloaderService fileDownloaderService)
         : base(configuration, logger)
     {
         this.fileDownloaderService = fileDownloaderService;
@@ -401,7 +395,7 @@ You can adjust the cleanup frequency by overriding this value in the environment
 
 ```csharp
 // Delete the file, its DB record, and optionally the associated notification
-await this.biaFileDownloaderService.RemoveFileToDownload(
+await this.fileDownloaderService.RemoveFileToDownload(
     fileDownloadData,
     deleteAssociatedNotification: true);
 ```
@@ -410,7 +404,7 @@ await this.biaFileDownloaderService.RemoveFileToDownload(
 
 ## Notification Translations
 
-The `DownloadReady` notification is automatically created with translations in **French**, **English**, and **Spanish**. The language IDs are configured via `BiaFileDownloaderOptions` (see [Configuration](#configuration)).
+The `DownloadReady` notification is automatically created with translations in **French**, **English**, and **Spanish**. The language IDs are configured via your project's `FileDownloaderOptions` (see [Configuration](#configuration)).
 
 To support additional languages or change the notification content, see [Extending the Service](#extending-the-service).
 
@@ -418,20 +412,53 @@ To support additional languages or change the notification content, see [Extendi
 
 ## Extending the Service
 
-Both `BiaFileDownloaderOptions` and `BiaFileDownloaderService` are designed for inheritance. All service methods are `virtual`, allowing you to override any part of the behaviour without reimplementing the interface from scratch. The translation-related methods — `GetNotificationTranslations` and `CreateDownloadReadyNotification` — are `protected virtual` and are the primary extension points.
+Because `BiaFileDownloaderOptions` and `BiaFileDownloaderService` are both **abstract**, every project **must** provide concrete subclasses. The base classes cannot be instantiated or registered directly — subclassing is a required step, not optional customization.
 
-The general pattern is always the same:
-1. **Extend the options class** to add any extra configuration your override needs.
-2. **Inherit the service** and override the relevant `virtual` method(s).
-3. **Update the IoC registration** to use your custom types.
+### Minimal required implementation
+
+:::info
+`FileDownloaderOptions` and `FileDownloaderService` are **already provided by the BIA project template**. In a project generated from the template, these classes exist out of the box and no manual creation is required. The implementation below is shown for reference only.
+:::
+
+The simplest implementation (as used in BIADemo) consists of two classes that simply inherit from the base without adding anything:
+
+```csharp title="Application/File/FileDownloaderOptions.cs"
+public class FileDownloaderOptions : BiaFileDownloaderOptions { }
+```
+
+```csharp title="Application/File/FileDownloaderService.cs"
+public class FileDownloaderService : BiaFileDownloaderService<
+    FileDownloaderOptions,
+    INotificationAppService,
+    Notification,
+    NotificationDto,
+    NotificationListItemDto>
+{
+    public FileDownloaderService(IServiceProvider serviceProvider, ILogger<FileDownloaderService> logger)
+        : base(serviceProvider, logger) { }
+}
+```
+
+The constructor takes only `IServiceProvider` and `ILogger` — the base class resolves all other dependencies internally via `IServiceProvider`.
+
+The five generic parameters of `BiaFileDownloaderService` map to:
+- `TFileDownloaderOptions` — your options subclass
+- `TINotificationAppService` — the notification application service interface
+- `TNotification` — the notification entity
+- `TNotificationDto` — the notification DTO
+- `TNotificationListItemDto` — the notification list-item DTO
+
+The notification types must match the concrete types already registered in your project for the notification feature.
 
 ### Adding Translations for Additional Languages
+
+All service methods are `virtual`, allowing you to override any part of the behaviour. The translation-related methods — `GetNotificationTranslations` and `CreateDownloadReadyNotification` — are `protected virtual` and are the primary extension points.
 
 By default the service creates `DownloadReady` notification translations in French, English, and Spanish. Here is how to add support for German as an example.
 
 **Step 1 – Extend the options class** to add the extra language ID:
 
-```csharp title="Crosscutting.Common/Options/MyFileDownloaderOptions.cs"
+```csharp title="Application/File/MyFileDownloaderOptions.cs"
 public class MyFileDownloaderOptions : BiaFileDownloaderOptions
 {
     public int GermanLanguageId { get; set; }
@@ -440,7 +467,7 @@ public class MyFileDownloaderOptions : BiaFileDownloaderOptions
 
 **Step 2 – Inherit the service** and override `GetNotificationTranslations`:
 
-```csharp title="Application/Services/MyFileDownloaderService.cs"
+```csharp title="Application/File/MyFileDownloaderService.cs"
 public class MyFileDownloaderService : BiaFileDownloaderService<
     MyFileDownloaderOptions,
     INotificationAppService,
@@ -448,16 +475,8 @@ public class MyFileDownloaderService : BiaFileDownloaderService<
     NotificationDto,
     NotificationListItemDto>
 {
-    public MyFileDownloaderService(
-        INotificationAppService notificationAppService,
-        ILogger<MyFileDownloaderService> logger,
-        IFileDownloadDataAppService fileDownloadDataAppService,
-        IFileDownloadTokenRepository fileDownloadTokenRepository,
-        IBackgroundJobClient backgroundJobClient,
-        IOptions<MyFileDownloaderOptions> options)
-        : base(notificationAppService, logger, fileDownloadDataAppService, fileDownloadTokenRepository, backgroundJobClient, options)
-    {
-    }
+    public MyFileDownloaderService(IServiceProvider serviceProvider, ILogger<MyFileDownloaderService> logger)
+        : base(serviceProvider, logger) { }
 
     protected override List<NotificationTranslationDto> GetNotificationTranslations(string fileName)
     {
@@ -480,7 +499,7 @@ public class MyFileDownloaderService : BiaFileDownloaderService<
 **Step 3 – Update the IoC registration** to use your custom types:
 
 ```csharp title="Crosscutting.Ioc/IocContainer.cs"
-collection.Configure<MyFileDownloaderOptions>(options =>
+param.Collection.Configure<MyFileDownloaderOptions>(options =>
 {
     options.FrenchLanguageId  = LanguageId.French;
     options.EnglishLanguageId = LanguageId.English;
@@ -488,7 +507,7 @@ collection.Configure<MyFileDownloaderOptions>(options =>
     options.GermanLanguageId  = LanguageId.German;  // your project's language ID
 });
 
-collection.AddScoped<IBiaFileDownloaderService, MyFileDownloaderService>();
+param.Collection.AddTransient<IFileDownloaderService, MyFileDownloaderService>();
 ```
 
 :::tip
