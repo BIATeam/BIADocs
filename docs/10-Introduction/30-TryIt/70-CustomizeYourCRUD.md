@@ -108,7 +108,7 @@ Example of a specific output template for bia-table and/or app-my-feature-table 
 
 ## 3) Customize forms: update `BiaFormLayoutConfig` or implement `MyFeatureFormComponent`
 
-- The generated form layout is driven by a `myFeatureFormLayoutConfiguration` (`BiaFormLayoutConfig`) in the model. Edit that to change grouping, rows and order of fields. This supports the specificInput templates for your more complicated fields. See the documentation of the Form Layout Configuration here : [Form Configuration](../../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md)
+- The generated form layout is driven by a `myFeatureFormLayoutConfiguration` (`BiaFormLayoutConfig`) in the model. Edit that to change grouping, rows and order of fields. This supports the specificInput templates for your more complicated fields. See the documentation of the Form Layout Configuration here : [Form Configuration](/docs/DeveloperGuide/CRUD/FormConfiguration)
 - If you still can't do what you need to with these options, you can create a form from scratch instead of using the bia-form.
 
 ## 4) Best practices (MyFeature)
