@@ -25,8 +25,8 @@ Before:
 Now:
 - `IocContainer` is `public static partial class`.
 - logic is split between two files:
-  - `TheBIADevCompany.BIADemo.Crosscutting.Ioc/Bia/IocContainer.cs` **<= This file is part of the framework and should never be modified**
-  - `TheBIADevCompany.BIADemo.Crosscutting.Ioc/IocContainer.cs` **<= Only this file should contain your project customizations**
+  - `TheBIADevCompany.BIADemo.Crosscutting.Ioc/Bia/IocContainer.cs` **This file is part of the framework and should never be modified**
+  - `TheBIADevCompany.BIADemo.Crosscutting.Ioc/IocContainer.cs` **Only this file should contain your project customizations**
 
 #### 2) Method signature
 
