@@ -52,8 +52,8 @@ private static ParamAutoRegister GetGlobalParamAutoRegister(ParamIocContainer pa
     return new ParamAutoRegister()
     {
         Collection = param.Collection,
-        ExcludedServiceNames = null,
-        IncludedServiceNames = null,
+        ExcludedServiceNames = null, // Add here
+        IncludedServiceNames = null, // Add here
     };
 }
 ```
@@ -63,5 +63,32 @@ private static ParamAutoRegister GetGlobalParamAutoRegister(ParamIocContainer pa
 The configuration of the DbContext (via collection.AddDbContext) has been moved to the method `BiaConfigureInfrastructureDataContainerDbContext`. This method is minimally configurable with the following input parameters:
 - string dbKey = BiaConstants.DatabaseConfiguration.DefaultKey
 - bool enableRetryOnFailure = true
-- int commandTimeout = default
+- int commandTimeout = default (30s)
+
+### ModelBuilder
+
+This change was made to simplify future migrations. Please take the time to read the explanations below start merge.
+
+#### 1) What changed
+- Model builders were refactored to split:
+  - entity structure (`Create...Model`)
+  - seed data (`Create...ModelData`)
+- `CreateModel(...)` now calls both structure and data methods explicitly.
+- BIA code moved into partial files (**These files must never be modified**):
+  - `ModelBuilders/Bia/UserModelBuilder.cs`
+  - `ModelBuilders/Bia/TranslationModelBuilder.cs`
+- Main model builder classes keep project-specific logic.
+
+#### 2) Main impacted classes
+- `BaseUserModelBuilder`
+- `BaseTranslationModelBuilder`
+- `BaseNotificationModelBuilder`
+- `NotificationModelBuilder`
+
+#### 3) Framework Migration
+During framework migration, you must follow this pattern by separating the code that creates the entity structure from the code that initializes the data. You need to ensure that any code moved into the classes now contained in the ModelBuilders/Bia folder no longer appears in your ModelBuilders.
+If you do not wish to use the data initialization provided by BIA, you can comment out the code that starts with `base.`.
+
+#### 4) Test Framework Migration
+These changes should not result in any database migration. To verify this, simply create a test Entity Framework migration—it should be empty.
 
