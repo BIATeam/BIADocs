@@ -30,7 +30,7 @@ At that moment the notion of right will be introduce :
 ## Implement quickly model and CRUD.
 Now you can generate all CRUDs corresponding to all table that will be fill manually.
 - The implementation of a CRUD is not costly and even if it is not present in the mockup, it can be a start point for complex screen.
-- To implement CRUD quickly follow the documentation [CRUD](../40-DeveloperGuide/20-CRUD/00-CRUDOverview.md)
+- To implement CRUD quickly follow the documentation [CRUD](/docs/DeveloperGuide/CRUD/CRUDOverview)
 
 => At this step some business team can be interested to play with the application as is. The data model is more understandable and they can validate or rectify it, before than more complex dev begin.
 

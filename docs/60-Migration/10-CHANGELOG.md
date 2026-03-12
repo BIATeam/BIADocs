@@ -57,20 +57,20 @@ sidebar_position: 1
 * .NET 10 / Angular 20
 * Moving all `bia` core front files into dedicated angular package `@bia-team/bia-ng`
 * Centralization of NuGet package versions in a single file ([doc](https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management))
-* Extended migration history table properties ([doc](../40-DeveloperGuide/135-MigrationHistoryTableExtendedProperties.md))
-* New audit table management ([doc](../40-DeveloperGuide/80-Audit.md))
-* Display entity's historical of modifications ([doc](../40-DeveloperGuide/20-CRUD/30-Historical.md))
-* Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
+* Extended migration history table properties ([doc](/docs/DeveloperGuide/DataLayer/135-MigrationHistoryTableExtendedProperties))
+* New audit table management ([doc](/docs/DeveloperGuide/Security/Audit))
+* Display entity's historical of modifications ([doc](/docs/DeveloperGuide/CRUD/Historical))
+* Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](/docs/DeveloperGuide/ErrorManagement/BackExceptionHandler#front-user-exception))
 * New team configuration
   * Single entry point for team configuration into back-end `TeamConfig`
-  * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration))
+  * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](/docs/Introduction/TryIt/60-CreateYourFirstTeam#additionnal-configuration))
   * Remove team config definition for `Login` action into `AuthController`
 * Add action buttons on dropdown filters rules definition
 * New option to generate CRUD with domain URL (BIAToolKit)
-* Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](../40-DeveloperGuide/20-CRUD/10-InFilter.md#define-default-sort-order))
+* Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](/docs/DeveloperGuide/CRUD/InFilter#define-default-sort-order))
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
 * Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` class (Front-end). Purpose is to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
-* Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](../40-DeveloperGuide/20-CRUD/91-QueryModelMapper.md))
+* Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](/docs/DeveloperGuide/CRUD/QueryModelMapper))
 * Added database connection resiliency by enabling EnableRetryOnFailure()
 * Add `maxWidth` property into `BiaFieldConfig`
 * Add `.bia-table-output` CSS class for non specific output in a calc table
@@ -172,12 +172,12 @@ sidebar_position: 1
 
 ## V5.0.1 (08/07/2025)
 ### Features
-* Form layout configuration ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-layout))
-* Component button group ([doc](../40-DeveloperGuide/20-CRUD/80-ButtonGroup.md))
-* Configuration to set the read only mode of a CRUD feature item ([doc](../40-DeveloperGuide/20-CRUD/70-FormConfiguration.md#form-read-only))
-* Handling of errors when form is submitted and preventing closing it ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#block-form))
-* Handling of outdated item currently edited ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#inform-user-of-conflict))
-* Fixable entity ([doc](../40-DeveloperGuide/20-CRUD/75-FixableCRUD.md))
+* Form layout configuration ([doc](/docs/DeveloperGuide/CRUD/FormConfiguration#form-layout))
+* Component button group ([doc](/docs/DeveloperGuide/CRUD/ButtonGroup))
+* Configuration to set the read only mode of a CRUD feature item ([doc](/docs/DeveloperGuide/CRUD/FormConfiguration#form-read-only))
+* Handling of errors when form is submitted and preventing closing it ([doc](/docs/DeveloperGuide/ErrorManagement/PreventFormClosingOnError#block-form))
+* Handling of outdated item currently edited ([doc](/docs/DeveloperGuide/ErrorManagement/PreventFormClosingOnError#inform-user-of-conflict))
+* Fixable entity ([doc](/docs/DeveloperGuide/CRUD/FixableCRUD))
 * Be able to unset team or role as default.
 * Configuration to clear team and have no team selected ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#clear-and-choose-no-team-in-selector))
 * Configuration to choose automatic team selection mode if no default team set ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#automatic-team-selection-mode))
@@ -214,7 +214,7 @@ sidebar_position: 1
 * Using new PrimeNG theming ([doc](../50-BestPractices/40-Front%20Style%20Guide/40-CustomizeApplicationTheme.md))
 ### .NET
 * Handle user's default teams from dedicated new table `UserDefaultTeams` and remove property `IsDefault` from `Member` entity and database
-* Into `ArchiveServiceBase`, rename `SaveItemAsFlatTextCompressedAsync()` to `CreateArchiveAsync()`, and expose new virtual methods `SerializeItem()` and `AddEntriesToArchiveAsync()` ([doc](../40-DeveloperGuide/30-WorkerService/30-WorkerFeatures/20-ArchiveJob.md#archive-service))
+* Into `ArchiveServiceBase`, rename `SaveItemAsFlatTextCompressedAsync()` to `CreateArchiveAsync()`, and expose new virtual methods `SerializeItem()` and `AddEntriesToArchiveAsync()` ([doc](/docs/DeveloperGuide/WorkerService/WorkerFeatures/ArchiveJob#archive-service))
 
 ## V4.1.1 (2025-06-30)
 
