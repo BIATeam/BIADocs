@@ -3,6 +3,11 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V6.1.2 (12/03/2026)
+### Bugfix
+* fix keycloak token issue
+* up MailKit nuget to 4.15.1 to fix known vulnerability
+
 ## V6.1.1 (27/02/2026)
 ### Bugfix
 * fix notification Translations from signalR 
