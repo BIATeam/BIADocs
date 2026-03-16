@@ -38,8 +38,8 @@ Example `bianetconfig.json`:
         "ConnectionStringName": "ProjectDatabase"
       },
       "HybridCache": {
-        "ExpirationSeconds": 600,
-        "LocalCacheExpirationSeconds": 100
+        "ExpirationSeconds": 900,
+        "LocalCacheExpirationSeconds": 5
       }
     }
   }
@@ -69,34 +69,34 @@ public class MyAppService
 
 ### Basic GetOrCreate
 ```csharp
-var result = await hybridCache.GetOrCreateAsync(
-    ct => this.GetByMyBusinessRuleAsync(param1, param2, param3),
+var result = await this.hybridCache.GetOrCreateAsync(
+    factoryExpression: ct => new ValueTask<EntityDto>(this.GetByMyBusinessRuleAsync(param1, param2, param3)),
     teamId: 42,
     tags: new List<string> { "planes", "engine" });
 ```
 
 ### Override expirations per call
 ```csharp
-var result = await hybridCache.GetOrCreateAsync(
-    ct => this.GetByMyBusinessRuleAsync(param1, param2, param3),
+var result = await this.hybridCache.GetOrCreateAsync(
+    factoryExpression: ct => new ValueTask<EntityDto>(this.GetByMyBusinessRuleAsync(param1, param2, param3)),
     expiration: TimeSpan.FromMinutes(10),
     localCacheExpiration: TimeSpan.FromSeconds(30));
 ```
 
 ### Provide an explicit key
 ```csharp
-var result = await hybridCache.GetOrCreateAsync(
-    ct => this.GetByMyBusinessRuleAsync(param1, param2, param3),
+var result = await this.hybridCache.GetOrCreateAsync(
+    factoryExpression: ct => new ValueTask<EntityDto>(this.GetByMyBusinessRuleAsync(param1, param2, param3)),
     key: "MyCustomKey");
 ```
 
 ### Remove entries
 ```csharp
-await hybridCache.RemoveAsync("MyCustomKey");
-await hybridCache.RemoveByTeamIdAsync(42);
-await hybridCache.RemoveByTagAsync("planes");
-await hybridCache.RemoveByTagAsync(new List<string> { "planes", "engine" });
-await hybridCache.RemoveAllAsync();
+await this.hybridCache.RemoveAsync("MyCustomKey");
+await this.hybridCache.RemoveByTeamIdAsync(42);
+await this.hybridCache.RemoveByTagAsync("planes");
+await this.hybridCache.RemoveByTagAsync(new List<string> { "planes", "engine" });
+await this.hybridCache.RemoveAllAsync();
 ```
 
 ## Tag and team behavior

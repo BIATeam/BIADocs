@@ -95,13 +95,14 @@ To use them, you must define a template for your `specificInput` or `specificOut
 ``` html title="feature-table.component.html"
 <bia-calc-table>
   <ng-template pTemplate="specificInput" let-field="field" let-form="form">
-    <div [formGroup]="form">
+    <span [formGroup]="form">
       <ng-container [ngSwitch]="field.field">
         <ng-container *ngSwitchCase="'myField'">
           <!-- Apply here your template for your field  -->
           <p-checkbox binary="true" [formControlName]="field.field"></p-checkbox>
         </ng-container>
       </ng-container>
+    </span>
   </ng-template>
 
   <ng-template pTemplate="specificOutput" let-field="field" let-data="data">
