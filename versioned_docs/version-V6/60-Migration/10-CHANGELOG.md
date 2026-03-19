@@ -3,6 +3,15 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V6.1.3 (19/03/2026)
+### Bugfix
+* Fix audit linked entities
+* Improve display front user exception
+* Fix BIA HybridCache
+* Display of a non editable fields into form
+* Fix init forms
+* Update of npm & nuget packages
+  
 ## V6.1.2 (12/03/2026)
 ### Bugfix
 * fix keycloak token issue
