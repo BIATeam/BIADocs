@@ -3,6 +3,25 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7 (DD/MM/YYYY)
+### Features
+* Update to Angular V21
+* Use partial classes for projet configuration to improve the future migration processes
+* New download file service ([doc](../40-DeveloperGuide/145-FileDownloaderService.md))
+* New `onPanelHide` output from `CrudItemIndexComponent`
+* Change back button behavior into table header to return to the previous navigation URL part
+* New `popupClosable` property added into `PopupLayoutComponent` and `DynamicLayoutComponent`
+  * Set the closable popup by setting into the data snapshot the property `closable` to `true`
+* Handle local date time display ([doc](../40-DeveloperGuide/20-CRUD/65-LocalDateTime.md))
+* Dedicated projets for Entity Framework Core migrations ([doc](../40-DeveloperGuide/10-Start/50-InfrastructureDataProject.md#ef-core-migrations))
+  * You must now use the `DeployDB` as entry point to manage the migrations when using the package manager console
+* Improve the cache client side for Options
+* Use generic `PagingFilterFormatDto` for BaseControllers of `Users` and `Notifications`
+* Improve dependancy injection of `DataContext` from `DeployDB` or `API/WorkerService` with single method from IOC
+### Bugfix
+* Fix error code 426 that occurs after a new deployment of the application with a new version
+* Fix the login on teams with persistents child teams
+
 ## V6.1.3 (19/03/2026)
 ### Bugfix
 * Fix audit linked entities
