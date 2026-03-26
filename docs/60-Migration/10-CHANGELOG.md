@@ -3,6 +3,26 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7 (DD/MM/YYYY)
+### Features
+* Updated to Angular V21
+* Using partial classes for project configuration to improve future migrations
+* New file download service ([doc](../40-DeveloperGuide/145-FileDownloaderService.md))
+* New `onPanelHide` output for `CrudItemIndexComponent`
+* Changed the behavior of the Back button: it is now the table header, allowing users to return to the previous navigation URL
+* Added the new `popupClosable` property to `PopupLayoutComponent` and `DynamicLayoutComponent`
+  * Enabled popup closing by setting the `closable` property to `true` in the data snapshot
+* Support for displaying the local date and time ([doc](../40-DeveloperGuide/20-CRUD/65-LocalDateTime.md))
+* Projects dedicated to migrations to Entity Framework Core ([doc](../40-DeveloperGuide/10-Start/50-InfrastructureDataProject.md#ef-core-migrations))
+  * You must now use `DeployDB` as the entry point to manage migrations from the Package Manager console.
+* Improved client-side caching of options.
+* Use of generic `PagingFilterFormatDto` for BaseControllers in the `Users` and `Notifications` groups.
+* Improved dependency injection of `DataContext` from `DeployDB` or `API/WorkerService` using a single injection method.
+* Hiding the "Back to site" button on the Hangfire dashboard
+### Bug Fixes
+* Fixed error 426 that occurred after deploying a new application with a new version.
+* Fixed connection issues for teams with persistent sub-teams.
+
 ## V6.1.3 (19/03/2026)
 ### Bugfix
 * Fix audit linked entities

@@ -233,6 +233,86 @@ function Invoke-ReplacementsInFiles {
   }
 }
 
+function Sync-BiaNetPermissions {
+    param(
+        [string]$DotNetPath = "DotNet"
+    )
+
+    $apiFolder = Get-ChildItem -Path $DotNetPath -Directory -Filter "*.Presentation.Api" | Select-Object -First 1
+    if (-not $apiFolder) {
+        Write-Error "No folder matching *.Presentation.Api found under $DotNetPath"
+        return
+    }
+
+    $ConfigPath = Join-Path $apiFolder.FullName "bianetconfig.json"
+    $PermissionsPath = Join-Path $apiFolder.FullName "bianetpermissions.json"
+
+    $configContent = Get-Content $ConfigPath -Raw -Encoding UTF8
+    $lines = $configContent -split "`n"
+
+    # Find the Permissions block boundaries
+    $startLine = -1
+    $depth = 0
+    $endLine = -1
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $line = $lines[$i]
+        if ($startLine -eq -1) {
+            if ($line -match '^\s*"Permissions"\s*:\s*\[') {
+                $startLine = $i
+                foreach ($char in $line.ToCharArray()) {
+                    if ($char -eq '[') { $depth++ }
+                    elseif ($char -eq ']') { $depth-- }
+                }
+                if ($depth -eq 0) { $endLine = $i; break }
+            }
+        }
+        else {
+            foreach ($char in $line.ToCharArray()) {
+                if ($char -eq '[') { $depth++ }
+                elseif ($char -eq ']') { $depth-- }
+            }
+            if ($depth -eq 0) { $endLine = $i; break }
+        }
+    }
+
+    if ($startLine -eq -1 -or $endLine -eq -1) {
+        Write-Host "No Permissions block found in $ConfigPath, skipping."
+        return
+    }
+
+    # Write new bianetpermissions.json
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    $permissionsBlock = ($lines[$startLine..$endLine]) -join "`n"
+    $newPermissionsContent = "{`n  `"BiaNet`": {`n    $($permissionsBlock.Trim())`n  }`n}`n"
+    [System.IO.File]::WriteAllText((Resolve-Path $PermissionsPath), $newPermissionsContent, $utf8NoBom)
+    Write-Host "Updated: $PermissionsPath"
+
+    # Remove Permissions block from bianetconfig.json
+    $beforeLines = if ($startLine -gt 0) { $lines[0..($startLine - 1)] } else { @() }
+    $afterLines = if ($endLine -lt ($lines.Count - 1)) { $lines[($endLine + 1)..($lines.Count - 1)] } else { @() }
+
+    # Remove trailing comma from the last non-empty line before the block
+    for ($i = $beforeLines.Count - 1; $i -ge 0; $i--) {
+        if ($beforeLines[$i].Trim() -ne '') {
+            $beforeLines[$i] = $beforeLines[$i] -replace ',\s*$', ''
+            break
+        }
+    }
+
+    # Collapse consecutive blank lines
+    $cleanedLines = @()
+    $prevBlank = $false
+    foreach ($line in ($beforeLines + $afterLines)) {
+        $isBlank = $line.Trim() -eq ''
+        if (-not ($isBlank -and $prevBlank)) { $cleanedLines += $line }
+        $prevBlank = $isBlank
+    }
+
+    [System.IO.File]::WriteAllText((Resolve-Path $ConfigPath), ($cleanedLines -join "`n"), $utf8NoBom)
+    Write-Host "Updated: $ConfigPath"
+}
+
 # FRONT END
 # BEGIN - Ultima 21 css change
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.html"
@@ -244,109 +324,21 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -Ne
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "featureNameSingular:\s*'(?!app\.)(\S*)'" -NewRegexp 'featureNameSingular: ''app.$1''' -Include "*.ts"
 # END - Change feature singular name key
 
+# BEGIN - Replace specific input complex input by motion options
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onHide\)="onComplexInput\(false\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onComplexInput\(false\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onPanelHide\(\S*\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
+# END - Replace specific input complex input by motion options
+
+# BEGIN - Replace deprecated changeDetection for Angular 21
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "changeDetection:\s*ChangeDetectionStrategy\.Default" -NewRegexp 'changeDetection: ChangeDetectionStrategy.Eager' -Include "*.ts"
+# END - Replace deprecated changeDetection for Angular 21
+
 # BACK END
 
-# BEGIN - Move EF Core migrations to dedicated projects
-function Move-MigrationFiles {
-  param (
-    [string]$SourceDir,
-    [string]$DestDir,
-    [string]$OldNamespace,
-    [string]$NewNamespace,
-    [string]$Label
-  )
-
-  if (-not (Test-Path $SourceDir)) {
-    Write-Host "$Label : source folder not found, skipping: $SourceDir" -ForegroundColor Yellow
-    return
-  }
-
-  $files = Get-ChildItem -Path $SourceDir -File -Filter "*.cs"
-  if ($files.Count -eq 0) {
-    Write-Host "$Label : no .cs files found in source folder, skipping." -ForegroundColor Yellow
-    return
-  }
-
-  Write-Host "`n$Label : moving $($files.Count) .cs file(s) from '$SourceDir' to '$DestDir'" -ForegroundColor Cyan
-
-  if (-not (Test-Path $DestDir)) {
-    New-Item -ItemType Directory -Path $DestDir -Force | Out-Null
-  }
-
-  foreach ($file in $files) {
-    $content = [System.IO.File]::ReadAllText($file.FullName)
-    $updatedContent = $content -replace [regex]::Escape($OldNamespace), $NewNamespace
-    $destFile = Join-Path $DestDir $file.Name
-    [System.IO.File]::WriteAllText($destFile, $updatedContent, [System.Text.Encoding]::UTF8)
-    Remove-Item -Path $file.FullName -Force
-    Write-Host "  Moved & updated namespace: $($file.Name)" -ForegroundColor Green
-  }
-
-  Write-Host "$Label : done." -ForegroundColor Green
-}
-
-function Move-EfMigrationsToProjects {
-  param (
-    [string]$SourceBackEnd
-  )
-
-  # Find the Infrastructure.Data project folder (direct child whose name ends with .Infrastructure.Data)
-  $infraDataFolder = Get-ChildItem -Path $SourceBackEnd -Directory |
-    Where-Object { $_.Name -match '\.Infrastructure\.Data$' } |
-    Select-Object -First 1
-
-  if ($null -eq $infraDataFolder) {
-    Write-Host "Infrastructure.Data project folder not found in $SourceBackEnd" -ForegroundColor Red
-    return
-  }
-
-  $infraDataProjectName = $infraDataFolder.Name
-  Write-Host "Found Infrastructure.Data project: $infraDataProjectName" -ForegroundColor Cyan
-
-  # Locate destination migration projects (direct children of SourceBackEnd)
-  $sqlServerProjectFolder = Get-ChildItem -Path $SourceBackEnd -Directory |
-    Where-Object { $_.Name -eq "$infraDataProjectName.Migrations.SqlServer" } |
-    Select-Object -First 1
-
-  $postgreSqlProjectFolder = Get-ChildItem -Path $SourceBackEnd -Directory |
-    Where-Object { $_.Name -eq "$infraDataProjectName.Migrations.PostgreSQL" } |
-    Select-Object -First 1
-
-  # SQL Server: Migrations -> *.Migrations.SqlServer\Migrations
-  if ($null -ne $sqlServerProjectFolder) {
-    Move-MigrationFiles `
-      -SourceDir    (Join-Path $infraDataFolder.FullName "Migrations") `
-      -DestDir      (Join-Path $sqlServerProjectFolder.FullName "Migrations") `
-      -OldNamespace "$infraDataProjectName.Migrations" `
-      -NewNamespace "$infraDataProjectName.Migrations.SqlServer.Migrations" `
-      -Label        "SqlServer"
-  }
-  else {
-    Write-Host "SQL Server destination project not found: $infraDataProjectName.Migrations.SqlServer" -ForegroundColor Red
-  }
-
-  # PostgreSQL: MigrationsPostGreSql -> *.Migrations.PostgreSQL\Migrations
-  if ($null -ne $postgreSqlProjectFolder) {
-    Move-MigrationFiles `
-      -SourceDir    (Join-Path $infraDataFolder.FullName "MigrationsPostGreSql") `
-      -DestDir      (Join-Path $postgreSqlProjectFolder.FullName "Migrations") `
-      -OldNamespace "$infraDataProjectName.MigrationsPostGreSql" `
-      -NewNamespace "$infraDataProjectName.Migrations.PostgreSQL.Migrations" `
-      -Label        "PostgreSQL"
-  }
-  else {
-    Write-Host "PostgreSQL destination project not found: $infraDataProjectName.Migrations.PostgreSQL" -ForegroundColor Red
-  }
-
-  # Delete the old Infrastructure.Data project folder now that migrations have been moved
-  Write-Host "`nDeleting old project folder: $($infraDataFolder.FullName)" -ForegroundColor Cyan
-  Remove-Item -Path $infraDataFolder.FullName -Recurse -Force
-  Write-Host "Old Infrastructure.Data project folder deleted." -ForegroundColor Green
-}
-
-Move-EfMigrationsToProjects -SourceBackEnd $SourceBackEnd
-# END - Move EF Core migrations to dedicated projects
-
+# BEGIN - Move permissions to a dedicated file
+Sync-BiaNetPermissions -DotNetPath $SourceBackEnd
+# END - Move permissions to a dedicated file
 
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
