@@ -83,19 +83,10 @@ function Move-EfMigrationsToProjects {
   $infraDataProjectName = $infraDataFolder.Name
   Write-Host "Found Infrastructure.Data project: $infraDataProjectName" -ForegroundColor Cyan
 
-  # Locate destination migration projects (direct children of SourceBackEnd)
-  $sqlServerProjectFolder = Get-ChildItem -Path $SourceBackEnd -Directory |
-    Where-Object { $_.Name -eq "$infraDataProjectName.Migrations.SqlServer" } |
-    Select-Object -First 1
-
-  $postgreSqlProjectFolder = Get-ChildItem -Path $SourceBackEnd -Directory |
-    Where-Object { $_.Name -eq "$infraDataProjectName.Migrations.PostgreSQL" } |
-    Select-Object -First 1
-
   # SQL Server: Migrations -> *.Migrations.SqlServer\Migrations
 	Move-MigrationFiles `
 	  -SourceDir    (Join-Path $infraDataFolder.FullName "Migrations") `
-	  -DestDir      (Join-Path $sqlServerProjectFolder.FullName "Migrations") `
+	  -DestDir      (Join-Path "$($infraDataFolder.FullName).Migrations.SqlServer" "Migrations") `
 	  -OldNamespace "$infraDataProjectName.Migrations" `
 	  -NewNamespace "$infraDataProjectName.Migrations.SqlServer.Migrations" `
 	  -Label        "SqlServer"
@@ -103,7 +94,7 @@ function Move-EfMigrationsToProjects {
   # PostgreSQL: MigrationsPostGreSql -> *.Migrations.PostgreSQL\Migrations
   Move-MigrationFiles `
     -SourceDir    (Join-Path $infraDataFolder.FullName "MigrationsPostGreSql") `
-    -DestDir      (Join-Path $postgreSqlProjectFolder.FullName "Migrations") `
+    -DestDir      (Join-Path "$($infraDataFolder.FullName).Migrations.PostgreSQL" "Migrations") `
     -OldNamespace "$infraDataProjectName.MigrationsPostGreSql" `
     -NewNamespace "$infraDataProjectName.Migrations.PostgreSQL.Migrations" `
     -Label        "PostgreSQL"
@@ -120,6 +111,22 @@ Move-EfMigrationsToProjects -SourceBackEnd "C:\sources\Project\DotNet"
 5. Check if all your migrations have been migrated successfully with the namespace updated according to the new location
 6. ⚡**COMMIT**
 
+## Front Manual Steps
+### i18n files
+
+Some translations keys have been moved to the bia i18n translation files for all features that are defined in bia-ng package.
+These translations concerns:
+- Members
+- Notifications
+- Teams
+- Users
+
+You can now override any bia translation key by your own key in the project i18n files (assets/i18n/app/en.json keys override assets/bia/i18n/en.json keys).
+
+Most of the time you can remove from your project i18n files the translation keys concerning these four features during conflict resolution.
+If you customized a feature (like users) by adding some custom columns, you will need to keep these columns in your project files, but otherwise the whole block can be removed.
+
+A fast way to do that would be to keep your previous i18n files during conflict resolution and then remove manually the four references to the four features in the app section and the four blocks concerning these features.
 
 ## Back Manual Steps
 
@@ -204,3 +211,17 @@ If you do not wish to use the data initialization provided by BIA, you can comme
 
 #### 4) Test Framework Migration
 These changes should not result in any database migration. To verify this, simply create a test Entity Framework migration—it should be empty.
+
+### Constants file
+The Crosscutting.Common Constants class is now partial.
+You might have conflict on that file.
+You can check what has been moved by checking the Bia/Constants.cs file in the project, the remove everything that is already in that file during your conflict resolution.
+What have been moved in v7:
+- Application.FrameworkVersion
+- Application.Environment
+- DefaultValues.Theme
+- LanguageId.English
+- LanguageId.French
+- LanguageId.Spanish
+
+### Permissions
