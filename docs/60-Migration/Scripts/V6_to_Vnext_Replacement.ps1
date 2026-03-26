@@ -277,7 +277,7 @@ function Sync-BiaNetPermissions {
     }
 
     if ($startLine -eq -1 -or $endLine -eq -1) {
-        Write-Error "Could not find Permissions block in $ConfigPath"
+        Write-Host "No Permissions block found in $ConfigPath, skipping."
         return
     }
 
