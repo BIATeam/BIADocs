@@ -225,7 +225,98 @@ During framework migration, you must follow this pattern by separating the code 
 If you do not wish to use the data initialization provided by BIA, you can comment out the code that starts with `base.`.
 
 #### 4) Test Framework Migration
-These changes should not result in any database migration. To verify this, simply create a test Entity Framework migration—it should be empty.
+These changes should not result in any database migration. To verify this, here is what your migration file should look like at the end of your framework migration:
+
+``` csharp
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterColumn<DateTimeOffset>(
+                name: "CreatedDate",
+                table: "Notifications",
+                type: "datetimeoffset",
+                nullable: false,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
+
+            migrationBuilder.AlterColumn<DateTimeOffset>(
+                name: "Start",
+                table: "Announcements",
+                type: "datetimeoffset",
+                nullable: false,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
+
+            migrationBuilder.AlterColumn<DateTimeOffset>(
+                name: "End",
+                table: "Announcements",
+                type: "datetimeoffset",
+                nullable: false,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
+
+            migrationBuilder.CreateTable(
+                name: "FileDownloadData",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    FileContentType = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    RequestDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RequestByUserId = table.Column<int>(type: "int", nullable: false),
+                    ExpiredAtDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileDownloadData", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FileDownloadData_Users_RequestByUserId",
+                        column: x => x.RequestByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileDownloadTokens",
+                columns: table => new
+                {
+                    FileGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileDownloadTokens", x => new { x.FileGuid, x.Token });
+                    table.ForeignKey(
+                        name: "FK_FileDownloadTokens_FileDownloadData_FileGuid",
+                        column: x => x.FileGuid,
+                        principalTable: "FileDownloadData",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "NotificationTypes",
+                columns: new[] { "Id", "Code", "Label" },
+                values: new object[] { 6, "downloadr", "Download Ready" });
+
+            migrationBuilder.InsertData(
+                table: "NotificationTypeTranslations",
+                columns: new[] { "Id", "Label", "LanguageId", "NotificationTypeId" },
+                values: new object[,]
+                {
+                    { 601, "Téléchargement prêt", 2, 6 },
+                    { 602, "Descarga lista", 3, 6 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileDownloadData_RequestByUserId",
+                table: "FileDownloadData",
+                column: "RequestByUserId");
+        }
+```
+
 
 ### Constants file
 The Crosscutting.Common Constants class is now partial.
