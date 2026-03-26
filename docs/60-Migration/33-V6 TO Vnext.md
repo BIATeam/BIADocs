@@ -240,9 +240,8 @@ What have been moved in v7:
 - LanguageId.Spanish
 
 ### Bianetconfig Permissions
-Permissions have been moved from bianetconfig.json file to bianetpermissions.json file.
+Permissions will been moved from bianetconfig.json file to bianetpermissions.json file.
 You should have a conflict in the bianetconfig file.
 To resolve it:
-1) Keep your current changes in the permissions part of the bianetconfig
-2) Cut the array of permissions from the file and past it to replace the array of permissions in bianetpermissions.json
-3) Remove the permissions key from bianetconfig and clean your file.
+**Keep your current changes in the permissions part of the bianetconfig**
+The migration script will move your permissions to the new file automatically.

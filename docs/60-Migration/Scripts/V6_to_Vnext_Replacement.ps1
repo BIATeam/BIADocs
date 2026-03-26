@@ -233,6 +233,85 @@ function Invoke-ReplacementsInFiles {
   }
 }
 
+function Sync-BiaNetPermissions {
+    param(
+        [string]$DotNetPath = "DotNet"
+    )
+
+    $apiFolder = Get-ChildItem -Path $DotNetPath -Directory -Filter "*.Presentation.Api" | Select-Object -First 1
+    if (-not $apiFolder) {
+        Write-Error "No folder matching *.Presentation.Api found under $DotNetPath"
+        return
+    }
+
+    $ConfigPath = Join-Path $apiFolder.FullName "bianetconfig.json"
+    $PermissionsPath = Join-Path $apiFolder.FullName "bianetpermissions.json"
+
+    $configContent = Get-Content $ConfigPath -Raw -Encoding UTF8
+    $lines = $configContent -split "`n"
+
+    # Find the Permissions block boundaries
+    $startLine = -1
+    $depth = 0
+    $endLine = -1
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $line = $lines[$i]
+        if ($startLine -eq -1) {
+            if ($line -match '^\s*"Permissions"\s*:\s*\[') {
+                $startLine = $i
+                foreach ($char in $line.ToCharArray()) {
+                    if ($char -eq '[') { $depth++ }
+                    elseif ($char -eq ']') { $depth-- }
+                }
+                if ($depth -eq 0) { $endLine = $i; break }
+            }
+        }
+        else {
+            foreach ($char in $line.ToCharArray()) {
+                if ($char -eq '[') { $depth++ }
+                elseif ($char -eq ']') { $depth-- }
+            }
+            if ($depth -eq 0) { $endLine = $i; break }
+        }
+    }
+
+    if ($startLine -eq -1 -or $endLine -eq -1) {
+        Write-Error "Could not find Permissions block in $ConfigPath"
+        return
+    }
+
+    # Write new bianetpermissions.json
+    $permissionsBlock = ($lines[$startLine..$endLine]) -join "`n"
+    $newPermissionsContent = "{`n  `"BiaNet`": {`n    $($permissionsBlock.Trim())`n  }`n}`n"
+    [System.IO.File]::WriteAllText((Resolve-Path $PermissionsPath), $newPermissionsContent, [System.Text.Encoding]::UTF8)
+    Write-Host "Updated: $PermissionsPath"
+
+    # Remove Permissions block from bianetconfig.json
+    $beforeLines = if ($startLine -gt 0) { $lines[0..($startLine - 1)] } else { @() }
+    $afterLines = if ($endLine -lt ($lines.Count - 1)) { $lines[($endLine + 1)..($lines.Count - 1)] } else { @() }
+
+    # Remove trailing comma from the last non-empty line before the block
+    for ($i = $beforeLines.Count - 1; $i -ge 0; $i--) {
+        if ($beforeLines[$i].Trim() -ne '') {
+            $beforeLines[$i] = $beforeLines[$i] -replace ',\s*$', ''
+            break
+        }
+    }
+
+    # Collapse consecutive blank lines
+    $cleanedLines = @()
+    $prevBlank = $false
+    foreach ($line in ($beforeLines + $afterLines)) {
+        $isBlank = $line.Trim() -eq ''
+        if (-not ($isBlank -and $prevBlank)) { $cleanedLines += $line }
+        $prevBlank = $isBlank
+    }
+
+    [System.IO.File]::WriteAllText((Resolve-Path $ConfigPath), ($cleanedLines -join "`n"), [System.Text.Encoding]::UTF8)
+    Write-Host "Updated: $ConfigPath"
+}
+
 # FRONT END
 # BEGIN - Ultima 21 css change
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.html"
@@ -251,6 +330,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onPanelH
 # END - Replace specific input complex input by motion options
 
 # BACK END
+
+# BEGIN - Move permissions to a dedicated file
+Sync-BiaNetPermissions -DotNetPath $SourceBackEnd
+# END - Move permissions to a dedicated file
 
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
