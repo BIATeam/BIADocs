@@ -330,6 +330,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onComple
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onPanelHide\(\S*\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
 # END - Replace specific input complex input by motion options
 
+# BEGIN - Replace deprecated changeDetection for Angular 21
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "changeDetection:\s*ChangeDetectionStrategy\.Default" -NewRegexp 'changeDetection: ChangeDetectionStrategy.Eager' -Include "*.ts"
+# END - Replace deprecated changeDetection for Angular 21
+
 # BACK END
 
 # BEGIN - Move permissions to a dedicated file
