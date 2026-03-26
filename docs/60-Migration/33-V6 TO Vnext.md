@@ -29,13 +29,17 @@ function Move-MigrationFiles {
   )
 
   if (-not (Test-Path $SourceDir)) {
-    Write-Host "$Label : source folder not found, skipping: $SourceDir" -ForegroundColor Yellow
+    Write-Host "`n$Label : source folder not found, skipping: $SourceDir" -ForegroundColor Yellow
     return
   }
 
   $files = Get-ChildItem -Path $SourceDir -File -Filter "*.cs"
   if ($files.Count -eq 0) {
-    Write-Host "$Label : no .cs files found in source folder, skipping." -ForegroundColor Yellow
+    Write-Host "`n$Label : no .cs files found in source folder, skipping." -ForegroundColor Yellow
+    Write-Host "Deleting old migration folder: $($SourceDir.FullName)" -ForegroundColor Cyan
+    Remove-Item -Path $SourceDir -Recurse -Force
+    Write-Host "Old migration folder deleted." -ForegroundColor Green
+    Write-Host "$Label : done." -ForegroundColor Green
     return
   }
 
@@ -53,6 +57,10 @@ function Move-MigrationFiles {
     Remove-Item -Path $file.FullName -Force
     Write-Host "  Moved & updated namespace: $($file.Name)" -ForegroundColor Green
   }
+
+  Write-Host "Deleting old migration folder: $SourceDir" -ForegroundColor Cyan
+  Remove-Item -Path $SourceDir -Recurse -Force
+  Write-Host "Old migration folder deleted." -ForegroundColor Green
 
   Write-Host "$Label : done." -ForegroundColor Green
 }
@@ -85,35 +93,20 @@ function Move-EfMigrationsToProjects {
     Select-Object -First 1
 
   # SQL Server: Migrations -> *.Migrations.SqlServer\Migrations
-  if ($null -ne $sqlServerProjectFolder) {
-    Move-MigrationFiles `
-      -SourceDir    (Join-Path $infraDataFolder.FullName "Migrations") `
-      -DestDir      (Join-Path $sqlServerProjectFolder.FullName "Migrations") `
-      -OldNamespace "$infraDataProjectName.Migrations" `
-      -NewNamespace "$infraDataProjectName.Migrations.SqlServer.Migrations" `
-      -Label        "SqlServer"
-  }
-  else {
-    Write-Host "SQL Server destination project not found: $infraDataProjectName.Migrations.SqlServer" -ForegroundColor Red
-  }
+	Move-MigrationFiles `
+	  -SourceDir    (Join-Path $infraDataFolder.FullName "Migrations") `
+	  -DestDir      (Join-Path $sqlServerProjectFolder.FullName "Migrations") `
+	  -OldNamespace "$infraDataProjectName.Migrations" `
+	  -NewNamespace "$infraDataProjectName.Migrations.SqlServer.Migrations" `
+	  -Label        "SqlServer"
 
   # PostgreSQL: MigrationsPostGreSql -> *.Migrations.PostgreSQL\Migrations
-  if ($null -ne $postgreSqlProjectFolder) {
-    Move-MigrationFiles `
-      -SourceDir    (Join-Path $infraDataFolder.FullName "MigrationsPostGreSql") `
-      -DestDir      (Join-Path $postgreSqlProjectFolder.FullName "Migrations") `
-      -OldNamespace "$infraDataProjectName.MigrationsPostGreSql" `
-      -NewNamespace "$infraDataProjectName.Migrations.PostgreSQL.Migrations" `
-      -Label        "PostgreSQL"
-  }
-  else {
-    Write-Host "PostgreSQL destination project not found: $infraDataProjectName.Migrations.PostgreSQL" -ForegroundColor Red
-  }
-
-  # Delete the old Infrastructure.Data project folder now that migrations have been moved
-  Write-Host "`nDeleting old project folder: $($infraDataFolder.FullName)" -ForegroundColor Cyan
-  Remove-Item -Path $infraDataFolder.FullName -Recurse -Force
-  Write-Host "Old Infrastructure.Data project folder deleted." -ForegroundColor Green
+  Move-MigrationFiles `
+    -SourceDir    (Join-Path $infraDataFolder.FullName "MigrationsPostGreSql") `
+    -DestDir      (Join-Path $postgreSqlProjectFolder.FullName "Migrations") `
+    -OldNamespace "$infraDataProjectName.MigrationsPostGreSql" `
+    -NewNamespace "$infraDataProjectName.Migrations.PostgreSQL.Migrations" `
+    -Label        "PostgreSQL"
 }
 
 Move-EfMigrationsToProjects -SourceBackEnd "C:\sources\Project\DotNet"
