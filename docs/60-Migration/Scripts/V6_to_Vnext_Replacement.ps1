@@ -282,9 +282,10 @@ function Sync-BiaNetPermissions {
     }
 
     # Write new bianetpermissions.json
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     $permissionsBlock = ($lines[$startLine..$endLine]) -join "`n"
     $newPermissionsContent = "{`n  `"BiaNet`": {`n    $($permissionsBlock.Trim())`n  }`n}`n"
-    [System.IO.File]::WriteAllText((Resolve-Path $PermissionsPath), $newPermissionsContent, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText((Resolve-Path $PermissionsPath), $newPermissionsContent, $utf8NoBom)
     Write-Host "Updated: $PermissionsPath"
 
     # Remove Permissions block from bianetconfig.json
@@ -308,7 +309,7 @@ function Sync-BiaNetPermissions {
         $prevBlank = $isBlank
     }
 
-    [System.IO.File]::WriteAllText((Resolve-Path $ConfigPath), ($cleanedLines -join "`n"), [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText((Resolve-Path $ConfigPath), ($cleanedLines -join "`n"), $utf8NoBom)
     Write-Host "Updated: $ConfigPath"
 }
 
