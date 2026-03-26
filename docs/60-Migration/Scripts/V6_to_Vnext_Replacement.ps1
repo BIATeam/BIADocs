@@ -244,6 +244,12 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -Ne
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "featureNameSingular:\s*'(?!app\.)(\S*)'" -NewRegexp 'featureNameSingular: ''app.$1''' -Include "*.ts"
 # END - Change feature singular name key
 
+# BEGIN - Replace specific input complex input by motion options
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onHide\)="onComplexInput\(false\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onComplexInput\(false\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onPanelHide\(\S*\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
+# END - Replace specific input complex input by motion options
+
 # BACK END
 
 # FRONT END CLEAN
