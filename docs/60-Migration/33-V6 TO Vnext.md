@@ -128,6 +128,21 @@ If you customized a feature (like users) by adding some custom columns, you will
 
 A fast way to do that would be to keep your previous i18n files during conflict resolution and then remove manually the four references to the four features in the app section and the four blocks concerning these features.
 
+### main.ts file
+
+:::info
+This conflict only occurs if you have previously modified the `main.ts` file in your project.
+:::
+
+If you encounter a conflict on the `main.ts` file during the migration, the auto-resolve may not handle it properly.
+
+The `verifyPrimeNgLicence` method has been moved to a different location in the framework. During conflict resolution, you need to remove this method from your `main.ts` file as it is no longer needed there.
+
+To resolve this conflict:
+1. During merge conflict resolution, remove the `verifyPrimeNgLicence` method from your `main.ts` file
+2. Keep any other custom modifications you made to the file
+3. The method is now handled by the framework in its new location
+
 ## Back Manual Steps
 
 ### IocContainer
