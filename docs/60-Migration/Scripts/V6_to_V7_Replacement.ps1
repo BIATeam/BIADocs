@@ -334,6 +334,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onPanelH
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "changeDetection:\s*ChangeDetectionStrategy\.Default" -NewRegexp 'changeDetection: ChangeDetectionStrategy.Eager' -Include "*.ts"
 # END - Replace deprecated changeDetection for Angular 21
 
+# BEGIN - Replace deprecated changeDetection for Angular 21
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "@primeng\/themes" -NewRegexp '@primeuix/themes' -Include "*.ts"
+# END - Replace deprecated changeDetection for Angular 21
+
 # BACK END
 
 # BEGIN - Move permissions to a dedicated file
