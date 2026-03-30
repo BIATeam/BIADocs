@@ -263,6 +263,10 @@ ReplaceInProject -Source $SourceFrontEnd -OldRegexp "h1 {([\s\S]+)font-family: '
 ReplaceInProject -Source $SourceFrontEnd -OldRegexp "h1 {([\s\S]+)font-size: 36px;([\s]+)" -NewRegexp 'h1 {$1font-size: 1.75rem;$2' -Include *header.component.scss
 # END - Change table header title font and size
 
+# BEGIN - Renaming RetrieveSetReadOnly to RetrieveSetNoTracking
+ReplaceInProject -Source $SourceBackEnd -OldRegexp '\bRetrieveSetReadOnly\b' -NewRegexp 'RetrieveSetNoTracking' -Include *.cs
+# BEGIN - Renaming RetrieveSetReadOnly to RetrieveSetNoTracking
+
 # Set-Location $Source/DotNet
 dotnet restore --no-cache
 
