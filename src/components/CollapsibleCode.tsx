@@ -1,10 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
+import CodeBlock from '@theme/CodeBlock';
 import styles from './CollapsibleCode.module.css';
 
 type Props = {
   /**
-   * Pass a Docusaurus fenced code block as a child (supports all languages,
-   * backticks, $ signs, etc. with no escaping needed):
+   * Optional path to a static file to display as a code block.
+   * The file must be imported with the `?raw` query in your MDX file:
+   *
+   * ```mdx
+   * import scriptContent from '!!raw-loader!./Scripts/MyScript.ps1';
+   *
+   * <CollapsibleCode filePath={scriptContent} language="powershell" title="MyScript.ps1" maxLines={10} />
+   * ```
+   *
+   * When `filePath` is provided, `children` is ignored and the file content
+   * is rendered with the given `language` and `title`.
+   *
+   * When `filePath` is omitted, pass a Docusaurus fenced code block as a child:
    *
    * ```mdx
    * <CollapsibleCode maxLines={10}>
@@ -16,7 +28,13 @@ type Props = {
    * </CollapsibleCode>
    * ```
    */
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  /** Raw file content (use `import content from '!!raw-loader!./file?raw'` or webpack asset/source) */
+  fileContent?: string;
+  /** Language for syntax highlighting when using `fileContent` (e.g. "powershell", "csharp") */
+  language?: string;
+  /** Title shown in the code block header when using `fileContent` */
+  title?: string;
   /** Approximate number of code lines visible before "Show more" (default: 15) */
   maxLines?: number;
 };
@@ -26,7 +44,7 @@ const LINE_HEIGHT_PX = 24;
 /** Approximate vertical padding inside a Docusaurus code block (px) */
 const BLOCK_PADDING_PX = 40;
 
-export default function CollapsibleCode({ children, maxLines = 15 }: Props) {
+export default function CollapsibleCode({ children, fileContent, language, title, maxLines = 15 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [isCollapsible, setIsCollapsible] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -61,7 +79,9 @@ export default function CollapsibleCode({ children, maxLines = 15 }: Props) {
         className={styles.content}
         style={{ maxHeight: expanded ? undefined : `${collapsedHeight}px` }}
       >
-        {children}
+        {fileContent !== undefined
+          ? <CodeBlock language={language} title={title}>{fileContent}</CodeBlock>
+          : children}
         {isCollapsible && !expanded && <div className={styles.fadeOverlay} />}
       </div>
 

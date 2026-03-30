@@ -130,6 +130,25 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   // plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [
+    function rawLoaderPlugin() {
+      return {
+        name: 'raw-loader-plugin',
+        configureWebpack() {
+          return {
+            module: {
+              rules: [
+                {
+                  resourceQuery: /raw/,
+                  type: 'asset/source',
+                },
+              ],
+            },
+          };
+        },
+      };
+    },
+  ],
 };
 
 export default config;
