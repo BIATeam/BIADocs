@@ -3,7 +3,7 @@ sidebar_position: 1
 ---
 
 # ChangeLog
-## V7 (DD/MM/YYYY)
+## V7.0.1 (31/03/2026)
 ### Features
 * Updated to Angular V21
 * Using partial classes for project configuration to improve future migrations
