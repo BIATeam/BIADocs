@@ -45,7 +45,6 @@
   "engines": {
     "node": ">=18.0"
   },
-  // TODO: remove this override when docusaurus will use serialize-javascript v>=7.0.5
   "overrides": {
     "serialize-javascript": "7.0.5"
   }
