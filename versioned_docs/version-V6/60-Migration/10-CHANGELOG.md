@@ -125,10 +125,10 @@ entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTe
 * Remove `LazyLoadDto`
   * use `PagingFilterFormatDto` instead
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
-* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](33-V5%20TO%20V6.md#inheritage))
-* Rename generic methods of `OperationalDomainServiceBase` ([migration note](33-V5%20TO%20V6.md#overrides))
+* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](/BIADocs/docs/V6/Migration/V5%20TO%20V6#inheritage))
+* Rename generic methods of `OperationalDomainServiceBase` ([migration note](/BIADocs/docs/V6/Migration/V5%20TO%20V6#overrides))
 * `TeamsConfig` property has been removed from `LoginParamDto` and is now returned into `AppSettingsDto`
-  * In front-end, inject `AppSettingService` and use `appSettings.teamsConfig` property to access it ([migration note](33-V5%20TO%20V6.md#teamsconfig))
+  * In front-end, inject `AppSettingService` and use `appSettings.teamsConfig` property to access it ([migration note](/BIADocs/docs/V6/Migration/V5%20TO%20V6#teamsconfig))
 
 ## V5.2.3 (18/12/2025)
 ### Bugfix

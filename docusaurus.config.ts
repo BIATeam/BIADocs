@@ -19,7 +19,11 @@ const config: Config = {
   projectName: 'BIA Framework', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    }
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -130,6 +134,25 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   // plugins: [require.resolve('docusaurus-lunr-search')],
+  plugins: [
+    function rawLoaderPlugin() {
+      return {
+        name: 'raw-loader-plugin',
+        configureWebpack() {
+          return {
+            module: {
+              rules: [
+                {
+                  resourceQuery: /raw/,
+                  type: 'asset/source',
+                },
+              ],
+            },
+          };
+        },
+      };
+    },
+  ],
 };
 
 export default config;

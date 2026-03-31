@@ -3,7 +3,7 @@ sidebar_position: 1
 ---
 
 # ChangeLog
-## V7 (DD/MM/YYYY)
+## V7.0.1 (31/03/2026)
 ### Features
 * Updated to Angular V21
 * Using partial classes for project configuration to improve future migrations
@@ -146,10 +146,10 @@ sidebar_position: 1
 * Remove `LazyLoadDto`
   * use `PagingFilterFormatDto` instead
 * All methods of `CrudAppServiceBase` has been moved into `OperationalDomainServiceBase`
-* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](../../versioned_docs/version-V6/60-Migration/33-V5%20TO%20V6.md#inheritage))
-* Rename generic methods of `OperationalDomainServiceBase` ([migration note](../../versioned_docs/version-V6/60-Migration/33-V5%20TO%20V6.md#overrides))
+* `OperationalDomainServiceBase` takes now 7 generic types `<TDto, TDtoListItem, TEntity, TKey, TFilterDto, TMapper, TMapperListItem>` ([migration note](/BIADocs/docs/V6/Migration/V5%20TO%20V6#inheritage))
+* Rename generic methods of `OperationalDomainServiceBase` ([migration note](/BIADocs/docs/V6/Migration/V5%20TO%20V6#overrides))
 * `TeamsConfig` property has been removed from `LoginParamDto` and is now returned into `AppSettingsDto`
-  * In front-end, inject `AppSettingService` and use `appSettings.teamsConfig` property to access it ([migration note](../../versioned_docs/version-V6/60-Migration/33-V5%20TO%20V6.md#teamsconfig))
+  * In front-end, inject `AppSettingService` and use `appSettings.teamsConfig` property to access it ([migration note](/BIADocs/docs/V6/Migration/V5%20TO%20V6#teamsconfig))
 
 ## V5.2.3 (18/12/2025)
 ### Bugfix
