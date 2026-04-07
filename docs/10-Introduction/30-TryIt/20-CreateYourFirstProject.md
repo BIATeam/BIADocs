@@ -11,12 +11,12 @@ sidebar_position: 1
    ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-2-Files.PNG)
 
 3. Create the database:
-  a. If you use SqlServer:
-      Open Sql Server Management Studio and create a database named "MyFirstProject"   
+  1. If you use SqlServer:
+      Open Sql Server Management Studio and create a database named "MyFirstProject" by right-clicking on the **Databases** folder in the Object Explorer.
    ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-3-Database.PNG)
 
-    b. If you use PostGreSQL
-    Use pgAdmin 4 to create your database. 
+  2. If you use PostGreSQL :
+      Use pgAdmin 4 to create your database. 
 
 4. Open with Visual Studio code (VSCode) the folder "C:\Sources\Test\MyFirstProject"
    
@@ -52,18 +52,36 @@ sidebar_position: 1
     1.  In VSCode Run and debug "DotNet WebApi" 
       ![VSCode Start WebApi](../../Images/GettingStarted/CreateYourFirstProject-11-VSCodeStartWebApi.PNG)
     2.  The swagger page will be open.  
-      Click on "BIA login" at bottom right.  
-      The button will be green.  
+      Click on "BIA login" at bottom right and wait (There is no need to type anything in the window that appeared).  
+      The window should close and the "BIA login" button should be green.  
       ![Swagger](../../Images/GettingStarted/CreateYourFirstProject-5-Swagger.PNG)
     
-    3. If the button is red it is probably an error in bianetconfig.Development.json.
+    3. If the button is red or if there is an error after you clicked on it, it is probably due to an error in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Presentation.Api\bianetconfig.Development.json'**. Look for **LdapDomains** and replace the values with the following ones.
+
+    ```json title="bianetconfig.Development.json"
+    "LdapDomains": [
+      {
+        "Name": "ONE",
+        "LdapName": "one.ad",
+        "ContainsGroup": true,
+        "ContainsUser": true
+      }
+    ]
+    ```
 
 9.  Run the Front
     1.  Do not stop the Run of the "DotNet WebApi" launched in previous step
-    2.  Install npm:
-        1. In VSCode (folder MyFirstProject) press F1
-        2. Click "Tasks: Run Tasks".
-        3. Click "Angular: install".
+    2.  Install npm, if you use PrimeNg V6 :
+        1.  You can buy a licence on [PrimeNG website](https://primeng.org/lts)
+        2.  Or go back to a free no LTS version by deleting all licence manager mentions in **'...\MyFirstProject\Angular\package.json'** and install the latest PrimeNG version that doesn't use LTS (you can check on [PrimeNG website](https://primeng.org/lts) what is the latest version).
+        Go in the "Angular" repository : 
+        ```ps
+        cd Angular
+        ```
+        And run the command replacing LatestPrimeNGVersion by the current latest PrimeNG version :
+        ```ps
+        npm i primeng@LatestPrimeNGVersion
+        ```
     3.  In VSCode Run and debug "Angular + npm start" 
     ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-12-VSCodeStartAngular.PNG)
     4.  Open a browser at address http://localhost:4200/  
