@@ -6,9 +6,9 @@ sidebar_position: 1
 We will create in first the feature 'Airport'.
 
 ## Create the Entity
-* Open with Visual Studio 2022 or VS Code the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-* Create the entity 'Airport':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\' create 'Fleet' folder.
+* Open with Visual Studio 2026 or VS Code the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
+
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\'** create 'Fleet' folder.
 * Create 'Entities' subfolder.
 * Create empty class 'Airport.cs' and add: 
 

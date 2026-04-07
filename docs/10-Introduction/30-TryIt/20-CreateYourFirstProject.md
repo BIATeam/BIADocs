@@ -73,7 +73,7 @@ sidebar_position: 1
     1.  Do not stop the Run of the "DotNet WebApi" launched in previous step
     2.  Install npm, if you use PrimeNg V6 :
         1.  You can buy a licence on [PrimeNG website](https://primeng.org/lts)
-        2.  Or go back to a free no LTS version by deleting all licence manager mentions in **'...\MyFirstProject\Angular\package.json'** and install the latest PrimeNG version that doesn't use LTS (you can check on [PrimeNG website](https://primeng.org/lts) what is the latest version).
+        2.  Or go back to a free no LTS version by deleting all licence manager mentions in **'...\MyFirstProject\Angular\package.json'** and install the latest PrimeNG version that doesn't use LTS (you can check the latest version on [PrimeNG's website](https://primeng.org/lts)).
         Go in the "Angular" repository : 
         ```ps
         cd Angular
@@ -82,6 +82,16 @@ sidebar_position: 1
         ```ps
         npm i primeng@LatestPrimeNGVersion
         ```
+        Delete this two lines from **'...\Sources\Test\MyFirstProject\Angular\src\main.ts'**
+
+        ```js
+        import { LicenseManager } from 'primeng/api';
+        ```
+        ```js
+        LicenseManager.verify(licensePayload.licenseKey, licensePayload.passKey);
+        ```
+
+
     3.  In VSCode Run and debug "Angular + npm start" 
     ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-12-VSCodeStartAngular.PNG)
     4.  Open a browser at address http://localhost:4200/  
