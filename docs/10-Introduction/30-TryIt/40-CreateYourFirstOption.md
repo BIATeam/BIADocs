@@ -6,9 +6,8 @@ sidebar_position: 1
 We will create the feature 'PlaneType'.
 
 ## Create the Entity
-* Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-* Create the entity 'PlaneType':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities' folder, create empty class 'PlaneType.cs' and add: 
+* Open with Visual Studio 2022 the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'** folder, create empty class 'PlaneType.cs' and add: 
 
 ```csharp
 // <copyright file="PlaneType.cs" company="MyCompany">
@@ -44,7 +43,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```
 ## Update Data
 ### Create the ModelBuilder
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders', open class 'FleetModelBuilder.cs' and add:  
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, open class 'PlaneModelBuilder.cs' and add:  
 
 ```csharp
         public static void CreateModel(ModelBuilder modelBuilder)
@@ -66,7 +65,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```
 
 ### Update DataContext file
-* Open '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs' file and declare the DbSet associated to PlaneType:
+* Open **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs'** file and declare the DbSet associated to PlaneType:
 
 ```csharp
         /// <summary>
@@ -81,7 +80,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 * Click "Tasks: Run Tasks".
 * Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
 * Set the name "NewFeaturePlaneType" and press enter.
-* Verify new file *'xxx_NewFeaturePlaneType.cs'* is created on '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations' folder, and file is not empty.
+* Verify new file *'xxx_NewFeaturePlaneType.cs'* is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
 
 2. Create the database migration:
 * In VSCode Run and Debug  "DotNet DeployDB"
