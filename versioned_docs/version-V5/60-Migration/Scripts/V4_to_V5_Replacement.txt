@@ -264,7 +264,7 @@ function ApplyChangesAngular19 {
       @{Pattern = "p-sidebar"; Replacement = "p-drawer"},
       @{Pattern = "(p-drawer[^>]*?>)\s*<ng-template pTemplate=""header"">"; Replacement = "`$1<ng-template #header>"},
       @{Pattern = "(?s)<p-drawer([^>]*)>\s*<h[1-6]>(.*?)<\/h[1-6]>"; Replacement = "<p-drawer`$1 header=""`$2"">"},
-      @{Pattern = '(?s)<(\w+)(\s+[^>]*class="[^"]*p-float-label[^"]*"[^>]*)>((?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b))*<\/\1\s*>)*<\/\1\s*>)*)<\/\1\s*>'; Replacement = '<p-floatlabel$2 variant="in">$3</p-floatlabel>'},
+      @{Pattern = '(?s)<(\w+)(\s+[^>]*class="[^"]*p-float-label[^"]*"[^>]*)>((?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b)|<\1\b[^>]*>(?:[^<]+|<(?!\/?\1\b))*<\/\1\s*>)*<\/\1\s*>)*)<\/\1\s*>'; Replacement = '<p-floatlabel$2 variant="on">$3</p-floatlabel>'},
       @{Pattern = '(?s)<button([^>]*class="[^"]*p-link[^"]*"[^>]*)>(.*?)<\/button'; Replacement = '<p-button [link]=true $1>$2</p-button'},
       @{Pattern = '(?<=class=")([^"]*)\b(p-float-label)\b([^"]*)'; Replacement = '${1}${3}'},
       @{Pattern = '(?<=class=")([^"]*)\b(p-link)\b([^"]*)'; Replacement = '${1}${3}'},
