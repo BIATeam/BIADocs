@@ -9,23 +9,23 @@ This page will explains how to create a team inside your project.
 Make sure to have your project created by following the steps on [this page](./20-CreateYourFirstProject.md).
 
 ### Create the Model
-1. In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain'** create **'Company'** folder, then create a folder **'Entities'** into it. Use the parent's domain existing module folder if exists.
-2. Create empty class **'Company.cs'** and add following:
-```csharp title="Company.cs"
-// <copyright file="Company.cs" company="MyCompany">
+1. In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain'** create **'Airline'** folder, then create a folder **'Entities'** into it. Use the parent's domain existing module folder if exists.
+2. Create empty class **'Airline.cs'** and add following:
+```csharp title="Airline.cs"
+// <copyright file="Airline.cs" company="MyCompany">
 // Copyright (c) MyCompany. All rights reserved.
 // </copyright>
 
-namespace MyCompany.MyFirstProject.Domain.Company.Entities
+namespace MyCompany.MyFirstProject.Domain.Airline.Entities
 {
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using MyCompany.MyFirstProject.Domain.User.Entities;
 
     /// <summary>
-    /// The company entity.
+    /// The airline entity.
     /// </summary>
-    public class Company : BaseEntityTeam
+    public class Airline : BaseEntityTeam
     {
         /// <summary>
         /// Gets or sets the Id.
@@ -33,27 +33,27 @@ namespace MyCompany.MyFirstProject.Domain.Company.Entities
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the company name.
+        /// Gets or sets the airline name.
         /// </summary>
-        public string CompanyName { get; set; }
+        public string AirlineName { get; set; }
 
         /// <summary>
-        /// Add row version timestamp in table Company.
+        /// Add row version timestamp in table Airline.
         /// </summary>
         [BiaRowVersionProperty(DbProvider.SqlServer)]
         [AuditIgnore]
-        public byte[] RowVersionCompany { get; set; }
+        public byte[] RowVersionAirline { get; set; }
 
         /// <summary>
-        /// Add row version for Postgre in table Company.
+        /// Add row version for Postgre in table Airline.
         /// </summary>
         [BiaRowVersionProperty(DbProvider.PostGreSql)]
         [AuditIgnore]
-        public uint RowVersionXminCompany { get; set; }
+        public uint RowVersionXminAirline { get; set; }
     }
 }
 ```
-3. In case of children team, ensure to have logical links between the parent and child entities.
+1. In case of children team, ensure to have logical links between the parent and child entities.
 
 Make sure to inherit from `Team` and expose : 
 - a `byte[]` row version property with attribute `BiaRowVersionProperty` for provider `SqlServer`
@@ -66,7 +66,7 @@ You must expose the `Id` property even if it's hide the inherited property of `T
 
 ### Complete DataContext
 1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.
-2. Open **DataContext.cs** and add your new `DbSet<Company>` :
+2. Open **DataContext.cs** and add your new `DbSet<Airline>` :
 
 ```csharp title="DataContext.cs"
     public class DataContext : BiaDataContext
@@ -74,22 +74,22 @@ You must expose the `Id` property even if it's hide the inherited property of `T
         // Existing DbSet<T>
 
         /// <summary>
-        /// Gets or sets the Company DBSet.
+        /// Gets or sets the Airline DBSet.
         /// </summary>
-        public DbSet<Company> Companies { get; set; }
+        public DbSet<Airline> Airlines { get; set; }
     }
 ```
-3. In folder **ModelBuilders**, create class **CompanyModelBuilder.cs** or use parent's model builder, and add :
+3. In folder **ModelBuilders**, create class **AirlineModelBuilder.cs** or use parent's model builder, and add :
 ```csharp title="CompanyModelBuilder.cs"
 namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
-    using MyCompany.MyFirstProject.Domain.Company.Entities;
+    using MyCompany.MyFirstProject.Domain.Airline.Entities;
 
     /// <summary>
-    /// Class used to update the model builder for Company domain.
+    /// Class used to update the model builder for Airline domain.
     /// </summary>
-    public static class CompanyModelBuilder
+    public static class AirlineModelBuilder
     {
         /// <summary>
         /// Create the model for projects.
@@ -97,22 +97,22 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
         /// <param name="modelBuilder">The model builder.</param>
         public static void CreateModel(ModelBuilder modelBuilder)
         {
-            CreateCompanyModel(modelBuilder);
+            CreateAirlineModel(modelBuilder);
         }
 
         /// <summary>
-        /// Create the model for companiess.
+        /// Create the model for airlines.
         /// </summary>
         /// <param name="modelBuilder">The model builder.</param>
-        private static void CreateCompanyModel(ModelBuilder modelBuilder)
+        private static void CreateAirlineModel(ModelBuilder modelBuilder)
         {
             // Use ToTable() to create the inherited relation with Team in database
-            modelBuilder.Entity<Company>().ToTable("Companies");
+            modelBuilder.Entity<Airline>().ToTable("Airlines");
         }
     }
 }
 ```
-4. If added to existing parent's model builder, add only the method `CreateCompanyModel` and make a call inside the `CreateModel` method. 
+4. If added to existing parent's model builder, add only the method `CreateAirlineModel` and make a call inside the `CreateModel` method. 
 5. Back to **DataContext.cs**, ensure to have a call to your model builder's method `CreateModel` :
 ```csharp title="DataContext.cs"
     public class DataContext : BiaDataContext
@@ -122,7 +122,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
         {
             // Existing model builders
             
-            CompanyModelBuilder.CreateModel(modelBuilder);
+            AirlineModelBuilder.CreateModel(modelBuilder);
             this.OnEndModelCreating(modelBuilder);
         }
     }
@@ -142,20 +142,20 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 Complete the generated DTO : 
 * ensure to set the first `AncestorTeam` parent's type into `BiaDtoClass` class annotation
 * set `IsParent` to true in `BiaDtoField` field annotation for parent's id property
-```csharp title="CompanyChildDto.cs"
+```csharp title="AirlineChildDto.cs"
 /// <summary>
 /// The DTO used to represent a company child.
 /// </summary>
-[BiaDtoClass(AncestorTeam = "Company")]
-public class CompanyChildDto : TeamDto
+[BiaDtoClass(AncestorTeam = "Airline")]
+public class AirlineChildDto : TeamDto
 {
     [...]
 
     /// <summary>
-    /// Gets or sets the parent's company id.
+    /// Gets or sets the parent's airline id.
     /// </summary>
     [BiaDtoField(IsParent = true, Required = true)]
-    public int CompanyId { get; set; }
+    public int AirlineId { get; set; }
 }
 ```
 
@@ -176,27 +176,27 @@ After the files generation, some customization is needed.
 Open your DotNet project solution in **'...\MyFirstProject\DotNet'** and complete the following files.
 ##### RoleId.cs
 1. Go in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **RoleId.cs** file.
-2. Adapt the enum value of the generated value `CompanyAdmin`.
+2. Adapt the enum value of the generated value `AirlineAdmin`.
 3. In case of children team, review the `TeamLeader` created value. Delete new generated value if already exists and in use by other teams.
 ##### TeamTypeId.cs
 1. Stay in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **TeamTypeId.cs** file.
-2. Adapt the enum value of the generated value `Company`.
+2. Adapt the enum value of the generated value `Airline`.
 
 #### Front
 Open your Angular project folder **'...\MyFirstProject\Angular'** and complete the following files.
 ##### constants.ts
 1. Go in **'src\app\shared'** folder and open **constants.ts** file.
 2. Go in `TeamTypeId` enum declaration.
-3. Adapt the enum value of the generated value `Company`.
+3. Adapt the enum value of the generated value `Airline`.
 ##### navigation.ts
 1. Stay in **'src\app\shared'** folder and open **navigation.ts** file.
 2. Adapt the path of the generated navigation for companies :
 ```typescript title="navigation.ts"
     {
-        labelKey: 'app.companies',
-        permissions: [Permission.Company_List_Access],
-        /// TODO after creation of CRUD Team Company : adapt the path
-        path: ['/companies'],
+        labelKey: 'app.airlines',
+        permissions: [Permission.Airline_List_Access],
+        /// TODO after creation of CRUD Team Airline : adapt the path
+        path: ['/airlines'],
       },
 ```
 3. In case of children team, you can move if needed the generated content into the children's array of parent `BiaNavigation` :
@@ -218,7 +218,7 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
   },
 ```
 ##### model.ts
-1. Go in **'src\app\features\companies\model'** or the children parent's path of the generated feature `companies` and open the **company.ts** file.
+1. Go in **'src\app\features\companies\model'** or the children parent's path of the generated feature `airlines` and open the **airline.ts** file.
 2. Adapt the field configuration if needed.
 3. Remove all unused imports from the generated file.
 
@@ -277,27 +277,64 @@ new BiaTeamConfig<Team>()
 ### Complete traductions
 1. Go in **'...\MyFirstProject\Angular\src\assets\i18n\app'**
 2. Complete each available language traduction JSON file with the correct values : 
-```json title="en.json"
+```json
 "app": {
-    //...
-    "companies": "companies"
+    ...,
+    "airlines": "Airlines"
   },
-  "company": {
-    "add": "Add company",
-    "edit": "Edit company",
-    "listOf": "List of companies",
-    "headerLabel": "Company",
-    "admins": "Company administrators",
-    "filterMember": "Member user",
-    "goto": "View Company",
-    "companyName": "Company name"
+    ...,
+"airline": {
+    "add": "Add airline",
+    "admins": "Administrators",
+    "edit": "Edit airline",
+    "listOf": "List of airlines",
+    "title": "Title",
+    "headerLabel": "Airline",
+    "uniqueIdentifier": "Unique identifier"
+  }
+  ```
+* Open **'src/assets/i18n/app/es.json'** and add:
+```json
+"app": {
+    ...,
+    "airlines": "Aerolíneas"
   },
+    ...,
+"airline": {
+    "add": "Añadir aerolínea",
+    "admins": "Administradores",
+    "edit": "Editar aerolínea",
+    "listOf": "Lista de aerolíneas",
+    "Begin BIADemo": "To remove in project from here",
+    "End BIADemo": "To remove in project up to here",
+    "title": "Título",
+    "headerLabel": "Aerolíneas",
+    "uniqueIdentifier": "Identificador único"
+  }
+```  
+
+* Open **'src/assets/i18n/app/fr.json'** and add:
+```json
+"app": {
+    ...,
+    "airlines": "Compagnies aériennes"
+  },
+    ...,
+"airline": {
+    "add": "Ajouter compagnie aérienne",
+    "admins": "Administrateurs",
+    "edit": "Modifier compagnie aérienne",
+    "listOf": "Liste des compagnies aériennes",
+    "title": "Titre",
+    "headerLabel": "Compagnie aérienne",
+    "uniqueIdentifier": "Identifiant unique"
+  }
 ```
 ### Update the database
 1. Open the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
 2. Open a new Package Manager Console.
 3. Set default project to **MyCompany.MyFirstProject.Infrastructure.Data**.
-4. Run command `add-migration -context "DataContext" AddTeamCompany` (replace Company by your new team).
+4. Run command `add-migration -context "DataContext" AddTeamAirline`
 5. Verify the generated migration.
 6. Run command `update-database -context "DataContext"`
 7. Verify your database.
@@ -306,5 +343,5 @@ new BiaTeamConfig<Team>()
 1. Run the DotNet solution.
 2. Launch `npm start` in Angular folder.
 3. Go to *http://localhost:4200/*
-4. Navigate to the company team list.
+4. Navigate to the airline team list.
 ![BIAToolKitConfig](../../Images/BIAToolKit/Team_List.png)

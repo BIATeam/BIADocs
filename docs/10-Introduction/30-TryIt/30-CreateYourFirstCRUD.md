@@ -164,22 +164,23 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 * Click on *"APP.AIRPORTS"* in menu to display 'Airports' page.
 
 ## Add traduction
-* Open 'src/assets/i18n/app/en.json' and add:
+* Open **'src/assets/i18n/app/en.json'** and add:
 ```json
   "app": {
     ...,
     "airports": "Airports"
   },
     ...,
-    "airports": {
-    "name": "Name",
+  "airport": {
+    "add": "Add airport",
     "city": "City",
-    "listOf": "List of airports"
-
+    "edit": "Edit airport",
+    "listOf": "List of airports",
+    "name": "Name"
   }
 ```  
 
-* Open 'src/assets/i18n/app/es.json' and add:
+* Open **'src/assets/i18n/app/es.json'** and add:
 ```json
   "app": {
     ...,
@@ -187,13 +188,15 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
   },
     ...,
   "airports": {
-    "name": "Nombre",
+    "add": "Añadir aeropuerto",
     "city": "Ciudad",
-    "listOf": "Lista de aeropuertos"
+    "edit": "Editar aeropuerto",
+    "listOf": "Lista de aeropuertos",
+    "name": "Nombre"
   }
 ```  
 
-* Open 'src/assets/i18n/app/fr.json' and add:
+* Open **'src/assets/i18n/app/fr.json'** and add:
 ```json
   "app": {
     ...,
@@ -201,9 +204,11 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
   },
     ...,
   "airports": {
-    "name": "Nom",
+    "add": "Ajouter aéroport",
     "city": "Ville",
-    "listOf": "Liste des aéroports"
+    "edit": "Modifier aéroport",
+    "listOf": "Liste des aéroports",
+    "name": "Nom"
   }
 ```
 
