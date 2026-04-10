@@ -7,9 +7,9 @@ This page will explain how to configure the inputs into a form of a CRUD feature
 
 ## Form fields
 ### Principles
-All the fields that must be displayed into your CRUD feature must be declared into a `BiaFieldsConfig<TDto>` class, where `TDto` represents your feature model. This class is used both for the form and the table display of your feature CRUD screens.  
+All the fields that must be displayed in your CRUD feature must be declared in a `BiaFieldsConfig<TDto>` class, where `TDto` represents your feature model. This class is used both for the form and the table display of your feature CRUD screens.  
 
-The declaration must be set into your feature model, exported as const, and associated to the feature `CrudConfig` into your feature's constants declarations :
+The declaration must be set in your feature model, exported as const, and associated to the feature `CrudConfig` in your feature's constants declarations :
 ``` typescript title="feature.constants.ts"
 export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
   featureName: 'features',
@@ -19,11 +19,11 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
 });
 ```
 :::info
-The declaration into the model and association into the constants are already set when using CRUD generation from BIAToolkit.
+The declaration in the model and association in the constants are already set when using CRUD generation from BIAToolkit.
 :::
 
 ### Configuration
-You must add all your fields to display into the `columns` property of the `BiaFieldsConfig<TDto>`.  
+You must add all your fields to display in the `columns` property of the `BiaFieldsConfig<TDto>`.  
 Each column item must be a `BiaFieldConfig<TDto>`, where you will configure for each field :
 - **`field`** : feature's property name to bind with *(mandatory in constructor)*
 - **`header`** : header name of your feature's property when displayed into a table *(mandatory in constructor)*
@@ -39,7 +39,7 @@ Each column item must be a `BiaFieldConfig<TDto>`, where you will configure for 
 - `isVisible` : visibility mode into **form** (`true` | `false`)
 - `isVisibleInTable` : visibility mode into **table** (`true` | `false`)
 - `isHideByDefault` : hide by default mode into the "columns visible by default" dropdown of the table (`true` | `false`)
-- `maxlength` : maximum lenght setting when input is a string
+- `maxlength` : maximum length setting when input is a string
 - `isRequired` : required mode (`true` | `false`)
 - `validators` : set of validators to apply to the input
 - `minWidth` : minimum width when displayed into a table
@@ -122,9 +122,9 @@ To use them, you must define a template for your `specificInput` or `specificOut
 The class `BiaFormLayoutConfig<TDto>` is the container of your form layout configuration. Each items of this class (`BiaFormLayoutConfigItem`) will represent a configuration to customize the disposition of your inputs into the form, where `TDto` represents your feature model.
 
 These `BiaFormLayoutConfigItem` can be :
-- `BiaFormLayoutConfigRow<TDto>` : a row that will contains a set of `BiaFormLayoutConfigColumn<TDto>` 
-- `BiaFormLayoutConfigGroup<TDto>` : a group of `BiaFormLayoutConfigRow<TDto>` under a title (title must refer to a traductible resource) 
-- `BiaFormLayoutConfigTabGroup<TDto>` : a bunch of `BiaFormLayoutConfigTab<TDto>` that each contains other `BiaFormLayoutConfigItem`
+- `BiaFormLayoutConfigRow<TDto>` : a row that will contain a set of `BiaFormLayoutConfigColumn<TDto>` 
+- `BiaFormLayoutConfigGroup<TDto>` : a group of `BiaFormLayoutConfigRow<TDto>` under a title (title must refer to a translatable resource) 
+- `BiaFormLayoutConfigTabGroup<TDto>` : a set of `BiaFormLayoutConfigTab<TDto>` that each contains other `BiaFormLayoutConfigItem`
 
 ``` typescript
 // Config
@@ -199,7 +199,7 @@ new BiaFormLayoutConfig<Feature>([
 ])
 ```
 :::warning
-All the fields used into the `BiaFormLayoutConfig` must have been declared into the `BiaFieldsConfig` of your CRUD feature. 
+All the fields used in the `BiaFormLayoutConfig` must have been declared in the `BiaFieldsConfig` of your CRUD feature. 
 :::
 
 #### Responsive design
@@ -212,22 +212,24 @@ When declaring a `BiaFormLayoutConfigColumn<TDto>` element, you can set the colu
   The `lgSize` must be set **between 1 and 12** to be valid.  
   The mobile first column size (< 576px) will be always **12**.  
 
-  The `md` and `sm` sizes will be automatically calculate according to the following ratio table :  
+  The `lg`, `md` and `sm` sizes will be automatically calculated according to the following rules:
+  - `sm` (>= 576px) is always **12**
+  - `lg` (>= 992px) is computed as `floor(remainingSize / autoSizedColumns)`, where `remainingSize = 12 - sum of explicit lgSizes` and `autoSizedColumns` is the number of columns without an explicit size
+  - `md` (>= 768px) is computed as `snapToGrid(ceil(12 / colsInRow))`, where `colsInRow` is the total number of columns in the row and `snapToGrid` rounds up to the nearest value in `[1, 2, 3, 4, 6, 12]`
 
-  | lg (>= 992px) | md (>= 768px) | sm (>= 576px)  |
-  |------------|------------------|---------------|
-  | 1          | 1                | 2             |
-  | 2          | 3                | 4             |
-  | 3          | 4                | 6             |
-  | 4          | 6                | 8             |
-  | 5          | 7                | 10            |
-  | 6          | 9                | 12            |
-  | 7          | 10               | 12            |
-  | 8          | 12               | 12            |
-  | 9          | 12               | 12            |
-  | 10         | 12               | 12            |
-  | 11         | 12               | 12            |
-  | 12         | 12               | 12            |
+  For a row with a single column (`colsInRow = 1`), both `md` and `sm` will always be **12**.
+
+  For rows with multiple columns, the `md` size is snapped to the grid based on the number of columns. Examples:
+
+  | colsInRow | lg (>= 992px) | md (>= 768px) | sm (>= 576px) |
+  |-----------|---------------|---------------|---------------|
+  | 1         | 12            | 12            | 12            |
+  | 2         | 6             | 6             | 12            |
+  | 3         | 4             | 4             | 12            |
+  | 4         | 3             | 3             | 12            |
+  | 5         | 2             | 3             | 12            |
+  | 6         | 2             | 2             | 12            |
+  | 12        | 1             | 1             | 12            |
 - setting all the size breakpoints (`lg`, `md`, `sm` and `mobileFirst`) inside a `BiaFormLayoutConfigColumnSize` class :
   ``` typescript
   new BiaFormLayoutConfigGroup<Feature>('Group', groupRows, new BiaFormLayoutConfigColumnSize(6, 6, 6, 6))
@@ -235,7 +237,7 @@ When declaring a `BiaFormLayoutConfigColumn<TDto>` element, you can set the colu
   ```
 
 :::info
-If you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column sizeleft by the columns with a custom size, and the total columns count into the row.
+If you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` will compute the ideal column size depending both on the remaining column size left by the columns with a custom size, and the total column count in the row.
 :::
 
 ### Configuration
@@ -243,68 +245,169 @@ If you don't specify the column size, the parent `BiaFormLayoutConfigRow<TDto>` 
 2. Complete or add the `BiaFormLayoutConfig<TDto>` definition with your form configuration
 3. Add the groups, rows and columns by required order of display
 
-Full example : 
-``` typescript title="feature.ts"
-export const featureFormConfiguration: BiaFormLayoutConfig<Feature> = new BiaFormLayoutConfig([
-  // First row with two groups
-  new BiaFormLayoutConfigRow([
-    // First group with single row
-    new BiaFormLayoutConfigGroup('feature.groupIdentification', [
-      // Row with two fields
-      new BiaFormLayoutConfigRow([
-        new BiaFormLayoutConfigField('msn'),
-        new BiaFormLayoutConfigField('manufacturer'),
+### Size Configuration Examples
+
+Below is a real-world example using a `Plane` feature, covering the main use cases for column size configuration.
+
+``` typescript title="plane.constants.ts"
+export const planeFormLayoutConfiguration: BiaFormLayoutConfig<Plane> =
+  new BiaFormLayoutConfig([
+    // Row with two groups side by side (auto-sized columns)
+    new BiaFormLayoutConfigRow([
+      new BiaFormLayoutConfigGroup('plane.groupIdentification', [
+        // 2 auto-sized fields → lg:6, md:6, sm:12 each
+        new BiaFormLayoutConfigRow([
+          new BiaFormLayoutConfigField('msn'),
+          new BiaFormLayoutConfigField('manufacturer'),
+        ]),
+      ]),
+      new BiaFormLayoutConfigGroup('plane.groupStatus', [
+        // 2 auto-sized fields → lg:6, md:6, sm:12 each
+        new BiaFormLayoutConfigRow([
+          new BiaFormLayoutConfigField('isActive'),
+          new BiaFormLayoutConfigField('isMaintenance'),
+        ]),
       ]),
     ]),
 
-    // Second group with single row
-    new BiaFormLayoutConfigGroup('feature.groupStatus', [
-      // Row with two fields with custom column lg size
+    // Group with two rows
+    new BiaFormLayoutConfigGroup('plane.groupTracking', [
+      // 4 auto-sized fields → lg:3, md:3, sm:12 each
       new BiaFormLayoutConfigRow([
-        new BiaFormLayoutConfigField('isActive', 2),
-        new BiaFormLayoutConfigField('isMaintenance', 2),
+        new BiaFormLayoutConfigField('deliveryDate'),
+        new BiaFormLayoutConfigField('firstFlightDate'),
+        new BiaFormLayoutConfigField('lastFlightDate'),
+        new BiaFormLayoutConfigField('nextMaintenanceDate'),
+      ]),
+      // 2 auto-sized fields → lg:6, md:6, sm:12 each
+      new BiaFormLayoutConfigRow([
+        new BiaFormLayoutConfigField('syncFlightDataTime'),
+        new BiaFormLayoutConfigField('syncTime'),
       ]),
     ]),
-  ]),
 
-  // Second row with single group with two rows
-  new BiaFormLayoutConfigGroup('feature.groupTracking', [
-    // First row with four fields
+    // Single field with explicit size: half-width on lg/md, full-width on sm/mobile
     new BiaFormLayoutConfigRow([
-      new BiaFormLayoutConfigField('deliveryDate'),
-      new BiaFormLayoutConfigField('firstFlightDate'),
-      new BiaFormLayoutConfigField('lastFlightDate'),
-      new BiaFormLayoutConfigField('nextMaintenanceDate'),
+      new BiaFormLayoutConfigField('motorsCount',
+        new BiaFormLayoutConfigColumnSize(6, 6, 12, 12)),
     ]),
-    //Second row with single field
+
+    // 3 auto-sized fields → lg:4, md:4, sm:12 each
     new BiaFormLayoutConfigRow([
-      new BiaFormLayoutConfigField('syncFlightDataTime'),
-      new BiaFormLayoutConfigField('syncTime'),
+      new BiaFormLayoutConfigField('probability'),
+      new BiaFormLayoutConfigField('capacity'),
+      new BiaFormLayoutConfigField('totalFlightHours'),
     ]),
-  ]),
 
-  // Third row with single field with full custom column sizes
-  new BiaFormLayoutConfigRow([
-    new BiaFormLayoutConfigField(
-      'motorsCount',
-      new BiaFormLayoutConfigColumnSize(6, 6, 6, 6)
-    ),
-  ]),
+    // Mixed explicit sizes in the same row:
+    // fuelCapacity takes 4/12 on lg, originalPrice takes 8/12 on lg
+    new BiaFormLayoutConfigRow([
+      new BiaFormLayoutConfigField('fuelCapacity',
+        new BiaFormLayoutConfigColumnSize(4, 6, 12, 12)),
+      new BiaFormLayoutConfigField('originalPrice',
+        new BiaFormLayoutConfigColumnSize(8, 12, 12, 12)),
+    ]),
 
-  // Fourth row with two fields
-  new BiaFormLayoutConfigRow([
-    new BiaFormLayoutConfigField('probability'),
-    new BiaFormLayoutConfigField('capacity'),
-  ]),
-]);
+    // Fine-grained control: non-standard breakpoints for all sizes
+    // fuelLevel is narrow (3/12) on lg/md/sm, half on mobile
+    // estimatedPrice fills the rest (9/12) on lg/md/sm, full on mobile
+    new BiaFormLayoutConfigRow([
+      new BiaFormLayoutConfigField('fuelLevel',
+        new BiaFormLayoutConfigColumnSize(3, 3, 3, 6)),
+      new BiaFormLayoutConfigField('estimatedPrice',
+        new BiaFormLayoutConfigColumnSize(9, 9, 9, 12)),
+    ]),
+  ]);
 ```
 
 The framework will automatically generate the form like this :
-![FormConfiguration](../../Images/FormConfiguration.png)
+![FormConfiguration](../../Images/FormLayout/FormConfiguration.png)
 
 :::info
-All the remaining fields declared into the `BiaFieldsConfig` will be displayed after the fields handled into the `BiaFormLayoutConfig`.
+All the remaining fields declared in the `BiaFieldsConfig` will be displayed after the fields handled in the `BiaFormLayoutConfig`.
 :::
+
+#### Use cases explained
+
+**Auto-sized columns** — omit the size argument and let the row distribute the space evenly:
+```typescript
+// 2 fields in a row → each gets lg:6, md:6, sm:12
+new BiaFormLayoutConfigRow([
+  new BiaFormLayoutConfigField('msn'),
+  new BiaFormLayoutConfigField('manufacturer'),
+])
+```
+
+**Single explicit `lgSize`** — pass a number to control the large-screen width; `md` and `sm` are derived automatically:
+```typescript
+// lg:2 → md: snapToGrid(ceil(12/1)) = 12, sm:12
+new BiaFormLayoutConfigField('msn', 2)
+```
+
+**Full explicit size with `BiaFormLayoutConfigColumnSize(lg, md, sm, mobileFirst)`** — use when you need precise control at every breakpoint:
+```typescript
+// Half-width on lg and md, full-width on sm and mobile
+new BiaFormLayoutConfigField('motorsCount',
+  new BiaFormLayoutConfigColumnSize(6, 6, 12, 12))
+```
+
+**Mixed explicit sizes in a row** — fields share the 12-column grid; sizes must add up to 12 for a clean layout:
+```typescript
+// fuelCapacity: 4/12 on lg | originalPrice: 8/12 on lg
+new BiaFormLayoutConfigRow([
+  new BiaFormLayoutConfigField('fuelCapacity',
+    new BiaFormLayoutConfigColumnSize(4, 6, 12, 12)),
+  new BiaFormLayoutConfigField('originalPrice',
+    new BiaFormLayoutConfigColumnSize(8, 12, 12, 12)),
+])
+```
+
+**Non-standard breakpoints** — useful when the default snapping doesn't match your design:
+```typescript
+// Narrow label (3/12) next to a wide value (9/12) at all breakpoints
+new BiaFormLayoutConfigRow([
+  new BiaFormLayoutConfigField('fuelLevel',
+    new BiaFormLayoutConfigColumnSize(3, 3, 3, 6)),
+  new BiaFormLayoutConfigField('estimatedPrice',
+    new BiaFormLayoutConfigColumnSize(9, 9, 9, 12)),
+])
+```
+
+**Intentional overflow to control wrapping across breakpoints** — when you have more fields than fit in one row at smaller screen sizes, you can use explicit sizes to control how many fields appear per row at each breakpoint. Fields that exceed 12 columns wrap to the next line automatically:
+```typescript
+// 5 fields × col-3 = 15 on lg → wraps: 4 fields on first line, 1 on second
+// 5 fields × col-4 = 20 on md → wraps: 3 fields per line
+// 5 fields × col-6 = 30 on sm → wraps: 2 fields per line
+// 5 fields × col-12 = 60 on mobile → 1 field per line
+new BiaFormLayoutConfigRow([
+  new BiaFormLayoutConfigField('probability',
+    new BiaFormLayoutConfigColumnSize(3, 4, 6, 12)),
+  new BiaFormLayoutConfigField('capacity',
+    new BiaFormLayoutConfigColumnSize(3, 4, 6, 12)),
+  new BiaFormLayoutConfigField('totalFlightHours',
+    new BiaFormLayoutConfigColumnSize(3, 4, 6, 12)),
+  new BiaFormLayoutConfigField('fuelCapacity',
+    new BiaFormLayoutConfigColumnSize(3, 4, 6, 12)),
+  new BiaFormLayoutConfigField('originalPrice',
+    new BiaFormLayoutConfigColumnSize(3, 4, 6, 12)),
+])
+```
+
+Large size screen result:
+
+![lgCustom5Fields](../../Images/FormLayout/lgCustom5Fields.png)
+
+Medium size screen result:
+
+![mdCustom5Fields](../../Images/FormLayout/mdCustom5Fields.png)
+
+Small size screen result:
+
+![smCustom5Fields](../../Images/FormLayout/smCustom5Fields.png)
+
+Mobile size screen result:
+
+![mobileCustom5Fields](../../Images/FormLayout/mobileCustom5Fields.png)
 
 ### Usage
 Into your feature constants declaration, add the definition of the `formLayoutConfig` under the definition of `fieldsConfig` when declaring the `CrudConfig` :
@@ -318,7 +421,7 @@ export const featureCRUDConfiguration: CrudConfig<Feature> = new CrudConfig({
 });
 ```
 
-Into all the components that use a form component inherited from `CrudItemFormComponent` or `BiaFormComponent`, ensure to bind the `formConfig` property to your feature `BiaFormLayoutConfig` property : 
+Into all the components that use a form component inherited from `CrudItemFormComponent` or `BiaFormComponent`, ensure to bind the `formConfig` property to your feature `BiaFormLayoutConfig` property :
 
 ``` html title="feature-new.component.html"
 <app-feature-form
@@ -450,7 +553,7 @@ export const ROUTES: Routes = [
 - Then, with `clickToEdit` mode enabled, by clicking to the edit mode button, the user will be redirected to `edit` route
 
 #### Feature Form
-Your feature form must inherits from `CrudItemFormComponent` : 
+Your feature form must inherit from `CrudItemFormComponent` : 
 ``` typescript title="feature-form.component.ts"
 @Component({
   selector: 'app-feature-form',
@@ -470,7 +573,7 @@ export class FeatureFormComponent extends CrudItemFormComponent<Feature> {
 }
 ```
 
-If your feature form use a custom HTML template, you must use `BiaFormComponent` inside your html file :
+If your feature form uses a custom HTML template, you must use `BiaFormComponent` inside your html file :
 ``` html title="feature-form.component.html"
 <bia-form
   [element]="crudItem"
@@ -510,5 +613,8 @@ export class FeatureFormComponent extends CrudItemFormComponent<Feature> {
 }
 ```
 :::info
-Super method handle the redirect to the `edit` route if the read only mode is set to `clickToEdit`.
+Super method handles the redirect to the `edit` route if the read only mode is set to `clickToEdit`.
 :::
+
+
+
