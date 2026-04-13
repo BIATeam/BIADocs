@@ -5,10 +5,148 @@ sidebar_position: 1
 # Create your first Relation
 We will create a relation between CRUD 'Plane' and option 'PlaneType' (previously created).
 
+## Create the Plane Entity
+
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'**.
+* Create empty class 'Plane.cs' and add:
+
+```csharp
+
+// <copyright file="Plane.cs" company="MyCompany">
+//     Copyright (c) MyCompany. All rights reserved.
+// </copyright>
+
+namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using BIA.Net.Core.Domain.Entity;
+
+    /// <summary>
+    /// The plane entity.
+    /// </summary>
+    public class Plane : BaseEntity<int>
+    {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Manufacturer's Serial Number.
+        /// </summary>
+        public string Msn { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the plane is active.
+        /// </summary>
+        public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last flight date.
+        /// </summary>
+        public DateTime? LastFlightDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delivery date.
+        /// </summary>
+        [Column(TypeName = "date")]
+        public DateTime? DeliveryDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the daily synchronization hour.
+        /// </summary>
+        [Column(TypeName = "time")]
+        public TimeSpan? SyncTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the capacity.
+        /// </summary>
+        public int Capacity { get; set; }
+    }
+}
+```
+
+## Create the DTO
+
+### Using BIAToolKit
+* Open the BIAToolKi
+* Go to "Modify existing project" tab
+* Set the projects parent path and choose your project
+* Go to tab 3 "DTO Generator"
+* Select your entity Plane on the list
+* 
+![Plane_DTOGenerator](../../Images/GettingStarted/Plane_DTOGenerator.png)
+* Click on "Map to" button
+* Check the required checkbox for the Id mapping property
+
+![Plane_DTOGenerator-2](../../Images/GettingStarted/Plane_DTOGenerator-2.png)
+
+* Then click the "Generate" button
+* The DTO and the mapper will be generated
+* Check in the project solution if the DTO and mapper are present
+
+![Plane_DTOGenerator_Result](../../Images/GettingStarted/Plane_DTOGenerator_Result.png)
+
+## Update Data
+
+Open the 'PlaneModelBuilder.cs' in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'** and add : 
+
+``` csharp
+        public static void CreateModel(ModelBuilder modelBuilder)
+        {
+        ...
+            CreatePlaneModel(modelBuilder);
+        }
+
+        /// <summary>
+        /// Create the model for planes.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder.</param>
+        private static void CreatePlaneModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Plane>().HasKey(p => p.Id);
+            modelBuilder.Entity<Plane>().Property(p => p.Msn).IsRequired().HasMaxLength(64);
+            modelBuilder.Entity<Plane>().Property(p => p.IsActive).IsRequired();
+            modelBuilder.Entity<Plane>().Property(p => p.LastFlightDate).IsRequired(false);
+            modelBuilder.Entity<Plane>().Property(p => p.DeliveryDate).IsRequired(false);
+            modelBuilder.Entity<Plane>().Property(p => p.SyncTime).IsRequired(false);
+            modelBuilder.Entity<Plane>().Property(p => p.Capacity).IsRequired();
+        }
+```
+
+### Update DataContext file
+
+Open **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs'** file and declare the DbSet associated to Plane:
+
+``` csharp
+/// <summary>
+/// Gets or sets the Plane DBSet.
+/// </summary>
+public DbSet<Plane> Planes { get; set; }
+```
+
+### Update the DataBase
+
+* In VSCode (folder MyFirstProject) press F1
+* Click "Tasks: Run Tasks".
+* Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
+* Set the name "NewFeaturePlane" and press enter.
+* Verify new file 'xxx_NewFeaturePlane.cs' is created on '...**\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
+
+![Verify_Plane_Migration_File_Created](../../Images/GettingStarted/Verify_Plane_Migration_File_Created.png)
+
+* In VSCode Run and Debug  "DotNet DeployDB"
+* Verify 'Planes' table is created in the database.
+![Verify_Table_Planes_Created](../../Images/GettingStarted/Verify_Table_Planes_Created.png)
+
+# TODO
+
 ## Create the relation Entity
-* Open with Visual Studio 2022 the solution '...\MyFirstProject\DotNet\MyFirstProject.sln'.
-* Open the entity 'Plane':
-* In '...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Plane\Entities' open class 'Plane.cs' and add 'PlaneType' declaration: 
+* Open with Visual Studio 2026 the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
+* Open the entity 'Fleet':
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'** open class 'Plane.cs' and add 'PlaneType' declaration: 
   
 ```csharp
 /// <summary>

@@ -289,8 +289,7 @@ new BiaTeamConfig<Team>()
     "edit": "Edit airline",
     "listOf": "List of airlines",
     "title": "Title",
-    "headerLabel": "Airline",
-    "uniqueIdentifier": "Unique identifier"
+    "airlineName": "Identifier"
   }
   ```
 * Open **'src/assets/i18n/app/es.json'** and add:
@@ -305,11 +304,8 @@ new BiaTeamConfig<Team>()
     "admins": "Administradores",
     "edit": "Editar aerolínea",
     "listOf": "Lista de aerolíneas",
-    "Begin BIADemo": "To remove in project from here",
-    "End BIADemo": "To remove in project up to here",
     "title": "Título",
-    "headerLabel": "Aerolíneas",
-    "uniqueIdentifier": "Identificador único"
+    "airlineName": "Identificador"
   }
 ```  
 
@@ -326,8 +322,7 @@ new BiaTeamConfig<Team>()
     "edit": "Modifier compagnie aérienne",
     "listOf": "Liste des compagnies aériennes",
     "title": "Titre",
-    "headerLabel": "Compagnie aérienne",
-    "uniqueIdentifier": "Identifiant unique"
+    "airlineName": "Identifiant"
   }
 ```
 ### Update the database

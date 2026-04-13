@@ -125,16 +125,18 @@ public DbSet<Airport> Airports { get; set; }
 PlaneModelBuilder.CreateModel(modelBuilder);
 ```
 ### Update the DataBase
-1. Create the database migration:
 * In VSCode (folder MyFirstProject) press F1
 * Click "Tasks: Run Tasks".
 * Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
 * Set the name "NewFeatureAirport" and press enter.
 * Verify new file *'xxx_NewFeatureAirport.cs'* is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
 
-2. Create the database migration:
+![Verify_Airport_Migration_File_Created.png](../../Images/GettingStarted/Verify_Airport_Migration_File_Created.png)
+
+
 * In VSCode Run and Debug  "DotNet DeployDB"
 * Verify 'Airports' table is created in the database.
+![Verify_Table_Airports_Created](../../Images/GettingStarted/Verify_Table_Airports_Created.png)
 
 ## Create the CRUD 
 ### Using BIAToolKit  

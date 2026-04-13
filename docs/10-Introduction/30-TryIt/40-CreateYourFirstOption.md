@@ -75,16 +75,19 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```
 
 ### Update the DataBase
-1. Create the database migration:
+
 * In VSCode (folder MyFirstProject) press F1
 * Click "Tasks: Run Tasks".
 * Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
 * Set the name "NewFeaturePlaneType" and press enter.
 * Verify new file *'xxx_NewFeaturePlaneType.cs'* is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
 
-2. Create the database migration:
+![Verify_PlaneType_Migration_File_Created.png](../../Images/GettingStarted/Verify_PlaneType_Migration_File_Created.png)
+
+
 * In VSCode Run and Debug  "DotNet DeployDB"
 * Verify 'PlanesTypes' table is created in the database.
+![Verify_Table_PlanesTypes_Created](../../Images/GettingStarted/Verify_Table_PlanesTypes_Created.png)
 
 ## Create the Option
 ### Using BIAToolKit
