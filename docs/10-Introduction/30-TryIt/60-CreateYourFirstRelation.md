@@ -141,6 +141,104 @@ public DbSet<Plane> Planes { get; set; }
 * Verify 'Planes' table is created in the database.
 ![Verify_Table_Planes_Created](../../Images/GettingStarted/Verify_Table_Planes_Created.png)
 
+## Create the CRUD
+
+### Using the BIAToolKit 
+
+* Start the BIAToolKit and go on "Modify existing project" tab*
+* Set the projects parent path and choose your project
+* Go to tab 4 "CRUD Generator"
+* Choose Dto file: PlaneDto.cs
+* Check "WebApi" and "Front" for Generation
+* Check "CRUD" for Generation Type
+* Domain name should be "Fleet"
+* Set Base key type as int
+* Verify "Entity name (singular)" value: Plane
+* Verify "Entity name (plural)" value: Planes
+* Choose "Display item": Msn
+* Click on generate button
+
+![PlaneCRUD_Generator](../../Images/GettingStarted/PlaneCRUD_Generator.png)
+
+### Launch application generation
+
+* In VSCode Stop all debug launched.
+* Run and debug "Debug Full Stack"
+* The swagger page will be open.
+* Open a browser at address http://localhost:4200/
+* Click on "APP.PLANES" in menu to display 'Planes' page.
+
+
+## Add traduction
+
+* Open **'src/assets/i18n/app/en.json'** and add:
+
+``` json
+  "app": {
+    ...,
+    "planes": "Planes"
+  },
+  "plane": {
+    "add": "Add plane",
+    "capacity": "Capacity",
+    "deliveryDate": "Delivery Date",
+    "edit": "Edit plane",
+    "isActive": "Active",
+    "lastFlightDate": "Last flight date",
+    "listOf": "List of planes",
+    "msn": "Msn",
+    "syncTime": "Synchronization time"
+  }
+```
+
+* Open **'src/assets/i18n/app/es.json'** and add:
+``` json
+  "app": {
+    ...,
+    "planes": "Aviones"
+  },
+  "plane": {
+    "add": "Añadir plano",
+    "capacity": "Capacidad",
+    "deliveryDate": "Fecha de entrega",
+    "edit": "Editar plano",
+    "isActive": "Activo",
+    "lastFlightDate": "Última fecha de vuelo",
+    "listOf": "Lista de planos",
+    "msn": "Msn",
+    "syncTime": "Tiempo de sincronización"
+  }
+  ```
+
+* Open **'src/assets/i18n/app/fr.json'** and add:
+``` json
+  "app": {
+    ...,
+    "planes": "Avions"
+  },
+  "plane": {
+    "add": "Ajouter avion",
+    "capacity": "Capacité",
+    "deliveryDate": "Date de livraison",
+    "edit": "Modifier avion",
+    "isActive": "Actif",
+    "lastFlightDate": "Date du dernier vol",
+    "listOf": "Liste des avions",
+    "msn": "Msn",
+    "syncTime": "Heure de synchronisation"
+  }
+```
+
+## Test
+
+* Open web navigator on address: http://localhost:4200/ to display front page
+* Verify 'Plane' page have the good name
+* Open 'Plane' page and verify labels have been replaced too.
+* Since you already created an administrator account in the CreateYourFirstCRUD part you should be able to create a new Plane by clicking on the "+" and filling the row.
+
+
+
+
 # TODO
 
 ## Create the relation Entity
