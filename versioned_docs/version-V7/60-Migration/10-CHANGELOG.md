@@ -3,6 +3,15 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7.0.2 (15/04/2026)
+### Bug Fixes
+* Handling empty frontendversion responses to avoid 426 errors
+* Fixing CdkPortalFooter not working since V4
+* Fixing PostGreSql migration script creation
+* Fixing missing translations for teams selectors
+* Fixing BiaLogin not working anymore in swagger
+* Fixing dialog not hiding correctly in some specific configurations
+
 ## V7.0.1 (31/03/2026)
 ### Features
 * Updated to Angular V21
