@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Create your first Team
+# Create Airline Team
 This page will explains how to create a team inside your project.
 
 ## Prerequisites

@@ -2,106 +2,46 @@
 sidebar_position: 1
 ---
 
-# Create your first Option
-We will create the feature 'PlaneType'.
+# Create Airport and PlaneType Options
 
-## Create the Entity
-* Open with Visual Studio 2022 the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
-* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'** folder, create empty class 'PlaneType.cs' and add: 
+## Create Airport's Option
 
-```csharp
-// <copyright file="PlaneType.cs" company="MyCompany">
-//     Copyright (c) MyCompany. All rights reserved.
-// </copyright>
-
-namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
-{
-    using System;
-    using BIA.Net.Core.Domain.Entity;
-
-    /// <summary>
-    /// The plane entity.
-    /// </summary>
-    public class PlaneType : BaseEntity<int>
-    {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Manufacturer's Serial Number.
-        /// </summary>
-        public string Title { get; set; }
-
-        /// <summary>
-        /// Gets or sets the first flight date.
-        /// </summary>
-        public DateTime? CertificationDate { get; set; }
-    }
-}
-```
-## Update Data
-### Create the ModelBuilder
-* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, open class 'PlaneModelBuilder.cs' and add:  
-
-```csharp
-        public static void CreateModel(ModelBuilder modelBuilder)
-        {
-        ...
-            CreatePlaneTypeModel(modelBuilder);
-        }
-
-        /// <summary>
-        /// Create the model for planes.
-        /// </summary>
-        /// <param name="modelBuilder">The model builder.</param>
-        private static void CreatePlaneTypeModel(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<PlaneType>().HasKey(p => p.Id);
-            modelBuilder.Entity<PlaneType>().Property(p => p.Title).IsRequired().HasMaxLength(64);
-            modelBuilder.Entity<PlaneType>().Property(p => p.CertificationDate).IsRequired(false);
-        }
-```
-
-### Update DataContext file
-* Open **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs'** file and declare the DbSet associated to PlaneType:
-
-```csharp
-        /// <summary>
-        /// Gets or sets the Plane DBSet.
-        /// </summary>
-        public DbSet<PlaneType> PlanesTypes { get; set; }
-```
-
-### Update the DataBase
-
-* In VSCode (folder MyFirstProject) press F1
-* Click "Tasks: Run Tasks".
-* Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
-* Set the name "NewFeaturePlaneType" and press enter.
-* Verify new file *'xxx_NewFeaturePlaneType.cs'* is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
-
-![Verify_PlaneType_Migration_File_Created.png](../../Images/GettingStarted/Verify_PlaneType_Migration_File_Created.png)
-
-
-* In VSCode Run and Debug  "DotNet DeployDB"
-* Verify 'PlanesTypes' table is created in the database.
-![Verify_Table_PlanesTypes_Created](../../Images/GettingStarted/Verify_Table_PlanesTypes_Created.png)
-
-## Create the Option
 ### Using BIAToolKit
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Set the projects parent path and choose your project
 * Go to tab 1 "Option Generator"
+* Select your entity **Airport** on the list
+* Verify the plural name: **Airports**
+* Choose the display item: **Name**
+* Set the Domain: **Fleet**
+* Click on generate button
+
+![Airport_Options_Generator](../../Images/GettingStarted/Airport_Options_Generator.png)
+
+### Launch application generation
+* In VSCode Stop all debug launched.
+* Run and debug "Debug Full Stack" 
+* Verify you have no error.
+* You can see in swagger the "AirportOptions-Get" WebApi.
+* For the moment you can't see other in the Front.
+
+![Airport_Options_Verification](../../Images/GettingStarted/Airport_Options_Verification.png)
+
+
+## Create PlaneType's Option
+
+### Launch application generation
+
+
+### Using BIAToolKit
+Follow the same steps as for Airport's option but change the values selected on the fields : 
 * Select your entity **PlaneType** on the list
 * Verify the plural name: **PlaneTypes**
 * Choose the display item: **Title**
 * Set the Domain: **Fleet**
+* Click on generate button
 
 ![FirstOPTION_Set](../../Images/GettingStarted/FirstOPTION_Set.png)
-
-* Click on generate button
   
 ### Launch application generation
 * In VSCode Stop all debug launched.
@@ -109,3 +49,5 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 * Verify you have no error.
 * You can see in swagger the "PlaneTypeOptions-Get" WebApi.
 * For the moment you can't see other in the Front.
+  
+![PlaneType_Options_Verification](../../Images/GettingStarted/PlaneType_Options_Verification.png)

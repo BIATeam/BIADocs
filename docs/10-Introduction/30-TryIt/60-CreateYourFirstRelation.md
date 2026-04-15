@@ -3,70 +3,53 @@ sidebar_position: 1
 ---
 
 # Create your first Relation
-We will create a relation between CRUD 'Plane' and option 'PlaneType' (previously created).
 
-## Create the Plane Entity
+## Create the relation Entity for Airport
 
-* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'**.
-* Create empty class 'Plane.cs' and add:
+* Open with Visual Studio 2022 the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
+* Open the entity 'Plane':
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'** open class 'Plane.cs' and add 'Airport' declaration:
+  
+```csharp name=Plane.cs
+        /// <summary>
+        /// Gets or sets the current airport.
+        /// </summary>
+        public virtual Airport CurrentAirport { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current airport id.
+        /// </summary>
+        public int CurrentAirportId { get; set; }
+```
+
+## Update Data
+
+### Update the ModelBuilder
+
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, open class 'PlaneModelBuilder.cs' and add 'Airport' relationship:
 
 ```csharp
-
-// <copyright file="Plane.cs" company="MyCompany">
-//     Copyright (c) MyCompany. All rights reserved.
-// </copyright>
-
-namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
+/// <summary>
+/// Create the model for planes.
+/// </summary>
+/// <param name="modelBuilder">The model builder.</param>
+private static void CreatePlaneModel(ModelBuilder modelBuilder)
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using BIA.Net.Core.Domain.Entity;
-
-    /// <summary>
-    /// The plane entity.
-    /// </summary>
-    public class Plane : BaseEntity<int>
-    {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Manufacturer's Serial Number.
-        /// </summary>
-        public string Msn { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the plane is active.
-        /// </summary>
-        public bool IsActive { get; set; }
-
-        /// <summary>
-        /// Gets or sets the last flight date.
-        /// </summary>
-        public DateTime? LastFlightDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the delivery date.
-        /// </summary>
-        [Column(TypeName = "date")]
-        public DateTime? DeliveryDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the daily synchronization hour.
-        /// </summary>
-        [Column(TypeName = "time")]
-        public TimeSpan? SyncTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the capacity.
-        /// </summary>
-        public int Capacity { get; set; }
-    }
+    ...
+    modelBuilder.Entity<Plane>().HasOne(x => x.CurrentAirport).WithMany().HasForeignKey(x => x.CurrentAirportId)
 }
 ```
+
+## Update the DataBase
+
+* In VSCode (folder MyFirstProject) press F1
+* Click "Tasks: Run Tasks".
+* Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
+* Set the name "UpdateFeaturePlaneAirport" and press enter.
+* Verify new file 'xxx_UpdateFeaturePlaneAirport.cs' is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
+
+![Verify_Airport_Plane_Relation_Migration_File_Created](../../Images/GettingStarted/Verify_Airport_Plane_Relation_Migration_File_Created.png)
+
 
 ## Create the DTO
 
@@ -76,7 +59,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 * Set the projects parent path and choose your project
 * Go to tab 3 "DTO Generator"
 * Select your entity Plane on the list
-* 
+
 ![Plane_DTOGenerator](../../Images/GettingStarted/Plane_DTOGenerator.png)
 * Click on "Map to" button
 * Check the required checkbox for the Id mapping property
