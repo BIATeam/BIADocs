@@ -80,9 +80,6 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ![Plane_DTOGenerator](../../Images/GettingStarted/Plane_DTOGenerator.png)
 * Click on "Map to" button
 * Check the required checkbox for the Id mapping property
-
-![Plane_DTOGenerator-2](../../Images/GettingStarted/Plane_DTOGenerator-2.png)
-
 * Then click the "Generate" button
 * The DTO and the mapper will be generated
 * Check in the project solution if the DTO and mapper are present

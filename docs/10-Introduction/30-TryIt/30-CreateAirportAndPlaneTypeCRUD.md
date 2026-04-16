@@ -7,7 +7,6 @@ We will create in first the features 'Airport' and 'PlaneType'.
 
 ## Create the Entity 'Airport'
 * Open with Visual Studio 2026 or VS Code the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
-
 * In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\'** create 'Fleet' folder.
 * Create 'Entities' subfolder.
 * Create empty class 'Airport.cs' and add: 
@@ -108,8 +107,6 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 }
 ```
 
-
-
 ### Update DataContext file
 * Open **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs'** and add :
   
@@ -124,6 +121,7 @@ public DbSet<Airport> Airports { get; set; }
 ```csharp
 PlaneModelBuilder.CreateModel(modelBuilder);
 ```
+
 ### Update the DataBase
 * In VSCode (folder MyFirstProject) press F1
 * Click "Tasks: Run Tasks".
@@ -154,7 +152,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 * Verify "Entity name (plural)" value: *Airports*
 * Choose "Display item": *Name*
 
-![FirstCRUD_CRUDGenerator_Set](../../Images/GettingStarted/FirstCRUD_CRUDGenerator_Set.png)
+![AirportCRUD_Generator](../../Images/GettingStarted/AirportCRUD_Generator.png)
 
 * Click on generate button
 
@@ -219,7 +217,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 * Verify 'Airports' page have the good name (name put on previous file).
 * Open 'Airports' page and verify labels have been replaced too.
 * To be able to add element in this table you need to be "administrator" of the current site:
-  * Click on "site menu" and click on "+" button.
+  * Click on "site" menu and click on "+" button.
   * Enter a title like "Site 1" and click the button "+ Add"
   * Now click on the row "Site 1" to enter in the List of members of the "Site 1"
   * Click on "+"" button to open add member screen
@@ -347,7 +345,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```json
   "app": {
     ...,
-    "planesTypes": "Planes types"
+    "planeTypes": "Planes types"
   },
     ...,
   "planeType": {
@@ -363,7 +361,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```json
   "app": {
     ...,
-    "planesTypes": "Tipos de aviones",
+    "planeTypes": "Tipos de aviones"
   },
     ...,
   "planeType": {
@@ -379,7 +377,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```json
   "app": {
     ...,
-    "planesTypes": "Types d'avions",
+    "planeTypes": "Types d'avions"
   },
     ...,
   "planeType": {

@@ -7,7 +7,8 @@ sidebar_position: 1
 1. Create a project "MyFirstProject" with company name "MyCompany" using the BIAToolKit in folder "C:\Sources\Test". [Step describe here](../../30-BIAToolKit/20-CreateProject.md). If you have company files used them to have correct settings.
   ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-1-BIATollKit.PNG)
 
-2. Open the folder "C:\Sources\Test\MyFirstProject"   
+2. Open the folder "C:\Sources\Test\MyFirstProject" and verify the project is correctly created   
+
    ![CreateYourFirstProject-1-BIATollKit](../../Images/GettingStarted/CreateYourFirstProject-2-Files.PNG)
 
 3. Create the database:
@@ -35,22 +36,28 @@ sidebar_position: 1
 
 6. Create the first database migration: 
     1. In VSCode (folder MyFirstProject) press F1
+   
     2. Click "Tasks: Run Tasks".
       ![VSCode Task](../../Images/GettingStarted/CreateYourFirstProject-8-VSCodeTask.PNG)
+
     3. Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
+   
     4. Let the name "Initial" for this first migration and press enter.
+   
     5. Console must display no error message and verify new file *'...Initial.cs'* is created:    
       ![VSCode Verify Migration](../../Images/GettingStarted/CreateYourFirstProject-10-VSCodeVerifyMigration.PNG)  
 
 7.  Deploy the base:
     1.  In VS Code Run and debug the "DotNet DeployDB"
       ![VSCode Deploy DB](../../Images/GettingStarted/CreateYourFirstProject-9-VSCodeDeployDB.PNG)
+
     2.  Verify tables are created in the database:   
       ![Tables](../../Images/GettingStarted/CreateYourFirstProject-4-Tables.PNG)
 
 8.  Run the WebApi:
     1.  In VSCode Run and debug "DotNet WebApi" 
       ![VSCode Start WebApi](../../Images/GettingStarted/CreateYourFirstProject-11-VSCodeStartWebApi.PNG)
+
     2.  The swagger page will be open.  
       Click on "BIA login" at bottom right and wait (There is no need to type anything in the window that appeared).  
       The window should close and the "BIA login" button should be green.  
@@ -75,18 +82,22 @@ sidebar_position: 1
         1.  You can buy a licence on [PrimeNG website](https://primeng.org/lts)
         2.  Or go back to a free no LTS version by deleting all licence manager mentions in **'...\MyFirstProject\Angular\package.json'** and install the latest PrimeNG version that doesn't use LTS (you can check the latest version on [PrimeNG's website](https://primeng.org/lts)).
         Go in the "Angular" repository : 
+
         ```ps
         cd Angular
         ```
         And run the command replacing LatestPrimeNGVersion by the current latest PrimeNG version :
+
         ```ps
         npm i primeng@LatestPrimeNGVersion
         ```
+
         Delete this two lines from **'...\Sources\Test\MyFirstProject\Angular\src\main.ts'**
 
         ```js
         import { LicenseManager } from 'primeng/api';
         ```
+
         ```js
         LicenseManager.verify(licensePayload.licenseKey, licensePayload.passKey);
         ```

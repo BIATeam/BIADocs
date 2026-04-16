@@ -41,7 +41,7 @@ Follow the same steps as for Airport's option but change the values selected on 
 * Set the Domain: **Fleet**
 * Click on generate button
 
-![FirstOPTION_Set](../../Images/GettingStarted/FirstOPTION_Set.png)
+![FirstOPTION_Set](../../Images/GettingStarted/PlaneType_Option_Generator.png)
   
 ### Launch application generation
 * In VSCode Stop all debug launched.
