@@ -166,6 +166,198 @@ function TrouverPositionFermetureClasse ($contenuFichier, $MatchBegin) {
   return $positionFermeture
 }
 
+function Invoke-MigrateBiaFieldConfig {
+    param(
+        [string]$SourceFrontEndPath
+    )
+
+    $PKG_PATH = "@bia-team/bia-ng/models/enum"
+
+    function Add-EnumImport {
+        param([string]$content, [string]$enumName)
+
+        $importSection = [regex]::Match($content, '(?s)^(import\s[\s\S]*?;[\s\n]*)+')
+        if ($importSection.Success -and $importSection.Value.Contains($enumName)) {
+            return $content
+        }
+
+        $escapedPkg = [regex]::Escape($PKG_PATH)
+        $rx = [regex]::new("(?s)(import\s*\{)([^}]*?)(\}\s*from\s*['""]" + $escapedPkg + "['""][\s]*;)")
+        $m = $rx.Match($content)
+
+        if ($m.Success) {
+            $open    = $m.Groups[1].Value
+            $names   = $m.Groups[2].Value
+            $close   = $m.Groups[3].Value
+            $trimmed = $names.TrimEnd()
+            if ($trimmed -notmatch ',\s*$') { $trimmed = $trimmed + ',' }
+            $replacement = $open + $trimmed + "`n  " + $enumName + "`n" + $close
+            return $content.Substring(0, $m.Index) + $replacement + $content.Substring($m.Index + $m.Length)
+        }
+
+        $allImports = [regex]::Matches($content, '(?m)^import\s[\s\S]*?;')
+        if ($allImports.Count -gt 0) {
+            $last     = $allImports[$allImports.Count - 1]
+            $insertAt = $last.Index + $last.Length
+            $newLine  = "`nimport { " + $enumName + " } from '" + $PKG_PATH + "';"
+            return $content.Substring(0, $insertAt) + $newLine + $content.Substring($insertAt)
+        }
+
+        return "import { " + $enumName + " } from '" + $PKG_PATH + "';`n" + $content
+    }
+
+    $RULES = @(
+        # ── TableColumnVisibility ────────────────────────────────────────────
+        @{ P = '(?<!\w)isVisibleInTable\s*:\s*false(?!\w)'
+           R = 'tableColumnVisibility: TableColumnVisibility.Hidden'
+           I = @('TableColumnVisibility') },
+
+        @{ P = '(?<!\w)isVisibleInTable\s*:\s*true\s*,?[ \t]*\r?\n?'
+           R = ''
+           I = @() },
+
+        @{ P = '(?<!\w)isHideByDefault\s*:\s*true(?!\w)'
+           R = 'tableColumnVisibility: TableColumnVisibility.AvailableButHidden'
+           I = @('TableColumnVisibility') },
+
+        @{ P = '(?<!\w)isHideByDefault\s*:\s*false\s*,?[ \t]*\r?\n?'
+           R = ''
+           I = @() },
+
+        # ── FieldEditMode ────────────────────────────────────────────────────
+        @{ P = '(?<!\w)isEditable\s*:\s*false\s*,[ \t]*\r?\n?[ \t]*isOnlyInitializable\s*:\s*true(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.InitializableOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isOnlyInitializable\s*:\s*true\s*,[ \t]*\r?\n?[ \t]*isEditable\s*:\s*false(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.InitializableOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isEditable\s*:\s*false\s*,[ \t]*\r?\n?[ \t]*isOnlyUpdatable\s*:\s*true(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.UpdatableOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isOnlyUpdatable\s*:\s*true\s*,[ \t]*\r?\n?[ \t]*isEditable\s*:\s*false(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.UpdatableOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isOnlyInitializable\s*:\s*true(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.InitializableOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isOnlyUpdatable\s*:\s*true(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.UpdatableOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isEditable\s*:\s*false(?!\w)'
+           R = 'fieldEditMode: FieldEditMode.ReadOnly'
+           I = @('FieldEditMode') },
+
+        @{ P = '(?<!\w)isEditable\s*:\s*true\s*,?[ \t]*\r?\n?'
+           R = ''
+           I = @() },
+
+        @{ P = '(?<!\w)isOnlyInitializable\s*:\s*false\s*,?[ \t]*\r?\n?'
+           R = ''
+           I = @() },
+
+        @{ P = '(?<!\w)isOnlyUpdatable\s*:\s*false\s*,?[ \t]*\r?\n?'
+           R = ''
+           I = @() }
+    )
+
+    function Apply-FieldRules {
+        param([string]$block, [ref]$needed)
+        foreach ($rule in $RULES) {
+            if ([regex]::IsMatch($block, $rule.P)) {
+                $block = [regex]::Replace($block, $rule.P, $rule.R)
+                foreach ($imp in $rule.I) { [void]$needed.Value.Add($imp) }
+            }
+        }
+        return $block
+    }
+
+    function Apply-RulesInsideBiaFieldConfigBlocks {
+        param([string]$content)
+
+        $needed = [System.Collections.Generic.HashSet[string]]::new()
+
+        $blockStartRx = [regex]::new(
+            '(?s)Object\.assign\(\s*new\s+BiaFieldConfig\s*(<[^>]*>)?\s*\([^)]*\)\s*,\s*\{',
+            [System.Text.RegularExpressions.RegexOptions]::None
+        )
+
+        $result    = [System.Text.StringBuilder]::new($content.Length)
+        $searchPos = 0
+        $matches   = $blockStartRx.Matches($content)
+
+        foreach ($m in $matches) {
+            [void]$result.Append($content.Substring($searchPos, $m.Index - $searchPos))
+            [void]$result.Append($m.Value)
+
+            $pos   = $m.Index + $m.Length
+            $depth = 1
+
+            while ($pos -lt $content.Length -and $depth -gt 0) {
+                $ch = $content[$pos]
+                if ($ch -eq '{') { $depth++ }
+                elseif ($ch -eq '}') { $depth-- }
+                $pos++
+            }
+
+            $innerStart = $m.Index + $m.Length
+            $innerEnd   = $pos - 1
+            $inner      = $content.Substring($innerStart, $innerEnd - $innerStart)
+            $inner      = Apply-FieldRules -block $inner -needed ([ref]$needed)
+
+            [void]$result.Append($inner)
+            [void]$result.Append('}')
+            $searchPos = $pos
+        }
+
+        [void]$result.Append($content.Substring($searchPos))
+
+        return [PSCustomObject]@{
+            Content = $result.ToString()
+            Needed  = $needed
+        }
+    }
+
+    $oldFields   = @('isVisibleInTable', 'isHideByDefault', 'isEditable', 'isOnlyInitializable', 'isOnlyUpdatable')
+    $filesScanned  = 0
+    $filesModified = 0
+
+    $tsFiles = Get-ChildItem -Path $SourceFrontEndPath -Recurse -Filter '*.ts' |
+        Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
+
+    foreach ($file in $tsFiles) {
+        $filesScanned++
+        $original = Get-Content -Path $file.FullName -Raw -Encoding UTF8
+
+        $hasOldField = $false
+        foreach ($f in $oldFields) {
+            if ($original.Contains($f)) { $hasOldField = $true; break }
+        }
+        if (-not $hasOldField -or -not $original.Contains('BiaFieldConfig')) { continue }
+
+        $result  = Apply-RulesInsideBiaFieldConfigBlocks -content $original
+        $content = $result.Content
+        $needed  = $result.Needed
+
+        foreach ($imp in $needed) {
+            $content = Add-EnumImport -content $content -enumName $imp
+        }
+
+        if ($content -ne $original) {
+            [System.IO.File]::WriteAllText($file.FullName, $content, [System.Text.Encoding]::UTF8)
+            $filesModified++
+            Write-Host "     => $($file.FullName)"
+        }
+    }
+
+    Write-Host "Invoke-MigrateBiaFieldConfig done. Scanned: $filesScanned, Modified: $filesModified"
+}
+
 function Invoke-ReplacementsInFiles {
   param(
       [Parameter(Mandatory)]
@@ -233,116 +425,13 @@ function Invoke-ReplacementsInFiles {
   }
 }
 
-function Sync-BiaNetPermissions {
-    param(
-        [string]$DotNetPath = "DotNet"
-    )
-
-    $apiFolder = Get-ChildItem -Path $DotNetPath -Directory -Filter "*.Presentation.Api" | Select-Object -First 1
-    if (-not $apiFolder) {
-        Write-Error "No folder matching *.Presentation.Api found under $DotNetPath"
-        return
-    }
-
-    $ConfigPath = Join-Path $apiFolder.FullName "bianetconfig.json"
-    $PermissionsPath = Join-Path $apiFolder.FullName "bianetpermissions.json"
-
-    $configContent = Get-Content $ConfigPath -Raw -Encoding UTF8
-    $lines = $configContent -split "`n"
-
-    # Find the Permissions block boundaries
-    $startLine = -1
-    $depth = 0
-    $endLine = -1
-
-    for ($i = 0; $i -lt $lines.Count; $i++) {
-        $line = $lines[$i]
-        if ($startLine -eq -1) {
-            if ($line -match '^\s*"Permissions"\s*:\s*\[') {
-                $startLine = $i
-                foreach ($char in $line.ToCharArray()) {
-                    if ($char -eq '[') { $depth++ }
-                    elseif ($char -eq ']') { $depth-- }
-                }
-                if ($depth -eq 0) { $endLine = $i; break }
-            }
-        }
-        else {
-            foreach ($char in $line.ToCharArray()) {
-                if ($char -eq '[') { $depth++ }
-                elseif ($char -eq ']') { $depth-- }
-            }
-            if ($depth -eq 0) { $endLine = $i; break }
-        }
-    }
-
-    if ($startLine -eq -1 -or $endLine -eq -1) {
-        Write-Host "No Permissions block found in $ConfigPath, skipping."
-        return
-    }
-
-    # Write new bianetpermissions.json
-    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
-    $permissionsBlock = ($lines[$startLine..$endLine]) -join "`n"
-    $newPermissionsContent = "{`n  `"BiaNet`": {`n    $($permissionsBlock.Trim())`n  }`n}`n"
-    [System.IO.File]::WriteAllText((Resolve-Path $PermissionsPath), $newPermissionsContent, $utf8NoBom)
-    Write-Host "Updated: $PermissionsPath"
-
-    # Remove Permissions block from bianetconfig.json
-    $beforeLines = if ($startLine -gt 0) { $lines[0..($startLine - 1)] } else { @() }
-    $afterLines = if ($endLine -lt ($lines.Count - 1)) { $lines[($endLine + 1)..($lines.Count - 1)] } else { @() }
-
-    # Remove trailing comma from the last non-empty line before the block
-    for ($i = $beforeLines.Count - 1; $i -ge 0; $i--) {
-        if ($beforeLines[$i].Trim() -ne '') {
-            $beforeLines[$i] = $beforeLines[$i] -replace ',\s*$', ''
-            break
-        }
-    }
-
-    # Collapse consecutive blank lines
-    $cleanedLines = @()
-    $prevBlank = $false
-    foreach ($line in ($beforeLines + $afterLines)) {
-        $isBlank = $line.Trim() -eq ''
-        if (-not ($isBlank -and $prevBlank)) { $cleanedLines += $line }
-        $prevBlank = $isBlank
-    }
-
-    [System.IO.File]::WriteAllText((Resolve-Path $ConfigPath), ($cleanedLines -join "`n"), $utf8NoBom)
-    Write-Host "Updated: $ConfigPath"
-}
-
 # FRONT END
-# BEGIN - Ultima 21 css change
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.ts"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\blayout-container\b" -NewRegexp 'layout-wrapper' -Include "*.scss"
-# END - Ultima 21 css change
 
-# BEGIN - Change feature singular name key
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "featureNameSingular:\s*'(?!app\.)(\S*)'" -NewRegexp 'featureNameSingular: ''app.$1''' -Include "*.ts"
-# END - Change feature singular name key
-
-# BEGIN - Replace specific input complex input by motion options
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onHide\)="onComplexInput\(false\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onComplexInput\(false\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp '\(onPanelHide\)="onPanelHide\(\S*\)"' -NewRegexp '[motionOptions]="complexInputMotionOptions"' -Include "*.html"
-# END - Replace specific input complex input by motion options
-
-# BEGIN - Replace deprecated changeDetection for Angular 21
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "changeDetection:\s*ChangeDetectionStrategy\.Default" -NewRegexp 'changeDetection: ChangeDetectionStrategy.Eager' -Include "*.ts"
-# END - Replace deprecated changeDetection for Angular 21
-
-# BEGIN - Replace deprecated @primeng/themes by @primeuix/themes
-ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "@primeng\/themes" -NewRegexp '@primeuix/themes' -Include "*.ts"
-# END - Replace deprecated @primeng/themes by @primeuix/themes
+# BEGIN - Migrate BiaFieldConfig to TableColumnVisibility and FieldEditMode enums
+Invoke-MigrateBiaFieldConfig -SourceFrontEndPath $SourceFrontEnd
+# END - Migrate BiaFieldConfig to TableColumnVisibility and FieldEditMode enums
 
 # BACK END
-
-# BEGIN - Move permissions to a dedicated file
-Sync-BiaNetPermissions -DotNetPath $SourceBackEnd
-# END - Move permissions to a dedicated file
 
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
