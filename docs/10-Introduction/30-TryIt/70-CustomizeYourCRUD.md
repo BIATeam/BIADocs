@@ -28,12 +28,17 @@ Key properties on `BiaFieldConfig` that control object fields:
 - `isSearchable` (bool): whether the field can be filtered.
 - `isSortable` (bool): whether the field can be sorted by the user with a click on the column header.
 - `icon` (string): display an icon instead of label on the header of the column.
-- `isEditable` (bool): whether the field can always be edited in the form. Default **true** unless set to **false**.
-- `isOnlyInitializable` (bool): whether the field can be edited in the form when creating a new element only. Default **false** unless set to **true**.
-- `isOnlyUpdatable` (bool): whether the field can be edited in the form when editing an existing element only. Default **false** unless set to **true**.
+- `fieldEditMode` (`FieldEditMode`): controls when the field is editable in forms. Possible values:
+  - `FieldEditMode.Editable` (default): field is editable in both create and edit forms.
+  - `FieldEditMode.ReadOnly`: field is read-only in all forms.
+  - `FieldEditMode.InitializableOnly`: field is editable only on create.
+  - `FieldEditMode.UpdatableOnly`: field is editable only on update.
 - `isEditableChoice` (bool): whether the OneToMany value can be a free string not contained in the options.
 - `isVisible` (bool): whether the field should appear in the form. Default **true** unless set to **false**.
-- `isHideByDefault` (bool): when true the field is available but hidden by default (user can show it from column toggles). Default **false** unless set to **true**.
+- `tableColumnVisibility` (`TableColumnVisibility`): controls the column visibility in the table. Possible values:
+  - `TableColumnVisibility.Visible` (default): column is visible in the table.
+  - `TableColumnVisibility.AvailableButHidden`: column is available in the column selector but hidden by default.
+  - `TableColumnVisibility.Hidden`: column is not available in the table at all.
 - `maxlength` (number): max length for a string type field.
 - `searchPlaceholder` (string): placeholder of the filter input for the field. Can be an i18n key.
 - `isRequired` (bool): whether the field should be required in form. Default **false** unless set to **true**.
@@ -44,7 +49,6 @@ Key properties on `BiaFieldConfig` that control object fields:
 - `alignFrozen` (string): Position of the frozen column. Default **left** unless set to **right**.
 - `displayFormat` (BiaFieldNumberFormat | BiaFieldDateFormat): Define the display format of the field (only if type is **Number**, **Date**, **DateTime**, **Time**, **TimeOnly** or **TimeSecOnly**).
 - `maxConstraints` (number): max number of filter constraints allowed for the field. Default **10**.
-- `isVisibleInTable` (bool): whether the field should appear in the table. Default **true** unless set to **false**.
 - `filterWithDisplay` (bool): whether the ManyToMany field should be filtered with the display value instead of the id. Default **false** unless set to **true**.
 - `multiline` (BiaFieldMultilineString): define the multiline configuration for a string type input in the form. Default **undefined** implies a mono line input.
   
@@ -68,7 +72,7 @@ Object.assign(new BiaFieldConfig('isActive', 'myFeature.isActive'), {
 });
 
 Object.assign(new BiaFieldConfig('syncTime', 'myFeature.syncTime'), {
-  isHideByDefault: true,
+  tableColumnVisibility: TableColumnVisibility.AvailableButHidden,
   type: PropType.TimeSecOnly,
   minWidth: '50px',
 });
@@ -76,8 +80,8 @@ Object.assign(new BiaFieldConfig('syncTime', 'myFeature.syncTime'), {
 
 How the table uses this config
 
-- The feature table component (e.g., `MyFeatureTableComponent`) extends `CrudItemTableComponent`, which uses `this.configuration.columns` (passed from the feature's `CrudConfig`) to build the UI. The shared template renders a column for each `column` where `isVisibleInTable` is true and not `isHideByDefault` (unless the user or the current view toggles it).
-- To change default visible columns: edit the `isHideByDefault` flag or `isVisibleInTable` in the `myFeatureFieldsConfiguration` in the feature model.
+- The feature table component (e.g., `MyFeatureTableComponent`) extends `CrudItemTableComponent`, which uses `this.configuration.columns` (passed from the feature's `CrudConfig`) to build the UI. The shared template renders a column for each `column` based on its `tableColumnVisibility` value (unless the user or the current view toggles it).
+- To change default visible columns: edit the `tableColumnVisibility` property in the `myFeatureFieldsConfiguration` in the feature model.
 
 When to implement a specific renderer
 

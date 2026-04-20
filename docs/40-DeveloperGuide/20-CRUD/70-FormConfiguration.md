@@ -32,13 +32,10 @@ Each column item must be a `BiaFieldConfig<TDto>`, where you will configure for 
 - `isSearchable` : searchable mode (`true` | `false`)
 - `isSortable` : sortable mode (`true` | `false`) 
 - `icon` : icon displayed beside the header name when displayed into a table
-- `isEditable` : editable mode (`true` | `false`)
-- `isOnlyInitializable` : only initializable mode (`true` | `false`)
-- `isOnlyUpdatable` : only updatable mode (`true` | `false`)
+- `fieldEditMode` : edit mode of the field in forms (`FieldEditMode.Editable` | `FieldEditMode.ReadOnly` | `FieldEditMode.InitializableOnly` | `FieldEditMode.UpdatableOnly`)
 - `isEditableChoice` : editable choice mode (`true` | `false`)
 - `isVisible` : visibility mode into **form** (`true` | `false`)
-- `isVisibleInTable` : visibility mode into **table** (`true` | `false`)
-- `isHideByDefault` : hide by default mode into the "columns visible by default" dropdown of the table (`true` | `false`)
+- `tableColumnVisibility` : visibility mode in the table (`TableColumnVisibility.Visible` | `TableColumnVisibility.AvailableButHidden` | `TableColumnVisibility.Hidden`)
 - `maxlength` : maximum length setting when input is a string
 - `isRequired` : required mode (`true` | `false`)
 - `validators` : set of validators to apply to the input
