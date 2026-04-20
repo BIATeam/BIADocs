@@ -425,11 +425,106 @@ function Invoke-ReplacementsInFiles {
   }
 }
 
+function Invoke-RenameBiaFieldConfigIsVisible {
+    param(
+        [string]$SourceFrontEndPath
+    )
+
+    function Find-MatchingBrace {
+        param([string]$content, [int]$startPos)
+        $depth = 1
+        $pos   = $startPos
+        while ($pos -lt $content.Length -and $depth -gt 0) {
+            $ch = $content[$pos]
+            if ($ch -eq '{') { $depth++ }
+            elseif ($ch -eq '}') { $depth-- }
+            $pos++
+        }
+        return $pos
+    }
+
+    function Process-BiaFieldConfigFile {
+        param([string]$content, [string]$extension)
+
+        $modified = $false
+
+        if ($extension -eq '.html') {
+            $newContent = [regex]::Replace($content, '(?<!\w)isVisible(?!\w)', 'isVisibleInForm')
+            if ($newContent -ne $content) {
+                return [PSCustomObject]@{ Content = $newContent; Modified = $true }
+            }
+            return [PSCustomObject]@{ Content = $content; Modified = $false }
+        }
+
+        $blockStartRx = [regex]::new(
+            '(?s)Object\.assign\(\s*new\s+BiaFieldConfig\s*(<[^>]*>)?\s*\([^)]*\)\s*,\s*\{'
+        )
+
+        $result    = [System.Text.StringBuilder]::new($content.Length)
+        $searchPos = 0
+        $matches   = $blockStartRx.Matches($content)
+
+        foreach ($m in $matches) {
+            [void]$result.Append($content.Substring($searchPos, $m.Index - $searchPos))
+            [void]$result.Append($m.Value)
+
+            $innerStart = $m.Index + $m.Length
+            $afterClose = Find-MatchingBrace -content $content -startPos $innerStart
+            $innerEnd   = $afterClose - 1
+
+            $inner    = $content.Substring($innerStart, $innerEnd - $innerStart)
+            $newInner = [regex]::Replace($inner, '(?<!\w)isVisible\s*:', 'isVisibleInForm:')
+
+            if ($newInner -ne $inner) { $modified = $true }
+
+            [void]$result.Append($newInner)
+            [void]$result.Append('}')
+            $searchPos = $afterClose
+        }
+
+        [void]$result.Append($content.Substring($searchPos))
+
+        return [PSCustomObject]@{ Content = $result.ToString(); Modified = $modified }
+    }
+
+    $filesScanned  = 0
+    $filesModified = 0
+
+    $files = Get-ChildItem -Path $SourceFrontEndPath -Recurse -Include '*.ts', '*.html' |
+        Where-Object { $_.FullName -notmatch '[\\/]node_modules[\\/]' }
+
+    foreach ($file in $files) {
+        $filesScanned++
+        $original = Get-Content -Path $file.FullName -Raw -Encoding UTF8
+
+        if (-not $original.Contains('isVisible')) { continue }
+
+        $result = Process-BiaFieldConfigFile -content $original -extension $file.Extension
+
+        if ($result.Modified) {
+            [System.IO.File]::WriteAllText($file.FullName, $result.Content, [System.Text.Encoding]::UTF8)
+            $filesModified++
+            Write-Host "     => $($file.FullName)"
+        }
+    }
+
+    Write-Host "Invoke-RenameBiaFieldConfigIsVisible done. Scanned: $filesScanned, Modified: $filesModified"
+}
+
 # FRONT END
 
 # BEGIN - Migrate BiaFieldConfig to TableColumnVisibility and FieldEditMode enums
 Invoke-MigrateBiaFieldConfig -SourceFrontEndPath $SourceFrontEnd
 # END - Migrate BiaFieldConfig to TableColumnVisibility and FieldEditMode enums
+
+# BEGIN - Rename isVisible to isVisibleInForm in BiaFieldConfig
+Invoke-RenameBiaFieldConfigIsVisible -SourceFrontEndPath $SourceFrontEnd
+# END - Rename isVisible to isVisibleInForm in BiaFieldConfig
+
+# BEGIN - Rename isHideByDefault to isHiddenByDefault
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\bisHideByDefault\b" -NewRegexp 'isHiddenByDefault' -Include "*.ts"
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\bisHideByDefault\b" -NewRegexp 'isHiddenByDefault' -Include "*.html"
+# END - Rename isHideByDefault to isHiddenByDefault
 
 # BACK END
 
