@@ -4,6 +4,8 @@ sidebar_position: 1
 
 # Create Plane CRUD
 
+![Create_Plane_CRUD_Diagram](../../Images/GettingStarted/Create_Plane_CRUD_Diagram.png)
+
 ## Create the Plane Entity
 
 * In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'**.
@@ -67,25 +69,6 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 }
 ```
 
-## Create the DTO
-
-### Using BIAToolKit
-* Open the BIAToolKi
-* Go to "Modify existing project" tab
-* Set the projects parent path and choose your project
-* Go to tab 3 "DTO Generator"
-* Select your entity Plane on the list
-
-
-![Plane_DTOGenerator](../../Images/GettingStarted/Plane_DTOGenerator.png)
-* Click on "Map to" button
-* Check the required checkbox for the Id mapping property
-* Then click the "Generate" button
-* The DTO and the mapper will be generated
-* Check in the project solution if the DTO and mapper are present
-
-![Plane_DTOGenerator_Result](../../Images/GettingStarted/Plane_DTOGenerator_Result.png)
-
 ## Update Data
 
 Open the 'PlaneModelBuilder.cs' in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'** and add : 
@@ -137,17 +120,40 @@ public DbSet<Plane> Planes { get; set; }
 * In VSCode Run and Debug  "DotNet DeployDB"
 * Verify 'Planes' table is created in the database.
   
-
 ![Verify_Table_Planes_Created](../../Images/GettingStarted/Verify_Table_Planes_Created.png)
 
-## Create the CRUD
 
+## Create the DTO
+
+### Using BIAToolKit
+* Open the BIAToolKi
+* Go to "Modify existing project" tab
+* Set the projects parent path and choose your project
+* Go to tab 3 "DTO Generator"
+* Select your entity Plane on the list
+
+
+![Plane_DTOGenerator](../../Images/GettingStarted/Plane_DTOGenerator.png)
+
+* Click on "Map to" button
+* Check the required checkbox for the Id mapping property
+* Then click the "Generate" button
+* The DTO and the mapper will be generated
+* Check in the project solution if the DTO and mapper are present
+
+![Plane_DTOGenerator_Result](../../Images/GettingStarted/Plane_DTOGenerator_Result.png)
+
+
+## Create the CRUD
+### Using the BIAToolKit
 * Start the BIAToolKit and go on "Modify existing project" tab*
 * Set the projects parent path and choose your project
 * Go to tab 4 "CRUD Generator"
 * Fill the fields with the corresponding informations
 
 ![PlaneCRUD_Generator](../../Images/GettingStarted/PlaneCRUD_Generator.png)
+
+* Click on generate button
 
 ### Launch application generation
 
@@ -158,7 +164,7 @@ public DbSet<Plane> Planes { get; set; }
 * Click on "APP.PLANES" in menu to display 'Planes' page.
 
 
-## Add traduction
+## Complete traduction
 
 * Open **'src/assets/i18n/app/en.json'** and add:
 
@@ -181,25 +187,27 @@ public DbSet<Plane> Planes { get; set; }
 ```
 
 * Open **'src/assets/i18n/app/es.json'** and add:
+
 ``` json
   "app": {
     ...,
     "planes": "Aviones"
   },
-  "plane": {
-    "add": "Añadir plano",
+    "plane": {
+    "add": "Añadir avión",
     "capacity": "Capacidad",
     "deliveryDate": "Fecha de entrega",
-    "edit": "Editar plano",
+    "edit": "Editar avión",
     "isActive": "Activo",
     "lastFlightDate": "Última fecha de vuelo",
-    "listOf": "Lista de planos",
+    "listOf": "Lista de aviones",
     "msn": "Msn",
-    "syncTime": "Tiempo de sincronización"
+    "syncTime": "Tiempo de sincronización",
   }
   ```
 
 * Open **'src/assets/i18n/app/fr.json'** and add:
+
 ``` json
   "app": {
     ...,

@@ -4,6 +4,8 @@ sidebar_position: 1
 
 # Create Airport and PlaneType Options
 
+![Create_Airline_Team_Diagram](../../Images/GettingStarted/Create_Airline_Team_Diagram.png)
+
 ## Create Airport's Option
 
 ### Using BIAToolKit

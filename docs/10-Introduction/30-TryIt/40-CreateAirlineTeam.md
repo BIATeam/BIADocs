@@ -4,13 +4,12 @@ sidebar_position: 1
 
 # Create Airline Team
 
-This page will explains how to create a team inside your project.
-
+![Create_Airline_Team_Diagram](../../Images/GettingStarted/Create_Airline_Team_Diagram.png)
 
 ### Create the Model
 
-1. In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain'** create **'Airline'** folder, then create a folder **'Entities'** into it. Use the parent's domain existing module folder if exists.
-2. Create empty class **'Airline.cs'** and add following:
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain'** create `Airline` folder, then create a folder `Entities` into it. Use the parent's domain existing module folder if exists.
+* Create empty class `Airline.cs` and add following:
 
 ```csharp title="Airline.cs"
 // <copyright file="Airline.cs" company="MyCompany">
@@ -59,28 +58,18 @@ namespace MyCompany.MyFirstProject.Domain.Airline.Entities
 }
 ```
 
-3. In case of children team, ensure to have logical links between the parent and child entities.
+* In case of children team, ensure to have logical links between the parent and child entities.
 
 Make sure to inherit from `Team` and expose : 
 - a `byte[]` row version property with attribute `BiaRowVersionProperty` for provider `SqlServer`
 - a `uint` row version property with attribute `BiaRowVersionProperty` for provider `PostGreSql`
 
+## Update Data
+### Create the ModelBuilder
 
-### Complete DataContext
-
-1. Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.
-2. Open **DataContext.cs** and add your new `DbSet<Airline>` :
-
-```csharp title="DataContext.cs"
-        /// <summary>
-        /// Gets or sets the Airline DBSet.
-        /// </summary>
-        public DbSet<Airline> Airlines { get; set; }
-```
-
-3. In folder **ModelBuilders**, create class **AirlineModelBuilder.cs** or use parent's model builder, and add :
+* In folder `ModelBuilders`, create class `AirlineModelBuilder.cs` or use parent's model builder, and add :
    
-```csharp title="CompanyModelBuilder.cs"
+```csharp title="AirlineModelBuilder.cs"
 namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 {
     using Microsoft.EntityFrameworkCore;
@@ -113,9 +102,21 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 }
 ```
 
-1. If added to existing parent's model builder, add only the method `CreateAirlineModel` and make a call inside the `CreateModel` method. 
+* If added to existing parent's model builder, add only the method `CreateAirlineModel` and make a call inside the `CreateModel` method. 
 
-2. Back to **DataContext.cs**, ensure to have a call to your model builder's method `CreateModel` :
+### Update DataContext
+
+* Go in **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data'** folder.
+* Open `DataContext.cs` and add your new `DbSet<Airline>` :
+
+```csharp title="DataContext.cs"
+        /// <summary>
+        /// Gets or sets the Airline DBSet.
+        /// </summary>
+        public DbSet<Airline> Airlines { get; set; }
+```
+
+* Also ensure to have a call to your model builder's method `CreateModel` :
 
 ```csharp title="DataContext.cs"
     public class DataContext : BiaDataContext
@@ -131,24 +132,29 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
     }
 ```
 
-1. In case of children team, ensure to specify logical links between the parent and child entities.
+* In case of children team, ensure to specify logical links between the parent and child entities.
+
+### Update the database
+
+* In VSCode (folder MyFirstProject) press F1
+* Click "Tasks: Run Tasks".
+* Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
+* Set the name "NewFeatureAirport" and press enter.
+* Verify new file `xxx_NewFeatureAirport.cs` is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
 
 ## Generate DTO
 
 ### Using BIAToolKit
 
-1. Launch the **BIAToolKit**, go to the tab **"Modify existing project"**.
-2. Set your parent project path, then select your project folder.
-3. Go to **"DTO Generator"** tab.
-4. Fill the form as following : 
+* Launch the BIAToolKit, go to the tab "Modify existing project".
+* Set your parent project path, then select your project folder.
+* Go to "DTO Generator" tab.
+* Fill the form as following
+* Then click on Generate button
    
 ![AirlineDTO_Generator](../../Images/GettingStarted/AirlineDTO_Generator.png)
 
-5. Then, click on **Generate** button !
-
-#### Children Team case
-
-Complete the generated DTO : 
+In a Children Team case, complete the generated DTO : 
 * ensure to set the first `AncestorTeam` parent's type into `BiaDtoClass` class annotation
 * set `IsParent` to true in `BiaDtoField` field annotation for parent's id property
 
@@ -173,18 +179,17 @@ public class AirlineChildDto : TeamDto
 
 ### Using BIAToolKit
 
-1. Launch the **BIAToolKit**, go to the tab **"Modify existing project"**.
-2. Set your parent project path, then select your project folder.
-3. Go to **"CRUD Generator"** tab.
-4. Fill the form as following : 
+* Launch the BIAToolKit, go to the tab "Modify existing project".
+* Set your parent project path, then select your project folder.
+* Go to "CRUD Generator" tab.
+* Fill the form as following 
+* If your Team inherits from parent, click on the "Has Parent" checkbox and complete the parent's name singular and plural.
+* Then click on Generate button
    
 ![Airline_CRUD_Generator](../../Images/GettingStarted/Airline_CRUD_Generator.png)
 
-1. If your Team inherits from parent, click on the **"Has Parent"** checkbox and complete the parent's name singular and plural 
-2. Then, click on **Generate** button !
-
 ### Customize generated files
-After the files generation, some customization is needed.
+After the files are generated, there might be some errors. Follow the instructions to correct them if there are any.
 
 #### Back
 
@@ -192,14 +197,14 @@ Open your DotNet project solution in **'...\MyFirstProject\DotNet'** and complet
 
 ##### RoleId.cs
 
-1. Go in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **RoleId.cs** file.
-2. Adapt the enum value of the generated value `AirlineAdmin`.
-3. In case of children team, review the `TeamLeader` created value. Delete new generated value if already exists and in use by other teams.
+* Go in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **RoleId.cs** file.
+* Adapt the enum value of the generated value `AirlineAdmin`.
+* In case of children team, review the `TeamLeader` created value. Delete new generated value if already exists and in use by other teams.
    
 ##### TeamTypeId.cs
 
-1. Stay in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **TeamTypeId.cs** file.
-2. Adapt the enum value of the generated value `Airline`.
+* Stay in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open `TeamTypeId.cs` file.
+* Adapt the enum value of the generated value `Airline`.
 
 #### Front
 
@@ -207,14 +212,14 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
 
 ##### constants.ts
 
-1. Go in **'src\app\shared'** folder and open **constants.ts** file.
-2. Go in `TeamTypeId` enum declaration.
-3. Adapt the enum value of the generated value `Airline`.
+* Go in **'src\app\shared'** folder and open `constants.ts` file.
+* Go in `TeamTypeId` enum declaration.
+* Adapt the enum value of the generated value `Airline`.
 
 ##### navigation.ts
 
-1. Stay in **'src\app\shared'** folder and open **navigation.ts** file.
-2. Adapt the path of the generated navigation for companies :
+* Stay in **'src\app\shared'** folder and open `navigation.ts` file.
+* Adapt the path of the generated navigation for companies :
    
 ```typescript title="navigation.ts"
     {
@@ -225,7 +230,7 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
       },
 ```
 
-1. In case of children team, you can move if needed the generated content into the children's array of parent `BiaNavigation` :
+* In case of children team, you can move if needed the generated content into the children's array of parent `BiaNavigation` :
    
 ```typescript title="navigation.ts"
   {
@@ -247,79 +252,14 @@ Open your Angular project folder **'...\MyFirstProject\Angular'** and complete t
 
 ##### model.ts
 
-1. Go in **'src\app\features\companies\model'** or the children parent's path of the generated feature `airlines` and open the **airline.ts** file.
-2. Adapt the field configuration if needed.
-3. Remove all unused imports from the generated file.
+* Go in **'src\app\features\companies\model'** or the children parent's path of the generated feature `airlines` and open the `airline.ts` file.
+* Adapt the field configuration if needed.
+* Remove all unused imports from the generated file.
 
-### Additionnal configuration
+## Complete traductions
 
-The additionnal configuration for the teams is based on the `TeamConfig.cs` from the **domain layer** in the back-end.
-
-#### Role mode
-
-You can set the role mode for your team.
-
-``` csharp title="TeamConfig.cs"
-new BiaTeamConfig<Team>()
-{
-    // [...]
-    RoleMode = BIA.Net.Core.Common.Enum.RoleMode.AllRoles,
-},
-```
-
-- `AllRoles` : all roles are selected
-- `SingleRole` : you can select only one role
-- `MultiRoles` : you can select multiple roles
-
-#### Automatic team selection mode
-
-You can choose the selection mode if not default team has been set by the user.
-
-``` csharp title="TeamConfig.cs"
-new BiaTeamConfig<Team>()
-{
-    // [...]
-    TeamAutomaticSelectionMode = BIA.Net.Core.Common.Enum.TeamSelectionMode.None,
-},
-```
-
-- `None` : leave empty team selection
-- `First` : the first team available (ordered by ID)
-- 
-#### Clear and choose no team in selector
-
-You can set if the users can clear and select empty team in the team selector.
-``` csharp title="TeamConfig.cs"
-
-new BiaTeamConfig<Team>()
-{
-    // [...]
-    TeamSelectionCanBeEmpty = true,
-},
-```
-
-#### Display mode
-
-You can configure how to display your Team into your front-end.
-
-``` csharp title="TeamConfig.cs"
-new BiaTeamConfig<Team>()
-{
-    // [...]
-
-    // Display the Team selector into the header of your application
-    DisplayInHeader = true,
-    // Always display the Team selector or only if there is more than one team choice
-    DisplayAlways = true,
-    // Display the label (Team Title) of the Team selector
-    DisplayLabel = true,
-},
-```
-
-### Complete traductions
-
-1. Go in **'...\MyFirstProject\Angular\src\assets\i18n\app'**
-2. Complete each available language traduction JSON file with the correct values : 
+* Go in **'...\MyFirstProject\Angular\src\assets\i18n\app'**
+* Complete each available language traduction JSON file with the correct values : 
    
 ```json
 "app": {
@@ -373,20 +313,11 @@ new BiaTeamConfig<Team>()
   }
 ```
 
-### Update the database
+## Test
 
-1. Open the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
-2. Open a new Package Manager Console.
-3. Set default project to **MyCompany.MyFirstProject.Infrastructure.Data**.
-4. Run command `add-migration -context "DataContext" AddTeamAirline`
-5. Verify the generated migration.
-6. Run command `update-database -context "DataContext"`
-7. Verify your database.
-
-## Testing your Team
-
-1. Run the DotNet solution.
-2. Launch `npm start` in Angular folder.
-3. Go to *http://localhost:4200/*
-4. Navigate to the airline team list.
+* Run the DotNet solution.
+* Launch `npm start` in Angular folder.
+* Go to *http://localhost:4200/*
+* Navigate to the airline team list.
+  
 ![BIAToolKitConfig](../../Images/BIAToolKit/Team_List.png)

@@ -3,13 +3,14 @@ sidebar_position: 1
 ---
 
 # Create Airport and PlaneType CRUD
-We will create in first the features 'Airport' and 'PlaneType'.
+
+![Create_Airport_And_PlaneType_CRUD_Diagram](../../Images/GettingStarted/Create_Airport_And_PlaneType_CRUD_Diagram.png)
 
 ## Create the Entity 'Airport'
 * Open with Visual Studio 2026 or VS Code the solution **'...\MyFirstProject\DotNet\MyFirstProject.sln'**.
-* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\'** create 'Fleet' folder.
-* Create 'Entities' subfolder.
-* Create empty class 'Airport.cs' and add: 
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\'** create `Fleet` folder.
+* Create `Entities` subfolder.
+* Create empty class `Airport.cs` and add: 
 
 ```csharp
 // <copyright file="Airport.cs" company="TheBIADevCompany">
@@ -40,35 +41,11 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 }
 ```
 
-## Create the DTO
-### Using BIAToolKit
-For more informations about creating a DTO, see [Create a DTO with BIAToolkit documentation](../../30-BIAToolKit/30-CreateDTO.md)
-
-* Open the BIAToolkit
-* Go to "Modify existing project" tab
-* Set the projects parent path and choose your project
-* Go to tab 3 "DTO Generator"
-* Select your entity **Airport** on the list
-
-![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.png)
-
- Click on "Map to" button
-* All the selected properties will be added to the mapping table that represents that properties that will be generated in your corresponding DTO
-* Check the required checkbox for the Id mapping property
-
-![FirstCRUD_DTOGenerator_Mapping](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Mapping.png)
-
-* Then click the "Generate" button
-* The DTO and the mapper will be generated
-* Check in the project solution if the DTO and mapper are present
-
-![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.png)
-
 ## Update Data
 
 ### Create the Modelbuilder
 
-* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, create empty class 'PlaneModelBuilder.cs' and add:
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, create empty class `PlaneModelBuilder.cs` and add:
 
 ```csharp
 // <copyright file="PlaneModelBuilder.cs" company="TheBIADevCompany">
@@ -116,7 +93,7 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
 /// </summary>
 public DbSet<Airport> Airports { get; set; }
 ```
-* On 'OnModelCreating' method add the 'PlaneModelBuilder.CreateModel':
+* On `OnModelCreating` method add the `PlaneModelBuilder.CreateModel`:
 
 ```csharp
 PlaneModelBuilder.CreateModel(modelBuilder);
@@ -127,14 +104,40 @@ PlaneModelBuilder.CreateModel(modelBuilder);
 * Click "Tasks: Run Tasks".
 * Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
 * Set the name "NewFeatureAirport" and press enter.
-* Verify new file *'xxx_NewFeatureAirport.cs'* is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
+* Verify new file `xxx_NewFeatureAirport.cs` is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
 
 ![Verify_Airport_Migration_File_Created.png](../../Images/GettingStarted/Verify_Airport_Migration_File_Created.png)
 
 
 * In VSCode Run and Debug  "DotNet DeployDB"
-* Verify 'Airports' table is created in the database.
+* Verify `Airports` table is created in the database.
+  
 ![Verify_Table_Airports_Created](../../Images/GettingStarted/Verify_Table_Airports_Created.png)
+
+
+## Create the DTO
+### Using BIAToolKit
+For more informations about creating a DTO, see [Create a DTO with BIAToolkit documentation](../../30-BIAToolKit/30-CreateDTO.md)
+
+* Open the BIAToolkit
+* Go to "Modify existing project" tab
+* Set the projects parent path and choose your project
+* Go to tab 3 "DTO Generator"
+* Select your entity `Airport` on the list
+
+![FirstCRUD_DTOGenerator_ChooseEntity](../../Images/GettingStarted/FirstCRUD_DTOGenerator_ChooseEntity.png)
+
+* Click on "Map to" button
+* All the selected properties will be added to the mapping table that represents that properties that will be generated in your corresponding DTO
+* Check the required checkbox for the Id mapping property
+
+![FirstCRUD_DTOGenerator_Mapping](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Mapping.png)
+
+* Then click the "Generate" button
+* The DTO and the mapper will be generated
+* Check in the project solution if the DTO and mapper are present
+
+![FirstCRUD_DTOGenerator_Result](../../Images/GettingStarted/FirstCRUD_DTOGenerator_Result.png)
 
 ## Create the CRUD 
 ### Using BIAToolKit  
@@ -151,20 +154,20 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 * Verify "Entity name (singular)" value: *Airport*
 * Verify "Entity name (plural)" value: *Airports*
 * Choose "Display item": *Name*
-
-![AirportCRUD_Generator](../../Images/GettingStarted/AirportCRUD_Generator.png)
-
 * Click on generate button
+  
+![AirportCRUD_Generator](../../Images/GettingStarted/AirportCRUD_Generator.png)
 
 ### Launch application generation
 * In VSCode Stop all debug launched.
 * Run and debug "Debug Full Stack" 
 * The swagger page will be open. 
 * Open a browser at address http://localhost:4200/ 
-* Click on *"APP.AIRPORTS"* in menu to display 'Airports' page.
+* Click on *"APP.AIRPORTS"* in menu to display `Airports` page.
 
 ## Add traduction
 * Open **'src/assets/i18n/app/en.json'** and add:
+  
 ```json
   "app": {
     ...,
@@ -181,6 +184,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 ```  
 
 * Open **'src/assets/i18n/app/es.json'** and add:
+  
 ```json
   "app": {
     ...,
@@ -197,6 +201,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 ```  
 
 * Open **'src/assets/i18n/app/fr.json'** and add:
+
 ```json
   "app": {
     ...,
@@ -213,7 +218,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 ```
 
 ## Test
-* Open web navigator on address: *http://localhost:4200/* to display front page
+* Open web navigator on address: *http://localhost:4200/* to display front page.
 * Verify 'Airports' page have the good name (name put on previous file).
 * Open 'Airports' page and verify labels have been replaced too.
 * To be able to add element in this table you need to be "administrator" of the current site:
@@ -237,7 +242,7 @@ For more informations about creating a CRUD, see [Create a CRUD with BIAToolkit 
 Now let's do the same steps but with 'PlaneType'
 
 * In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Domain\Fleet\Entities'**
-* Create empty class 'PlaneType' and add :
+* Create empty class `PlaneType` and add :
 
 ```csharp
 // <copyright file="PlaneType.cs" company="MyCompany">
@@ -272,15 +277,9 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 }
 ```
 
-## Create the DTO
-### Using BIAToolKit
-
-* Follow the same steps as for the Airports's DTO but replace the entity selected by 'PlaneType - Fleet.Entities'
-![PlaneTypeDTO_Generator](../../Images/GettingStarted/PlaneTypeDTO_Generator.png)
-
 ## Update Data
-### Create the ModelBuilder
-* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, open class 'PlaneModelBuilder.cs' and add:  
+### Update the ModelBuilder
+* In **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\ModelBuilders'**, open class `PlaneModelBuilder.cs` and add:  
 
 ```csharp
         public static void CreateModel(ModelBuilder modelBuilder)
@@ -302,7 +301,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```
 
 ### Update DataContext file
-* Open **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs'** file and declare the DbSet associated to PlaneType:
+* Open **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\DataContext.cs'** file and declare the DbSet associated to `PlaneType`:
 
 ```csharp
         /// <summary>
@@ -317,31 +316,44 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 * Click "Tasks: Run Tasks".
 * Click "Database Add migration SqlServer" if you use SqlServer or "Database Add migration PostGreSql" if you use PostGerSql.
 * Set the name "NewFeaturePlaneType" and press enter.
-* Verify new file *'xxx_NewFeaturePlaneType.cs'* is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
+* Verify new file `xxx_NewFeaturePlaneType.cs` is created on **'...\MyFirstProject\DotNet\MyCompany.MyFirstProject.Infrastructure.Data\Migrations'** folder, and file is not empty.
 
 ![Verify_PlaneType_Migration_File_Created.png](../../Images/GettingStarted/Verify_PlaneType_Migration_File_Created.png)
 
 
 * In VSCode Run and Debug  "DotNet DeployDB"
-* Verify 'PlanesTypes' table is created in the database.
+* Verify `PlanesTypes` table is created in the database.
+
 ![Verify_Table_PlanesTypes_Created](../../Images/GettingStarted/Verify_Table_PlanesTypes_Created.png)
 
-## Create the CRUD 
 
+## Create the DTO
+### Using BIAToolKit
+
+* Follow the same steps as for the Airports's DTO but replace the entity selected by `PlaneType - Fleet.Entities`
+
+![PlaneTypeDTO_Generator](../../Images/GettingStarted/PlaneTypeDTO_Generator.png)
+
+
+## Create the CRUD 
+### Using BIAToolKit
 * Follow the same steps as for the Airports's CRUD but adapt the fields with PlaneType's specifications
 * Click on generate button
+
 ![PlaneTypeCRUD_Generator](../../Images/GettingStarted/PlaneTypeCRUD_Generator.png)
 
-## Launch application generation
+### Launch application generation
 
 * In VSCode Stop all debug launched.
 * Run and debug "Debug Full Stack"
 * The swagger page will be open.
 * Open a browser at address http://localhost:4200/
-* Click on "APP.PLANESTYPES" in menu to display 'PlaneType' page.
+* Click on "APP.PLANESTYPES" in menu to display `PlaneType` page.
 
-## Add traduction
+## Complete traduction
+
 * Open **'src/assets/i18n/app/en.json'** and add:
+
 ```json
   "app": {
     ...,
@@ -358,6 +370,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```  
 
 * Open **'src/assets/i18n/app/es.json'** and add:
+
 ```json
   "app": {
     ...,
@@ -374,6 +387,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
 ```  
 
 * Open **'src/assets/i18n/app/fr.json'** and add:
+
 ```json
   "app": {
     ...,
@@ -389,6 +403,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
   }
 ```
 
+## Test
 * Open web navigator on address: http://localhost:4200/ to display front page
 * Verify 'Plane Types' page have the good name
 * Open 'Plane Types' page and verify labels have been replaced too.

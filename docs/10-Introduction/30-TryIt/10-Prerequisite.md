@@ -11,7 +11,7 @@ sidebar_position: 1
 
 ### Tutorial for DotNet
 
-[.NET tutorial](https://learn.microsoft.com/fr-fr/aspnet/core/tutorials/first-web-api?view=aspnetcore-10.0&tabs=visual-studio)
+* [.NET tutorial](https://learn.microsoft.com/fr-fr/aspnet/core/tutorials/first-web-api?view=aspnetcore-10.0&tabs=visual-studio)
 
 ## Knowledge to have for Angular:
 * [Angular](https://angular.io/)
@@ -22,6 +22,4 @@ sidebar_position: 1
 
 ### Tutorial for Angular
 
-[Angular tutorial](https://angular.dev/tutorials/first-app)
-
-[.NET tutorial](https://learn.microsoft.com/fr-fr/aspnet/core/tutorials/first-web-api?view=aspnetcore-10.0&tabs=visual-studio)
+* [Angular tutorial](https://angular.dev/tutorials/first-app)
