@@ -116,4 +116,3 @@ Example of a specific output template for bia-table and/or app-my-feature-table 
 - Prefer configuration first: change `myFeatureFieldsConfiguration` in `src/app/features/my-features/model/my-feature.ts`.
 - Use `specificOutput`/`specificInput` flags to indicate custom rendering; keep templates small and reusable.
 - Put custom UI logic in light-weight presentational components under `src/app/features/my-features/components/` and call them from the shared table/form templates via `ng-template` or via the feature table/form component that extends the shared class.
-
