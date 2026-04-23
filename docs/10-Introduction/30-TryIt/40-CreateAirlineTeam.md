@@ -195,6 +195,14 @@ After the files are generated, there might be some errors. Follow the instructio
 
 Open your DotNet project solution in **'...\MyFirstProject\DotNet'** and complete the following files.
 
+##### TeamConfig.cs
+
+Add the following line in the configuration of the Airline team : 
+
+```csharp
+DisplayInHeader = true
+```
+
 ##### RoleId.cs
 
 * Go in **'MyCompany.MyFirstProject.Crosscutting.Common\Enum'** folder and open **RoleId.cs** file.

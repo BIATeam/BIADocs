@@ -41,7 +41,7 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
         /// <summary>
         /// Gets or sets the engine serial number.
         /// </summary>
-        public string SN { get; set; }
+        public string Serial_Number { get; set; }
 
         /// <summary>
         /// Gets or sets the plane Id.
@@ -109,7 +109,7 @@ private static void CreateEngineModel(ModelBuilder modelBuilder)
 * In VSCode Run and Debug  "DotNet DeployDB"
 * Verify 'Engines' table is created in the database.
 
-![Verify_Table_Airports_Created](../../Images/GettingStarted/Verify_Table_Airports_Created.png)
+![Verify_Table_Engines_Created](../../Images/GettingStarted/Verify_Table_Engines_Created.png)
 
 
 ## Generate DTO
@@ -152,7 +152,7 @@ private static void CreateEngineModel(ModelBuilder modelBuilder)
     "edit": "Edit engine",
     "listOf": "List of engines",
     "plane": "Plane",
-    "sN": "Serial Number"
+    "serial_Number": "Serial Number"
   }
 ```
 
@@ -172,7 +172,7 @@ Open **'...\MyFirstProject\Angular\src\assets\i18n\app\es.json'** and add:
     "edit": "Editar motor",
     "listOf": "Lista de motores",
     "plane": "Avión",
-    "sN": "Número de serie"
+    "serial_Number": "Número de serie"
   }
 ```
 
@@ -191,7 +191,7 @@ Open **'...\MyFirstProject\Angular\src\assets\i18n\app\fr.json'** and add:
     "edit": "Modifier moteur",
     "listOf": "Liste des moteurs",
     "plane": "Avion",
-    "sN": "Numéro de série"
+    "serial_Number": "Numéro de série"
   }
 ```
 
@@ -200,7 +200,6 @@ Open **'...\MyFirstProject\Angular\src\assets\i18n\app\fr.json'** and add:
 * Launch `npm start` in Angular folder.
 * Go to *http://localhost:4200/*
 * Navigate to the plane list.
-* Select one plane (create one if needed) and click on the button "Engines":
-![Verify_Engine_CRUD_1](../../Images/GettingStarted/Verify_Engine_CRUD_1.png)
+* Select one plane (create one if needed) and click on the button "Engines"
 * You should access to the engines list of the plane.
-![Verify_Engine_CRUD_2](../../Images/GettingStarted/Verify_Engine_CRUD_2.png)
+![Verify_Engine_CRUD](../../Images/GettingStarted/Verify_Engine_CRUD.png)
