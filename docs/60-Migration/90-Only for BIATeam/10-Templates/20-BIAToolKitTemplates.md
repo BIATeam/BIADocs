@@ -179,10 +179,17 @@ The manifest contains all the files to generate for each feature kind of a versi
           "outputPath": "{Project}.Domain\\{Domain}\\Mappers\\{Entity}OptionMapper.cs"
         },
         {
-          "inputPath": "CrosscuttingCommon\\PartialOptionRightsTemplate.tt",
+          "inputPath": "CrosscuttingCommon\\PartialOptionRightsForOptionTemplate.tt",
           "outputPath": "{Project}.Crosscutting.Common\\Rights.cs",
           "isPartial": true,
           "partialInsertionMarkup": "RightsForOption"
+        },
+        {
+          "inputPath": "CrosscuttingCommon\\PartialOptionRightsImportsTemplate.tt",
+          "outputPath": "{Project}.Crosscutting.Common\\Rights.cs",
+          "isPartial": true,
+          "partialInsertionMarkup": "RightsImport",
+          "hasNoPartialInsertionMarkupSuffix": true,
         }
       ]
     }
@@ -199,6 +206,7 @@ The manifest contains all the files to generate for each feature kind of a versi
   - you must then provide the `partialInsertionMarkup` value that corresponds to the area into the target file where the generated content will be added
   - you can set `useDomainPartialInsertionMarkup` to `true` if you want to generate partial content with the `Domain` identifier instead of the `Entity` identifier
   - you can set into `ignoredInnerMarkups` a list of inner markups into the markup content to generate where the content between these will not be erased by the generation process
+  - you can set `hasNoPartialInsertionMarkupSuffix` to `true` if you want to generate partial content between the principal insertion markup without any suffix identifier
 - you can use templates property between `{}` into `outputPath`, `partialInsertionMarkup` or `ignoredInnerMarkups` properties that will be replaced by the file generator service :
   - `{Project}` : the target project name
   - `{Domain}` : the target entity's domain name 

@@ -1,0 +1,58 @@
+/* ── Outer wrapper ──────────────────────────────────────────────────────── */
+.wrapper {
+  margin-bottom: 1.25rem;
+}
+
+/* ── Content container (clipped when collapsed) ─────────────────────────── */
+.content {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Remove bottom margin of the code block when inside CollapsibleCode */
+.content > div:last-child,
+.content > pre:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* ── Gradient overlay that fades out hidden lines ───────────────────────── */
+.fadeOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  pointer-events: none;
+  /* light mode: fade toward the page background */
+  background: linear-gradient(transparent, var(--ifm-background-color, #fff));
+}
+
+[data-theme='dark'] .fadeOverlay {
+  background: linear-gradient(transparent, var(--ifm-background-color, #1b1b1d));
+}
+
+/* ── Expand / collapse toggle row ───────────────────────────────────────── */
+.toggleRow {
+  display: flex;
+  justify-content: center;
+  padding: 0.4rem 0;
+  margin-top: -0.3rem;
+}
+
+.toggleBtn {
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 1.1rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 0.15s;
+}
+
+.toggleBtn:hover {
+  background: var(--ifm-color-primary-dark);
+}
+
