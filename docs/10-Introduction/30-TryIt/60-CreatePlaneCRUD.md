@@ -35,6 +35,17 @@ namespace MyCompany.MyFirstProject.Domain.Fleet.Entities
         public int Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the site.
+        /// </summary>
+        public virtual Airline Airline { get; set; }
+
+        /// <summary>
+        /// Gets or sets the site id.
+        /// </summary>
+        public int AirlineId { get; set; }
+
+
+        /// <summary>
         /// Gets or sets the Manufacturer's Serial Number.
         /// </summary>
         public string Msn { get; set; }
@@ -136,7 +147,8 @@ public DbSet<Plane> Planes { get; set; }
 ![Plane_DTOGenerator](../../Images/GettingStarted/Plane_DTOGenerator.png)
 
 * Click on "Map to" button
-* Check the required checkbox for the Id mapping property
+* Check the required checkbox for the Id, Msn, Capacity and AirlineId mapping property
+* Check AirlineId as Parent Identifier
 * Then click the "Generate" button
 * The DTO and the mapper will be generated
 * Check in the project solution if the DTO and mapper are present

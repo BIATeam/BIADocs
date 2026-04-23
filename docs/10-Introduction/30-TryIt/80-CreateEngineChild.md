@@ -152,7 +152,7 @@ private static void CreateEngineModel(ModelBuilder modelBuilder)
     "edit": "Edit engine",
     "listOf": "List of engines",
     "plane": "Plane",
-    "sn": "Serial Number"
+    "sN": "Serial Number"
   }
 ```
 
@@ -172,7 +172,7 @@ Open **'...\MyFirstProject\Angular\src\assets\i18n\app\es.json'** and add:
     "edit": "Editar motor",
     "listOf": "Lista de motores",
     "plane": "Avión",
-    "sn": "Número de serie"
+    "sN": "Número de serie"
   }
 ```
 
@@ -191,7 +191,7 @@ Open **'...\MyFirstProject\Angular\src\assets\i18n\app\fr.json'** and add:
     "edit": "Modifier moteur",
     "listOf": "Liste des moteurs",
     "plane": "Avion",
-    "sn": "Numéro de série"
+    "sN": "Numéro de série"
   }
 ```
 
@@ -201,6 +201,6 @@ Open **'...\MyFirstProject\Angular\src\assets\i18n\app\fr.json'** and add:
 * Go to *http://localhost:4200/*
 * Navigate to the plane list.
 * Select one plane (create one if needed) and click on the button "Engines":
-![CrudParentList](../../Images/BIAToolKit/CRUD-Child_Parent-List.png)
+![Verify_Engine_CRUD_1](../../Images/GettingStarted/Verify_Engine_CRUD_1.png)
 * You should access to the engines list of the plane.
-![CrudList](../../Images/BIAToolKit/CRUD-Child_List.png)
+![Verify_Engine_CRUD_2](../../Images/GettingStarted/Verify_Engine_CRUD_2.png)
