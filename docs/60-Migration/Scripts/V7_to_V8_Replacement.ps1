@@ -528,6 +528,10 @@ ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\bisHideByDefault\b" -New
 
 # BACK END
 
+# BEGIN - Use TeamCrudAppServiceBase instead of CrudAppServiceBase for teams
+ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\bCrudAppServiceBase(<[^>]*PagingFilterFormatDto\s*<\s*TeamAdvancedFilterDto\s*>[^>]*>)" -NewRegexp 'TeamCrudAppServiceBase$1' -Include "*.cs"
+# END - Use TeamCrudAppServiceBase instead of CrudAppServiceBase for teams
+
 # FRONT END CLEAN
 Set-Location $SourceFrontEnd
 npm run clean
