@@ -92,7 +92,7 @@ sidebar_position: 1
 * Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
 * New team configuration
   * Single entry point for team configuration into back-end `TeamConfig`
-  * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration))
+  * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
   * Remove team config definition for `Login` action into `AuthController`
 * Add action buttons on dropdown filters rules definition
 * New option to generate CRUD with domain URL (BIAToolKit)
@@ -118,7 +118,7 @@ sidebar_position: 1
 * New split button to group buttons into table header
 * Rebranding export and export CSV buttons
 * Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
-* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#create-the-model))
+* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
@@ -208,8 +208,8 @@ sidebar_position: 1
 * Handling of outdated item currently edited ([doc](../40-DeveloperGuide/60-ErrorManagement/30-PreventFormClosingOnError.md#inform-user-of-conflict))
 * Fixable entity ([doc](../40-DeveloperGuide/20-CRUD/75-FixableCRUD.md))
 * Be able to unset team or role as default.
-* Configuration to clear team and have no team selected ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#clear-and-choose-no-team-in-selector))
-* Configuration to choose automatic team selection mode if no default team set ([doc](../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#automatic-team-selection-mode))
+* Configuration to clear team and have no team selected ([doc](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
+* Configuration to choose automatic team selection mode if no default team set ([doc](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
 * Customization of the application logo ([doc](../50-BestPractices/40-Front%20Style%20Guide/40-CustomizeApplicationTheme.md#application-logo))
 * Easiest configuration for web API repository.
 * Adding new mode for form display : possibility to split the page to show form on the right of the table.

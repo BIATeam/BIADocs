@@ -17,7 +17,7 @@ In the following code sample replace [YourTeamType] by the name of your type typ
 ## Create a team
 You can use BIAToolKit to create a team. 
 
-Follow instructions [here](../../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md).
+Follow instructions [here](../../10-Introduction/30-TryIt/40-CreateAirlineTeam.md).
 
 Otherwise, see next chapters.
 
@@ -130,9 +130,10 @@ Add the TeamType :
   - AdminRoleIds : is the list of the ids of the roles that can administrate the teams. It is necessary to display correctly the list of administrators in the CRUD.
   - Children : it list the children teams. To be able to see the parent teams when you are member of one child team.
   - Parent : it list the parent teams. To be able to see the children teams when you are member of one parents team. To be able to retrieve the parent teams and ensure that the right of the child team is compute in a correct context.
-:::tip
-You can have additionnal configuration for your team : follow instructions [here](../../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md#additionnal-configuration)
-:::
+
+You can have additionnal configuration for your team : follow instructions [here](../../10-Introduction/30-TryIt/40-CreateAirlineTeam.md
+)
+
 
 ### Add the team CRUD
 
@@ -167,7 +168,7 @@ In addition, to finish update the database.
   ```
 
 ### Add the team CRUD
-The procedure is similar to the [CRUD Team](../../10-Introduction/30-TryIt/60-CreateYourFirstTeam.md).
+The procedure is similar to the [CRUD Team](../../10-Introduction/30-TryIt/40-CreateAirlineTeam.md).
 
 ### Filter Sub teams in header
 In case of a team type child of team type you have to filer the children teams by their parent.

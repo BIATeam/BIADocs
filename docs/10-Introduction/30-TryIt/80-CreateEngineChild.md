@@ -9,7 +9,7 @@ We will create in first the child feature 'Engine'.
 
 ## Prerequisites
 ### CRUD Parent creation
-Follow steps from the section [Create your first CRUD](./30-CreateYourFirstCRUD.md) to create the parent's child.
+Follow steps from the section [Create your first CRUD](./30-CreateAirportAndPlaneTypeCRUD.md) to create the parent's child.
 
 We will assume that the parent is a Plane for this documentation.
 
