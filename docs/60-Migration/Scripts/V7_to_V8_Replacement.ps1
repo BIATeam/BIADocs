@@ -511,6 +511,125 @@ function Invoke-RenameBiaFieldConfigIsVisible {
     Write-Host "Invoke-RenameBiaFieldConfigIsVisible done. Scanned: $filesScanned, Modified: $filesModified"
 }
 
+function Invoke-AddContextMenuImport {
+    param(
+        [string]$SourceFrontEndPath
+    )
+
+    $templatePatterns = @('bia-table\.component\.html', 'bia-calc-table\.component\.html')
+
+    $importStatement = "import { ContextMenu } from 'primeng/contextmenu';"
+
+    $files = Get-ChildItem -Path $SourceFrontEndPath -Recurse -Filter '*.component.ts' |
+    Where-Object { $_.FullName -notmatch '\\node_modules\\' }
+
+    $patched = 0
+
+    foreach ($file in $files) {
+        $content = Get-Content $file.FullName -Raw -Encoding UTF8
+
+        # Check if this file uses one of the target templates
+        $usesTemplate = $false
+        foreach ($pattern in $templatePatterns) {
+            if ($content -match $pattern) {
+                $usesTemplate = $true
+                break
+            }
+        }
+        if (-not $usesTemplate) { continue }
+
+        Write-Host "Processing: $($file.Name)"
+        $changed = $false
+
+        # --- 1. Add the import statement if not already present ---
+        if ($content -notmatch "from 'primeng/contextmenu'") {
+            $lines = $content -split "`n"
+            $lastPrimengIdx = -1
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+                if ($lines[$i] -match "^import .* from 'primeng/") {
+                    $lastPrimengIdx = $i
+                }
+            }
+
+            if ($lastPrimengIdx -ge 0) {
+                $before = $lines[0..$lastPrimengIdx]
+                $after = $lines[($lastPrimengIdx + 1)..($lines.Count - 1)]
+                $newLines = $before + $importStatement + $after
+                $content = $newLines -join "`n"
+                $changed = $true
+                Write-Host "  [+] Added import statement"
+            }
+            else {
+                Write-Warning "  Could not find a primeng import line in: $($file.Name)"
+            }
+        }
+        else {
+            Write-Host "  [=] Import already present"
+        }
+
+        # --- 2. Add ContextMenu to the imports: [...] array if not already present ---
+        # Extract only the imports array content to check (avoids matching the import statement)
+        $arrayContent = ''
+        $inArr = $false
+        foreach ($ln in ($content -split "`n")) {
+            if ($ln -match '^\s+imports:\s*\[') { $inArr = $true }
+            if ($inArr) { $arrayContent += $ln + "`n" }
+            if ($inArr -and $ln -match '^\s+\],') { $inArr = $false; break }
+        }
+        if ($arrayContent -notmatch '\bContextMenu\b') {
+            # Find the @Component imports array and append ContextMenu before the closing ]
+            # The array ends with a line that is just "  ]," (2-space indent)
+            $lines = $content -split "`n"
+            $inImportsArray = $false
+            $insertIdx = -1
+
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+                if ($lines[$i] -match '^\s+imports:\s*\[') {
+                    $inImportsArray = $true
+                }
+                if ($inImportsArray -and $lines[$i] -match '^\s+\],') {
+                    $insertIdx = $i
+                    $inImportsArray = $false
+                    break
+                }
+            }
+
+            if ($insertIdx -ge 0) {
+                # Determine indentation from surrounding entries
+                $indent = '    '
+                if ($insertIdx -gt 0 -and $lines[$insertIdx - 1] -match '^(\s+)\S') {
+                    $indent = $Matches[1]
+                }
+                $newEntry = "${indent}ContextMenu,"
+                $before = $lines[0..($insertIdx - 1)]
+                $after = $lines[$insertIdx..($lines.Count - 1)]
+                $newLines = $before + $newEntry + $after
+                $content = $newLines -join "`n"
+                $changed = $true
+                Write-Host "  [+] Added ContextMenu to imports array"
+            }
+            else {
+                Write-Warning "  Could not find imports array closing ] in: $($file.Name)"
+            }
+        }
+        else {
+            Write-Host "  [=] ContextMenu already in imports array"
+        }
+
+        if ($changed) {
+            Set-Content -Path $file.FullName -Value $content -Encoding UTF8 -NoNewline
+            Write-Host "  => PATCHED"
+            $patched++
+        }
+        else {
+            Write-Host "  => No changes needed"
+        }
+    }
+
+    Write-Host ""
+    Write-Host "Invoke-AddContextMenuImport done. $patched file(s) patched."
+}
+
 # FRONT END
 
 # BEGIN - Migrate BiaFieldConfig to TableColumnVisibility and FieldEditMode enums
@@ -525,6 +644,10 @@ Invoke-RenameBiaFieldConfigIsVisible -SourceFrontEndPath $SourceFrontEnd
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\bisHideByDefault\b" -NewRegexp 'isHiddenByDefault' -Include "*.ts"
 ReplaceInProject ` -Source $SourceFrontEnd -OldRegexp "\bisHideByDefault\b" -NewRegexp 'isHiddenByDefault' -Include "*.html"
 # END - Rename isHideByDefault to isHiddenByDefault
+
+# BEGIN - Add ContextMenu import to components using bia-table or bia-calc-table
+Invoke-AddContextMenuImport -SourceFrontEndPath $SourceFrontEnd
+# END - Add ContextMenu import to components using bia-table or bia-calc-table
 
 # BACK END
 
