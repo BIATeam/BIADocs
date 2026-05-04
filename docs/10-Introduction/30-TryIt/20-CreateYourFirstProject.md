@@ -84,9 +84,9 @@ sidebar_position: 1
    
     2.  Install npm, if you use PrimeNg V6 :
   
-        1.  You can buy a licence on [PrimeNG website](https://primeng.org/lts)
+        1.  You can buy a license on [PrimeNG website](https://primeng.org/lts)
    
-        2.  Or go back to a free no LTS version by deleting all licence manager mentions in **'...\MyFirstProject\Angular\package.json'** and install the latest PrimeNG version that doesn't use LTS (you can check the latest version on [PrimeNG's website](https://primeng.org/lts)).
+        2.  Or go back to a free no LTS version by deleting all license manager mentions in **'...\MyFirstProject\Angular\package.json'** and install the latest PrimeNG version that doesn't use LTS (you can check the latest version on [PrimeNG's website](https://primeng.org/lts)).
         Go in the `Angular` repository : 
 
         ```ps
