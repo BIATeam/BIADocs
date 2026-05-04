@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Create your first Relation
+# Create Plane's Relations
 ![Create_Planes_Relations_Diagram](../../Images/GettingStarted/Create_Planes_Relations_Diagram.png)
 
 
