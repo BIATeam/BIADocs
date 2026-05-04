@@ -72,7 +72,7 @@ export const myFeatureFieldsConfiguration : BiaFieldsConfig<MyFeature> = {
         // [...]
         Object.assign(new BiaFieldConfig('rowVersion', 'myFeature.rowVersion'), {
             isVisible: false,
-            isVisibleInTable: false,
+            tableColumnVisibility: TableColumnVisibility.Hidden,
         }),
     ]
 }

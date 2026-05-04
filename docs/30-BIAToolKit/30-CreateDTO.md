@@ -45,9 +45,9 @@ You can select for the compatible types the **Date Type** value to your target :
 ![DateType](../Images/BIAToolKit/DTO_DateType.png)
    
 ### With relations in entity
-When having an entity with relations, the BIaToolKit will analyze the relation between the entity and the differents objects in order to automatically map the linked proprties to `OptionDto` objects.
+When having an entity with relations, the BIaToolKit will analyze the relation between the entity and the differents objects in order to automatically map the linked properties to `OptionDto` objects.
 
-In this section we will use the relation entity to `PlaneType` as seen in the chapter [Create your first relation](../10-Introduction/30-TryIt/45-CreateYourFirstRelation.md).
+In this section we will use the relation entity to `PlaneType` as seen in the chapter [Create your first relation](../10-Introduction/30-TryIt/70-CreatePlanesRelations.md).
 #### Single relation
 When your entity has a single object relation, you must have on your entity both relation object property and `int` relation identifier to the relation entity : 
 ```csharp title="plane.cs"
@@ -90,7 +90,7 @@ public virtual ICollection<PlaneType> PlaneTypes { get; set; }
 /// </summary>
 public virtual ICollection<PlanePlaneType> PlanePlaneTypes { get; set; }
 ```
-You must have in your project an existing relationnal entity dedicated to link `Plane` and `PlaneType` :
+You must have in your project an existing relational entity dedicated to link `Plane` and `PlaneType` :
 ```csharp title="planeplanetype.cs"
 /// <summary>
 /// The entity conformcertif repair site.

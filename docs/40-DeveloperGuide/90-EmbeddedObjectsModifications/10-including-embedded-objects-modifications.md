@@ -127,7 +127,7 @@ export class MyItemFormComponent extends CrudItemFormComponent<MyItem> {
   constructor() {
     super();
     this.myEmbeddedItemColumnsToDisplay = this.myEmbeddedItemCrudConfig.columns
-      .filter(col => !col.isHideByDefault)
+      .filter(col => col.tableColumnVisibility !== TableColumnVisibility.AvailableButHidden)
       .map(col => <KeyValuePair>{ key: col.field, value: col.header });
   }
 
