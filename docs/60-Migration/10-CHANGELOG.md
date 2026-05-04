@@ -3,6 +3,14 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7.0.2 (15/04/2026)
+### Bug Fixes
+* Handling empty frontendversion responses to avoid 426 errors
+* Fixing CdkPortalFooter not working since V4
+* Fixing PostGreSql migration script creation
+* Fixing missing translations for teams selectors
+* Fixing BiaLogin not working anymore in swagger
+* Fixing dialog not hiding correctly in some specific configurations
 ## V7.0.1 (31/03/2026)
 ### Features
 * Updated to Angular V21
@@ -63,11 +71,11 @@ sidebar_position: 1
 ## V6.0.3 (11/02/2025)
 ### Bugfix
 * Fix view save when using a system view as base
-* Fix sortFieldValue initialization being overriden by first column
+* Fix sortFieldValue initialization being overridden by first column
 
 ## V6.0.2 (05/02/2025)
 ### Features
-* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned 
+* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versioned 
 * Add Health checks ([doc](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-10.0))
 * Add package Http Resilience ([doc](https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience?tabs=dotnet-cli))
 * Email notification on error removed
@@ -92,13 +100,13 @@ sidebar_position: 1
 * Handle translated and custom server errors with existing `FrontUserException` back-end handler ([doc](../40-DeveloperGuide/60-ErrorManagement/10-BackExceptionHandler.md#front-user-exception))
 * New team configuration
   * Single entry point for team configuration into back-end `TeamConfig`
-  * Move team additionnal configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
+  * Move team additional configuration from front-end `all-environments.ts` to back-end ([doc](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
   * Remove team config definition for `Login` action into `AuthController`
 * Add action buttons on dropdown filters rules definition
 * New option to generate CRUD with domain URL (BIAToolKit)
 * Add `multiSortMeta` property into `CrudItemsIndexComponent` to make easier binding to `bia-table` ([doc](../40-DeveloperGuide/20-CRUD/10-InFilter.md#define-default-sort-order))
 * Add announcements feature to administrate messages to display into information banner ([doc](../45-UserGuide/10-Announcements.md))
-* Add `baseHrefRedirectionOnError` optionnal parameter into `GetParam` class (Front-end). Purpose is to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
+* Add `baseHrefRedirectionOnError` optional parameter into `GetParam` class (Front-end). Purpose is to block the base HREF redirection in case of error when using the `get()` method of `AbstractDasService` or `getItem()` method of `GenericDasService` (always considered to `true` even if undefined)
 * Add `BiaBaseQueryModelMapper` to use intermediate query model between entity and dto for performance concerns ([doc](../40-DeveloperGuide/20-CRUD/91-QueryModelMapper.md))
 * Added database connection resiliency by enabling EnableRetryOnFailure()
 * Add `maxWidth` property into `BiaFieldConfig`
@@ -109,16 +117,16 @@ sidebar_position: 1
 * Improve back to back communication with compressed data
 * Prevent multiple submission on add or update
 * `BaseDto<TKey>` in front-end can now have `number` or `string` primary key
-* Add dynamic filter based on periods from current day (tommorow, day before today...)
+* Add dynamic filter based on periods from current day (tomorrow, day before today...)
 * Improve `GetAsync` method to use with `HttpClient` by returning the `HttpStatusCode` into the Tuple data
 * Usage of `NewStyleCop.Analyzers` instead of `StyleCop.Analyzers`
-* Add `EnableRetryOnFailure` to data context options in dependcy injection configuration
+* Add `EnableRetryOnFailure` to data context options in dependency injection configuration
 * New configuration screens for Views into tables
 * Add bulk methods for Insert, Update and Delete (back-end)
 * New split button to group buttons into table header
 * Rebranding export and export CSV buttons
-* Add new pipe `localDate` to automatically format a date (with time optionaly) to local format
-* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versionned entity ([example doc for Teams](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
+* Add new pipe `localDate` to automatically format a date (with time optionally) to local format
+* Add new `BiaRowVersionProperty` attribute for properties that should be considered as the dedicated row version column of entities that inherits from a parent versioned entity ([example doc for Teams](../10-Introduction/30-TryIt/40-CreateAirlineTeam))
   
 ### Bugfix
 * Fix URL query parameter update issue when changing view from table into index page
@@ -130,7 +138,7 @@ sidebar_position: 1
 * Fix the failure to recognize overrides of `GetRangeAsync`, `AddAsync`, `UpdateAsync`, and `RemoveAsync` methods from the `CrudAppServiceBase` in the generic methods of the `OperationalDomainServiceBase`
 * Fix clone issue in calc mode that didn't save the many to many relations
 * Fix clone issue in form mode that didn't save the new choice in one to many relation
-* Fix bad dispay of select/multiselect overlay when the column width is greater than the current scroll view
+* Fix bad display of select/multiselect overlay when the column width is greater than the current scroll view
 * Fix bad display of forms with layout config on split mode
 * Fix RowVersion for PostGreSQL
 * Fix height view for table with 2 rows displayed at least
@@ -333,7 +341,7 @@ sidebar_position: 1
 * Change Worker Service SignalR communication with Redis directly
 * Multiple repositories handling
 * Exposing standard object model validation properties into BiaDtoField attribute
-* Entity Framework model validation given optionnal
+* Entity Framework model validation given optional
 * Autonomous validation of the keycloak token
 * Fix bug when team title contains special characters
 
@@ -546,10 +554,10 @@ sidebar_position: 1
 ## V3.6.2 (2022-06-17)
 ### DotNet
 * Correct right for admin at start uo (add permission for role Admin: User_Options, Roles_Option, "Notification_List_Access", "Notification_Delete", "Notification_Read" + Get the current Teams when Admin)
-* Correct deployment (BiaNetConfig.json bad formated)
+* Correct deployment (BiaNetConfig.json bad formatted)
 * Correct the Bulk Update and Delete when pool user not db_owner of the dataBase
 ### Front
-* Offline bug : Endpoint missing in post, multiple call to back, token that does not refresh, add an observable triggered at the end of the syncho.
+* Offline bug : Endpoint missing in post, multiple call to back, token that does not refresh, add an observable triggered at the end of the synchro.
 
 ## V3.6.1 (2022-05-06)
 * Change the format of the NotificationTeamDto
@@ -573,7 +581,7 @@ sidebar_position: 1
 * WebApi connector (abstract class)
 * Helper impersonation
 ### Angular
-* New organistion for bia domain and bia repository, placed in separate folder
+* New organization for bia domain and bia repository, placed in separate folder
 
 ## V3.5.5.1 (Patch - 2023-09-19)
 ### DotNet
@@ -583,7 +591,7 @@ sidebar_position: 1
 * More compliant with IISExpress
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
-* Correct daily synchrnonisation in UserInDB mode.
+* Correct daily synchronization in UserInDB mode.
 
 ## V3.5.4.1 (Patch - 2023-07-12)
 ### DotNet
@@ -602,7 +610,7 @@ sidebar_position: 1
 * Separate role UserManager from Admin
 
 ## V3.5.1 (2022-02-08)
-* Possibility to inject ExternalJS in front depending on back environement. 
+* Possibility to inject ExternalJS in front depending on back environment. 
 ### DotNet
 * Solve bug in order list
 ### Angular
@@ -635,7 +643,7 @@ sidebar_position: 1
 * More compliant with IISExpress
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
-* Correct daily synchrnonisation in UserInDB mode.
+* Correct daily synchronization in UserInDB mode.
   
 ## V3.4.4.1 (Patch - 2023-07-13)
 ### DotNet
@@ -684,7 +692,7 @@ sidebar_position: 1
 * More compliant with IISExpress
 ### DotNet
 * Correct bug on non active user when UserInDB not use, that create huge log and consume lot of CPU.
-* Correct daily synchrnonisation in UserInDB mode.
+* Correct daily synchronization in UserInDB mode.
   
 ## V3.3.5.1 (Patch - 2023-07-13)
 ### DotNet
@@ -725,12 +733,12 @@ sidebar_position: 1
   
 ## V3.3.0 (2021-01-15)
 ### DotNet
-* Add feature management (posibilité to activate and desactivate powerfull feature like swagger, SignalR...)
+* Add feature management (possibility to activate and deactivate powerful feature like swagger, SignalR...)
 * Add Unitary Test
-* Add feature in Api HubForClients (use SignalR to push messge to all client connected, compatible with multi front) 
+* Add feature in Api HubForClients (use SignalR to push message to all client connected, compatible with multi front) 
 * Add feature in Api DelegateJobToWorker (use Hangfire to launch job in the worker) 
-* Add feature in worker DatabaseHandler (detect the change in db immediatlty)
-* Add feature in worker HubForClients (use the Api feture HubForClients to push message to all web client connected)
+* Add feature in worker DatabaseHandler (detect the change in db immediately)
+* Add feature in worker HubForClients (use the Api feature HubForClients to push message to all web client connected)
 * WorkerService is now a web api with the hangfire Dashboard.
 ### Angular
 *  Date bug fix
