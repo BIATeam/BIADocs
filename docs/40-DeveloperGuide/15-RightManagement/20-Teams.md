@@ -131,7 +131,7 @@ Add the TeamType :
   - Children : it list the children teams. To be able to see the parent teams when you are member of one child team.
   - Parent : it list the parent teams. To be able to see the children teams when you are member of one parents team. To be able to retrieve the parent teams and ensure that the right of the child team is compute in a correct context.
 
-You can have additionnal configuration for your team : follow instructions [here](../../10-Introduction/30-TryIt/40-CreateAirlineTeam.md
+You can have additional configuration for your team : follow instructions [here](../../10-Introduction/30-TryIt/40-CreateAirlineTeam.md
 )
 
 
