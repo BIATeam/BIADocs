@@ -154,27 +154,6 @@ namespace MyCompany.MyFirstProject.Infrastructure.Data.ModelBuilders
    
 ![AirlineDTO_Generator](../../Images/GettingStarted/AirlineDTO_Generator.png)
 
-In a Children Team case, complete the generated DTO : 
-* ensure to set the first `AncestorTeam` parent's type into `BiaDtoClass` class annotation
-* set `IsParent` to true in `BiaDtoField` field annotation for parent's id property
-
-```csharp title="AirlineChildDto.cs"
-/// <summary>
-/// The DTO used to represent a company child.
-/// </summary>
-[BiaDtoClass(AncestorTeam = "Airline")]
-public class AirlineChildDto : TeamDto
-{
-    [...]
-
-    /// <summary>
-    /// Gets or sets the parent's airline id.
-    /// </summary>
-    [BiaDtoField(IsParent = true, Required = true)]
-    public int AirlineId { get; set; }
-}
-```
-
 ## Generate CRUD 
 
 ### Using BIAToolKit

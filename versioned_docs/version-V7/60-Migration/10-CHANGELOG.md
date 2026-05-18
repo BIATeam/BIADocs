@@ -3,6 +3,19 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7.0.3 (18/05/2026)
+### Bug Fixes
+* Fixing archive file creation error
+* Fixing AuthService login for keycloak
+* Allow expressions in Audit linked entities display properties
+* Allow usage of UserContext in AuditMapper by delaying initialisation at usage
+* Fixing swagger authentication when CurrentTeamLogins is null
+* BaseUserController and BaseNotificationController functions now virtual
+* Fixing some spanish translations
+* Fixing WebApiRepository SendAsync
+* Fixing table columns not correctly updating format after table manipulations
+* Fixing db update concurrency exceptions by doing a retry
+
 ## V7.0.2 (15/04/2026)
 ### Bug Fixes
 * Handling empty frontendversion responses to avoid 426 errors
@@ -11,6 +24,7 @@ sidebar_position: 1
 * Fixing missing translations for teams selectors
 * Fixing BiaLogin not working anymore in swagger
 * Fixing dialog not hiding correctly in some specific configurations
+
 ## V7.0.1 (31/03/2026)
 ### Features
 * Updated to Angular V21

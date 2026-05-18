@@ -43,7 +43,7 @@ All tests must be validated before continuing package process !
   ```
   cd Angular
   ```
-- Switch the angular application to use bia-ng references in imports by executing the **switch-to-bia-ng.ps1** script and selecting No so the references of bia-ng are taken from dist instead of npm.
+- Switch the angular application to use bia-ng references in imports by executing the **switch-to-bia-ng.ps1** script and selecting Yes so the references of bia-ng are taken from dist instead of npm.
 - Move your terminal location to bia-ng folder: 
   ```
   cd packages/bia-ng
