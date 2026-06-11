@@ -3,6 +3,12 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7.0.4 (11/06/2026)
+### Bug Fixes
+* Fix multiselect filters closing when selecting a value
+* Fix Row Version migration error when tree works on children before parent
+* Remove countryId from BIATemplate
+
 ## V7.0.3 (18/05/2026)
 ### Bug Fixes
 * Fixing archive file creation error
