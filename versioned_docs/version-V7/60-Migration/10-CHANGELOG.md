@@ -3,6 +3,13 @@ sidebar_position: 1
 ---
 
 # ChangeLog
+## V7.0.5 (24/06/2026)
+### Bug Fixes
+* Fix slim and slim plus submenu position
+* Fix vulnerabilities in .net and angular
+* Filter by parent team before selecting default children team
+* Exposing PrincipalMockBuilder mock and adding MockPrincipalRoleIds
+
 ## V7.0.4 (11/06/2026)
 ### Bug Fixes
 * Fix multiselect filters closing when selecting a value
